@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Connexion, Coup de Patte</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --forest:#2D4A3E;--moss:#4A7C59;--sage:#7AAD89;--mint:#C8E6C0;--mint-lt:#EBF5E8;
+  --ivory:#F4F1E8;--paper:#FDFCF8;--bark:#6B4F3A;--gold:#D4A843;--amber:#C49A1A;
+  --blush:#E8C49A;--rose:#C9704A;--blue:#5B8DEF;--border:rgba(45,74,62,0.12);
+  --dust:#7A6E65;--smoke:#A89E96;--shadow:0 16px 56px rgba(45,74,62,0.13);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Nunito',sans-serif;font-weight:400;background:var(--ivory);color:var(--forest);min-height:100vh;overflow-x:hidden;display:flex;flex-direction:column}
+
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");pointer-events:none;z-index:0}
+
+/* Blobs */
+.blob{position:fixed;border-radius:60% 40% 55% 45%/50% 60% 40% 50%;pointer-events:none;z-index:0;animation:blobFloat 14s ease-in-out infinite}
+.blob-1{top:-15%;right:-10%;width:650px;height:650px;background:radial-gradient(ellipse,rgba(74,124,89,0.10) 0%,transparent 65%)}
+.blob-2{bottom:-10%;left:-8%;width:550px;height:550px;background:radial-gradient(ellipse,rgba(212,168,67,0.08) 0%,transparent 65%);animation-direction:reverse;animation-duration:18s}
+@keyframes blobFloat{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(20px,-18px) scale(1.04)}66%{transform:translate(-14px,10px) scale(0.97)}}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:16px 52px;background:rgba(244,241,232,0.93);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.logo{font-family:'Fraunces',serif;font-size:1.4rem;font-weight:600;color:var(--forest);display:flex;align-items:center;gap:9px;text-decoration:none}
+.logo-bubble{width:40px;height:40px;background:var(--forest);border-radius:50% 50% 50% 50%/60% 60% 40% 40%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(45,74,62,0.32)}
+.logo-bubble span{filter:brightness(0) invert(1);font-size:0.95rem}
+.nav-back{font-size:0.82rem;font-weight:600;color:var(--dust);text-decoration:none;opacity:0.7;transition:opacity 0.2s}
+.nav-back:hover{opacity:1}
+
+/* LAYOUT */
+.page{flex:1;display:grid;grid-template-columns:1fr 1fr;min-height:100vh;padding-top:74px;position:relative;z-index:1}
+
+/* ─── PANNEAU GAUCHE (visuel) ─── */
+.left-panel{background:linear-gradient(160deg,var(--forest) 0%,var(--moss) 70%,var(--sage) 100%);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:60px 52px;position:relative;overflow:hidden;overflow-y:auto}
+
+.left-panel::before{content:'🐾';position:absolute;font-size:22rem;opacity:0.04;right:-60px;bottom:-40px;line-height:1;animation:pawFloat 12s ease-in-out infinite}
+@keyframes pawFloat{0%,100%{transform:rotate(-8deg) scale(1)}50%{transform:rotate(8deg) scale(1.05)}}
+
+.left-content{position:relative;z-index:1;text-align:center;max-width:400px}
+
+.left-badge{display:inline-flex;align-items:center;gap:7px;background:rgba(244,241,232,0.12);border:1px solid rgba(244,241,232,0.2);border-radius:50px;padding:7px 16px;font-size:0.75rem;font-weight:700;color:rgba(244,241,232,0.8);margin-bottom:28px;letter-spacing:0.5px}
+.left-badge-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(1.5)}}
+
+.left-title{font-family:'Fraunces',serif;font-size:2.8rem;font-weight:700;font-style:italic;color:var(--ivory);line-height:1.1;margin-bottom:16px;letter-spacing:-0.5px}
+.left-title em{font-style:normal;color:var(--gold)}
+
+.left-sub{font-size:0.9rem;line-height:1.75;color:rgba(244,241,232,0.65);margin-bottom:40px}
+
+/* Mini stats */
+.left-stats{display:flex;gap:32px;justify-content:center;padding-top:28px;border-top:1px solid rgba(255,255,255,0.1)}
+.ls-n{font-family:'Fraunces',serif;font-size:1.6rem;font-weight:700;color:var(--gold);display:block;line-height:1}
+.ls-l{font-size:0.72rem;color:rgba(244,241,232,0.55);margin-top:3px;display:block;font-weight:500}
+
+/* Mini cards flottantes */
+.float-card{position:absolute;background:rgba(244,241,232,0.12);backdrop-filter:blur(12px);border:1px solid rgba(244,241,232,0.15);border-radius:16px;padding:12px 16px;font-size:0.75rem;font-weight:600;color:var(--ivory);white-space:nowrap}
+.fc-1{top:18%;left:8%;animation:fcFloat 5s ease-in-out infinite}
+.fc-2{top:32%;right:6%;animation:fcFloat 6s 1s ease-in-out infinite reverse}
+.fc-3{bottom:22%;left:6%;animation:fcFloat 4.5s 0.5s ease-in-out infinite}
+@keyframes fcFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+
+/* ─── PANNEAU DROIT (formulaire) ─── */
+.right-panel{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:52px 60px;overflow-y:auto}
+
+.form-wrap{width:100%;max-width:420px}
+
+/* Sélecteur de profil */
+.profile-selector{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:32px}
+
+.profile-btn{border:2px solid var(--border);border-radius:18px;padding:18px 16px;background:var(--ivory);cursor:pointer;text-align:center;transition:all 0.22s cubic-bezier(0.34,1.56,0.64,1);display:flex;flex-direction:column;align-items:center;gap:8px}
+.profile-btn:hover{border-color:var(--sage);background:var(--mint-lt);transform:translateY(-2px)}
+.profile-btn.active{border-color:var(--forest);background:var(--forest);box-shadow:0 6px 20px rgba(45,74,62,0.22);transform:translateY(-2px)}
+.profile-btn.active .pb-emoji{filter:none}
+.profile-btn.active .pb-label{color:var(--ivory)}
+.profile-btn.active .pb-sub{color:rgba(244,241,232,0.6)}
+.pb-emoji{font-size:1.8rem;line-height:1}
+.pb-label{font-family:'Fraunces',serif;font-size:0.95rem;font-weight:600;font-style:italic;color:var(--forest)}
+.pb-sub{font-size:0.68rem;color:var(--dust)}
+
+/* Tabs connexion / inscription */
+.auth-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:28px}
+.auth-tab{flex:1;padding:12px;text-align:center;font-size:0.85rem;font-weight:700;color:var(--dust);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.2s}
+.auth-tab:hover{color:var(--forest)}
+.auth-tab.active{color:var(--forest);border-bottom-color:var(--moss)}
+
+.auth-panel{display:none;animation:fadeUp 0.3s ease both}
+.auth-panel.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* Header formulaire */
+.form-header{margin-bottom:24px}
+.form-title{font-family:'Fraunces',serif;font-size:1.6rem;font-weight:600;font-style:italic;color:var(--forest);margin-bottom:4px}
+.form-sub{font-size:0.8rem;color:var(--dust);line-height:1.5}
+
+/* Champs */
+.field-group{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
+.field-label{font-size:0.65rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--smoke)}
+.field-input{padding:12px 16px;border-radius:12px;border:1.5px solid var(--border);background:var(--paper);font-family:'Nunito',sans-serif;font-size:0.88rem;color:var(--forest);outline:none;transition:border-color 0.2s,box-shadow 0.2s;width:100%}
+.field-input:focus{border-color:var(--moss);box-shadow:0 0 0 3px rgba(74,124,89,0.08)}
+.field-input::placeholder{color:var(--smoke)}
+
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+/* Password toggle */
+.field-pwd-wrap{position:relative}
+.field-pwd-wrap .field-input{padding-right:44px}
+.pwd-toggle{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:1rem;color:var(--smoke);transition:color 0.2s}
+.pwd-toggle:hover{color:var(--forest)}
+
+/* CGU */
+.cgu-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:18px;margin-top:4px}
+.cgu-check{width:18px;height:18px;border-radius:5px;border:1.5px solid var(--border);background:var(--paper);cursor:pointer;flex-shrink:0;margin-top:1px;appearance:none;transition:all 0.15s;display:flex;align-items:center;justify-content:center}
+.cgu-check:checked{background:var(--forest);border-color:var(--forest)}
+.cgu-check:checked::after{content:'✓';color:white;font-size:0.65rem;font-weight:700}
+.cgu-label{font-size:0.76rem;color:var(--dust);line-height:1.5}
+.cgu-label a{color:var(--moss);text-decoration:none;font-weight:700}
+.cgu-label a:hover{text-decoration:underline}
+
+/* Submit */
+.submit-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--moss),var(--forest));color:var(--ivory);border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.92rem;font-weight:700;cursor:pointer;transition:transform 0.2s cubic-bezier(0.34,1.56,0.64,1),box-shadow 0.2s;box-shadow:0 4px 16px rgba(74,124,89,0.3);margin-bottom:16px;display:flex;align-items:center;justify-content:center;gap:8px}
+.submit-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(74,124,89,0.42)}
+.submit-btn:active{transform:translateY(0)}
+
+/* Séparateur */
+.separator{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.sep-line{flex:1;height:1px;background:var(--border)}
+.sep-text{font-size:0.72rem;color:var(--smoke);font-weight:600;white-space:nowrap}
+
+/* Bouton Google */
+.google-btn{width:100%;padding:12px;background:var(--paper);color:var(--forest);border:1.5px solid var(--border);border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.88rem;font-weight:700;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:20px}
+.google-btn:hover{border-color:var(--moss);background:var(--mint-lt)}
+.google-icon{width:18px;height:18px}
+
+/* Lien switch */
+.switch-link{text-align:center;font-size:0.78rem;color:var(--dust)}
+.switch-link a{color:var(--moss);font-weight:700;text-decoration:none}
+.switch-link a:hover{text-decoration:underline}
+
+/* Mot de passe oublié */
+.forgot-link{text-align:right;font-size:0.72rem;color:var(--moss);cursor:pointer;font-weight:600;text-decoration:none;display:block;margin-top:-8px;margin-bottom:16px;transition:opacity 0.2s}
+.forgot-link:hover{opacity:0.7}
+
+/* Spécifique refuge */
+.refuge-info-box{background:var(--mint-lt);border:1.5px solid rgba(74,124,89,0.2);border-radius:14px;padding:14px 16px;margin-bottom:16px;font-size:0.78rem;color:var(--forest);line-height:1.6}
+.refuge-info-box strong{font-weight:700;display:block;margin-bottom:3px}
+
+/* Divider section */
+.section-divider{font-size:0.62rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--smoke);margin:18px 0 14px;display:flex;align-items:center;gap:10px}
+.section-divider::before,.section-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* Toast */
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--forest);color:var(--ivory);padding:12px 24px;border-radius:50px;font-size:0.82rem;font-weight:700;z-index:600;transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1);box-shadow:0 8px 24px rgba(45,74,62,0.3);white-space:nowrap}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+/* Indicateur force mot de passe */
+.pwd-strength{display:flex;gap:4px;margin-top:6px}
+.pwd-bar{flex:1;height:3px;border-radius:50px;background:var(--border);transition:background 0.3s}
+.pwd-bar.weak{background:var(--rose)}
+.pwd-bar.medium{background:var(--amber)}
+.pwd-bar.strong{background:var(--moss)}
+.pwd-strength-label{font-size:0.65rem;color:var(--smoke);margin-top:4px;display:block}
+</style>
+
+  <!-- Supabase SDK + Configuration Coup de Patte -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+</head>
+<body>
+
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="coup-de-patte-landing.html" class="logo">
+    <div class="logo-bubble" style="animation:pawPulse 2.5s ease-in-out infinite;"><span style="animation:pawWiggle 2.5s ease-in-out infinite;display:inline-block;filter:brightness(0) invert(1);font-size:1.1rem">🐾</span></div>
+    Coup de Patte
+  </a>
+  <a href="coup-de-patte-landing.html" class="nav-back">← Retour à l'accueil</a>
+</nav>
+
+<div class="page">
+
+  <!-- ─── PANNEAU GAUCHE ─── -->
+  <div class="left-panel">
+    <div class="left-content" style="margin-top:0;text-align:center;max-width:440px">
+      <div class="left-badge"><span class="left-badge-dot"></span> L'adoption intelligente</div>
+      <h2 class="left-title">L'animal qui vous<br>correspond <em>vraiment</em></h2>
+      <p class="left-sub">Complétez votre profil en 5 minutes et découvrez les animaux en refuge qui correspondent à votre mode de vie, avec un score de compatibilité.</p>
+      <div class="left-stats">
+        <div><span class="ls-n">4 000+</span><span class="ls-l">Refuges référencés</span></div>
+        <div><span class="ls-n">100%</span><span class="ls-l">100% gratuit</span></div>
+        <div><span class="ls-n">47</span><span class="ls-l">Animaux Enfin Moi ?</span></div>
+      </div>
+
+      <!-- Enfin Moi explanation -->
+      <div style="margin-top:40px;padding-top:32px;border-top:1px solid rgba(255,255,255,0.1)">
+        <div style="display:inline-flex;align-items:center;gap:7px;background:rgba(212,168,67,0.2);border:1px solid rgba(212,168,67,0.35);border-radius:50px;padding:6px 14px;font-size:0.72rem;font-weight:700;color:var(--gold);margin-bottom:14px;letter-spacing:0.5px">
+          <span style="width:5px;height:5px;border-radius:50%;background:var(--gold);display:inline-block;animation:pulse 2s ease-in-out infinite"></span>
+          ✨ Enfin Moi ?
+        </div>
+        <h3 style="font-family:'Fraunces',serif;font-size:1.4rem;font-weight:600;font-style:italic;color:var(--ivory);margin-bottom:10px;line-height:1.2">Ces animaux méritent leur chance</h3>
+        <p style="font-size:0.83rem;line-height:1.75;color:rgba(244,241,232,0.65);margin-bottom:16px;text-align:left">La catégorie <strong style="color:var(--gold);font-weight:700">Enfin Moi ?</strong> regroupe les animaux âgés, handicapés, présents en refuge depuis plus d'un an, ou qui supportent mal la vie en refuge. Ce sont souvent les plus attachants. Ils ont juste besoin qu'on leur donne une chance.</p>
+        <div style="display:flex;flex-direction:column;gap:10px;align-items:flex-start">
+          <div style="display:flex;align-items:center;gap:10px;font-size:0.8rem;color:rgba(244,241,232,0.7)">
+            <span style="width:28px;height:28px;border-radius:50%;background:rgba(212,168,67,0.2);border:1px solid rgba(212,168,67,0.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:0.85rem">📅</span>
+            Présents en refuge depuis plus d'un an
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;font-size:0.8rem;color:rgba(244,241,232,0.7)">
+            <span style="width:28px;height:28px;border-radius:50%;background:rgba(212,168,67,0.2);border:1px solid rgba(212,168,67,0.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:0.85rem">🌿</span>
+            Animaux âgés, chiens +8 ans, chats +10 ans
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;font-size:0.8rem;color:rgba(244,241,232,0.7)">
+            <span style="width:28px;height:28px;border-radius:50%;background:rgba(212,168,67,0.2);border:1px solid rgba(212,168,67,0.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:0.85rem">💛</span>
+            Animaux avec un handicap ou des besoins spéciaux
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ─── PANNEAU DROIT ─── -->
+  <div class="right-panel">
+    <div class="form-wrap">
+
+      <!-- Sélecteur de profil -->
+      <div class="profile-selector">
+        <button class="profile-btn active" id="btn-adoptant" onclick="selectProfile('adoptant')">
+          <span class="pb-emoji">🏠</span>
+          <span class="pb-label">Je cherche à adopter</span>
+          <span class="pb-sub">Profil adoptant</span>
+        </button>
+        <button class="profile-btn" id="btn-refuge" onclick="selectProfile('refuge')">
+          <span class="pb-emoji">🏡</span>
+          <span class="pb-label">Je gère un refuge</span>
+          <span class="pb-sub">Espace refuge</span>
+        </button>
+      </div>
+
+      <!-- Tabs -->
+      <div class="auth-tabs">
+        <div class="auth-tab active" onclick="showAuthTab('connexion',this)">Connexion</div>
+        <div class="auth-tab" onclick="showAuthTab('inscription',this)">Créer un compte</div>
+      </div>
+
+      <!-- ══ CONNEXION ══ -->
+      <div class="auth-panel active" id="panel-connexion">
+
+        <!-- Adoptant connexion -->
+        <div id="connexion-adoptant">
+          <div class="form-header">
+            <h2 class="form-title">Bon retour 🐾</h2>
+            <p class="form-sub">Connectez-vous pour retrouver vos matchs et vos animaux likés.</p>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">Email</label>
+            <input class="field-input" type="email" placeholder="sophie@email.fr">
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">Mot de passe</label>
+            <div class="field-pwd-wrap">
+              <input class="field-input" type="password" id="pwd-login" placeholder="••••••••">
+              <button class="pwd-toggle" onclick="togglePwd('pwd-login',this)">👁</button>
+            </div>
+          </div>
+
+          <a href="#" class="forgot-link">Mot de passe oublié ?</a>
+
+          <button class="submit-btn" onclick="handleLogin()"><span style="filter:brightness(0) invert(1)">🐾</span> Se connecter</button>
+
+          <div class="separator"><div class="sep-line"></div><span class="sep-text">ou continuer avec</span><div class="sep-line"></div></div>
+
+          <button class="google-btn">
+            <svg class="google-icon" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+            Continuer avec Google
+          </button>
+
+          <p class="switch-link">Pas encore de compte ? <a onclick="showAuthTab('inscription',document.querySelectorAll('.auth-tab')[1])">Créer un compte</a></p>
+        </div>
+
+        <!-- Refuge connexion -->
+        <div id="connexion-refuge" style="display:none">
+          <div class="form-header">
+            <h2 class="form-title">Espace refuge 🏡</h2>
+            <p class="form-sub">Connectez-vous pour gérer vos animaux et les informations de votre refuge.</p>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">Email du refuge</label>
+            <input class="field-input" type="email" placeholder="contact@spa-lyon.fr">
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">Mot de passe</label>
+            <div class="field-pwd-wrap">
+              <input class="field-input" type="password" id="pwd-refuge-login" placeholder="••••••••">
+              <button class="pwd-toggle" onclick="togglePwd('pwd-refuge-login',this)">👁</button>
+            </div>
+          </div>
+
+          <a href="#" class="forgot-link">Mot de passe oublié ?</a>
+
+          <button class="submit-btn" onclick="handleRefugeLogin()">🏡 Accéder à mon espace refuge</button>
+
+          <p class="switch-link">Pas encore inscrit ? <a onclick="showAuthTab('inscription',document.querySelectorAll('.auth-tab')[1])">Référencer mon refuge</a></p>
+        </div>
+
+      </div>
+
+      <!-- ══ INSCRIPTION ══ -->
+      <div class="auth-panel" id="panel-inscription">
+
+        <!-- Adoptant inscription -->
+        <div id="inscription-adoptant">
+          <div class="form-header">
+            <h2 class="form-title">Créer mon profil 🐾</h2>
+            <p class="form-sub">5 minutes pour trouver l'animal qui vous correspond vraiment.</p>
+          </div>
+
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label">Prénom</label>
+              <input class="field-input" type="text" placeholder="Sophie">
+            </div>
+            <div class="field-group">
+              <label class="field-label">Nom</label>
+              <input class="field-input" type="text" placeholder="Martin">
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">Email</label>
+            <input class="field-input" type="email" placeholder="sophie@email.fr">
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">Mot de passe</label>
+            <div class="field-pwd-wrap">
+              <input class="field-input" type="password" id="pwd-register" placeholder="••••••••" oninput="checkStrength(this.value)">
+              <button class="pwd-toggle" onclick="togglePwd('pwd-register',this)">👁</button>
+            </div>
+            <div class="pwd-strength">
+              <div class="pwd-bar" id="bar1"></div>
+              <div class="pwd-bar" id="bar2"></div>
+              <div class="pwd-bar" id="bar3"></div>
+              <div class="pwd-bar" id="bar4"></div>
+            </div>
+            <span class="pwd-strength-label" id="strengthLabel"></span>
+          </div>
+
+          <div class="cgu-row">
+            <input type="checkbox" class="cgu-check" id="cgu-adoptant">
+            <label class="cgu-label" for="cgu-adoptant">J'accepte les <a href="coup-de-patte-cgu.html">conditions d'utilisation</a> et la <a href="coup-de-patte-cgu.html">politique de confidentialité</a> de Coup de Patte.</label>
+          </div>
+
+          <button class="submit-btn" onclick="handleRegister()">Créer mon compte et compléter mon profil →</button>
+
+          <div class="separator"><div class="sep-line"></div><span class="sep-text">ou continuer avec</span><div class="sep-line"></div></div>
+
+          <button class="google-btn">
+            <svg class="google-icon" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+            Continuer avec Google
+          </button>
+
+          <p class="switch-link">Déjà un compte ? <a onclick="showAuthTab('connexion',document.querySelectorAll('.auth-tab')[0])">Se connecter</a></p>
+        </div>
+
+        <!-- Refuge inscription -->
+        <div id="inscription-refuge" style="display:none">
+          <div class="form-header">
+            <h2 class="form-title">Référencer mon refuge 🏡</h2>
+            <p class="form-sub">Rejoignez Coup de Patte et augmentez la visibilité de vos animaux.</p>
+          </div>
+
+          <div class="refuge-info-box">
+            <strong>📋 Comment ça fonctionne ?</strong>
+            Après inscription, votre refuge est créé et vous pouvez gérer vos animaux directement. Notre IA importera aussi automatiquement vos fiches si vous avez un site web.
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">Nom du refuge</label>
+            <input class="field-input" type="text" placeholder="SPA de Lyon, Fondation">
+          </div>
+
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label">Ville</label>
+              <input class="field-input" type="text" placeholder="Lyon">
+            </div>
+            <div class="field-group">
+              <label class="field-label">Code postal</label>
+              <input class="field-input" type="text" placeholder="69009">
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">Site web du refuge (optionnel)</label>
+            <input class="field-input" type="url" placeholder="www.spa-lyon.fr">
+          </div>
+
+          <div class="section-divider">Compte administrateur</div>
+
+          <div class="field-group">
+            <label class="field-label">Email professionnel</label>
+            <input class="field-input" type="email" placeholder="contact@spa-lyon.fr">
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">Mot de passe</label>
+            <div class="field-pwd-wrap">
+              <input class="field-input" type="password" id="pwd-refuge-register" placeholder="••••••••" oninput="checkStrength(this.value,'refuge')">
+              <button class="pwd-toggle" onclick="togglePwd('pwd-refuge-register',this)">👁</button>
+            </div>
+            <div class="pwd-strength">
+              <div class="pwd-bar" id="rbar1"></div>
+              <div class="pwd-bar" id="rbar2"></div>
+              <div class="pwd-bar" id="rbar3"></div>
+              <div class="pwd-bar" id="rbar4"></div>
+            </div>
+            <span class="pwd-strength-label" id="rstrengthLabel"></span>
+          </div>
+
+          <div class="cgu-row">
+            <input type="checkbox" class="cgu-check" id="cgu-refuge">
+            <label class="cgu-label" for="cgu-refuge">J'accepte les <a href="coup-de-patte-cgu.html">conditions d'utilisation</a> pour les refuges partenaires de Coup de Patte.</label>
+          </div>
+
+          <button class="submit-btn" onclick="handleRefugeRegister()">🏡 Créer l'espace de mon refuge →</button>
+
+          <p class="switch-link">Déjà inscrit ? <a onclick="showAuthTab('connexion',document.querySelectorAll('.auth-tab')[0])">Se connecter</a></p>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+  let currentProfile = 'adoptant';
+  let currentTab     = 'connexion';
+
+  // ── Sélecteur profil ──
+  function selectProfile(profile) {
+    currentProfile = profile;
+    document.getElementById('btn-adoptant').classList.toggle('active', profile === 'adoptant');
+    document.getElementById('btn-refuge').classList.toggle('active',   profile === 'refuge');
+    updateForms();
+  }
+
+  // ── Tabs connexion / inscription ──
+  function showAuthTab(tab, el) {
+    currentTab = tab;
+    document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+    if(el) el.classList.add('active');
+    document.querySelectorAll('.auth-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('panel-' + tab).classList.add('active');
+    updateForms();
+  }
+
+  // ── Affichage conditionnel des formulaires ──
+  function updateForms() {
+    var sections = ['connexion-adoptant','connexion-refuge','inscription-adoptant','inscription-refuge'];
+    sections.forEach(id => {
+      var el = document.getElementById(id);
+      if(el) el.style.display = 'none';
+    });
+    var target = `${currentTab}-${currentProfile}`;
+    var el = document.getElementById(target);
+    if(el) el.style.display = 'block';
+  }
+
+  // ── Toggle mot de passe ──
+  function togglePwd(id, btn) {
+    var input = document.getElementById(id);
+    if(input.type === 'password') { input.type = 'text'; btn.textContent = '🙈'; }
+    else { input.type = 'password'; btn.textContent = '👁'; }
+  }
+
+  // ── Force du mot de passe ──
+  function checkStrength(val, prefix='') {
+    var p = prefix ? 'r' : '';
+    var bars  = [1,2,3,4].map(i => document.getElementById(`${p}bar${i}`));
+    var label = document.getElementById(`${p}strengthLabel`);
+    if(!bars[0]) return;
+    bars.forEach(b => b.className = 'pwd-bar');
+    if(!val) { label.textContent=''; return; }
+    var score = 0;
+    if(val.length >= 8)          score++;
+    if(/[A-Z]/.test(val))        score++;
+    if(/[0-9]/.test(val))        score++;
+    if(/[^A-Za-z0-9]/.test(val)) score++;
+    var configs = [
+      {},
+      { cls:'weak',   text:'Faible',    bars:1 },
+      { cls:'weak',   text:'Passable',  bars:2 },
+      { cls:'medium', text:'Bon',       bars:3 },
+      { cls:'strong', text:'Excellent', bars:4 },
+    ];
+    var c = configs[score] || configs[1];
+    for(var i=0; i<c.bars; i++) bars[i].classList.add(c.cls);
+    label.textContent = c.text || '';
+    label.style.color = score <= 2 ? 'var(--rose)' : score === 3 ? 'var(--amber)' : 'var(--moss)';
+  }
+
+  // ── Actions ──
+  function handleLogin() {
+    showToast('Connexion réussie ! Redirection vers vos matchs… 🐾');
+    setTimeout(() => window.location.href = 'coup-de-patte-dashboard.html', 1800);
+  }
+
+  function handleRefugeLogin() {
+    showToast('Connexion réussie ! Redirection vers votre espace… 🏡');
+    setTimeout(() => window.location.href = 'coup-de-patte-admin.html', 1800);
+  }
+
+  function handleRegister() {
+    var cgu = document.getElementById('cgu-adoptant');
+    if(!cgu.checked) { showToast('⚠️ Veuillez accepter les conditions d\'utilisation'); return; }
+    showToast('Compte créé ! Complétez maintenant votre profil 🐾');
+    setTimeout(() => window.location.href = 'coup-de-patte-form.html', 1800);
+  }
+
+  function handleRefugeRegister() {
+    var cgu = document.getElementById('cgu-refuge');
+    if(!cgu.checked) { showToast('⚠️ Veuillez accepter les conditions d\'utilisation'); return; }
+    showToast('Refuge créé ! Bienvenue sur Coup de Patte 🏡');
+    setTimeout(() => window.location.href = 'coup-de-patte-admin.html', 1800);
+  }
+
+  // ── Toast ──
+  let toastTimer;
+  function showToast(msg) {
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 3500);
+  }
+</script>
+
+  <script>
+    // Connexion
+    async function loginUser(email, password) {
+      var { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) { alert('Erreur : ' + error.message); return; }
+      window.location.href = 'coup-de-patte-v3.html';
+    }
+    
+    // Inscription
+    async function signupUser(email, password, prenom, nom, role) {
+      var { data, error } = await supabase.auth.signUp({
+        email, password,
+        options: { data: { prenom, nom, role, est_adoptant: role === 'adoptant', est_refuge: role === 'refuge', est_admin: false } }
+      });
+      if (error) { alert('Erreur : ' + error.message); return; }
+      window.location.href = role === 'adoptant' ? 'coup-de-patte-form.html' : 'coup-de-patte-admin.html';
+    }
+  </script>
+</body>
+</html>

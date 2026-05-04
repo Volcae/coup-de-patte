@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coup de Patte, Créer mon profil</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,500;0,600;0,700;1,300;1,500;1,600&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --forest:#2D4A3E;--moss:#4A7C59;--sage:#7AAD89;--mint:#C8E6C0;--mint-lt:#EBF5E8;
+    --ivory:#F4F1E8;--paper:#FDFCF8;--bark:#6B4F3A;--gold:#D4A843;--amber:#C49A1A;
+    --blush:#E8C49A;--rose:#C9704A;--border:rgba(45,74,62,0.12);--dust:#7A6E65;
+    --smoke:#A89E96;--shadow:0 8px 32px rgba(45,74,62,0.10);
+  }
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:'Nunito',sans-serif;font-weight:400;background:var(--ivory);color:var(--forest);min-height:100vh;overflow-x:hidden}
+  body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");pointer-events:none;z-index:0}
+  .blob{position:fixed;border-radius:60% 40% 55% 45%/50% 60% 40% 50%;pointer-events:none;z-index:0;animation:blobFloat 14s ease-in-out infinite}
+  .blob-1{top:-15%;right:-10%;width:600px;height:600px;background:radial-gradient(ellipse,rgba(74,124,89,0.10) 0%,transparent 65%)}
+  .blob-2{bottom:-10%;left:-8%;width:500px;height:500px;background:radial-gradient(ellipse,rgba(212,168,67,0.08) 0%,transparent 65%);animation-direction:reverse;animation-duration:18s}
+  @keyframes blobFloat{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(20px,-18px) scale(1.04)}66%{transform:translate(-14px,10px) scale(0.97)}}
+  nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:16px 48px;background:rgba(244,241,232,0.93);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+  .logo{font-family:'Fraunces',serif;font-size:1.4rem;font-weight:600;color:var(--forest);display:flex;align-items:center;gap:9px;text-decoration:none}
+  .logo-bubble{width:40px;height:40px;background:var(--forest);border-radius:50% 50% 50% 50%/60% 60% 40% 40%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(45,74,62,0.32)}
+  .logo-bubble span{filter:brightness(0) invert(1);font-size:0.95rem}
+  .nav-back{display:flex;align-items:center;gap:6px;font-size:0.83rem;font-weight:600;color:var(--dust);text-decoration:none;opacity:0.7;transition:opacity 0.2s}
+  .nav-back:hover{opacity:1}
+  .page{min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:100px 24px 60px;position:relative;z-index:1}
+  .progress-wrap{width:100%;max-width:680px;margin-bottom:36px}
+  .progress-steps{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;position:relative}
+  .progress-line{position:absolute;top:18px;left:18px;right:18px;height:2px;background:var(--mint);z-index:0}
+  .progress-line-fill{height:100%;background:linear-gradient(90deg,var(--moss),var(--sage));border-radius:50px;transition:width 0.5s cubic-bezier(0.34,1.56,0.64,1)}
+  .progress-step{display:flex;flex-direction:column;align-items:center;gap:5px;position:relative;z-index:1;cursor:pointer}
+  .progress-dot{width:36px;height:36px;border-radius:50%;background:var(--paper);border:2px solid var(--mint);display:flex;align-items:center;justify-content:center;font-size:0.9rem;transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1)}
+  .progress-step.done .progress-dot{background:var(--moss);border-color:var(--moss);box-shadow:0 4px 12px rgba(74,124,89,0.3)}
+  .progress-step.active .progress-dot{background:var(--forest);border-color:var(--forest);box-shadow:0 4px 14px rgba(45,74,62,0.35);transform:scale(1.15)}
+  .progress-label{font-size:0.6rem;font-weight:700;color:var(--smoke);letter-spacing:0.3px;white-space:nowrap;transition:color 0.3s}
+  .progress-step.active .progress-label{color:var(--forest)}
+  .progress-step.done  .progress-label{color:var(--moss)}
+  .progress-counter{text-align:right;font-size:0.72rem;color:var(--smoke);font-weight:600}
+  .form-card{width:100%;max-width:680px;background:var(--paper);border-radius:28px;border:1.5px solid var(--border);box-shadow:var(--shadow);overflow:hidden}
+  .form-header{padding:34px 40px 26px;border-bottom:1px solid var(--border)}
+  .form-eyebrow{font-size:0.65rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--moss);margin-bottom:8px;display:block}
+  .form-title{font-family:'Fraunces',serif;font-size:1.65rem;font-weight:600;font-style:italic;color:var(--forest);margin-bottom:5px}
+  .form-sub{font-size:0.83rem;color:var(--dust);line-height:1.5}
+  .form-body{padding:30px 40px;display:flex;flex-direction:column;gap:26px}
+  .q-label{font-size:0.88rem;font-weight:700;color:var(--forest);margin-bottom:11px;display:block;line-height:1.4}
+  .q-hint{font-size:0.73rem;color:var(--smoke);font-weight:400;display:block;margin-top:-7px;margin-bottom:11px}
+  .options{display:flex;flex-wrap:wrap;gap:8px}
+  .options-full .opt{width:100%;border-radius:14px;padding:13px 18px;justify-content:flex-start}
+  .opt{display:flex;align-items:center;gap:7px;padding:9px 18px;border-radius:50px;border:1.5px solid var(--border);background:var(--ivory);font-size:0.83rem;font-weight:600;color:var(--forest);cursor:pointer;transition:all 0.18s cubic-bezier(0.34,1.56,0.64,1);user-select:none}
+  .opt:hover{border-color:var(--sage);background:var(--mint-lt);transform:translateY(-1px)}
+  .opt.selected{background:var(--forest);border-color:var(--forest);color:var(--ivory);box-shadow:0 4px 12px rgba(45,74,62,0.2);transform:translateY(-1px)}
+  .q-divider{height:1px;background:var(--border);margin:2px 0}
+  .breed-search{width:100%;padding:11px 16px;border-radius:12px;border:1.5px solid var(--border);background:var(--ivory);font-family:'Nunito',sans-serif;font-size:0.85rem;font-weight:500;color:var(--forest);outline:none;transition:border-color 0.2s;margin-bottom:8px}
+  .breed-search:focus{border-color:var(--moss)}
+  .breed-search::placeholder{color:var(--smoke)}
+  .custom-select-wrap{position:relative}
+  .custom-select{width:100%;padding:12px 40px 12px 16px;border-radius:14px;border:1.5px solid var(--border);background:var(--ivory);color:var(--forest);font-family:'Nunito',sans-serif;font-size:0.85rem;font-weight:600;appearance:none;cursor:pointer;outline:none;transition:border-color 0.2s}
+  .custom-select:focus{border-color:var(--moss)}
+  .custom-select-arrow{position:absolute;right:14px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--moss)}
+  .selected-breed{display:inline-flex;align-items:center;gap:6px;background:var(--forest);color:var(--ivory);padding:6px 14px;border-radius:50px;font-size:0.78rem;font-weight:700;margin-top:6px}
+  .selected-breed-clear{cursor:pointer;opacity:0.7}
+  .selected-breed-clear:hover{opacity:1}
+  .info-box{background:var(--mint-lt);border:1.5px solid var(--mint);border-radius:12px;padding:10px 14px;font-size:0.78rem;font-weight:600;color:var(--moss);display:none;margin-top:8px}
+  .form-footer{padding:22px 40px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:rgba(235,245,232,0.4)}
+  .btn-prev{display:flex;align-items:center;gap:6px;background:transparent;border:1.5px solid var(--border);border-radius:50px;padding:10px 22px;font-family:'Nunito',sans-serif;font-size:0.85rem;font-weight:700;color:var(--dust);cursor:pointer;transition:all 0.2s}
+  .btn-prev:hover{border-color:var(--forest);color:var(--forest)}
+  .btn-next{display:flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--moss),var(--forest));border:none;border-radius:50px;padding:12px 28px;font-family:'Nunito',sans-serif;font-size:0.88rem;font-weight:700;color:var(--ivory);cursor:pointer;box-shadow:0 4px 16px rgba(74,124,89,0.3);transition:transform 0.2s cubic-bezier(0.34,1.56,0.64,1),box-shadow 0.2s}
+  .btn-next:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(74,124,89,0.4)}
+  .step-indicator{font-size:0.72rem;color:var(--smoke);font-weight:600}
+  .step-content{display:none}
+  .step-content.active{display:block;animation:slideIn 0.35s ease both}
+  .step-content.active.going-back{animation:slideInLeft 0.35s ease both}
+  @keyframes slideIn{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:translateX(0)}}
+  @keyframes slideInLeft{from{opacity:0;transform:translateX(-24px)}to{opacity:1;transform:translateX(0)}}
+  .hero-choice{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:4px}
+  .hc-card{border:2px solid var(--border);border-radius:22px;padding:28px 20px;background:var(--ivory);cursor:pointer;text-align:center;transition:all 0.22s cubic-bezier(0.34,1.56,0.64,1);display:flex;flex-direction:column;align-items:center;gap:12px}
+  .hc-card:hover{border-color:var(--sage);background:var(--mint-lt);transform:translateY(-3px);box-shadow:0 8px 24px rgba(45,74,62,0.1)}
+  .hc-card.selected{border-color:var(--forest);background:var(--forest);box-shadow:0 8px 24px rgba(45,74,62,0.25);transform:translateY(-3px)}
+  .hc-card.selected .hc-label,.hc-card.selected .hc-sub{color:var(--ivory)}
+  .hc-card.selected .hc-sub{opacity:0.6}
+  .hc-emoji{font-size:2.8rem;line-height:1}
+  .hc-label{font-family:'Fraunces',serif;font-size:1.1rem;font-weight:600;font-style:italic;color:var(--forest)}
+  .hc-sub{font-size:0.72rem;color:var(--dust)}
+  .hc-both{grid-column:1/-1;border:2px solid var(--border);border-radius:18px;padding:16px 20px;background:var(--ivory);cursor:pointer;text-align:center;display:flex;align-items:center;justify-content:center;gap:10px;font-family:'Fraunces',serif;font-size:1rem;font-weight:600;font-style:italic;color:var(--forest);transition:all 0.22s cubic-bezier(0.34,1.56,0.64,1)}
+  .hc-both:hover{border-color:var(--sage);background:var(--mint-lt);transform:translateY(-2px)}
+  .hc-both.selected{border-color:var(--forest);background:var(--forest);color:var(--ivory)}
+  .summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+  .summary-item{background:var(--mint-lt);border-radius:14px;padding:13px 15px;border:1.5px solid var(--border)}
+  .si-label{font-size:0.6rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--smoke);display:block;margin-bottom:3px}
+  .si-value{font-family:'Fraunces',serif;font-size:0.92rem;font-style:italic;font-weight:600;color:var(--forest)}
+  .confirm-screen{display:none;text-align:center;padding:60px 40px}
+  .confirm-screen.visible{display:block}
+  .confirm-emoji{font-size:4rem;display:block;margin-bottom:20px;animation:bounceIn 0.6s cubic-bezier(0.34,1.56,0.64,1) both}
+  @keyframes bounceIn{from{transform:scale(0.3);opacity:0}to{transform:scale(1);opacity:1}}
+  .confirm-title{font-family:'Fraunces',serif;font-size:2rem;font-weight:600;font-style:italic;color:var(--forest);margin-bottom:12px}
+  .confirm-sub{font-size:0.9rem;color:var(--dust);line-height:1.7;max-width:420px;margin:0 auto 32px}
+  .confirm-btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--moss),var(--forest));color:var(--ivory);font-family:'Nunito',sans-serif;font-size:0.95rem;font-weight:700;padding:14px 32px;border-radius:50px;text-decoration:none;box-shadow:0 6px 20px rgba(74,124,89,0.3);transition:transform 0.2s,box-shadow 0.2s}
+  .confirm-btn:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(74,124,89,0.4)}
+  .hidden{display:none!important}
+</style>
+
+  <!-- Supabase SDK + Configuration Coup de Patte -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+
+  <script>
+    // Vérification authentification
+    (async () => {
+      var session = await checkSession();
+      if (!session) {
+        window.location.href = 'coup-de-patte-login.html';
+      }
+    })();
+  </script>
+</head>
+<body>
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+
+<nav>
+  <a href="#" class="logo"><div class="logo-bubble" style="animation:pawPulse 2.5s ease-in-out infinite;"><span style="animation:pawWiggle 2.5s ease-in-out infinite;display:inline-block;filter:brightness(0) invert(1);font-size:1.1rem">🐾</span></div>Coup de Patte</a>
+  <a href="coup-de-patte-landing.html" class="nav-back">← Retour à l'accueil</a>
+</nav>
+
+<div class="page">
+
+  <div class="progress-wrap" id="progressWrap">
+    <div class="progress-steps">
+      <div class="progress-line"><div class="progress-line-fill" id="progressFill" style="width:0%"></div></div>
+      <div class="progress-step active" data-step="0"><div class="progress-dot">🐾</div><span class="progress-label">Animal</span></div>
+      <div class="progress-step" data-step="1"><div class="progress-dot">🔍</div><span class="progress-label">Recherche</span></div>
+      <div class="progress-step" data-step="2"><div class="progress-dot">🏠</div><span class="progress-label">Logement</span></div>
+      <div class="progress-step" data-step="3"><div class="progress-dot">👨‍👩‍👧</div><span class="progress-label">Foyer</span></div>
+      <div class="progress-step" data-step="4"><div class="progress-dot">⏰</div><span class="progress-label">Dispo</span></div>
+      <div class="progress-step" data-step="5"><div class="progress-dot">🏃</div><span class="progress-label">Mode de vie</span></div>
+    </div>
+    <div class="progress-counter" id="progressCounter">Étape 1 sur 6</div>
+  </div>
+
+  <div class="form-card" id="formCard">
+
+    <!-- ══ ÉTAPE 0, Animal ══ -->
+    <div class="step-content active" id="step-0">
+      <div class="form-header">
+        <span class="form-eyebrow">Étape 1 · Votre animal</span>
+        <h2 class="form-title">Vous cherchez quel type d'animal ?</h2>
+        <p class="form-sub">Ce choix oriente toutes les questions suivantes.</p>
+      </div>
+      <div class="form-body">
+        <div class="hero-choice">
+          <div class="hc-card" data-val="chien" onclick="chooseAnimal(this)">
+            <span class="hc-emoji">🐶</span>
+            <span class="hc-label">Un chien</span>
+            <span class="hc-sub">Fidèle, actif, présent</span>
+          </div>
+          <div class="hc-card" data-val="chat" onclick="chooseAnimal(this)">
+            <span class="hc-emoji">🐱</span>
+            <span class="hc-label">Un chat</span>
+            <span class="hc-sub">Indépendant, doux, apaisant</span>
+          </div>
+          <div class="hc-both" data-val="les-deux" onclick="chooseAnimal(this)">
+            🐶🐱 &nbsp; Les deux m'intéressent
+          </div>
+        </div>
+      </div>
+      <div class="form-footer">
+        <div></div>
+        <span class="step-indicator">1 / 6</span>
+        <button class="btn-next" onclick="nextStep()">Suivant →</button>
+      </div>
+    </div>
+
+    <!-- ══ ÉTAPE 1, Recherche ══ -->
+    <div class="step-content" id="step-1">
+      <div class="form-header">
+        <span class="form-eyebrow">Étape 2 · Votre recherche</span>
+        <h2 class="form-title">Ce que vous recherchez</h2>
+        <p class="form-sub">Décrivez l'animal idéal, et parlez-nous de votre expérience.</p>
+      </div>
+      <div class="form-body">
+
+        <!-- Q2 Race -->
+        <div class="question">
+          <span class="q-label" id="q2-label">Q2, Avez-vous une ou plusieurs races en tête ?</span>
+          <span class="q-hint">Vous pouvez sélectionner plusieurs races. Choisissez "peu importe" si vous êtes ouvert(e) à tout.</span>
+          <input class="breed-search" id="breedSearch" type="text" placeholder="Tapez une race… ex : Labrador, Beagle, Persan…" oninput="filterBreeds(this.value)" autocomplete="off">
+          <div class="custom-select-wrap hidden" id="breedSelectWrap">
+            <select class="custom-select" id="breedSelect" onchange="selectBreed(this)">
+              <option value="">— Sélectionner une race</option>
+            </select>
+            <span class="custom-select-arrow">▾</span>
+          </div>
+          <div id="selectedBreedBadges" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;"></div>
+          <div class="info-box" id="gabaritInfo"></div>
+          <div class="options" style="margin-top:10px">
+            <div class="opt selected" data-q="q2race" data-val="peu-importe" id="optPeuImporte" onclick="selectPeuImporte()">❤️ Peu importe la race</div>
+          </div>
+        </div>
+
+        <!-- Q2bis, Gabarit (affiché si "peu importe la race") -->
+        <div class="question hidden" id="q2b-block">
+          <span class="q-label">Q2bis, Préférence de gabarit ?</span>
+          <span class="q-hint">Plusieurs réponses possibles</span>
+          <div class="options">
+            <div class="opt multi" data-q="q2gabarit" data-val="Petit"       onclick="selMulti(this)">🐩 Petit (moins de 10 kg)</div>
+            <div class="opt multi" data-q="q2gabarit" data-val="Moyen"       onclick="selMulti(this)">🐕 Moyen (10 à 30 kg)</div>
+            <div class="opt multi" data-q="q2gabarit" data-val="Grand"       onclick="selMulti(this)">🦮 Grand (plus de 30 kg)</div>
+            <div class="opt"       data-q="q2gabarit" data-val="peu-importe" onclick="sel(this)">❤️ Peu importe</div>
+          </div>
+        </div>
+
+        <!-- Q3 Sexe -->
+        <div class="question">
+          <span class="q-label">Q3, Sexe de l'animal ?</span>
+          <div class="options">
+            <div class="opt" data-q="q3" data-val="male"        onclick="sel(this)">♂ Mâle</div>
+            <div class="opt" data-q="q3" data-val="femelle"     onclick="sel(this)">♀ Femelle</div>
+            <div class="opt" data-q="q3" data-val="peu-importe" onclick="sel(this)">❤️ Peu importe</div>
+          </div>
+        </div>
+
+        <!-- Q4 Âge -->
+        <div class="question">
+          <span class="q-label">Q4, Quel âge souhaitez-vous ?</span>
+          <span class="q-hint" id="q4-hint">Le seuil "senior" varie selon l'espèce et la race.</span>
+          <div class="options">
+            <div class="opt" data-q="q4" data-val="chiot"        onclick="sel(this)">🍼 Chiot / chaton</div>
+            <div class="opt" data-q="q4" data-val="jeune-adulte" onclick="sel(this)">🌱 Jeune adulte</div>
+            <div class="opt" data-q="q4" data-val="adulte"       onclick="sel(this)">🐾 Adulte</div>
+            <div class="opt" data-q="q4" data-val="senior"       onclick="sel(this)">🌿 Senior <span id="senior-label" style="font-size:0.7rem;opacity:0.65;margin-left:4px">(+8 ans chien / +10 ans chat)</span></div>
+            <div class="opt" data-q="q4" data-val="peu-importe"  onclick="sel(this)">❤️ Peu importe</div>
+          </div>
+        </div>
+
+        <!-- Q5 Pelage -->
+        <div class="question" id="q5-block">
+          <span class="q-label">Q5, Préférence de pelage ?</span>
+          <span class="q-hint" id="q5-hint">Certaines races ont un pelage unique, ce critère sera déduit automatiquement.</span>
+          <div class="options" id="q5-options">
+            <div class="opt" data-q="q5" data-val="court"        onclick="sel(this)">✂️ Court / ras</div>
+            <div class="opt" data-q="q5" data-val="mi-long"      onclick="sel(this)">🌾 Mi-long</div>
+            <div class="opt" data-q="q5" data-val="long"         onclick="sel(this)">🌊 Long</div>
+            <div class="opt" data-q="q5" data-val="peu-importe"  onclick="sel(this)">❤️ Peu importe</div>
+          </div>
+          <div class="info-box" id="pelageFixed"></div>
+        </div>
+
+        <div class="q-divider"></div>
+
+        <!-- Q6 enrichie : besoins médicaux + accompagnement fusionnés -->
+        <div class="question">
+          <span class="q-label">Q6, Quel profil d'animal vous correspond ?</span>
+          <span class="q-hint">Soyez honnête avec vous-même, c'est dans l'intérêt de l'animal.</span>
+          <div class="options options-full">
+            <div class="opt" data-q="q6" data-val="equilibre"      onclick="sel(this)">🙂 Un animal équilibré, sans besoins particuliers</div>
+            <div class="opt" data-q="q6" data-val="medical"        onclick="sel(this)">💊 Un animal avec des soins médicaux réguliers à gérer</div>
+            <div class="opt" data-q="q6" data-val="accompagnement" onclick="sel(this)">💛 Un animal ayant besoin de temps et de patience pour s'ouvrir</div>
+            <div class="opt" data-q="q6" data-val="les-deux"       onclick="sel(this)">🤝 Les deux, je suis prêt(e) à m'adapter à ses besoins, quels qu'ils soient</div>
+          </div>
+        </div>
+
+        <div class="q-divider"></div>
+
+        <!-- Q7 Expérience -->
+        <div class="question">
+          <span class="q-label">Q7, Avez-vous déjà eu un animal ?</span>
+          <div class="options">
+            <div class="opt" data-q="q7" data-val="jamais"  onclick="sel(this)">🌱 Jamais</div>
+            <div class="opt" data-q="q7" data-val="enfance" onclick="sel(this)">🧒 Pendant mon enfance</div>
+            <div class="opt" data-q="q7" data-val="adulte"  onclick="sel(this)">✅ Oui, en tant qu'adulte</div>
+          </div>
+        </div>
+
+        <!-- Q8 À l'aise avec -->
+        <div class="question">
+          <span class="q-label">Q8, Vous vous sentez à l'aise avec…</span>
+          <span class="q-hint">Plusieurs réponses possibles</span>
+          <div class="options">
+            <div class="opt multi" data-q="q8" data-val="chiot"          onclick="selMulti(this)">🍼 Chiot / chaton</div>
+            <div class="opt multi" data-q="q8" data-val="adulte"         onclick="selMulti(this)">🐾 Adulte équilibré</div>
+            <div class="opt multi" data-q="q8" data-val="senior"         onclick="selMulti(this)">🌿 Animal senior</div>
+            <div class="opt multi" data-q="q8" data-val="medical"        onclick="selMulti(this)">💊 Besoins médicaux</div>
+            <div class="opt multi" data-q="q8" data-val="accompagnement" onclick="selMulti(this)">💛 Besoin d'accompagnement</div>
+          </div>
+        </div>
+
+      </div>
+      <div class="form-footer">
+        <button class="btn-prev" onclick="prevStep()">← Retour</button>
+        <span class="step-indicator">2 / 6</span>
+        <button class="btn-next" onclick="nextStep()">Suivant, Mon logement →</button>
+      </div>
+    </div>
+
+    <!-- ══ ÉTAPE 2, Logement ══ -->
+    <div class="step-content" id="step-2">
+      <div class="form-header">
+        <span class="form-eyebrow">Étape 3 · Logement</span>
+        <h2 class="form-title">Votre espace de vie</h2>
+        <p class="form-sub">Le logement est le critère le plus important du matching. Soyez précis !</p>
+      </div>
+      <div class="form-body">
+
+        <div class="question">
+          <span class="q-label">Q10, Vous habitez dans…</span>
+          <div class="options">
+            <div class="opt" data-q="q10" data-val="appart" onclick="sel(this);toggleLogement('appart')">🏢 Un appartement</div>
+            <div class="opt" data-q="q10" data-val="maison" onclick="sel(this);toggleLogement('maison')">🏠 Une maison</div>
+          </div>
+        </div>
+
+        <div class="question">
+          <span class="q-label">Q11, Vous avez accès à un extérieur ?</span>
+          <div class="options">
+            <div class="opt" data-q="q11" data-val="jardin"   onclick="sel(this)">🌿 Jardin privatif</div>
+            <div class="opt" data-q="q11" data-val="terrasse" onclick="sel(this)">🪴 Terrasse / balcon</div>
+            <div class="opt" data-q="q11" data-val="aucun"    onclick="sel(this)">❌ Aucun extérieur</div>
+          </div>
+        </div>
+
+        <!-- Q12a : Appartement -->
+        <div class="question" id="q12a-block" style="display:none">
+          <span class="q-label">Q12, Votre appartement dispose-t-il d'un ascenseur ?</span>
+          <span class="q-hint">Important pour les animaux seniors ou à mobilité réduite.</span>
+          <div class="options">
+            <div class="opt" data-q="q12" data-val="oui" onclick="sel(this)">✅ Oui</div>
+            <div class="opt" data-q="q12" data-val="non" onclick="sel(this)">🪜 Non, escaliers uniquement</div>
+            <div class="opt" data-q="q12" data-val="rdc" onclick="sel(this)">🏠 Rez-de-chaussée</div>
+          </div>
+        </div>
+
+        <!-- Q12b : Maison -->
+        <div class="question" id="q12b-block" style="display:none">
+          <span class="q-label">Q12, L'accès à votre maison nécessite-t-il de monter des marches ?</span>
+          <span class="q-hint">Un animal senior ou handicapé ne pourra pas forcément les franchir.</span>
+          <div class="options">
+            <div class="opt" data-q="q12b" data-val="oui" onclick="sel(this)">🪜 Oui, il y a des marches</div>
+            <div class="opt" data-q="q12b" data-val="non" onclick="sel(this)">✅ Non, tout de plain-pied</div>
+          </div>
+        </div>
+
+      </div>
+      <div class="form-footer">
+        <button class="btn-prev" onclick="prevStep()">← Retour</button>
+        <span class="step-indicator">3 / 6</span>
+        <button class="btn-next" onclick="nextStep()">Suivant, Mon foyer →</button>
+      </div>
+    </div>
+
+    <!-- ══ ÉTAPE 3, Foyer ══ -->
+    <div class="step-content" id="step-3">
+      <div class="form-header">
+        <span class="form-eyebrow">Étape 4 · Foyer</span>
+        <h2 class="form-title">Votre foyer</h2>
+        <p class="form-sub">Ces informations sont essentielles pour la compatibilité avec certains animaux.</p>
+      </div>
+      <div class="form-body">
+        <div class="question">
+          <span class="q-label">Q13, Des enfants vivent avec vous ?</span>
+          <span class="q-hint">Plusieurs réponses possibles</span>
+          <div class="options">
+            <div class="opt"       data-q="q13" data-val="non"    onclick="selExclusif(this,'q13')">🙂 Non</div>
+            <div class="opt multi" data-q="q13" data-val="moins13" onclick="selAvecNon(this,'q13')">🧒 Oui, moins de 13 ans</div>
+            <div class="opt multi" data-q="q13" data-val="plus13"  onclick="selAvecNon(this,'q13')">🧑 Oui, 13 ans et plus</div>
+          </div>
+        </div>
+        <div class="question">
+          <span class="q-label">Q14, Vous avez déjà des animaux à la maison ?</span>
+          <span class="q-hint">Plusieurs réponses possibles</span>
+          <div class="options">
+            <div class="opt"       data-q="q14" data-val="non"   onclick="selExclusif(this,'q14')">🙂 Non</div>
+            <div class="opt multi" data-q="q14" data-val="chien" onclick="selAvecNon(this,'q14')">🐶 Un ou plusieurs chiens</div>
+            <div class="opt multi" data-q="q14" data-val="chat"  onclick="selAvecNon(this,'q14')">🐱 Un ou plusieurs chats</div>
+            <div class="opt multi" data-q="q14" data-val="autre" onclick="selAvecNon(this,'q14')">🐇 Autre (NAC…)</div>
+          </div>
+        </div>
+      </div>
+      <div class="form-footer">
+        <button class="btn-prev" onclick="prevStep()">← Retour</button>
+        <span class="step-indicator">4 / 6</span>
+        <button class="btn-next" onclick="nextStep()">Suivant, Ma disponibilité →</button>
+      </div>
+    </div>
+
+    <!-- ══ ÉTAPE 4, Disponibilité ══ -->
+    <div class="step-content" id="step-4">
+      <div class="form-header">
+        <span class="form-eyebrow">Étape 5 · Disponibilité</span>
+        <h2 class="form-title">Votre temps</h2>
+        <p class="form-sub">Certains animaux supportent mal la solitude. Soyons honnêtes pour mieux vous matcher.</p>
+      </div>
+      <div class="form-body">
+        <div class="question">
+          <span class="q-label">Q15, Combien d'heures l'animal serait-il seul par jour ?</span>
+          <div class="options">
+            <div class="opt" data-q="q15" data-val="0-2" onclick="sel(this)">🏠 Moins de 2h</div>
+            <div class="opt" data-q="q15" data-val="2-4" onclick="sel(this)">⏰ Entre 2 et 4h</div>
+            <div class="opt" data-q="q15" data-val="4-8" onclick="sel(this)">🕐 Entre 4 et 8h</div>
+            <div class="opt" data-q="q15" data-val="8+"  onclick="sel(this)">🌙 Plus de 8h</div>
+          </div>
+        </div>
+        <div class="question">
+          <span class="q-label">Q16, Votre situation actuelle ?</span>
+          <div class="options options-full">
+            <div class="opt" data-q="q16" data-val="maison"   onclick="sel(this)">🏠 Souvent à la maison (télétravail, retraite…)</div>
+            <div class="opt" data-q="q16" data-val="bureau"   onclick="sel(this)">🏢 Je travaille hors de chez moi à temps plein</div>
+            <div class="opt" data-q="q16" data-val="etudiant" onclick="sel(this)">📚 Étudiant(e)</div>
+            <div class="opt" data-q="q16" data-val="variable" onclick="sel(this)">⚡ Situation variable</div>
+          </div>
+        </div>
+      </div>
+      <div class="form-footer">
+        <button class="btn-prev" onclick="prevStep()">← Retour</button>
+        <span class="step-indicator">5 / 6</span>
+        <button class="btn-next" onclick="nextStep()">Suivant, Mon mode de vie →</button>
+      </div>
+    </div>
+
+    <!-- ══ ÉTAPE 5, Mode de vie ══ -->
+    <div class="step-content" id="step-5">
+      <div class="form-header">
+        <span class="form-eyebrow">Étape 6 · Mode de vie</span>
+        <h2 class="form-title">Votre rythme au quotidien</h2>
+        <p class="form-sub">Dernière étape ! Votre niveau d'activité nous aide à trouver un animal à votre image.</p>
+      </div>
+      <div class="form-body">
+        <div class="question">
+          <span class="q-label">Q17, Comment décririez-vous votre rythme de vie ?</span>
+          <div class="options options-full">
+            <div class="opt" data-q="q17" data-val="sedentaire" onclick="sel(this)">🛋️ Plutôt calme et sédentaire</div>
+            <div class="opt" data-q="q17" data-val="modere"     onclick="sel(this)">🚶 Modéré, quelques sorties par semaine</div>
+            <div class="opt" data-q="q17" data-val="actif"      onclick="sel(this)">🏃 Actif, je bouge tous les jours</div>
+            <div class="opt" data-q="q17" data-val="sportif"    onclick="sel(this)">⚡ Très sportif, randos, courses…</div>
+          </div>
+        </div>
+        <div class="question">
+          <span class="q-label">Q18, Temps quotidien pleinement dédié à mon animal (sorties, jeux, câlins…) ?</span>
+          <div class="options">
+            <div class="opt" data-q="q18" data-val="30min" onclick="sel(this)">⏱ Moins de 30 min</div>
+            <div class="opt" data-q="q18" data-val="1h"    onclick="sel(this)">🕐 30 min à 1h</div>
+            <div class="opt" data-q="q18" data-val="2h"    onclick="sel(this)">🕑 1h à 2h</div>
+            <div class="opt" data-q="q18" data-val="2h+"   onclick="sel(this)">🌿 Plus de 2h</div>
+          </div>
+        </div>
+        <div class="q-divider"></div>
+        <div class="question">
+          <span class="q-label">Q19, En une phrase, qu'attendez-vous de cette adoption ?</span>
+          <span class="q-hint">Optionnel · Ce texte sera visible par les refuges sur votre profil</span>
+          <textarea placeholder="Ex : Je cherche un compagnon calme pour mes soirées et mes weekends en forêt…" style="width:100%;min-height:88px;padding:13px 16px;border-radius:14px;border:1.5px solid var(--border);background:var(--ivory);color:var(--forest);font-family:'Nunito',sans-serif;font-size:0.85rem;font-weight:500;resize:vertical;outline:none;transition:border-color 0.2s;line-height:1.6" onfocus="this.style.borderColor='var(--moss)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+        </div>
+        <!-- Résumé -->
+        <div style="background:var(--mint-lt);border-radius:18px;padding:18px 20px;border:1.5px solid var(--border)">
+          <p style="font-family:'Fraunces',serif;font-size:0.9rem;font-style:italic;font-weight:600;color:var(--forest);margin-bottom:12px">📋 Récapitulatif de votre profil</p>
+          <div class="summary-grid">
+            <div class="summary-item"><span class="si-label">Animal</span><span class="si-value" id="sum-animal">—</span></div>
+            <div class="summary-item"><span class="si-label">Race / gabarit</span><span class="si-value" id="sum-race">—</span></div>
+            <div class="summary-item"><span class="si-label">Logement</span><span class="si-value" id="sum-logement">—</span></div>
+            <div class="summary-item"><span class="si-label">Foyer</span><span class="si-value" id="sum-foyer">—</span></div>
+            <div class="summary-item"><span class="si-label">Disponibilité</span><span class="si-value" id="sum-dispo">—</span></div>
+            <div class="summary-item"><span class="si-label">Mode de vie</span><span class="si-value" id="sum-mode">—</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="form-footer">
+        <button class="btn-prev" onclick="prevStep()">← Retour</button>
+        <span class="step-indicator">6 / 6</span>
+        <button class="btn-next" onclick="submitForm()"><span style="filter:brightness(0) invert(1)">🐾</span> Valider mon profil</button>
+      </div>
+    </div>
+
+    <!-- CONFIRMATION -->
+    <div class="confirm-screen" id="confirmScreen">
+      <span class="confirm-emoji">🐾</span>
+      <h2 class="confirm-title">Votre profil est créé !</h2>
+      <p class="confirm-sub">Nous analysons les animaux en refuge pour trouver ceux qui vous correspondent vraiment. Vos premiers matchs vous attendent.</p>
+      <a href="coup-de-patte-v3.html" class="confirm-btn"><span style="filter:brightness(0) invert(1)">🐾</span> Voir mes matchs →</a>
+    </div>
+
+  </div>
+</div>
+
+<script>
+let breedData = {
+  chien:[
+    {name:'Affenpinscher',gabarit:'Petit',pelage:'long'},
+    {name:'Airedale Terrier',gabarit:'Moyen',pelage:'long'},
+    {name:'Akita Américain',gabarit:'Grand',pelage:'long'},
+    {name:'Akita Inu',gabarit:'Grand',pelage:'long'},
+    {name:'Alaskan Malamute',gabarit:'Grand',pelage:'long'},
+    {name:'American Staffordshire Terrier',gabarit:'Moyen',pelage:'court'},
+    {name:'Apparence Loup (Saarloos / Tchécoslovaque)',gabarit:'Grand',pelage:'long'},
+    {name:'Azawakh',gabarit:'Grand',pelage:'court'},
+    {name:'Barbet',gabarit:'Moyen',pelage:'long'},
+    {name:'Basenji',gabarit:'Moyen',pelage:'court'},
+    {name:'Basset Artésien Normand',gabarit:'Petit',pelage:'court'},
+    {name:'Basset Fauve de Bretagne',gabarit:'Petit',pelage:'mi-long'},
+    {name:'Basset Hound',gabarit:'Moyen',pelage:'court'},
+    {name:'Beagle',gabarit:'Moyen',pelage:'court'},
+    {name:'Beagle Harrier',gabarit:'Moyen',pelage:'court'},
+    {name:'Berger Allemand',gabarit:'Grand',pelage:'variable'},
+    {name:'Berger Australien',gabarit:'Moyen',pelage:'long'},
+    {name:'Berger Belge Groenendael',gabarit:'Grand',pelage:'long'},
+    {name:'Berger Belge Laekenois',gabarit:'Grand',pelage:'long'},
+    {name:'Berger Belge Malinois',gabarit:'Grand',pelage:'court'},
+    {name:'Berger Belge Tervueren',gabarit:'Grand',pelage:'long'},
+    {name:'Berger Blanc Suisse',gabarit:'Grand',pelage:'long'},
+    {name:'Berger de Brie (Briard)',gabarit:'Grand',pelage:'long'},
+    {name:'Berger de Picardie',gabarit:'Grand',pelage:'mi-long'},
+    {name:'Berger des Pyrénées',gabarit:'Moyen',pelage:'long'},
+    {name:'Berger des Shetland',gabarit:'Petit',pelage:'long'},
+    {name:'Bichon Frisé',gabarit:'Petit',pelage:'long'},
+    {name:'Bichon Havanais',gabarit:'Petit',pelage:'long'},
+    {name:'Bloodhound (Chien de Saint-Hubert)',gabarit:'Grand',pelage:'court'},
+    {name:'Bobtail (Old English Sheepdog)',gabarit:'Grand',pelage:'long'},
+    {name:'Bolonais',gabarit:'Petit',pelage:'long'},
+    {name:'Border Collie',gabarit:'Moyen',pelage:'long'},
+    {name:'Border Terrier',gabarit:'Petit',pelage:'mi-long'},
+    {name:'Bouledogue Français',gabarit:'Petit',pelage:'court'},
+    {name:'Bouvier Australien',gabarit:'Moyen',pelage:'court'},
+    {name:'Bouvier Bernois',gabarit:'Grand',pelage:'long'},
+    {name:'Bouvier des Flandres',gabarit:'Grand',pelage:'long'},
+    {name:'Boxer',gabarit:'Grand',pelage:'court'},
+    {name:'Braque Allemand',gabarit:'Grand',pelage:'court'},
+    {name:'Braque de Weimar (Weimaraner)',gabarit:'Grand',pelage:'court'},
+    {name:'Braque du Bourbonnais',gabarit:'Moyen',pelage:'court'},
+    {name:'Braque Français',gabarit:'Grand',pelage:'court'},
+    {name:'Braque Hongrois (Vizsla)',gabarit:'Moyen',pelage:'court'},
+    {name:'Bull Terrier',gabarit:'Moyen',pelage:'court'},
+    {name:'Bulldog Anglais',gabarit:'Moyen',pelage:'court'},
+    {name:'Bullmastiff',gabarit:'Grand',pelage:'court'},
+    {name:'Cairn Terrier',gabarit:'Petit',pelage:'mi-long'},
+    {name:'Caniche (Toy)',gabarit:'Petit',pelage:'long'},
+    {name:'Caniche (Nain)',gabarit:'Petit',pelage:'long'},
+    {name:'Caniche (Moyen)',gabarit:'Moyen',pelage:'long'},
+    {name:'Caniche (Grand)',gabarit:'Grand',pelage:'long'},
+    {name:'Cane Corso',gabarit:'Grand',pelage:'court'},
+    {name:'Cavalier King Charles',gabarit:'Petit',pelage:'long'},
+    {name:'Chien Courant Suisse',gabarit:'Moyen',pelage:'court'},
+    {name:'Chien d\'Eau Portugais',gabarit:'Moyen',pelage:'long'},
+    {name:'Chien d\'Eau Romagnol',gabarit:'Moyen',pelage:'long'},
+    {name:'Chien de Berger Corse',gabarit:'Moyen',pelage:'mi-long'},
+    {name:'Chien de Berger Yougoslave',gabarit:'Grand',pelage:'long'},
+    {name:'Chien de Montagne des Pyrénées (Patou)',gabarit:'Grand',pelage:'long'},
+    {name:'Chien de Rhodésie (Ridgeback)',gabarit:'Grand',pelage:'court'},
+    {name:'Chihuahua (poil court)',gabarit:'Petit',pelage:'court'},
+    {name:'Chihuahua (poil long)',gabarit:'Petit',pelage:'long'},
+    {name:'Chow-Chow',gabarit:'Moyen',pelage:'long'},
+    {name:'Clumber Spaniel',gabarit:'Moyen',pelage:'long'},
+    {name:'Cocker Américain',gabarit:'Moyen',pelage:'long'},
+    {name:'Cocker Anglais',gabarit:'Moyen',pelage:'long'},
+    {name:'Colley Rough (à poil long)',gabarit:'Grand',pelage:'long'},
+    {name:'Colley Smooth (à poil court)',gabarit:'Grand',pelage:'court'},
+    {name:'Dalmatien',gabarit:'Grand',pelage:'court'},
+    {name:'Dobermann',gabarit:'Grand',pelage:'court'},
+    {name:'Dogue Allemand (Great Dane)',gabarit:'Grand',pelage:'court'},
+    {name:'Dogue Argentin',gabarit:'Grand',pelage:'court'},
+    {name:'Dogue de Bordeaux',gabarit:'Grand',pelage:'court'},
+    {name:'Épagneul Bleu de Picardie',gabarit:'Moyen',pelage:'long'},
+    {name:'Épagneul Breton',gabarit:'Moyen',pelage:'mi-long'},
+    {name:'Épagneul Japonais',gabarit:'Petit',pelage:'long'},
+    {name:'Épagneul Papillon',gabarit:'Petit',pelage:'long'},
+    {name:'Eurasier',gabarit:'Moyen',pelage:'long'},
+    {name:'Field Spaniel',gabarit:'Moyen',pelage:'long'},
+    {name:'Flat Coated Retriever',gabarit:'Grand',pelage:'long'},
+    {name:'Fox Terrier (poil dur)',gabarit:'Petit',pelage:'mi-long'},
+    {name:'Fox Terrier (poil lisse)',gabarit:'Petit',pelage:'court'},
+    {name:'Golden Retriever',gabarit:'Grand',pelage:'long'},
+    {name:'Grand Basset Griffon Vendéen',gabarit:'Moyen',pelage:'mi-long'},
+    {name:'Grand Bleu de Gascogne',gabarit:'Grand',pelage:'court'},
+    {name:'Grand Danois',gabarit:'Grand',pelage:'court'},
+    {name:'Greyhound',gabarit:'Grand',pelage:'court'},
+    {name:'Griffon Belge',gabarit:'Petit',pelage:'long'},
+    {name:'Griffon Bruxellois',gabarit:'Petit',pelage:'long'},
+    {name:'Griffon Fauve de Bretagne',gabarit:'Moyen',pelage:'mi-long'},
+    {name:'Griffon Korthals',gabarit:'Grand',pelage:'mi-long'},
+    {name:'Husky Sibérien',gabarit:'Moyen',pelage:'long'},
+    {name:'Irish Setter',gabarit:'Grand',pelage:'long'},
+    {name:'Irish Terrier',gabarit:'Moyen',pelage:'mi-long'},
+    {name:'Irish Water Spaniel',gabarit:'Grand',pelage:'long'},
+    {name:'Jack Russell Terrier',gabarit:'Petit',pelage:'variable'},
+    {name:'Jack Russell (poil dur)',gabarit:'Petit',pelage:'mi-long'},
+    {name:'Jagdterrier',gabarit:'Petit',pelage:'variable'},
+    {name:'Kai Ken',gabarit:'Moyen',pelage:'mi-long'},
+    {name:'Keeshond (Loulou de Poméranie Grand)',gabarit:'Moyen',pelage:'long'},
+    {name:'Kerry Blue Terrier',gabarit:'Moyen',pelage:'long'},
+    {name:'King Charles Spaniel',gabarit:'Petit',pelage:'long'},
+    {name:'Labrador Retriever',gabarit:'Grand',pelage:'court'},
+    {name:'Lagotto Romagnolo',gabarit:'Moyen',pelage:'long'},
+    {name:'Lakeland Terrier',gabarit:'Petit',pelage:'mi-long'},
+    {name:'Leonberg',gabarit:'Grand',pelage:'long'},
+    {name:'Lévrier Afghan',gabarit:'Grand',pelage:'long'},
+    {name:'Lévrier Écossais (Deerhound)',gabarit:'Grand',pelage:'mi-long'},
+    {name:'Lévrier Irlandais (Irish Wolfhound)',gabarit:'Grand',pelage:'mi-long'},
+    {name:'Lévrier Italien',gabarit:'Petit',pelage:'court'},
+    {name:'Lévrier Persan (Saluki)',gabarit:'Grand',pelage:'variable'},
+    {name:'Lhassa Apso',gabarit:'Petit',pelage:'long'},
+    {name:'Löwchen (Petit Chien Lion)',gabarit:'Petit',pelage:'long'},
+    {name:'Malinois',gabarit:'Grand',pelage:'court'},
+    {name:'Maltais',gabarit:'Petit',pelage:'long'},
+    {name:'Manchester Terrier',gabarit:'Moyen',pelage:'court'},
+    {name:'Mastiff',gabarit:'Grand',pelage:'court'},
+    {name:'Mâtin de Naples',gabarit:'Grand',pelage:'court'},
+    {name:'Mâtin Espagnol',gabarit:'Grand',pelage:'court'},
+    {name:'Mudi',gabarit:'Moyen',pelage:'long'},
+    {name:'Norwich Terrier',gabarit:'Petit',pelage:'mi-long'},
+    {name:'Pékinois',gabarit:'Petit',pelage:'long'},
+    {name:'Petit Basset Griffon Vendéen',gabarit:'Petit',pelage:'mi-long'},
+    {name:'Petit Chien Courant Suisse',gabarit:'Petit',pelage:'court'},
+    {name:'Pinscher Moyen',gabarit:'Moyen',pelage:'court'},
+    {name:'Pinscher Nain',gabarit:'Petit',pelage:'court'},
+    {name:'Pointer',gabarit:'Grand',pelage:'court'},
+    {name:'Pomeranian (Spitz Nain)',gabarit:'Petit',pelage:'long'},
+    {name:'Porcelaine',gabarit:'Moyen',pelage:'court'},
+    {name:'Puli',gabarit:'Moyen',pelage:'long'},
+    {name:'Pumi',gabarit:'Moyen',pelage:'long'},
+    {name:'Retriever de la Baie de Chesapeake',gabarit:'Grand',pelage:'court'},
+    {name:'Rottweiler',gabarit:'Grand',pelage:'court'},
+    {name:'Saint-Bernard',gabarit:'Grand',pelage:'long'},
+    {name:'Samoyède',gabarit:'Grand',pelage:'long'},
+    {name:'Schipperke',gabarit:'Petit',pelage:'long'},
+    {name:'Schnauzer Géant',gabarit:'Grand',pelage:'mi-long'},
+    {name:'Schnauzer Moyen',gabarit:'Moyen',pelage:'mi-long'},
+    {name:'Schnauzer Nain',gabarit:'Petit',pelage:'mi-long'},
+    {name:'Scottish Terrier',gabarit:'Petit',pelage:'mi-long'},
+    {name:'Sealyham Terrier',gabarit:'Petit',pelage:'long'},
+    {name:'Setter Anglais',gabarit:'Grand',pelage:'long'},
+    {name:'Setter Gordon',gabarit:'Grand',pelage:'long'},
+    {name:'Setter Irlandais Rouge et Blanc',gabarit:'Grand',pelage:'long'},
+    {name:'Shiba Inu',gabarit:'Petit',pelage:'court'},
+    {name:'Shih Tzu',gabarit:'Petit',pelage:'long'},
+    {name:'Siberian Husky',gabarit:'Moyen',pelage:'long'},
+    {name:'Skye Terrier',gabarit:'Petit',pelage:'long'},
+    {name:'Sloughi',gabarit:'Grand',pelage:'court'},
+    {name:'Soft Coated Wheaten Terrier',gabarit:'Moyen',pelage:'long'},
+    {name:'Spitz Finlandais',gabarit:'Moyen',pelage:'long'},
+    {name:'Spitz Japonais',gabarit:'Petit',pelage:'long'},
+    {name:'Springer Anglais',gabarit:'Moyen',pelage:'long'},
+    {name:'Staffordshire Bull Terrier',gabarit:'Moyen',pelage:'court'},
+    {name:'Sussex Spaniel',gabarit:'Moyen',pelage:'long'},
+    {name:'Teckel (poil court)',gabarit:'Petit',pelage:'court'},
+    {name:'Teckel (poil dur)',gabarit:'Petit',pelage:'mi-long'},
+    {name:'Teckel (poil long)',gabarit:'Petit',pelage:'long'},
+    {name:'Terre-Neuve',gabarit:'Grand',pelage:'long'},
+    {name:'Terrier Noir Russe',gabarit:'Grand',pelage:'long'},
+    {name:'Tervueren',gabarit:'Grand',pelage:'long'},
+    {name:'Tibetan Mastiff (Dogue du Tibet)',gabarit:'Grand',pelage:'long'},
+    {name:'Tibetan Spaniel',gabarit:'Petit',pelage:'long'},
+    {name:'Tibetan Terrier',gabarit:'Moyen',pelage:'long'},
+    {name:'Tosa',gabarit:'Grand',pelage:'court'},
+    {name:'Welsh Corgi Cardigan',gabarit:'Petit',pelage:'mi-long'},
+    {name:'Welsh Corgi Pembroke',gabarit:'Petit',pelage:'mi-long'},
+    {name:'Welsh Springer Spaniel',gabarit:'Moyen',pelage:'long'},
+    {name:'Welsh Terrier',gabarit:'Moyen',pelage:'mi-long'},
+    {name:'West Highland White Terrier',gabarit:'Petit',pelage:'long'},
+    {name:'Whippet',gabarit:'Moyen',pelage:'court'},
+    {name:'Yorkshire Terrier',gabarit:'Petit',pelage:'long'},
+  ],
+  chat:[
+    {name:'Abyssin',gabarit:'Moyen',pelage:'court'},
+    {name:'Balinais',gabarit:'Moyen',pelage:'long'},
+    {name:'Bengal',gabarit:'Moyen',pelage:'court'},
+    {name:'Birman',gabarit:'Moyen',pelage:'long'},
+    {name:'Bleu Russe',gabarit:'Moyen',pelage:'court'},
+    {name:'Bombay',gabarit:'Moyen',pelage:'court'},
+    {name:'British Longhair',gabarit:'Moyen',pelage:'long'},
+    {name:'British Shorthair',gabarit:'Moyen',pelage:'court'},
+    {name:'Burmese',gabarit:'Moyen',pelage:'court'},
+    {name:'Burmilla',gabarit:'Moyen',pelage:'court'},
+    {name:'Californian Spangled',gabarit:'Moyen',pelage:'court'},
+    {name:'Chantilly Tiffany',gabarit:'Moyen',pelage:'long'},
+    {name:'Chartreux',gabarit:'Moyen',pelage:'court'},
+    {name:'Chausie',gabarit:'Grand',pelage:'court'},
+    {name:'Cornish Rex',gabarit:'Moyen',pelage:'court'},
+    {name:'Cymric',gabarit:'Moyen',pelage:'long'},
+    {name:'Devon Rex',gabarit:'Petit',pelage:'court'},
+    {name:'Donskoy (Chat Nu Russe)',gabarit:'Moyen',pelage:'aucun'},
+    {name:'Européen (chat européen)',gabarit:'Moyen',pelage:'court'},
+    {name:'Exotic Shorthair',gabarit:'Moyen',pelage:'court'},
+    {name:'Havana',gabarit:'Moyen',pelage:'court'},
+    {name:'Highland Fold',gabarit:'Moyen',pelage:'long'},
+    {name:'Khao Manee',gabarit:'Moyen',pelage:'court'},
+    {name:'Korat',gabarit:'Moyen',pelage:'court'},
+    {name:'Laperm',gabarit:'Moyen',pelage:'long'},
+    {name:'Maine Coon',gabarit:'Grand',pelage:'long'},
+    {name:'Manx',gabarit:'Moyen',pelage:'court'},
+    {name:'Mau Égyptien',gabarit:'Moyen',pelage:'court'},
+    {name:'Munchkin',gabarit:'Petit',pelage:'variable'},
+    {name:'Nebelung',gabarit:'Moyen',pelage:'long'},
+    {name:'Norvégien',gabarit:'Grand',pelage:'long'},
+    {name:'Ocicat',gabarit:'Moyen',pelage:'court'},
+    {name:'Oriental Longhair',gabarit:'Moyen',pelage:'long'},
+    {name:'Oriental Shorthair',gabarit:'Moyen',pelage:'court'},
+    {name:'Persan',gabarit:'Moyen',pelage:'long'},
+    {name:'Peterbald',gabarit:'Moyen',pelage:'aucun'},
+    {name:'Pixie-Bob',gabarit:'Grand',pelage:'mi-long'},
+    {name:'Ragamuffin',gabarit:'Grand',pelage:'long'},
+    {name:'Ragdoll',gabarit:'Grand',pelage:'long'},
+    {name:'Sacré de Birmanie',gabarit:'Moyen',pelage:'long'},
+    {name:'Savannah',gabarit:'Grand',pelage:'court'},
+    {name:'Scottish Fold',gabarit:'Moyen',pelage:'court'},
+    {name:'Selkirk Rex',gabarit:'Moyen',pelage:'long'},
+    {name:'Serengeti',gabarit:'Moyen',pelage:'court'},
+    {name:'Siamois',gabarit:'Moyen',pelage:'court'},
+    {name:'Sibérien',gabarit:'Grand',pelage:'long'},
+    {name:'Singapura',gabarit:'Petit',pelage:'court'},
+    {name:'Snowshoe',gabarit:'Moyen',pelage:'court'},
+    {name:'Somali',gabarit:'Moyen',pelage:'long'},
+    {name:'Sphynx',gabarit:'Moyen',pelage:'aucun'},
+    {name:'Thai',gabarit:'Moyen',pelage:'court'},
+    {name:'Tiffanie',gabarit:'Moyen',pelage:'long'},
+    {name:'Tonkinois',gabarit:'Moyen',pelage:'court'},
+    {name:'Turc de Van',gabarit:'Grand',pelage:'mi-long'},
+    {name:'Turkish Angora',gabarit:'Moyen',pelage:'long'},
+    {name:'York Chocolat',gabarit:'Moyen',pelage:'long'},
+  ]
+};
+
+// Races sélectionnées (multi)
+let selectedBreeds = [];
+
+let currentStep=0, goingBack=false, selectedAnimal='';
+let answers={};
+let fills=[0,20,40,60,80,100];
+let icons=['🐾','🔍','🏠','👨‍👩‍👧','⏰','🏃'];
+
+function updateProgress(){
+  document.getElementById('progressFill').style.width=fills[currentStep]+'%';
+  document.getElementById('progressCounter').textContent=`Étape ${currentStep+1} sur 6`;
+  document.querySelectorAll('.progress-step').forEach((el,i)=>{
+    el.classList.remove('active','done');
+    var dot=el.querySelector('.progress-dot');
+    if(i<currentStep){el.classList.add('done');dot.textContent='✓';}
+    else if(i===currentStep){el.classList.add('active');dot.textContent=icons[i];}
+    else dot.textContent=icons[i];
+  });
+}
+
+function showStep(n){
+  document.querySelectorAll('.step-content').forEach(el=>el.classList.remove('active','going-back'));
+  var t=document.getElementById('step-'+n);
+  t.classList.add('active');
+  if(goingBack)t.classList.add('going-back');
+  goingBack=false;
+  document.getElementById('formCard').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function nextStep(){if(currentStep<5){currentStep++;updateProgress();showStep(currentStep);if(currentStep===5)updateSummary();}}
+function prevStep(){if(currentStep>0){goingBack=true;currentStep--;updateProgress();showStep(currentStep);}}
+
+function chooseAnimal(el){
+  document.querySelectorAll('.hc-card,.hc-both').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedAnimal=el.dataset.val;
+  answers.q1=selectedAnimal;
+  // Adapter labels
+  var q2l=document.getElementById('q2-label');
+  q2l.textContent=selectedAnimal==='chat'?'Q2, Avez-vous une race de chat en tête ?':selectedAnimal==='chien'?'Q2, Avez-vous une race de chien en tête ?':'Q2, Avez-vous une race en tête ?';
+  var sl=document.getElementById('senior-label');
+  sl.textContent=selectedAnimal==='chien'?'(+8 ans)':selectedAnimal==='chat'?'(+10 ans)':'(+8 ans chien / +10 ans chat)';
+  clearBreed();
+}
+
+function getBreeds(){
+  if(selectedAnimal==='chien')return breedData.chien;
+  if(selectedAnimal==='chat')return breedData.chat;
+  return [...breedData.chien,...breedData.chat];
+}
+
+function filterBreeds(val){
+  var s=val.trim().toLowerCase();
+  var wrap=document.getElementById('breedSelectWrap');
+  if(!s){wrap.classList.add('hidden');return;}
+  var breeds=getBreeds().filter(b=>b.name.toLowerCase().includes(s));
+  var sel=document.getElementById('breedSelect');
+  sel.innerHTML='<option value="">— Sélectionner une race</option>';
+  breeds.forEach(b=>{var o=document.createElement('option');o.value=b.name;o.textContent=b.name+' ('+b.gabarit+')';sel.appendChild(o);});
+  wrap.classList.remove('hidden');
+}
+
+function selectBreed(sel){
+  var name=sel.value;if(!name)return;
+  var breed=getBreeds().find(b=>b.name===name);if(!breed)return;
+  // Vérifier si pas déjà sélectionnée
+  if(selectedBreeds.find(b=>b.name===name))return;
+  selectedBreeds.push(breed);
+  document.getElementById('optPeuImporte').classList.remove('selected');
+  document.getElementById('q2b-block').classList.add('hidden'); // cacher gabarit
+  document.getElementById('breedSearch').value='';
+  document.getElementById('breedSelectWrap').classList.add('hidden');
+  renderBreedBadges();
+  updateBreedInfos();
+  answers.q2breeds=selectedBreeds.map(b=>b.name);
+  answers.q2gabarits=[...new Set(selectedBreeds.map(b=>b.gabarit))];
+}
+
+function removeBreed(name){
+  selectedBreeds=selectedBreeds.filter(b=>b.name!==name);
+  renderBreedBadges();
+  updateBreedInfos();
+  answers.q2breeds=selectedBreeds.map(b=>b.name);
+  answers.q2gabarits=[...new Set(selectedBreeds.map(b=>b.gabarit))];
+  if(selectedBreeds.length===0){
+    document.getElementById('gabaritInfo').style.display='none';
+    document.getElementById('pelageFixed').style.display='none';
+    document.querySelectorAll('#q5-options .opt').forEach(o=>{o.style.display='flex';o.classList.remove('selected');});
+  }
+}
+
+function renderBreedBadges(){
+  var wrap=document.getElementById('selectedBreedBadges');
+  wrap.innerHTML='';
+  selectedBreeds.forEach(b=>{
+    var span=document.createElement('span');
+    span.className='selected-breed';
+    span.innerHTML=`${b.name} <span class="selected-breed-clear" onclick="removeBreed('${b.name.replace(/'/g,"\\'")}')">✕</span>`;
+    wrap.appendChild(span);
+  });
+}
+
+function updateBreedInfos(){
+  if(selectedBreeds.length===0)return;
+  var gabarits=[...new Set(selectedBreeds.map(b=>b.gabarit))];
+  var pelages=[...new Set(selectedBreeds.map(b=>b.pelage))];
+  var gi=document.getElementById('gabaritInfo');
+  gi.style.display='block';
+  gi.textContent='📏 Gabarit(s) habituel(s) : '+gabarits.join(', ');
+  // Pelage : toujours suggérer sans bloquer
+  if(pelages.length===1&&pelages[0]!=='variable') adaptPelage(pelages[0]);
+  else {
+    document.getElementById('pelageFixed').style.display='block';
+    document.getElementById('pelageFixed').textContent='ℹ️ Les races sélectionnées ont des pelages variés, choisissez selon votre préférence.';
+    document.querySelectorAll('#q5-options .opt').forEach(o=>{o.style.display='flex';o.classList.remove('selected');});
+  }
+}
+
+function clearBreed(){
+  selectedBreeds=[];
+  document.getElementById('selectedBreedBadges').innerHTML='';
+  document.getElementById('breedSelectWrap').classList.add('hidden');
+  document.getElementById('breedSearch').value='';
+  document.getElementById('gabaritInfo').style.display='none';
+  document.getElementById('pelageFixed').style.display='none';
+  document.querySelectorAll('#q5-options .opt').forEach(o=>{o.style.display='flex';o.classList.remove('selected');});
+  delete answers.q2breeds;delete answers.q2gabarits;
+}
+
+function selectPeuImporte(){
+  clearBreed();
+  document.getElementById('optPeuImporte').classList.add('selected');
+  document.getElementById('q2b-block').classList.remove('hidden'); // afficher choix gabarit
+  answers.q2breeds=['peu-importe'];
+}
+
+function adaptPelage(pelage){
+  var fixed=document.getElementById('pelageFixed');
+  var opts=document.querySelectorAll('#q5-options .opt');
+  var labels={court:'court / ras','mi-long':'mi-long',long:'long',aucun:'sans poils'};
+
+  // Toujours laisser le choix visible
+  opts.forEach(o=>o.style.display='flex');
+
+  if(pelage==='aucun'){
+    fixed.style.display='block';
+    fixed.textContent='ℹ️ Pelage habituel de cette race : sans poils, mais vous pouvez sélectionner autre chose.';
+  } else if(['court','mi-long','long'].includes(pelage)){
+    fixed.style.display='block';
+    fixed.textContent=`ℹ️ Pelage habituel de cette race : ${labels[pelage]}, présélectionné, mais vous pouvez choisir autre chose.`;
+    // Présélectionner sans bloquer
+    opts.forEach(o=>{
+      o.classList.remove('selected');
+      if(o.dataset.val===pelage) o.classList.add('selected');
+    });
+    answers.q5=pelage;
+  } else {
+    // variable : aucune présélection
+    fixed.style.display='none';
+    opts.forEach(o=>o.classList.remove('selected'));
+  }
+}
+
+function toggleLogement(val){
+  document.getElementById('q12a-block').style.display=val==='appart'?'block':'none';
+  document.getElementById('q12b-block').style.display=val==='maison'?'block':'none';
+}
+
+function sel(el){
+  var q=el.dataset.q;
+  document.querySelectorAll(`[data-q="${q}"]:not(.multi)`).forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');
+  answers[q]=el.dataset.val;
+}
+
+function selExclusif(el,q){
+  var was=el.classList.contains('selected');
+  document.querySelectorAll(`[data-q="${q}"]`).forEach(o=>o.classList.remove('selected'));
+  if(!was){el.classList.add('selected');answers[q]=['non'];}
+  else{delete answers[q];}
+}
+
+function selAvecNon(el,q){
+  document.querySelectorAll(`[data-q="${q}"][data-val="non"]`).forEach(o=>o.classList.remove('selected'));
+  el.classList.toggle('selected');
+  answers[q]=[...document.querySelectorAll(`[data-q="${q}"].selected`)].map(o=>o.dataset.val);
+}
+
+function selMulti(el){
+  el.classList.toggle('selected');
+  var q=el.dataset.q;
+  answers[q]=[...document.querySelectorAll(`[data-q="${q}"].selected`)].map(o=>o.dataset.val);
+}
+
+function updateSummary(){
+  var a=answers;
+  var anL={chien:'🐶 Chien',chat:'🐱 Chat','les-deux':'🐶🐱 Les deux'};
+  document.getElementById('sum-animal').textContent=anL[a.q1]||'—';
+  document.getElementById('sum-race').textContent=
+    (a.q2breeds&&a.q2breeds[0]==='peu-importe')
+      ? (a.q2gabarit&&a.q2gabarit!=='peu-importe' ? 'Gabarit : '+[...(Array.isArray(answers.q2gabarit)?answers.q2gabarit:[answers.q2gabarit])].join(', ') : 'Toutes races')
+      : (a.q2breeds&&a.q2breeds.length>0 ? a.q2breeds.join(', ') : '—');
+  var logL={appart:'Appartement',maison:'Maison'};
+  var extL={jardin:'Jardin',terrasse:'Terrasse',aucun:'Sans extérieur'};
+  document.getElementById('sum-logement').textContent=`${logL[a.q10]||'—'} · ${extL[a.q11]||'—'}`;
+  var fL={non:'Pas d'enfants',moins13:'Enfants < 13 ans',plus13:'Ados 13 ans et plus'};
+  document.getElementById('sum-foyer').textContent=fL[a.q13]||'—';
+  var dL={'0-2':'< 2h seul','2-4':'2 à 4h','4-8':'4 à 8h','8+':'+ 8h seul'};
+  document.getElementById('sum-dispo').textContent=dL[a.q15]||'—';
+  var mL={sedentaire:'Sédentaire',modere:'Modéré',actif:'Actif',sportif:'Très sportif'};
+  document.getElementById('sum-mode').textContent=mL[a.q17]||'—';
+}
+
+function submitForm(){
+  document.querySelectorAll('.step-content').forEach(el=>el.classList.remove('active'));
+  document.getElementById('progressWrap').style.opacity='0';
+  document.getElementById('progressWrap').style.pointerEvents='none';
+  document.getElementById('confirmScreen').classList.add('visible');
+  document.getElementById('formCard').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+updateProgress();
+</script>
+</body>
+</html>

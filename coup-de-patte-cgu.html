@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Conditions Générales d'Utilisation — Coup de Patte</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --forest:#2D4A3E;--moss:#4A7C59;--sage:#7AAD89;--mint:#C8E6C0;--mint-lt:#EBF5E8;
+  --ivory:#F4F1E8;--paper:#FDFCF8;--bark:#6B4F3A;--gold:#D4A843;--amber:#C49A1A;
+  --rose:#C9704A;--blue:#5B8DEF;--border:rgba(45,74,62,0.11);
+  --dust:#7A6E65;--smoke:#A89E96;--shadow:0 8px 32px rgba(45,74,62,0.10);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Nunito',sans-serif;background:var(--ivory);color:var(--forest);overflow-x:hidden;line-height:1.8}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.022'/%3E%3C/svg%3E");pointer-events:none;z-index:0}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:16px 52px;background:rgba(244,241,232,0.93);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.logo{font-family:'Fraunces',serif;font-size:1.4rem;font-weight:600;color:var(--forest);display:flex;align-items:center;gap:9px;text-decoration:none}
+.logo-bubble{width:40px;height:40px;background:var(--forest);border-radius:50% 50% 50% 50%/60% 60% 40% 40%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(45,74,62,0.32);animation:pawPulse 2.5s ease-in-out infinite}
+.logo-bubble span{font-size:1.1rem;animation:pawWiggle 2.5s ease-in-out infinite;display:inline-block;filter:brightness(0) invert(1)}
+@keyframes pawPulse{0%,100%{box-shadow:0 4px 12px rgba(45,74,62,0.3);transform:scale(1)}50%{box-shadow:0 6px 20px rgba(45,74,62,0.45);transform:scale(1.07)}}
+@keyframes pawWiggle{0%,100%{transform:rotate(0deg) scale(1)}20%{transform:rotate(-12deg) scale(1.1)}40%{transform:rotate(10deg) scale(1.05)}60%{transform:rotate(-6deg) scale(1.08)}80%{transform:rotate(4deg) scale(1.03)}}
+.nav-back{font-size:0.82rem;font-weight:600;color:var(--dust);text-decoration:none;transition:color 0.2s}
+.nav-back:hover{color:var(--forest)}
+
+/* LAYOUT */
+.page{max-width:860px;margin:0 auto;padding:110px 40px 100px;position:relative;z-index:1}
+
+/* HEADER */
+.doc-header{margin-bottom:52px;padding-bottom:32px;border-bottom:1.5px solid var(--border)}
+.doc-eyebrow{font-size:0.65rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--moss);display:block;margin-bottom:12px}
+.doc-title{font-family:'Fraunces',serif;font-size:2.8rem;font-weight:700;font-style:italic;color:var(--forest);line-height:1.1;margin-bottom:16px}
+.doc-meta{display:flex;gap:20px;flex-wrap:wrap}
+.doc-meta-item{font-size:0.78rem;color:var(--smoke);display:flex;align-items:center;gap:5px}
+.doc-meta-item strong{color:var(--dust)}
+
+/* TABLE DES MATIÈRES */
+.toc{background:var(--paper);border-radius:18px;border:1.5px solid var(--border);padding:24px 28px;margin-bottom:48px;box-shadow:var(--shadow)}
+.toc-title{font-family:'Fraunces',serif;font-size:0.95rem;font-weight:600;font-style:italic;color:var(--forest);margin-bottom:14px}
+.toc-list{display:flex;flex-direction:column;gap:6px;list-style:none}
+.toc-list li a{font-size:0.82rem;color:var(--dust);text-decoration:none;display:flex;align-items:center;gap:8px;transition:color 0.2s}
+.toc-list li a:hover{color:var(--moss)}
+.toc-num{font-size:0.68rem;font-weight:700;color:var(--smoke);width:20px;flex-shrink:0}
+
+/* ARTICLES */
+.article{margin-bottom:44px;scroll-margin-top:100px}
+.article-header{display:flex;align-items:baseline;gap:12px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.article-num{font-family:'Fraunces',serif;font-size:1.2rem;font-weight:700;color:var(--moss);flex-shrink:0}
+.article-title{font-family:'Fraunces',serif;font-size:1.2rem;font-weight:600;font-style:italic;color:var(--forest)}
+.article-body{font-size:0.88rem;line-height:1.85;color:var(--dust)}
+.article-body p{margin-bottom:12px}
+.article-body p:last-child{margin-bottom:0}
+.article-body ul{margin:10px 0 12px 18px;display:flex;flex-direction:column;gap:5px}
+.article-body li{font-size:0.88rem;color:var(--dust)}
+.article-body strong{color:var(--forest);font-weight:700}
+
+/* Alert box */
+.alert-cgu{background:var(--mint-lt);border:1.5px solid rgba(74,124,89,0.2);border-radius:14px;padding:16px 20px;margin:16px 0;font-size:0.84rem;color:var(--forest);line-height:1.7}
+.alert-cgu.gold{background:rgba(212,168,67,0.08);border-color:rgba(196,154,26,0.2);color:var(--bark)}
+
+/* Footer */
+footer{background:var(--forest);padding:36px 52px;position:relative;z-index:1;margin-top:0}
+.footer-inner{max-width:860px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+.footer-logo{font-family:'Fraunces',serif;font-size:1.1rem;font-weight:600;font-style:italic;color:var(--ivory);display:flex;align-items:center;gap:10px}
+.footer-copy{font-size:0.72rem;color:rgba(244,241,232,0.3)}
+</style>
+
+  <!-- Supabase SDK + Configuration Coup de Patte -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+</head>
+<body>
+
+<nav>
+  <a href="coup-de-patte-landing.html" class="logo">
+    <div class="logo-bubble"><span>🐾</span></div>
+    Coup de Patte
+  </a>
+  <div></div>
+  <a href="coup-de-patte-landing.html" class="nav-back">← Retour à l'accueil</a>
+</nav>
+
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="doc-header">
+    <span class="doc-eyebrow">Document légal</span>
+    <h1 class="doc-title">Conditions Générales<br>d'Utilisation</h1>
+    <div class="doc-meta">
+      <div class="doc-meta-item">📅 <strong>Version :</strong> 1.0</div>
+      <div class="doc-meta-item">📅 <strong>Date d'entrée en vigueur :</strong> 1er janvier 2025</div>
+      <div class="doc-meta-item">📍 <strong>Éditeur :</strong> Coup de Patte · France</div>
+    </div>
+  </div>
+
+  <!-- TABLE DES MATIÈRES -->
+  <div class="toc">
+    <p class="toc-title">Table des matières</p>
+    <ul class="toc-list">
+      <li><a href="#art1"><span class="toc-num">01</span>Présentation du service</a></li>
+      <li><a href="#art2"><span class="toc-num">02</span>Acceptation des conditions</a></li>
+      <li><a href="#art3"><span class="toc-num">03</span>Création de compte et accès</a></li>
+      <li><a href="#art4"><span class="toc-num">04</span>Données personnelles et confidentialité</a></li>
+      <li><a href="#art5"><span class="toc-num">05</span>Collecte automatisée de données (scraping)</a></li>
+      <li><a href="#art6"><span class="toc-num">06</span>Contributions communautaires</a></li>
+      <li><a href="#art7"><span class="toc-num">07</span>Responsabilités et limites</a></li>
+      <li><a href="#art8"><span class="toc-num">08</span>Gratuité du service</a></li>
+      <li><a href="#art9"><span class="toc-num">09</span>Propriété intellectuelle</a></li>
+      <li><a href="#art10"><span class="toc-num">10</span>Modification des CGU</a></li>
+      <li><a href="#art11"><span class="toc-num">11</span>Droit applicable et contact</a></li>
+    </ul>
+  </div>
+
+  <!-- ARTICLE 1 -->
+  <div class="article" id="art1">
+    <div class="article-header">
+      <span class="article-num">01</span>
+      <h2 class="article-title">Présentation du service</h2>
+    </div>
+    <div class="article-body">
+      <p>Coup de Patte est une plateforme française d'adoption animale en ligne, accessible à l'adresse <strong>coup-de-patte.fr</strong>. Elle est éditée et exploitée à titre indépendant par son fondateur, personne physique résidant en France.</p>
+      <p>Coup de Patte a pour vocation de faciliter la mise en relation entre des adoptants potentiels et des animaux présents dans des refuges ou associations de protection animale référencés sur la plateforme. Elle propose notamment :</p>
+      <ul>
+        <li>Un algorithme de compatibilité entre le profil de vie de l'adoptant et les caractéristiques des animaux disponibles</li>
+        <li>Une indexation automatisée des fiches animaux publiées par les refuges partenaires et référencés</li>
+        <li>Une catégorie dédiée aux animaux les plus difficiles à placer, dénommée "Enfin Moi ?"</li>
+        <li>Des outils de contribution communautaire permettant aux utilisateurs de signaler des informations obsolètes ou erronées</li>
+      </ul>
+      <p>Coup de Patte n'est pas un intermédiaire légal dans le cadre de l'adoption animale. La relation contractuelle liée à l'adoption s'établit exclusivement entre l'adoptant et le refuge ou l'association concerné.</p>
+    </div>
+  </div>
+
+  <!-- ARTICLE 2 -->
+  <div class="article" id="art2">
+    <div class="article-header">
+      <span class="article-num">02</span>
+      <h2 class="article-title">Acceptation des conditions</h2>
+    </div>
+    <div class="article-body">
+      <p>L'accès et l'utilisation de la plateforme Coup de Patte impliquent l'acceptation pleine et entière des présentes Conditions Générales d'Utilisation (ci-après "CGU") par l'utilisateur.</p>
+      <p>Toute personne qui crée un compte, utilise le moteur de matching, contribue à la base communautaire ou consulte les fiches animaux est réputée avoir pris connaissance des présentes CGU et les avoir acceptées sans réserve.</p>
+      <p>Si vous n'acceptez pas les présentes CGU, vous êtes invité à ne pas utiliser la plateforme.</p>
+    </div>
+  </div>
+
+  <!-- ARTICLE 3 -->
+  <div class="article" id="art3">
+    <div class="article-header">
+      <span class="article-num">03</span>
+      <h2 class="article-title">Création de compte et accès</h2>
+    </div>
+    <div class="article-body">
+      <p>L'utilisation complète de la plateforme nécessite la création d'un compte utilisateur. L'utilisateur s'engage à fournir des informations exactes, sincères et à jour lors de son inscription, et à les maintenir à jour en cas de changement.</p>
+      <p>Deux types de comptes sont disponibles :</p>
+      <ul>
+        <li><strong>Compte adoptant :</strong> permet de compléter un profil de vie, d'accéder aux matchs personnalisés, de sauvegarder des fiches et de contacter des refuges.</li>
+        <li><strong>Compte refuge / association :</strong> permet de gérer les fiches animaux, de valider les informations importées automatiquement et de suivre les adoptions réalisées via la plateforme.</li>
+      </ul>
+      <p>L'utilisateur est seul responsable de la confidentialité de ses identifiants de connexion. Toute utilisation du compte est réputée effectuée par le titulaire du compte.</p>
+      <p>Coup de Patte se réserve le droit de suspendre ou supprimer tout compte dont l'utilisation serait contraire aux présentes CGU, à la législation en vigueur ou aux valeurs de la plateforme.</p>
+    </div>
+  </div>
+
+  <!-- ARTICLE 4 -->
+  <div class="article" id="art4">
+    <div class="article-header">
+      <span class="article-num">04</span>
+      <h2 class="article-title">Données personnelles et confidentialité</h2>
+    </div>
+    <div class="article-body">
+      <div class="alert-cgu">🔒 Coup de Patte s'engage à ne jamais vendre, louer ou céder les données personnelles de ses utilisateurs à des tiers à des fins commerciales. Aucune publicité ciblée n'est diffusée sur la plateforme.</div>
+      <p>Conformément au Règlement Général sur la Protection des Données (RGPD) et à la loi Informatique et Libertés, les données collectées lors de l'utilisation de Coup de Patte sont utilisées exclusivement aux fins suivantes :</p>
+      <ul>
+        <li>Calcul du score de compatibilité entre l'adoptant et les animaux référencés</li>
+        <li>Amélioration de l'algorithme de matching sur la base de retours anonymisés</li>
+        <li>Communication relative à l'activité du compte (notifications de matching, confirmations)</li>
+        <li>Statistiques anonymes d'utilisation de la plateforme</li>
+      </ul>
+      <p>Les données collectées dans le cadre du profil adoptant (type de logement, composition du foyer, disponibilité, mode de vie, expérience animale) ne sont ni partagées avec des tiers, ni utilisées à des fins autres que le matching.</p>
+      <p>Conformément à la réglementation applicable, l'utilisateur dispose d'un droit d'accès, de rectification, de suppression et de portabilité de ses données personnelles. Ces droits peuvent être exercés en contactant la plateforme à l'adresse : <strong>contact@coup-de-patte.fr</strong>.</p>
+      <p>Les données sont conservées pendant la durée d'activité du compte et supprimées dans un délai de 30 jours suivant la clôture du compte sur demande de l'utilisateur.</p>
+    </div>
+  </div>
+
+  <!-- ARTICLE 5 -->
+  <div class="article" id="art5">
+    <div class="article-header">
+      <span class="article-num">05</span>
+      <h2 class="article-title">Collecte automatisée de données (scraping)</h2>
+    </div>
+    <div class="article-body">
+      <p>Afin de maintenir un catalogue d'animaux à jour sans imposer de charge de travail supplémentaire aux refuges et associations, Coup de Patte utilise un système automatisé de collecte de données (ci-après "scraping IA") qui indexe périodiquement les informations publiées sur les sites internet des refuges référencés.</p>
+      <p>Ce système collecte uniquement les informations relatives aux animaux disponibles à l'adoption (nom, race, âge, sexe, description, photo lorsqu'elle est publiquement accessible). Aucune donnée personnelle relative aux bénévoles, salariés ou adoptants des refuges n'est collectée par ce biais.</p>
+      <p>Tout refuge ou association peut demander à être exclu du scraping automatique ou à être intégralement retiré de la plateforme en contactant Coup de Patte à l'adresse <strong>contact@coup-de-patte.fr</strong>. Cette demande sera traitée dans un délai de 72 heures ouvrées.</p>
+      <div class="alert-cgu gold">ℹ️ Les fiches importées automatiquement peuvent comporter des inexactitudes. Les refuges partenaires disposent d'un espace d'administration leur permettant de corriger, compléter ou supprimer ces informations à tout moment.</div>
+    </div>
+  </div>
+
+  <!-- ARTICLE 6 -->
+  <div class="article" id="art6">
+    <div class="article-header">
+      <span class="article-num">06</span>
+      <h2 class="article-title">Contributions communautaires</h2>
+    </div>
+    <div class="article-body">
+      <p>Coup de Patte propose à ses utilisateurs inscrits de contribuer à la fiabilité des informations présentes sur la plateforme via plusieurs mécanismes communautaires :</p>
+      <ul>
+        <li><strong>Signalement d'absence :</strong> un animal signalé absent par 5 utilisateurs distincts est automatiquement retiré de la plateforme et exclu du scraping pour une durée de 12 mois.</li>
+        <li><strong>Confirmation d'adoption :</strong> un utilisateur peut signaler avoir adopté un animal via Coup de Patte. La fiche est immédiatement retirée et le refuge notifié pour validation.</li>
+        <li><strong>Signalement d'information incorrecte :</strong> tout utilisateur peut signaler une information erronée (race, âge, photo, compatibilités). Le signalement est transmis au refuge concerné pour vérification.</li>
+        <li><strong>Confirmation ou infirmation de compatibilité :</strong> les utilisateurs ayant rencontré un animal peuvent renseigner ses compatibilités réelles afin d'enrichir la fiche.</li>
+      </ul>
+      <p>En effectuant une contribution communautaire, l'utilisateur certifie agir de bonne foi et sur la base d'informations qu'il croit exactes. Tout signalement abusif, malveillant ou répété sans fondement peut entraîner la suspension du compte concerné.</p>
+      <p>Coup de Patte ne peut être tenu responsable des conséquences d'un signalement erroné effectué de bonne foi par un utilisateur.</p>
+    </div>
+  </div>
+
+  <!-- ARTICLE 7 -->
+  <div class="article" id="art7">
+    <div class="article-header">
+      <span class="article-num">07</span>
+      <h2 class="article-title">Responsabilités et limites</h2>
+    </div>
+    <div class="article-body">
+      <p>Coup de Patte met tout en oeuvre pour assurer la fiabilité et la disponibilité de la plateforme, mais ne peut garantir l'exactitude, l'exhaustivité ou la mise à jour en temps réel des informations présentées, notamment en ce qui concerne :</p>
+      <ul>
+        <li>La disponibilité effective des animaux référencés</li>
+        <li>L'exactitude des fiches importées automatiquement depuis les sites des refuges</li>
+        <li>La disponibilité continue de la plateforme (maintenance, incidents techniques)</li>
+      </ul>
+      <p>Le score de compatibilité calculé par l'algorithme Coup de Patte est fourni à titre indicatif. Il repose sur les informations déclarées par l'adoptant et les données disponibles sur la fiche de l'animal. Coup de Patte ne garantit pas qu'un score élevé assurera le succès de l'adoption.</p>
+      <p>L'adoption d'un animal est un acte personnel et engageant. Coup de Patte ne saurait être tenu responsable des difficultés rencontrées dans le cadre d'une adoption, d'un retour d'adoption ou de tout préjudice résultant d'une relation entre un adoptant et un refuge.</p>
+      <p>En cas de dysfonctionnement de la plateforme, Coup de Patte s'engage à rétablir le service dans les meilleurs délais mais ne pourra être tenu responsable des préjudices directs ou indirects résultant d'une interruption de service.</p>
+    </div>
+  </div>
+
+  <!-- ARTICLE 8 -->
+  <div class="article" id="art8">
+    <div class="article-header">
+      <span class="article-num">08</span>
+      <h2 class="article-title">Gratuité du service</h2>
+    </div>
+    <div class="article-body">
+      <div class="alert-cgu">🐾 Coup de Patte est et restera gratuit pour tous : adoptants, refuges et associations, sans engagement, sans abonnement et sans publicité.</div>
+      <p>La plateforme est financée par les contributions volontaires de ses utilisateurs. Coup de Patte ne perçoit aucune commission sur les adoptions réalisées via la plateforme et ne tire aucun bénéfice commercial de son activité.</p>
+      <p>Les dons effectués via la plateforme sont utilisés exclusivement pour couvrir les frais de fonctionnement : hébergement, nom de domaine, développement technique, frais de traitement du scraping automatisé et envoi de notifications.</p>
+      <p>Coup de Patte se réserve le droit de faire évoluer son modèle économique à l'avenir, en informant préalablement ses utilisateurs de toute modification substantielle et dans le respect des présentes CGU.</p>
+    </div>
+  </div>
+
+  <!-- ARTICLE 9 -->
+  <div class="article" id="art9">
+    <div class="article-header">
+      <span class="article-num">09</span>
+      <h2 class="article-title">Propriété intellectuelle</h2>
+    </div>
+    <div class="article-body">
+      <p>L'ensemble des éléments constituant la plateforme Coup de Patte (nom, logo, design, algorithme, textes, structure) est la propriété exclusive de son fondateur et est protégé par les lois relatives à la propriété intellectuelle en vigueur en France.</p>
+      <p>Les fiches animaux importées automatiquement depuis les sites des refuges demeurent la propriété des refuges et associations concernés. Coup de Patte ne revendique aucun droit de propriété sur ces contenus.</p>
+      <p>Toute reproduction, représentation, modification ou exploitation non autorisée de tout ou partie de la plateforme est strictement interdite et susceptible de donner lieu à des poursuites.</p>
+    </div>
+  </div>
+
+  <!-- ARTICLE 10 -->
+  <div class="article" id="art10">
+    <div class="article-header">
+      <span class="article-num">10</span>
+      <h2 class="article-title">Modification des CGU</h2>
+    </div>
+    <div class="article-body">
+      <p>Coup de Patte se réserve le droit de modifier les présentes CGU à tout moment, notamment pour se conformer à l'évolution de la législation applicable ou faire évoluer les fonctionnalités de la plateforme.</p>
+      <p>Les utilisateurs inscrits seront informés de toute modification substantielle par notification sur la plateforme ou par email. La poursuite de l'utilisation de la plateforme après notification des modifications vaut acceptation des nouvelles CGU.</p>
+      <p>La version en vigueur des CGU est celle publiée sur la plateforme à la date de consultation, avec indication de la date de mise à jour.</p>
+    </div>
+  </div>
+
+  <!-- ARTICLE 11 -->
+  <div class="article" id="art11">
+    <div class="article-header">
+      <span class="article-num">11</span>
+      <h2 class="article-title">Droit applicable et contact</h2>
+    </div>
+    <div class="article-body">
+      <p>Les présentes CGU sont soumises au droit français. En cas de litige relatif à l'interprétation ou à l'exécution des présentes conditions, les parties s'engagent à rechercher une solution amiable avant tout recours judiciaire.</p>
+      <p>À défaut d'accord amiable, les tribunaux français compétents seront seuls compétents pour connaître du litige.</p>
+      <p>Pour toute question relative aux présentes CGU, à la protection des données ou au fonctionnement de la plateforme, vous pouvez contacter Coup de Patte à l'adresse suivante :</p>
+      <ul>
+        <li><strong>Email :</strong> contact@coup-de-patte.fr</li>
+        <li><strong>Formulaire de contact :</strong> <a href="coup-de-patte-contact.html" style="color:var(--moss);font-weight:700">Page Contact</a></li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">
+      <div style="width:36px;height:36px;background:rgba(244,241,232,0.15);border:1.5px solid rgba(244,241,232,0.2);border-radius:50% 50% 50% 50%/60% 60% 40% 40%;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span style="font-size:1rem;filter:brightness(0) invert(1);">🐾</span></div>
+      Coup de Patte
+    </div>
+    <span class="footer-copy">© 2025 Coup de Patte · Projet indépendant · France</span>
+  </div>
+</footer>
+
+</body>
+</html>

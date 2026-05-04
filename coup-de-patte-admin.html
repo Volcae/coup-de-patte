@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gestion, SPA de Lyon · Coup de Patte</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --forest:#2D4A3E;--moss:#4A7C59;--sage:#7AAD89;--mint:#C8E6C0;--mint-lt:#EBF5E8;
+  --ivory:#F4F1E8;--paper:#FDFCF8;--bark:#6B4F3A;--gold:#D4A843;--amber:#C49A1A;
+  --blush:#E8C49A;--rose:#C9704A;--blue:#5B8DEF;--border:rgba(45,74,62,0.11);
+  --dust:#7A6E65;--smoke:#A89E96;--shadow:0 8px 32px rgba(45,74,62,0.10);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Nunito',sans-serif;font-weight:400;background:var(--ivory);color:var(--forest);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");pointer-events:none;z-index:0}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:14px 48px;background:rgba(244,241,232,0.93);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.logo{font-family:'Fraunces',serif;font-size:1.4rem;font-weight:600;color:var(--forest);display:flex;align-items:center;gap:9px;text-decoration:none}
+.logo-bubble{width:40px;height:40px;background:var(--forest);border-radius:50% 50% 50% 50%/60% 60% 40% 40%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(45,74,62,0.32)}
+.logo-bubble span{filter:brightness(0) invert(1);font-size:0.95rem}
+.nav-center{display:flex;align-items:center;gap:8px}
+.nav-refuge-badge{background:var(--forest);color:var(--ivory);font-size:0.72rem;font-weight:700;padding:5px 14px;border-radius:50px;letter-spacing:0.3px}
+.nav-refuge-name{font-family:'Fraunces',serif;font-size:1rem;font-style:italic;font-weight:600;color:var(--forest)}
+.nav-right{display:flex;align-items:center;gap:12px}
+.nav-view-btn{display:flex;align-items:center;gap:6px;font-size:0.82rem;font-weight:600;color:var(--dust);text-decoration:none;opacity:0.7;transition:opacity 0.2s}
+.nav-view-btn:hover{opacity:1}
+.nav-logout{font-size:0.78rem;font-weight:600;color:var(--rose);cursor:pointer;opacity:0.7;transition:opacity 0.2s;background:none;border:none;font-family:'Nunito',sans-serif}
+.nav-logout:hover{opacity:1}
+
+/* LAYOUT */
+.app{display:flex;min-height:100vh;padding-top:72px;position:relative;z-index:1}
+
+/* SIDEBAR */
+.sidebar{width:260px;flex-shrink:0;border-right:1px solid var(--border);padding:28px 20px;display:flex;flex-direction:column;gap:6px;background:rgba(253,252,248,0.7)}
+
+.sidebar-section{font-size:0.6rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--smoke);padding:16px 12px 8px;margin-top:8px}
+.sidebar-section:first-child{margin-top:0}
+
+.sidebar-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:12px;cursor:pointer;transition:all 0.18s;font-size:0.85rem;font-weight:600;color:var(--dust);text-decoration:none}
+.sidebar-item:hover{background:var(--mint-lt);color:var(--forest)}
+.sidebar-item.active{background:var(--forest);color:var(--ivory);box-shadow:0 4px 12px rgba(45,74,62,0.2)}
+.sidebar-item-icon{font-size:1rem;width:20px;text-align:center;flex-shrink:0}
+.sidebar-badge{margin-left:auto;background:var(--rose);color:white;font-size:0.6rem;font-weight:700;padding:2px 7px;border-radius:50px}
+.sidebar-badge-green{background:var(--moss)}
+.sidebar-badge-gold{background:var(--amber)}
+
+/* MAIN */
+.main{flex:1;padding:32px 36px;min-width:0}
+
+/* Header */
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px}
+.page-title{font-family:'Fraunces',serif;font-size:1.6rem;font-weight:600;font-style:italic;color:var(--forest)}
+.page-sub{font-size:0.8rem;color:var(--dust);margin-top:3px}
+
+.btn-primary{display:inline-flex;align-items:center;gap:7px;background:linear-gradient(135deg,var(--moss),var(--forest));color:var(--ivory);font-family:'Nunito',sans-serif;font-size:0.85rem;font-weight:700;padding:11px 22px;border-radius:50px;border:none;cursor:pointer;box-shadow:0 4px 14px rgba(74,124,89,0.3);transition:transform 0.2s cubic-bezier(0.34,1.56,0.64,1),box-shadow 0.2s}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(74,124,89,0.4)}
+.btn-secondary{display:inline-flex;align-items:center;gap:7px;background:transparent;color:var(--forest);font-family:'Nunito',sans-serif;font-size:0.85rem;font-weight:700;padding:10px 20px;border-radius:50px;border:1.5px solid var(--border);cursor:pointer;transition:all 0.2s}
+.btn-secondary:hover{border-color:var(--moss);background:var(--mint-lt)}
+
+/* TABS */
+.tabs-wrap{border-bottom:1px solid var(--border);margin-bottom:28px;display:flex;gap:0}
+.tab{padding:12px 22px;font-size:0.84rem;font-weight:700;color:var(--dust);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.2s;display:flex;align-items:center;gap:7px;white-space:nowrap}
+.tab:hover{color:var(--forest)}
+.tab.active{color:var(--forest);border-bottom-color:var(--moss)}
+.tab-count{background:var(--mint-lt);color:var(--moss);font-size:0.65rem;font-weight:700;padding:2px 7px;border-radius:50px;border:1px solid rgba(74,124,89,0.2)}
+.tab.active .tab-count{background:var(--moss);color:white;border-color:var(--moss)}
+
+.tab-panel{display:none;animation:fadeUp 0.3s ease both}
+.tab-panel.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ═══ TABLEAU DE BORD ═══ */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px}
+.stat-card{background:var(--paper);border-radius:18px;border:1.5px solid var(--border);padding:20px;box-shadow:var(--shadow);transition:transform 0.2s}
+.stat-card:hover{transform:translateY(-2px)}
+.stat-n{font-family:'Fraunces',serif;font-size:2rem;font-weight:700;color:var(--moss);display:block;line-height:1;margin-bottom:4px}
+.stat-l{font-size:0.72rem;color:var(--dust);font-weight:500}
+.stat-trend{font-size:0.7rem;font-weight:700;margin-top:6px;display:block}
+.trend-up{color:var(--moss)}
+.trend-neutral{color:var(--smoke)}
+
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.dash-card{background:var(--paper);border-radius:20px;border:1.5px solid var(--border);padding:22px;box-shadow:var(--shadow)}
+.dash-card-title{font-family:'Fraunces',serif;font-size:0.95rem;font-weight:600;font-style:italic;color:var(--forest);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+
+/* Activité récente */
+.activity-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);font-size:0.8rem}
+.activity-item:last-child{border-bottom:none}
+.activity-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.dot-green{background:var(--moss)}
+.dot-gold{background:var(--gold)}
+.dot-blue{background:var(--blue)}
+.dot-rose{background:var(--rose)}
+.activity-text{flex:1;color:var(--forest);font-weight:500}
+.activity-time{color:var(--smoke);font-size:0.72rem;white-space:nowrap}
+
+/* Animaux prioritaires */
+.priority-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
+.priority-item:last-child{border-bottom:none}
+.priority-thumb{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0}
+.priority-info{flex:1}
+.priority-name{font-family:'Fraunces',serif;font-size:0.9rem;font-weight:600;font-style:italic;color:var(--forest)}
+.priority-meta{font-size:0.7rem;color:var(--dust);margin-top:1px}
+.priority-badge{font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:50px;white-space:nowrap}
+.pb-gold{background:rgba(212,168,67,0.12);color:var(--amber);border:1px solid rgba(196,154,26,0.2)}
+.pb-rose{background:rgba(201,112,74,0.08);color:var(--rose);border:1px solid rgba(201,112,74,0.15)}
+
+/* ═══ GESTION ANIMAUX ═══ */
+.animals-toolbar{display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+.search-input{flex:1;min-width:200px;padding:10px 16px;border-radius:50px;border:1.5px solid var(--border);background:var(--paper);font-family:'Nunito',sans-serif;font-size:0.83rem;color:var(--forest);outline:none;transition:border-color 0.2s}
+.search-input:focus{border-color:var(--moss)}
+.search-input::placeholder{color:var(--smoke)}
+.filter-select{padding:10px 16px;border-radius:50px;border:1.5px solid var(--border);background:var(--paper);font-family:'Nunito',sans-serif;font-size:0.83rem;color:var(--forest);cursor:pointer;outline:none;appearance:none;padding-right:30px}
+
+.animals-table{width:100%;border-collapse:collapse}
+.animals-table th{text-align:left;font-size:0.65rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--smoke);padding:10px 14px;border-bottom:1px solid var(--border)}
+.animals-table td{padding:14px;border-bottom:1px solid var(--border);vertical-align:middle}
+.animals-table tr:last-child td{border-bottom:none}
+.animals-table tr:hover td{background:rgba(235,245,232,0.4)}
+
+.animal-row-thumb{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0}
+.animal-row-name{font-family:'Fraunces',serif;font-size:0.95rem;font-weight:600;font-style:italic;color:var(--forest)}
+.animal-row-meta{font-size:0.72rem;color:var(--dust);margin-top:1px}
+
+.status-badge{display:inline-flex;align-items:center;gap:5px;font-size:0.7rem;font-weight:700;padding:4px 10px;border-radius:50px}
+.sb-dispo{background:var(--mint-lt);color:var(--moss);border:1px solid rgba(74,124,89,0.2)}
+.sb-adopte{background:rgba(91,141,239,0.1);color:var(--blue);border:1px solid rgba(91,141,239,0.2)}
+.sb-reserve{background:rgba(212,168,67,0.12);color:var(--amber);border:1px solid rgba(196,154,26,0.2)}
+.sb-enfin{background:rgba(212,168,67,0.15);color:var(--amber);border:1px solid rgba(196,154,26,0.25)}
+
+.row-actions{display:flex;align-items:center;gap:6px}
+.row-btn{padding:6px 12px;border-radius:50px;font-size:0.72rem;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:transparent;font-family:'Nunito',sans-serif;color:var(--forest);transition:all 0.15s;white-space:nowrap}
+.row-btn:hover{border-color:var(--moss);background:var(--mint-lt)}
+.row-btn-adopte{border-color:var(--blue);color:var(--blue)}
+.row-btn-adopte:hover{background:rgba(91,141,239,0.1)}
+.row-btn-danger{border-color:var(--rose);color:var(--rose)}
+.row-btn-danger:hover{background:rgba(201,112,74,0.08)}
+
+/* ═══ MODAL AJOUT ANIMAL ═══ */
+.modal-overlay{position:fixed;inset:0;background:rgba(45,74,62,0.45);backdrop-filter:blur(8px);z-index:500;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.3s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--paper);border-radius:28px;padding:36px 34px;max-width:580px;width:90%;max-height:85vh;overflow-y:auto;border:1.5px solid var(--border);box-shadow:0 24px 64px rgba(45,74,62,0.18);transform:translateY(22px) scale(0.96);transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1)}
+.modal-overlay.open .modal{transform:translateY(0) scale(1)}
+.modal-close{position:absolute;top:18px;right:20px;background:var(--mint-lt);border:none;border-radius:50%;width:32px;height:32px;font-size:0.9rem;cursor:pointer;color:var(--forest);transition:background 0.15s;display:flex;align-items:center;justify-content:center}
+.modal-close:hover{background:var(--mint)}
+.modal h3{font-family:'Fraunces',serif;font-size:1.5rem;font-weight:600;font-style:italic;color:var(--forest);margin-bottom:4px}
+.modal-sub{font-size:0.8rem;color:var(--dust);margin-bottom:24px}
+
+/* Formulaire modal */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
+.form-full{grid-column:1/-1}
+.form-group{display:flex;flex-direction:column;gap:5px}
+.form-label{font-size:0.68rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--smoke)}
+.form-input,.form-select,.form-textarea{padding:10px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--ivory);font-family:'Nunito',sans-serif;font-size:0.83rem;color:var(--forest);outline:none;transition:border-color 0.2s}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--moss)}
+.form-textarea{resize:vertical;min-height:80px;line-height:1.5}
+#photoDropzone:hover{border-color:var(--moss);background:var(--mint-lt)}
+
+/* Options cliquables dans modal */
+.opt-group{display:flex;flex-wrap:wrap;gap:6px}
+.opt{display:inline-flex;align-items:center;gap:5px;padding:6px 13px;border-radius:50px;border:1.5px solid var(--border);background:var(--ivory);font-size:0.78rem;font-weight:600;color:var(--forest);cursor:pointer;transition:all 0.15s;user-select:none}
+.opt:hover{border-color:var(--sage);background:var(--mint-lt)}
+.opt.on{background:var(--forest);border-color:var(--forest);color:var(--ivory)}
+
+.form-divider{height:1px;background:var(--border);margin:4px 0}
+
+.modal-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:8px;padding-top:16px;border-top:1px solid var(--border)}
+
+/* ═══ INFOS REFUGE ═══ */
+.infos-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.infos-card{background:var(--paper);border-radius:20px;border:1.5px solid var(--border);padding:24px;box-shadow:var(--shadow)}
+.infos-card-title{font-family:'Fraunces',serif;font-size:1rem;font-weight:600;font-style:italic;color:var(--forest);margin-bottom:18px;display:flex;align-items:center;gap:8px}
+.infos-card-full{grid-column:1/-1}
+
+.field-row{margin-bottom:14px}
+.field-label{font-size:0.65rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--smoke);display:block;margin-bottom:5px}
+
+/* Horaires editor */
+.horaires-editor{display:flex;flex-direction:column;gap:8px}
+.heure-row{display:flex;align-items:center;gap:10px;font-size:0.82rem}
+.heure-day{width:48px;font-weight:700;color:var(--forest);flex-shrink:0}
+.heure-toggle{position:relative;width:38px;height:20px;flex-shrink:0}
+.heure-toggle input{opacity:0;width:0;height:0}
+.heure-slider{position:absolute;inset:0;background:rgba(201,112,74,0.3);border-radius:20px;cursor:pointer;transition:background 0.2s}
+.heure-slider::before{content:'';position:absolute;height:14px;width:14px;left:3px;bottom:3px;background:white;border-radius:50%;transition:transform 0.2s;box-shadow:0 1px 4px rgba(0,0,0,0.2)}
+.heure-toggle input:checked+.heure-slider{background:var(--moss)}
+.heure-toggle input:checked+.heure-slider::before{transform:translateX(18px)}
+.heure-times{display:flex;align-items:center;gap:6px}
+.heure-input{width:64px;padding:5px 8px;border-radius:8px;border:1.5px solid var(--border);background:var(--ivory);font-family:'Nunito',sans-serif;font-size:0.78rem;text-align:center;outline:none}
+.heure-input:focus{border-color:var(--moss)}
+.heure-sep{color:var(--smoke);font-size:0.75rem}
+.heure-closed{font-size:0.75rem;color:var(--smoke);font-style:italic}
+
+.save-btn{width:100%;margin-top:20px;padding:13px;background:linear-gradient(135deg,var(--moss),var(--forest));color:var(--ivory);border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.88rem;font-weight:700;cursor:pointer;transition:transform 0.2s cubic-bezier(0.34,1.56,0.64,1),box-shadow 0.2s;box-shadow:0 4px 14px rgba(74,124,89,0.3)}
+.save-btn:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(74,124,89,0.42)}
+
+/* Confirmation toast */
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--forest);color:var(--ivory);padding:12px 24px;border-radius:50px;font-size:0.82rem;font-weight:700;z-index:600;transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1);box-shadow:0 8px 24px rgba(45,74,62,0.3);white-space:nowrap}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+/* Status dropdown */
+.status-dropdown-wrap{position:relative;display:inline-block}
+.status-dropdown-btn{padding:6px 12px;border-radius:50px;font-size:0.72rem;font-weight:700;cursor:pointer;border:1.5px solid;font-family:'Nunito',sans-serif;transition:all 0.15s;white-space:nowrap}
+.status-dropdown-btn.sb-dispo{background:var(--mint-lt);color:var(--moss);border-color:rgba(74,124,89,0.2)}
+.status-dropdown-btn.sb-adopte{background:rgba(91,141,239,0.1);color:var(--blue);border-color:rgba(91,141,239,0.2)}
+.status-dropdown-btn.sb-reserve{background:rgba(212,168,67,0.12);color:var(--amber);border-color:rgba(196,154,26,0.2)}
+.status-dropdown-btn.sb-decede{background:rgba(168,158,150,0.12);color:var(--smoke);border-color:rgba(168,158,150,0.3)}
+.status-dropdown-btn.sb-enfin{background:rgba(212,168,67,0.15);color:var(--amber);border-color:rgba(196,154,26,0.25)}
+.status-menu{position:absolute;top:calc(100% + 6px);left:0;background:var(--paper);border:1.5px solid var(--border);border-radius:14px;box-shadow:0 8px 28px rgba(45,74,62,0.14);z-index:300;min-width:140px;overflow:hidden}
+.status-menu.hidden{display:none}
+.status-option{padding:10px 16px;font-size:0.78rem;font-weight:600;cursor:pointer;transition:background 0.15s;color:var(--forest)}
+.status-option:hover{background:var(--mint-lt)}
+
+/* Effets visuels */
+.effect-container{position:fixed;inset:0;pointer-events:none;z-index:999;overflow:hidden}
+.emoji-particle{position:absolute;font-size:2rem;animation:particleFly 2.5s ease-out forwards;pointer-events:none}
+@keyframes particleFly{0%{transform:translateY(0) scale(1);opacity:1}100%{transform:translateY(-120vh) scale(0.3) rotate(360deg);opacity:0}}
+.angel-particle{position:absolute;font-size:2.5rem;animation:angelRise 3s ease-out forwards;pointer-events:none}
+@keyframes angelRise{0%{transform:translateY(0) scale(1);opacity:1}50%{opacity:1}100%{transform:translateY(-80vh) scale(0.5);opacity:0}}
+.cross-particle{position:absolute;font-size:2rem;animation:crossFloat 2s ease-in-out forwards;pointer-events:none}
+@keyframes crossFloat{0%{transform:translateY(0) scale(0.5);opacity:0}30%{opacity:1;transform:translateY(-30px) scale(1.2)}100%{transform:translateY(-80px) scale(1);opacity:0}}
+
+/* Popup confirmation suppression */
+.confirm-popup{position:fixed;inset:0;background:rgba(45,74,62,0.45);backdrop-filter:blur(8px);z-index:700;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.3s}
+.confirm-popup.open{opacity:1;pointer-events:all}
+.confirm-box{background:var(--paper);border-radius:24px;padding:32px;max-width:400px;width:90%;border:1.5px solid var(--border);box-shadow:0 20px 56px rgba(45,74,62,0.18);transform:scale(0.95);transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);text-align:center}
+.confirm-popup.open .confirm-box{transform:scale(1)}
+.confirm-emoji{font-size:3rem;display:block;margin-bottom:12px}
+.confirm-title{font-family:'Fraunces',serif;font-size:1.3rem;font-weight:600;font-style:italic;color:var(--forest);margin-bottom:6px}
+.confirm-sub{font-size:0.82rem;color:var(--dust);line-height:1.6;margin-bottom:22px}
+.confirm-actions{display:flex;gap:10px;justify-content:center}
+.confirm-yes{padding:10px 24px;background:var(--rose);color:white;border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer;transition:opacity 0.2s}
+.confirm-yes:hover{opacity:0.85}
+.confirm-no{padding:10px 24px;background:transparent;color:var(--forest);border:1.5px solid var(--border);border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer;transition:all 0.2s}
+.confirm-no:hover{border-color:var(--moss);background:var(--mint-lt)}
+
+/* Modal carte localisation */
+.map-modal{max-width:640px}
+.map-modal-map{width:100%;height:320px;background:linear-gradient(160deg,#e8f5e9,#c8e6c0);border-radius:16px;position:relative;overflow:hidden;margin-bottom:16px;cursor:crosshair}
+.map-modal-pin{position:absolute;font-size:2.5rem;transform:translate(-50%,-100%);cursor:pointer;animation:pinDrop 0.4s cubic-bezier(0.34,1.56,0.64,1)}
+@keyframes pinDrop{from{transform:translate(-50%,-200%);opacity:0}to{transform:translate(-50%,-100%);opacity:1}}
+.map-instruction{font-size:0.8rem;color:var(--dust);text-align:center;margin-bottom:14px;font-style:italic;font-family:'Fraunces',serif}
+.map-coords{font-size:0.75rem;font-weight:700;color:var(--moss);text-align:center;margin-top:8px}
+</style>
+
+  <!-- Supabase SDK + Configuration Coup de Patte -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+
+  <script>
+    // Vérification authentification
+    (async () => {
+      var session = await checkSession();
+      if (!session) {
+        window.location.href = 'coup-de-patte-login.html';
+      }
+    })();
+  </script>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="logo"><div class="logo-bubble" style="animation:pawPulse 2.5s ease-in-out infinite;"><span style="animation:pawWiggle 2.5s ease-in-out infinite;display:inline-block;filter:brightness(0) invert(1);font-size:1.1rem">🐾</span></div>Coup de Patte</a>
+  <div class="nav-center">
+    <span class="nav-refuge-badge">Espace refuge</span>
+    <span class="nav-refuge-name">SPA de Lyon</span>
+  </div>
+  <div class="nav-right">
+    <a href="coup-de-patte-refuge.html" class="nav-view-btn">👁 Voir ma fiche publique</a>
+    <button class="nav-logout">Déconnexion</button>
+  </div>
+</nav>
+
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <span class="sidebar-section">Navigation</span>
+    <a class="sidebar-item active" onclick="showMain('dashboard')">
+      <span class="sidebar-item-icon">📊</span>Tableau de bord
+    </a>
+    <a class="sidebar-item" onclick="showMain('animaux')">
+      <span class="sidebar-item-icon">🐾</span>Mes animaux
+      <span class="sidebar-badge sidebar-badge-green">23</span>
+    </a>
+    <a class="sidebar-item" onclick="showMain('infos')">
+      <span class="sidebar-item-icon">🏠</span>Infos du refuge
+    </a>
+
+    <span class="sidebar-section">Alertes</span>
+    <a class="sidebar-item" onclick="showMain('animaux');showTab('enfin',document.querySelector('[data-tab=enfin]'))">
+      <span class="sidebar-item-icon">✨</span>Enfin Moi ?
+      <span class="sidebar-badge sidebar-badge-gold">4</span>
+    </a>
+    <a class="sidebar-item" onclick="showMain('animaux');showTab('adoptes',document.querySelector('[data-tab=adoptes]'))">
+      <span class="sidebar-item-icon">✅</span>Récemment adoptés
+      <span class="sidebar-badge sidebar-badge-green">3</span>
+    </a>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- ══════════════════════════════
+         TABLEAU DE BORD
+    ══════════════════════════════ -->
+    <div id="main-dashboard">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Bonjour, SPA de Lyon 👋</h1>
+          <p class="page-sub">Voici l'état de votre refuge aujourd'hui</p>
+        </div>
+        <button class="btn-primary" onclick="openModal()">+ Ajouter un animal</button>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-n">23</span>
+          <span class="stat-l">Animaux disponibles</span>
+          <span class="stat-trend trend-neutral">= par rapport au mois dernier</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-n">4</span>
+          <span class="stat-l">Animaux Enfin Moi ? ✨</span>
+          <span class="stat-trend trend-neutral">Attente moyenne : 16 mois</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-n">3</span>
+          <span class="stat-l">Adoptions ce mois</span>
+          <span class="stat-trend trend-up">↑ +1 vs mois dernier</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-n">147</span>
+          <span class="stat-l">Vues sur Coup de Patte</span>
+          <span class="stat-trend trend-up">↑ +23 cette semaine</span>
+        </div>
+      </div>
+
+      <div class="dash-grid">
+        <div class="dash-card">
+          <p class="dash-card-title">📋 Activité récente</p>
+          <div class="activity-item">
+            <div class="activity-dot dot-blue"></div>
+            <span class="activity-text">Rex a été vu 14 fois aujourd'hui sur Coup de Patte</span>
+            <span class="activity-time">Aujourd'hui</span>
+          </div>
+          <div class="activity-item">
+            <div class="activity-dot dot-green"></div>
+            <span class="activity-text">Luna a été marquée adoptée</span>
+            <span class="activity-time">Hier</span>
+          </div>
+          <div class="activity-item">
+            <div class="activity-dot dot-gold"></div>
+            <span class="activity-text">Titan entre dans la catégorie Enfin Moi ? (16 mois)</span>
+            <span class="activity-time">Il y a 3 jours</span>
+          </div>
+          <div class="activity-item">
+            <div class="activity-dot dot-green"></div>
+            <span class="activity-text">Bella a été marquée adoptée</span>
+            <span class="activity-time">Il y a 5 jours</span>
+          </div>
+          <div class="activity-item">
+            <div class="activity-dot dot-blue"></div>
+            <span class="activity-text">Minette a été vue 8 fois cette semaine</span>
+            <span class="activity-time">Il y a 6 jours</span>
+          </div>
+        </div>
+
+        <div class="dash-card">
+          <p class="dash-card-title">⚠️ Animaux à surveiller</p>
+          <div class="priority-item">
+            <div class="priority-thumb" style="background:linear-gradient(135deg,#D5D0C8,#A89E90)">🐕</div>
+            <div class="priority-info">
+              <div class="priority-name">Titan</div>
+              <div class="priority-meta">Dogue · 8 ans · En refuge depuis 16 mois</div>
+            </div>
+            <span class="priority-badge pb-gold">✨ Enfin Moi ?</span>
+          </div>
+          <div class="priority-item">
+            <div class="priority-thumb" style="background:linear-gradient(135deg,#E8C4A0,#C9986A)">🐈</div>
+            <div class="priority-info">
+              <div class="priority-name">Caramel</div>
+              <div class="priority-meta">Persan · 11 ans · En refuge depuis 22 mois</div>
+            </div>
+            <span class="priority-badge pb-gold">✨ Enfin Moi ?</span>
+          </div>
+          <div class="priority-item">
+            <div class="priority-thumb" style="background:linear-gradient(135deg,#C8DFC8,#8AB89A)">🐕</div>
+            <div class="priority-info">
+              <div class="priority-name">Koda</div>
+              <div class="priority-meta">Husky · 6 ans · En refuge depuis 11 mois</div>
+            </div>
+            <span class="priority-badge pb-rose">Bientôt Enfin Moi ?</span>
+          </div>
+          <div class="priority-item">
+            <div class="priority-thumb" style="background:linear-gradient(135deg,#E0D5C0,#B89870)">🐶</div>
+            <div class="priority-info">
+              <div class="priority-name">Bruno</div>
+              <div class="priority-meta">Labrador · 6 ans · En refuge depuis 9 mois</div>
+            </div>
+            <span class="priority-badge pb-rose">Bientôt Enfin Moi ?</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════
+         GESTION ANIMAUX
+    ══════════════════════════════ -->
+    <div id="main-animaux" style="display:none">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Mes animaux</h1>
+          <p class="page-sub">Gérez les animaux disponibles à l'adoption</p>
+        </div>
+        <button class="btn-primary" onclick="openModal()">+ Ajouter un animal</button>
+      </div>
+
+      <div class="tabs-wrap">
+        <div class="tab active" data-tab="disponibles" onclick="showTab('disponibles',this)">🐾 Disponibles <span class="tab-count">19</span></div>
+        <div class="tab" data-tab="enfin" onclick="showTab('enfin',this)">✨ Enfin Moi ? <span class="tab-count">4</span></div>
+        <div class="tab" data-tab="adoptes" onclick="showTab('adoptes',this)">✅ Adoptés récemment <span class="tab-count">3</span></div>
+      </div>
+
+      <!-- Toolbar -->
+      <div class="animals-toolbar">
+        <input class="search-input" type="text" placeholder="🔍 Rechercher un animal…">
+        <select class="filter-select">
+          <option>Tous les types</option>
+          <option>🐶 Chiens</option>
+          <option>🐱 Chats</option>
+        </select>
+        <select class="filter-select">
+          <option>Tous les âges</option>
+          <option>Chiot / chaton</option>
+          <option>Adulte</option>
+          <option>Senior</option>
+        </select>
+      </div>
+
+      <!-- ── Onglet Disponibles ── -->
+      <div class="tab-panel active" id="tab-disponibles">
+        <table class="animals-table">
+          <thead>
+            <tr>
+              <th>Animal</th>
+              <th>Statut</th>
+              <th>En refuge depuis</th>
+              <th>Vues CDP</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr id="row-rex">
+              <td><div style="display:flex;align-items:center;gap:12px"><div class="animal-row-thumb" style="background:linear-gradient(135deg,var(--mint),var(--sage))">🐕</div><div><div class="animal-row-name">Rex</div><div class="animal-row-meta">Berger croisé · 3 ans · Mâle</div></div></div></td>
+              <td><div class="status-dropdown-wrap"><button class="status-dropdown-btn sb-dispo" onclick="toggleStatusMenu(this)">● Disponible ▾</button><div class="status-menu hidden"><div class="status-option" onclick="changeStatus(this,'disponible','Rex','row-rex')">● Disponible</div><div class="status-option" onclick="changeStatus(this,'adopte_cdp','Rex','row-rex')">🐾 Adopté via Coup de Patte</div><div class="status-option" onclick="changeStatus(this,'adopte','Rex','row-rex')">✅ Adopté (hors CDP)</div><div class="status-option" onclick="changeStatus(this,'reserve','Rex','row-rex')">🤞 Réservé</div><div class="status-option" onclick="changeStatus(this,'decede','Rex','row-rex')">🕊️ Décédé</div></div></div></td>
+              <td style="font-size:0.82rem;color:var(--dust)">8 mois</td>
+              <td style="font-size:0.82rem;font-weight:700;color:var(--moss)">147 vues</td>
+              <td><button class="row-btn" onclick="openEditModal('Rex')">✏️ Modifier</button></td>
+            </tr>
+            <tr id="row-minette">
+              <td><div style="display:flex;align-items:center;gap:12px"><div class="animal-row-thumb" style="background:linear-gradient(135deg,#DDE5DD,#9AB89A)">🐱</div><div><div class="animal-row-name">Minette</div><div class="animal-row-meta">Européenne · 4 ans · Femelle</div></div></div></td>
+              <td><div class="status-dropdown-wrap"><button class="status-dropdown-btn sb-dispo" onclick="toggleStatusMenu(this)">● Disponible ▾</button><div class="status-menu hidden"><div class="status-option" onclick="changeStatus(this,'disponible','Minette','row-minette')">● Disponible</div><div class="status-option" onclick="changeStatus(this,'adopte_cdp','Minette','row-minette')">🐾 Adopté via Coup de Patte</div><div class="status-option" onclick="changeStatus(this,'adopte','Minette','row-minette')">✅ Adopté (hors CDP)</div><div class="status-option" onclick="changeStatus(this,'reserve','Minette','row-minette')">🤞 Réservé</div><div class="status-option" onclick="changeStatus(this,'decede','Minette','row-minette')">🕊️ Décédé</div></div></div></td>
+              <td style="font-size:0.82rem;color:var(--dust)">5 mois</td>
+              <td style="font-size:0.82rem;font-weight:700;color:var(--moss)">83 vues</td>
+              <td><button class="row-btn" onclick="openEditModal('Minette')">✏️ Modifier</button></td>
+            </tr>
+            <tr id="row-bruno">
+              <td><div style="display:flex;align-items:center;gap:12px"><div class="animal-row-thumb" style="background:linear-gradient(135deg,#E0D5C0,#B89870)">🐶</div><div><div class="animal-row-name">Bruno</div><div class="animal-row-meta">Labrador · 6 ans · Mâle</div></div></div></td>
+              <td><div class="status-dropdown-wrap"><button class="status-dropdown-btn sb-dispo" onclick="toggleStatusMenu(this)">● Disponible ▾</button><div class="status-menu hidden"><div class="status-option" onclick="changeStatus(this,'disponible','Bruno','row-bruno')">● Disponible</div><div class="status-option" onclick="changeStatus(this,'adopte_cdp','Bruno','row-bruno')">🐾 Adopté via Coup de Patte</div><div class="status-option" onclick="changeStatus(this,'adopte','Bruno','row-bruno')">✅ Adopté (hors CDP)</div><div class="status-option" onclick="changeStatus(this,'reserve','Bruno','row-bruno')">🤞 Réservé</div><div class="status-option" onclick="changeStatus(this,'decede','Bruno','row-bruno')">🕊️ Décédé</div></div></div></td>
+              <td style="font-size:0.82rem;color:var(--dust)">9 mois</td>
+              <td style="font-size:0.82rem;font-weight:700;color:var(--moss)">61 vues</td>
+              <td><button class="row-btn" onclick="openEditModal('Bruno')">✏️ Modifier</button></td>
+            </tr>
+            <tr id="row-koda">
+              <td><div style="display:flex;align-items:center;gap:12px"><div class="animal-row-thumb" style="background:linear-gradient(135deg,#C8DFC8,#8AB89A)">🐕</div><div><div class="animal-row-name">Koda</div><div class="animal-row-meta">Husky · 6 ans · Mâle</div></div></div></td>
+              <td><div class="status-dropdown-wrap"><button class="status-dropdown-btn sb-dispo" onclick="toggleStatusMenu(this)">● Disponible ▾</button><div class="status-menu hidden"><div class="status-option" onclick="changeStatus(this,'disponible','Koda','row-koda')">● Disponible</div><div class="status-option" onclick="changeStatus(this,'adopte_cdp','Koda','row-koda')">🐾 Adopté via Coup de Patte</div><div class="status-option" onclick="changeStatus(this,'adopte','Koda','row-koda')">✅ Adopté (hors CDP)</div><div class="status-option" onclick="changeStatus(this,'reserve','Koda','row-koda')">🤞 Réservé</div><div class="status-option" onclick="changeStatus(this,'decede','Koda','row-koda')">🕊️ Décédé</div></div></div></td>
+              <td style="font-size:0.82rem;color:var(--dust)">11 mois</td>
+              <td style="font-size:0.82rem;font-weight:700;color:var(--moss)">44 vues</td>
+              <td><button class="row-btn" onclick="openEditModal('Koda')">✏️ Modifier</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ── Onglet Enfin Moi ── -->
+      <div class="tab-panel" id="tab-enfin">
+        <p style="font-size:0.8rem;color:var(--dust);margin-bottom:16px;font-family:'Fraunces',serif;font-style:italic;">Ces animaux sont présents depuis plus d'un an, ont plus de 8 ans (chien) / 10 ans (chat), ont un handicap, des besoins médicaux lourds, ou supportent mal la vie en refuge. Ils apparaissent en priorité sur Coup de Patte.</p>
+        <table class="animals-table">
+          <thead>
+            <tr>
+              <th>Animal</th>
+              <th>Raison(s) Enfin Moi ?</th>
+              <th>Statut</th>
+              <th>En refuge depuis</th>
+              <th>Vues CDP</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr id="row-titan">
+              <td><div style="display:flex;align-items:center;gap:12px"><div class="animal-row-thumb" style="background:linear-gradient(135deg,#D5D0C8,#A89E90)">🐕</div><div><div class="animal-row-name">Titan</div><div class="animal-row-meta">Dogue · 8 ans · Mâle</div></div></div></td>
+              <td>
+                <div style="display:flex;flex-direction:column;gap:4px">
+                  <span style="font-size:0.72rem;font-weight:700;color:var(--rose)">⏰ +1 an en refuge</span>
+                  <span style="font-size:0.72rem;font-weight:700;color:var(--amber)">🌿 Senior (8 ans)</span>
+                </div>
+              </td>
+              <td><div class="status-dropdown-wrap"><button class="status-dropdown-btn sb-enfin" onclick="toggleStatusMenu(this)">✨ Enfin Moi ? ▾</button><div class="status-menu hidden"><div class="status-option" onclick="changeStatus(this,'disponible','Titan','row-titan')">● Disponible</div><div class="status-option" onclick="changeStatus(this,'adopte_cdp','Titan','row-titan')">🐾 Adopté via Coup de Patte</div><div class="status-option" onclick="changeStatus(this,'adopte','Titan','row-titan')">✅ Adopté (hors CDP)</div><div class="status-option" onclick="changeStatus(this,'reserve','Titan','row-titan')">🤞 Réservé</div><div class="status-option" onclick="changeStatus(this,'decede','Titan','row-titan')">🕊️ Décédé</div></div></div></td>
+              <td style="font-size:0.82rem;color:var(--rose);font-weight:700">16 mois</td>
+              <td style="font-size:0.82rem;font-weight:700;color:var(--moss)">38 vues</td>
+              <td><button class="row-btn" onclick="openEditModal('Titan')">✏️ Modifier</button></td>
+            </tr>
+            <tr id="row-caramel">
+              <td><div style="display:flex;align-items:center;gap:12px"><div class="animal-row-thumb" style="background:linear-gradient(135deg,#E8C4A0,#C9986A)">🐈</div><div><div class="animal-row-name">Caramel</div><div class="animal-row-meta">Persan · 11 ans · Femelle</div></div></div></td>
+              <td>
+                <div style="display:flex;flex-direction:column;gap:4px">
+                  <span style="font-size:0.72rem;font-weight:700;color:var(--rose)">⏰ +1 an en refuge</span>
+                  <span style="font-size:0.72rem;font-weight:700;color:var(--amber)">🌿 Senior (11 ans)</span>
+                  <span style="font-size:0.72rem;font-weight:700;color:var(--amber)">💊 Besoins médicaux (thyroïde)</span>
+                  <span style="font-size:0.72rem;font-weight:700;color:var(--amber)">😟 Supporte mal le refuge</span>
+                </div>
+              </td>
+              <td><div class="status-dropdown-wrap"><button class="status-dropdown-btn sb-enfin" onclick="toggleStatusMenu(this)">✨ Enfin Moi ? ▾</button><div class="status-menu hidden"><div class="status-option" onclick="changeStatus(this,'disponible','Caramel','row-caramel')">● Disponible</div><div class="status-option" onclick="changeStatus(this,'adopte_cdp','Caramel','row-caramel')">🐾 Adopté via Coup de Patte</div><div class="status-option" onclick="changeStatus(this,'adopte','Caramel','row-caramel')">✅ Adopté (hors CDP)</div><div class="status-option" onclick="changeStatus(this,'reserve','Caramel','row-caramel')">🤞 Réservé</div><div class="status-option" onclick="changeStatus(this,'decede','Caramel','row-caramel')">🕊️ Décédé</div></div></div></td>
+              <td style="font-size:0.82rem;color:var(--rose);font-weight:700">22 mois</td>
+              <td style="font-size:0.82rem;font-weight:700;color:var(--moss)">29 vues</td>
+              <td><button class="row-btn" onclick="openEditModal('Caramel')">✏️ Modifier</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="tab-panel" id="tab-adoptes">
+        <p style="font-size:0.8rem;color:var(--dust);margin-bottom:16px;font-family:'Fraunces',serif;font-style:italic;">Historique des adoptions récentes. Ces animaux ne sont plus visibles sur Coup de Patte.</p>
+        <table class="animals-table">
+          <thead>
+            <tr>
+              <th>Animal</th>
+              <th>Statut</th>
+              <th>Via Coup de Patte ?</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><div style="display:flex;align-items:center;gap:12px"><div class="animal-row-thumb" style="background:linear-gradient(135deg,#E0D5C0,#B89870)">🐶</div><div><div class="animal-row-name">Luna</div><div class="animal-row-meta">Croisée · 2 ans · Femelle</div></div></div></td>
+              <td><span class="status-badge sb-adopte">✅ Adoptée</span></td>
+              <td>
+                <span style="display:inline-flex;align-items:center;gap:5px;background:var(--mint-lt);color:var(--moss);font-size:0.7rem;font-weight:700;padding:3px 10px;border-radius:50px;border:1px solid rgba(74,124,89,0.2)">🐾 Oui, via Coup de Patte</span>
+              </td>
+              <td style="font-size:0.82rem;color:var(--dust)">Hier</td>
+              <td><button class="row-btn" onclick="showToast('Luna remise en disponible !')">↩ Remettre disponible</button></td>
+            </tr>
+            <tr>
+              <td><div style="display:flex;align-items:center;gap:12px"><div class="animal-row-thumb" style="background:linear-gradient(135deg,var(--mint),var(--sage))">🐶</div><div><div class="animal-row-name">Bella</div><div class="animal-row-meta">Croisée · 5 ans · Femelle</div></div></div></td>
+              <td><span class="status-badge sb-adopte">✅ Adoptée</span></td>
+              <td>
+                <span style="display:inline-flex;align-items:center;gap:5px;background:var(--ivory);color:var(--dust);font-size:0.7rem;font-weight:700;padding:3px 10px;border-radius:50px;border:1px solid var(--border)">— Hors Coup de Patte</span>
+              </td>
+              <td style="font-size:0.82rem;color:var(--dust)">Il y a 5 jours</td>
+              <td><button class="row-btn" onclick="showToast('Bella remise en disponible !')">↩ Remettre disponible</button></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Mini stat -->
+        <div style="margin-top:18px;display:flex;gap:12px">
+          <div style="background:var(--mint-lt);border-radius:14px;padding:14px 18px;border:1.5px solid rgba(74,124,89,0.2);display:flex;align-items:center;gap:10px">
+            <span style="font-family:'Fraunces',serif;font-size:1.4rem;font-weight:700;color:var(--moss)">1</span>
+            <span style="font-size:0.75rem;color:var(--forest);font-weight:600">adoption via<br>Coup de Patte ce mois</span>
+          </div>
+          <div style="background:var(--ivory);border-radius:14px;padding:14px 18px;border:1.5px solid var(--border);display:flex;align-items:center;gap:10px">
+            <span style="font-family:'Fraunces',serif;font-size:1.4rem;font-weight:700;color:var(--dust)">1</span>
+            <span style="font-size:0.75rem;color:var(--dust);font-weight:600">adoption hors CDP<br>(non comptabilisée)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════
+         INFOS REFUGE
+    ══════════════════════════════ -->
+    <div id="main-infos" style="display:none">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Infos du refuge</h1>
+          <p class="page-sub">Ces informations apparaissent sur votre fiche publique</p>
+        </div>
+      </div>
+
+      <div class="infos-grid">
+
+        <div class="infos-card">
+          <p class="infos-card-title">📋 Informations générales</p>
+          <div class="field-row">
+            <span class="field-label">Nom du refuge</span>
+            <input class="form-input" style="width:100%" value="SPA de Lyon, Fondation">
+          </div>
+          <div class="field-row">
+            <span class="field-label">Adresse</span>
+            <input class="form-input" style="width:100%" id="fieldAdresse" value="12 chemin de la Ferme">
+          </div>
+          <div class="field-row">
+            <span class="field-label">Ville</span>
+            <input class="form-input" style="width:100%" id="fieldVille" value="Lyon 9ème">
+          </div>
+          <div class="field-row">
+            <span class="field-label">Téléphone</span>
+            <input class="form-input" style="width:100%" value="04 72 00 00 00">
+          </div>
+          <div class="field-row">
+            <span class="field-label">Email</span>
+            <input class="form-input" style="width:100%" value="contact@spa-lyon.fr">
+          </div>
+          <div class="field-row">
+            <span class="field-label">Site web</span>
+            <input class="form-input" style="width:100%" value="www.spa-lyon.fr">
+          </div>
+          <button class="save-btn" onclick="openMapModal()">Sauvegarder et localiser sur la carte →</button>
+        </div>
+
+        <div class="infos-card">
+          <p class="infos-card-title">🕐 Horaires d'ouverture</p>
+          <div class="horaires-editor">
+            <div class="heure-row">
+              <span class="heure-day">Lun</span>
+              <label class="heure-toggle"><input type="checkbox"><span class="heure-slider"></span></label>
+              <span class="heure-closed">Fermé</span>
+            </div>
+            <div class="heure-row">
+              <span class="heure-day">Mar</span>
+              <label class="heure-toggle"><input type="checkbox" checked><span class="heure-slider"></span></label>
+              <div class="heure-times"><input class="heure-input" value="10:00"><span class="heure-sep">→</span><input class="heure-input" value="18:00"></div>
+            </div>
+            <div class="heure-row">
+              <span class="heure-day">Mer</span>
+              <label class="heure-toggle"><input type="checkbox" checked><span class="heure-slider"></span></label>
+              <div class="heure-times"><input class="heure-input" value="10:00"><span class="heure-sep">→</span><input class="heure-input" value="18:00"></div>
+            </div>
+            <div class="heure-row">
+              <span class="heure-day">Jeu</span>
+              <label class="heure-toggle"><input type="checkbox" checked><span class="heure-slider"></span></label>
+              <div class="heure-times"><input class="heure-input" value="10:00"><span class="heure-sep">→</span><input class="heure-input" value="18:00"></div>
+            </div>
+            <div class="heure-row">
+              <span class="heure-day">Ven</span>
+              <label class="heure-toggle"><input type="checkbox" checked><span class="heure-slider"></span></label>
+              <div class="heure-times"><input class="heure-input" value="10:00"><span class="heure-sep">→</span><input class="heure-input" value="18:00"></div>
+            </div>
+            <div class="heure-row">
+              <span class="heure-day">Sam</span>
+              <label class="heure-toggle"><input type="checkbox" checked><span class="heure-slider"></span></label>
+              <div class="heure-times"><input class="heure-input" value="10:00"><span class="heure-sep">→</span><input class="heure-input" value="18:00"></div>
+            </div>
+            <div class="heure-row">
+              <span class="heure-day">Dim</span>
+              <label class="heure-toggle"><input type="checkbox" checked><span class="heure-slider"></span></label>
+              <div class="heure-times"><input class="heure-input" value="10:00"><span class="heure-sep">→</span><input class="heure-input" value="17:00"></div>
+            </div>
+          </div>
+          <button class="save-btn" onclick="showToast('Horaires sauvegardés ✅')">Sauvegarder</button>
+        </div>
+
+        <div class="infos-card infos-card-full">
+          <p class="infos-card-title">📝 Description du refuge</p>
+          <div class="field-row">
+            <span class="field-label">Présentation (visible sur votre fiche publique)</span>
+            <textarea class="form-textarea" style="width:100%;min-height:100px">La SPA de Lyon est une fondation reconnue d'utilité publique, fondée en 1860. Nous accueillons chaque année plus de 300 animaux abandonnés ou recueillis sur la voie publique. Notre équipe de bénévoles s'engage quotidiennement pour offrir à chaque animal les soins et l'attention qu'il mérite.</textarea>
+          </div>
+          <div class="field-row">
+            <span class="field-label">Types d'animaux accueillis</span>
+            <div class="opt-group">
+              <div class="opt on" onclick="this.classList.toggle('on')">🐶 Chiens</div>
+              <div class="opt on" onclick="this.classList.toggle('on')">🐱 Chats</div>
+              <div class="opt" onclick="this.classList.toggle('on')">🐇 NAC</div>
+            </div>
+          </div>
+          <button class="save-btn" style="max-width:200px" onclick="showToast('Description sauvegardée ✅')">Sauvegarder</button>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- MODAL AJOUT ANIMAL -->
+<div class="modal-overlay" id="animalModal">
+  <div class="modal" style="position:relative">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <h3 id="modalTitle">Ajouter un animal</h3>
+    <p class="modal-sub" id="modalSub">Complétez les informations pour ajouter cet animal sur Coup de Patte.</p>
+
+    <div class="form-grid">
+
+      <!-- Photo upload en pleine largeur en premier -->
+      <div class="form-group form-full">
+        <label class="form-label">Photo de l'animal</label>
+        <div id="photoDropzone" onclick="document.getElementById('photoInput').click()" style="border:2px dashed rgba(74,124,89,0.3);border-radius:16px;padding:28px 20px;text-align:center;cursor:pointer;background:var(--ivory);transition:all 0.2s;position:relative;overflow:hidden">
+          <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="previewPhoto(this)">
+          <div id="photoPlaceholder">
+            <div style="font-size:2.5rem;margin-bottom:10px">📸</div>
+            <p style="font-size:0.83rem;font-weight:700;color:var(--forest);margin-bottom:4px">Cliquez pour ajouter une photo</p>
+            <p style="font-size:0.72rem;color:var(--smoke)">JPG, PNG ou WEBP · Max 5 Mo</p>
+          </div>
+          <img id="photoPreview" src="" alt="" style="display:none;width:100%;max-height:200px;object-fit:cover;border-radius:10px">
+          <button id="photoRemove" onclick="removePhoto(event)" style="display:none;position:absolute;top:10px;right:10px;background:var(--rose);color:white;border:none;border-radius:50%;width:28px;height:28px;font-size:0.8rem;cursor:pointer;font-weight:700">✕</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Nom</label>
+        <input class="form-input" placeholder="Ex : Rex" id="fieldNom">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Espèce</label>
+        <select class="form-select" id="fieldEspece">
+          <option>🐶 Chien</option>
+          <option>🐱 Chat</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Race</label>
+        <input class="form-input" placeholder="Ex : Berger croisé" id="fieldRace">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Âge</label>
+        <input class="form-input" placeholder="Ex : 3 ans" id="fieldAge">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Sexe</label>
+        <select class="form-select">
+          <option>♂ Mâle</option>
+          <option>♀ Femelle</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Gabarit</label>
+        <select class="form-select">
+          <option>Petit (< 10 kg)</option>
+          <option>Moyen (10–30 kg)</option>
+          <option>Grand (> 30 kg)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Pelage</label>
+        <select class="form-select">
+          <option>Court / ras</option>
+          <option>Mi-long</option>
+          <option>Long</option>
+          <option>Sans poils</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Niveau d'énergie</label>
+        <select class="form-select">
+          <option>Calme</option>
+          <option>Modéré</option>
+          <option selected>Actif</option>
+          <option>Très actif</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Lien avec l'humain</label>
+        <select class="form-select">
+          <option>Très affectueux</option>
+          <option selected>Affectueux</option>
+          <option>Réservé</option>
+          <option>Distant</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Réactivité aux inconnus</label>
+        <select class="form-select">
+          <option>Très à l'aise</option>
+          <option>À l'aise</option>
+          <option selected>Prudent</option>
+          <option>Craintif</option>
+        </select>
+      </div>
+
+      <div class="form-group form-full">
+        <label class="form-label">Compatibilités</label>
+        <div class="opt-group">
+          <div class="opt on" onclick="this.classList.toggle('on')">👶 Enfants moins de 13 ans</div>
+          <div class="opt on" onclick="this.classList.toggle('on')">🧑 Ados 13 ans et plus</div>
+          <div class="opt on" onclick="this.classList.toggle('on')">🐶 Chiens</div>
+          <div class="opt on" onclick="this.classList.toggle('on')">🐱 Chats</div>
+        </div>
+      </div>
+
+      <div class="form-group form-full">
+        <label class="form-label">Besoins médicaux</label>
+        <div class="opt-group">
+          <div class="opt on" onclick="singleOpt(this,'medical')">Aucun</div>
+          <div class="opt" onclick="singleOpt(this,'medical')">Légers</div>
+          <div class="opt" onclick="singleOpt(this,'medical')">Lourds</div>
+        </div>
+      </div>
+
+      <div class="form-group form-full">
+        <label class="form-label">Expérience requise</label>
+        <div class="opt-group">
+          <div class="opt on" onclick="singleOpt(this,'exp')">Débutant</div>
+          <div class="opt" onclick="singleOpt(this,'exp')">Intermédiaire</div>
+          <div class="opt" onclick="singleOpt(this,'exp')">Expérimenté</div>
+        </div>
+      </div>
+
+      <!-- Date + Solitude sur la même ligne -->
+      <div class="form-group">
+        <label class="form-label">Date d'arrivée au refuge</label>
+        <input class="form-input" type="date" id="fieldDate">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Supporte la solitude</label>
+        <select class="form-select">
+          <option>Bien</option>
+          <option>Moyennement</option>
+          <option>Mal</option>
+        </select>
+      </div>
+
+      <!-- Vie en refuge : nouveau champ -->
+      <div class="form-group form-full">
+        <label class="form-label">Supporte la vie en refuge</label>
+        <p style="font-size:0.7rem;color:var(--dust);margin-bottom:8px">Si l'animal supporte mal la vie en refuge, il sera automatiquement placé en catégorie <strong>Enfin Moi ?</strong></p>
+        <div style="display:flex;gap:8px">
+          <div class="opt on" onclick="singleOptViRefuge(this,'bien')" data-vierefuge="bien">✅ Bien</div>
+          <div class="opt" onclick="singleOptViRefuge(this,'moyennement')" data-vierefuge="moyennement">⚠️ Moyennement</div>
+          <div class="opt" onclick="singleOptViRefuge(this,'mal')" data-vierefuge="mal">😟 Mal</div>
+        </div>
+      </div>
+
+      <div class="form-divider"></div>
+
+      <div class="form-group form-full">
+        <label class="form-label">Description (histoire de l'animal)</label>
+        <textarea class="form-textarea" placeholder="Décrivez l'animal, son histoire, son caractère…" id="fieldDesc"></textarea>
+      </div>
+
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal()">Annuler</button>
+      <button class="btn-primary" onclick="saveAnimal()">✅ Sauvegarder l'animal</button>
+    </div>
+  </div>
+</div>
+
+<!-- POPUP ENFIN MOI AUTO -->
+<div class="confirm-popup" id="enfinMoiPopup">
+  <div class="confirm-box" style="max-width:440px">
+    <span class="confirm-emoji">✨</span>
+    <div class="confirm-title" style="color:var(--amber)">Placé en Enfin Moi ?</div>
+    <p class="confirm-sub">Cet animal supporte mal la vie en refuge. Il a été automatiquement placé en catégorie <strong>Enfin Moi ?</strong> pour maximiser ses chances d'être adopté rapidement.</p>
+    <div style="background:rgba(212,168,67,0.1);border-radius:12px;padding:12px 16px;margin:12px 0;font-size:0.78rem;color:var(--bark);font-family:'Fraunces',serif;font-style:italic;line-height:1.5">
+      Sa fiche sera mise en avant sur la page Enfin Moi ? et dans les suggestions des adoptants.
+    </div>
+    <div class="confirm-actions">
+      <button class="confirm-yes" style="background:var(--amber)" onclick="document.getElementById('enfinMoiPopup').classList.remove('open')">✅ Compris</button>
+    </div>
+  </div>
+</div>
+
+<!-- EFFET CONTAINER -->
+<div class="effect-container" id="effectContainer"></div>
+
+<!-- POPUP CONFIRMATION SUPPRESSION -->
+<div class="confirm-popup" id="confirmPopup">
+  <div class="confirm-box">
+    <span class="confirm-emoji" id="confirmEmoji">🎉</span>
+    <div class="confirm-title" id="confirmTitle">Animal adopté !</div>
+    <p class="confirm-sub" id="confirmSub">Voulez-vous supprimer définitivement la fiche de cet animal ?</p>
+    <div class="confirm-actions">
+      <button class="confirm-yes" id="confirmYesBtn">Oui, supprimer la fiche</button>
+      <button class="confirm-no" onclick="closeConfirm()">Non, conserver</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CARTE LOCALISATION -->
+<div class="modal-overlay" id="mapModal">
+  <div class="modal map-modal" style="position:relative">
+    <button class="modal-close" onclick="closeMapModal()">✕</button>
+    <h3>📍 Localiser votre refuge</h3>
+    <p class="modal-sub" id="mapModalSub">Cliquez sur la carte pour placer votre refuge avec précision.</p>
+    <p class="map-instruction">Cliquez sur l'emplacement exact de votre refuge sur la carte</p>
+    <div class="map-modal-map" id="mapModalMap" style="position:relative;overflow:hidden;border-radius:16px;height:320px;">
+      <!-- OpenStreetMap réel via iframe -->
+      <iframe
+        id="mapIframe"
+        src="https://www.openstreetmap.org/export/embed.html?bbox=4.7357%2C45.6640%2C4.9357%2C45.8640&layer=mapnik&marker=45.7640%2C4.8357"
+        style="width:100%;height:320px;border:none;display:block;pointer-events:none"
+        loading="lazy"
+      ></iframe>
+      <!-- Overlay cliquable par dessus l'iframe -->
+      <div id="mapClickOverlay" style="position:absolute;inset:0;cursor:crosshair;z-index:5"></div>
+      <!-- Pin posé par l'utilisateur -->
+      <div id="mapPin" style="display:none;position:absolute;z-index:10;pointer-events:none;transform:translate(-50%,-100%)">
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <div style="background:var(--forest);color:white;border-radius:50px;padding:6px 12px;font-size:0.72rem;font-weight:700;white-space:nowrap;box-shadow:0 4px 14px rgba(45,74,62,0.35)" id="mapPinLabel">🏠 SPA de Lyon</div>
+          <div style="width:2px;height:10px;background:var(--forest)"></div>
+          <div style="width:10px;height:10px;border-radius:50%;background:var(--forest)"></div>
+        </div>
+      </div>
+    </div>
+    <p class="map-coords" id="mapCoords" style="display:none"></p>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeMapModal()">Annuler</button>
+      <button class="btn-primary" id="mapSaveBtn" disabled style="opacity:0.5;cursor:not-allowed" onclick="saveLocation()">✅ Confirmer la localisation</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+  // ── Navigation principale ──
+  function showMain(id) {
+    ['dashboard','animaux','infos'].forEach(s => {
+      document.getElementById('main-'+s).style.display = s===id ? 'block' : 'none';
+    });
+    document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+  }
+
+  // ── Tabs animaux ──
+  function showTab(id, el) {
+    document.querySelectorAll('[data-tab]').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    if(el) el.classList.add('active');
+    var panel = document.getElementById('tab-'+id);
+    if(panel) panel.classList.add('active');
+  }
+
+  // ── Status dropdown ──
+  function toggleStatusMenu(btn) {
+    var menu = btn.nextElementSibling;
+    document.querySelectorAll('.status-menu').forEach(m => {
+      if(m !== menu) m.classList.add('hidden');
+    });
+    menu.classList.toggle('hidden');
+  }
+
+  // Fermer menus si clic ailleurs
+  document.addEventListener('click', e => {
+    if(!e.target.closest('.status-dropdown-wrap')) {
+      document.querySelectorAll('.status-menu').forEach(m => m.classList.add('hidden'));
+    }
+  });
+
+  // ── Changement de statut ──
+  let pendingStatus = null;
+  let pendingName   = null;
+  let pendingRowId  = null;
+
+  function changeStatus(optEl, status, name, rowId) {
+    document.querySelectorAll('.status-menu').forEach(m => m.classList.add('hidden'));
+    if(status === 'disponible') {
+      // Juste mettre à jour le bouton
+      updateBtn(rowId, status);
+      return;
+    }
+    pendingStatus = status;
+    pendingName   = name;
+    pendingRowId  = rowId;
+
+    // Lancer l'effet visuel immédiatement
+    launchEffect(status);
+
+    // Configurer la popup
+    var configs = {
+      adopte_cdp:{ emoji:'🐾', title:`${name} adopté(e) via Coup de Patte ! 🎉`, sub:`Félicitations ! Cette adoption sera comptabilisée dans les statistiques Coup de Patte. Voulez-vous supprimer la fiche ?` },
+      adopte:  { emoji:'✅', title:`${name} est adopté(e)`,   sub:`Adoption enregistrée (hors Coup de Patte). La fiche ne sera pas comptabilisée dans nos stats. Voulez-vous la supprimer ?` },
+      decede:  { emoji:'🕊️', title:`${name} nous a quitté(e)s`, sub:`Voulez-vous supprimer définitivement la fiche de ${name} ?` },
+      reserve: { emoji:'🤞', title:`${name} est réservé(e) !`,  sub:`Les doigts sont croisés ! Voulez-vous supprimer la fiche ou la conserver le temps de finaliser ?` },
+    };
+    var c = configs[status];
+    document.getElementById('confirmEmoji').textContent   = c.emoji;
+    document.getElementById('confirmTitle').textContent   = c.title;
+    document.getElementById('confirmSub').textContent     = c.sub;
+    document.getElementById('confirmYesBtn').onclick      = () => deleteRow(rowId, name, status);
+    var popup = document.getElementById('confirmPopup');
+    popup.classList.add('open');
+    // Effet noir et blanc pour décédé
+    if(status === 'decede') {
+      popup.querySelector('.confirm-box').style.filter = 'grayscale(1)';
+    } else {
+      popup.querySelector('.confirm-box').style.filter = 'none';
+    }
+  }
+
+  function closeConfirm() {
+    document.getElementById('confirmPopup').classList.remove('open');
+    if(pendingRowId) updateBtn(pendingRowId, pendingStatus);
+    pendingStatus = pendingName = pendingRowId = null;
+  }
+
+  function deleteRow(rowId, name, status) {
+    document.getElementById('confirmPopup').classList.remove('open');
+    var row = document.getElementById(rowId);
+    if(row) {
+      row.style.transition = 'opacity 0.5s, transform 0.5s';
+      row.style.opacity = '0';
+      row.style.transform = 'translateX(40px)';
+      setTimeout(() => row.remove(), 500);
+    }
+    var msgs = { adopte_cdp: `🐾 ${name} adopté(e) via Coup de Patte, comptabilisé !`, adopte: `✅ ${name} adopté(e) hors CDP, non comptabilisé`, decede:`🕊️ ${name}, fiche supprimée avec respect`, reserve:`🤞 ${name} réservé(e), fiche supprimée` };
+    showToast(msgs[status] || 'Fiche supprimée');
+  }
+
+  function updateBtn(rowId, status) {
+    var row = document.getElementById(rowId);
+    if(!row) return;
+    var btn = row.querySelector('.status-dropdown-btn');
+    var configs = {
+      disponible: { cls:'sb-dispo',   label:'● Disponible ▾' },
+      adopte_cdp:  { cls:'sb-adopte',  label:'🐾 Adopté via CDP ▾' },
+      adopte:      { cls:'sb-adopte',  label:'✅ Adopté (hors CDP) ▾' },
+      reserve:    { cls:'sb-reserve', label:'🤞 Réservé ▾' },
+      decede:     { cls:'sb-decede',  label:'🕊️ Décédé ▾' },
+    };
+    var c = configs[status];
+    if(btn && c) {
+      btn.className = `status-dropdown-btn ${c.cls}`;
+      btn.innerHTML = c.label + '<div class="status-menu hidden">' + btn.nextElementSibling?.innerHTML + '</div>';
+    }
+  }
+
+  // ── Effets visuels ──
+  function launchEffect(status) {
+    var container = document.getElementById('effectContainer');
+    container.innerHTML = '';
+    var effects = {
+      adopte_cdp:{ emoji:'🐾', extra:['🎉','🎊','⭐','✨'], count:20, cls:'emoji-particle' },
+      adopte:    { emoji:'✅', extra:['✅'],                  count:3,  cls:'emoji-particle' },
+      decede:  { emoji:'🕊️', extra:['🕊️','🕊️'], count:5,  cls:'angel-particle' },
+      reserve: { emoji:'🤞', extra:['🍀','⭐','💛'],       count:12, cls:'cross-particle' },
+    };
+    var e = effects[status];
+    if(!e) return;
+    var all = [e.emoji, ...e.extra];
+    for(var i=0; i<e.count; i++) {
+      var el = document.createElement('div');
+      el.className = e.cls;
+      el.textContent = all[Math.floor(Math.random()*all.length)];
+      el.style.left = (10 + Math.random()*80) + 'vw';
+      el.style.top  = (60 + Math.random()*30) + 'vh';
+      el.style.animationDelay = (Math.random()*0.8) + 's';
+      el.style.animationDuration = (1.5 + Math.random()*2) + 's';
+      container.appendChild(el);
+    }
+    setTimeout(() => container.innerHTML='', 4000);
+  }
+
+  // ── Modal animal ──
+  function openModal() {
+    document.getElementById('modalTitle').textContent = 'Ajouter un animal';
+    document.getElementById('modalSub').textContent = 'Complétez les informations pour ajouter cet animal sur Coup de Patte.';
+    document.getElementById('fieldNom').value = '';
+    document.getElementById('fieldDesc').value = '';
+    document.getElementById('animalModal').classList.add('open');
+  }
+
+  function openEditModal(name) {
+    document.getElementById('modalTitle').textContent = 'Modifier, ' + name;
+    document.getElementById('modalSub').textContent = 'Modifiez les informations de ' + name + '.';
+    document.getElementById('fieldNom').value = name;
+    document.getElementById('animalModal').classList.add('open');
+  }
+
+  function closeModal() {
+    document.getElementById('animalModal').classList.remove('open');
+  }
+
+  document.getElementById('animalModal').addEventListener('click', function(e) {
+    if(e.target === this) closeModal();
+  });
+
+  function previewPhoto(input) {
+    if(!input.files || !input.files[0]) return;
+    var file = input.files[0];
+    var reader = new FileReader();
+    reader.onload = e => {
+      document.getElementById('photoPreview').src = e.target.result;
+      document.getElementById('photoPreview').style.display = 'block';
+      document.getElementById('photoPlaceholder').style.display = 'none';
+      document.getElementById('photoRemove').style.display = 'flex';
+      document.getElementById('photoDropzone').style.padding = '10px';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function removePhoto(e) {
+    e.stopPropagation();
+    document.getElementById('photoInput').value = '';
+    document.getElementById('photoPreview').src = '';
+    document.getElementById('photoPreview').style.display = 'none';
+    document.getElementById('photoPlaceholder').style.display = 'block';
+    document.getElementById('photoRemove').style.display = 'none';
+    document.getElementById('photoDropzone').style.padding = '28px 20px';
+  }
+
+  function singleOptViRefuge(el, val) {
+    document.querySelectorAll('[data-vierefuge]').forEach(o => o.classList.remove('on'));
+    el.classList.add('on');
+    if(val === 'mal') {
+      setTimeout(() => {
+        document.getElementById('enfinMoiPopup').classList.add('open');
+      }, 200);
+    }
+  }
+
+  function saveAnimal() {
+    // Vérifier si vie en refuge = mal → Enfin Moi
+    var vieRefuge = document.querySelector('[data-vierefuge].on');
+    var isMal = vieRefuge && vieRefuge.dataset.vierefuge === 'mal';
+    closeModal();
+    if(isMal) {
+      setTimeout(() => {
+        document.getElementById('enfinMoiPopup').classList.add('open');
+      }, 300);
+      showToast('✨ Animal sauvegardé et placé en Enfin Moi ?');
+    } else {
+      showToast('Animal sauvegardé et publié sur Coup de Patte ✅');
+    }
+  }
+
+  // ── Modal carte ──
+  var pinPlaced = false;
+
+  function openMapModal() {
+    var ville = document.getElementById('fieldVille')?.value || 'Lyon';
+    var nom   = document.getElementById('fieldNom')?.value   || 'Notre refuge';
+    document.getElementById('mapModalSub').textContent =
+      `Informations sauvegardées. Cliquez sur la carte pour placer votre refuge à ${ville} avec précision.`;
+    document.getElementById('mapPinLabel').textContent = '🏠 ' + nom;
+    document.getElementById('mapPin').style.display  = 'none';
+    document.getElementById('mapCoords').style.display = 'none';
+    document.getElementById('mapSaveBtn').disabled = true;
+    document.getElementById('mapSaveBtn').style.opacity = '0.5';
+    document.getElementById('mapSaveBtn').style.cursor  = 'not-allowed';
+    pinPlaced = false;
+    document.getElementById('mapClickOverlay').onclick = placePin;
+    document.getElementById('mapModal').classList.add('open');
+  }
+
+  function placePin(e) {
+    var overlay = document.getElementById('mapClickOverlay');
+    var rect = overlay.getBoundingClientRect();
+    var pct_x = ((e.clientX - rect.left) / rect.width)  * 100;
+    var pct_y = ((e.clientY - rect.top)  / rect.height) * 100;
+
+    var pin = document.getElementById('mapPin');
+    pin.style.display = 'block';
+    pin.style.left = pct_x + '%';
+    pin.style.top  = pct_y + '%';
+
+    var lat = (45.7640 - (pct_y - 50) * 0.002).toFixed(4);
+    var lng = (4.8357  + (pct_x - 50) * 0.002).toFixed(4);
+    var coords = document.getElementById('mapCoords');
+    coords.style.display = 'block';
+    coords.textContent   = `📍 Position enregistrée : ${lat}° N · ${lng}° E`;
+
+    var saveBtn = document.getElementById('mapSaveBtn');
+    saveBtn.disabled = false;
+    saveBtn.style.opacity = '1';
+    saveBtn.style.cursor  = 'pointer';
+    pinPlaced = true;
+  }
+
+  function saveLocation() {
+    if(!pinPlaced) return;
+    closeMapModal();
+    showToast('📍 Localisation sauvegardée sur Coup de Patte ✅');
+  }
+
+  document.getElementById('mapModal').addEventListener('click', function(e) {
+    if(e.target === this) closeMapModal();
+  });
+
+  // ── Single opt ──
+  function singleOpt(el, group) {
+    document.querySelectorAll(`[onclick*="'${group}'"]`).forEach(o => o.classList.remove('on'));
+    el.classList.add('on');
+  }
+
+  // ── Toast ──
+  let toastTimer;
+  function showToast(msg) {
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 3500);
+  }
+
+  // ── Keyboard ──
+  document.addEventListener('keydown', e => {
+    if(e.key === 'Escape') {
+      closeModal();
+      closeMapModal();
+      document.getElementById('confirmPopup').classList.remove('open');
+    }
+  });
+</script>
+</body>
+</html>

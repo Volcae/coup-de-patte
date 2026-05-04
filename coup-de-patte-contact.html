@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact, Coup de Patte</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --forest:#2D4A3E;--moss:#4A7C59;--sage:#7AAD89;--mint:#C8E6C0;--mint-lt:#EBF5E8;
+  --ivory:#F4F1E8;--paper:#FDFCF8;--bark:#6B4F3A;--gold:#D4A843;--amber:#C49A1A;
+  --blush:#E8C49A;--rose:#C9704A;--blue:#5B8DEF;--border:rgba(45,74,62,0.11);
+  --dust:#7A6E65;--smoke:#A89E96;--shadow:0 8px 32px rgba(45,74,62,0.10);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Nunito',sans-serif;background:var(--ivory);color:var(--forest);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");pointer-events:none;z-index:0}
+
+.blob{position:fixed;border-radius:60% 40% 55% 45%/50% 60% 40% 50%;pointer-events:none;z-index:0;animation:blobFloat 14s ease-in-out infinite}
+.blob-1{top:-15%;right:-10%;width:600px;height:600px;background:radial-gradient(ellipse,rgba(74,124,89,0.09) 0%,transparent 65%)}
+.blob-2{bottom:-10%;left:-8%;width:500px;height:500px;background:radial-gradient(ellipse,rgba(212,168,67,0.07) 0%,transparent 65%);animation-direction:reverse;animation-duration:18s}
+@keyframes blobFloat{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(20px,-18px) scale(1.04)}66%{transform:translate(-14px,10px) scale(0.97)}}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:16px 52px;background:rgba(244,241,232,0.93);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.logo{font-family:'Fraunces',serif;font-size:1.4rem;font-weight:600;color:var(--forest);display:flex;align-items:center;gap:9px;text-decoration:none}
+.logo-bubble{width:40px;height:40px;background:var(--forest);border-radius:50% 50% 50% 50%/60% 60% 40% 40%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(45,74,62,0.32)}
+.logo-bubble span{filter:brightness(0) invert(1);font-size:0.95rem}
+.nav-links{display:flex;gap:28px;align-items:center;list-style:none}
+.nav-links a{text-decoration:none;color:var(--forest);font-size:0.88rem;font-weight:500;opacity:0.6;transition:opacity 0.2s}
+.nav-links a:hover{opacity:1}
+.nav-links a.active{opacity:1;font-weight:700}
+.nav-cta{background:var(--forest)!important;color:var(--ivory)!important;opacity:1!important;padding:9px 22px;border-radius:50px;font-weight:700!important}
+.nav-cta:hover{background:var(--moss)!important}
+
+/* PAGE */
+.page{min-height:100vh;display:flex;align-items:stretch;padding-top:74px;position:relative;z-index:1}
+
+/* PANNEAU GAUCHE */
+.left{background:linear-gradient(160deg,var(--forest) 0%,var(--moss) 70%,var(--sage) 100%);padding:60px 56px;display:flex;flex-direction:column;justify-content:center;flex:0 0 420px;position:relative;overflow:hidden}
+.left::before{content:'🐾';position:absolute;font-size:20rem;opacity:0.04;right:-50px;bottom:-40px;line-height:1;animation:pawFloat 12s ease-in-out infinite}
+@keyframes pawFloat{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}
+
+.left-eyebrow{font-size:0.65rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:rgba(244,241,232,0.5);margin-bottom:14px;display:block}
+.left-title{font-family:'Fraunces',serif;font-size:2.4rem;font-weight:700;font-style:italic;color:var(--ivory);line-height:1.1;margin-bottom:16px;letter-spacing:-0.5px}
+.left-title em{font-style:normal;color:var(--gold)}
+.left-sub{font-size:0.88rem;line-height:1.75;color:rgba(244,241,232,0.65);margin-bottom:40px}
+
+.contact-links{display:flex;flex-direction:column;gap:14px}
+.contact-link{display:flex;align-items:center;gap:14px;padding:16px 18px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:16px;text-decoration:none;color:var(--ivory);transition:all 0.2s;cursor:pointer}
+.contact-link:hover{background:rgba(255,255,255,0.14);transform:translateX(4px)}
+.contact-link-icon{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
+.cl-email{background:rgba(212,168,67,0.3)}
+.contact-link-label{font-size:0.68rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(244,241,232,0.5);display:block;margin-bottom:2px}
+.contact-link-value{font-weight:700;font-size:0.88rem}
+
+/* PANNEAU DROIT, Formulaire */
+.right{flex:1;padding:60px 56px;display:flex;flex-direction:column;justify-content:center;overflow-y:auto}
+
+.form-wrap{max-width:500px}
+.form-eyebrow{font-size:0.65rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--moss);margin-bottom:12px;display:block}
+.form-title{font-family:'Fraunces',serif;font-size:2rem;font-weight:600;font-style:italic;color:var(--forest);margin-bottom:8px}
+.form-sub{font-size:0.83rem;color:var(--dust);line-height:1.6;margin-bottom:32px}
+
+/* Sujet */
+.subject-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:22px}
+.subject-btn{border:1.5px solid var(--border);border-radius:12px;padding:12px 14px;background:var(--ivory);cursor:pointer;text-align:left;transition:all 0.18s;display:flex;align-items:center;gap:8px;font-family:'Nunito',sans-serif;font-size:0.8rem;font-weight:600;color:var(--dust)}
+.subject-btn:hover{border-color:var(--sage);background:var(--mint-lt);color:var(--forest)}
+.subject-btn.on{border-color:var(--forest);background:var(--forest);color:var(--ivory)}
+
+/* Champs */
+.field-group{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.field-label{font-size:0.65rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--smoke)}
+.field-input,.field-textarea{padding:12px 16px;border-radius:12px;border:1.5px solid var(--border);background:var(--paper);font-family:'Nunito',sans-serif;font-size:0.85rem;color:var(--forest);outline:none;transition:border-color 0.2s,box-shadow 0.2s;width:100%}
+.field-input:focus,.field-textarea:focus{border-color:var(--moss);box-shadow:0 0 0 3px rgba(74,124,89,0.08)}
+.field-input::placeholder,.field-textarea::placeholder{color:var(--smoke)}
+.field-textarea{resize:vertical;min-height:120px;line-height:1.6}
+
+.submit-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--moss),var(--forest));color:var(--ivory);border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.92rem;font-weight:700;cursor:pointer;transition:transform 0.2s cubic-bezier(0.34,1.56,0.64,1),box-shadow 0.2s;box-shadow:0 4px 16px rgba(74,124,89,0.3);margin-top:8px;display:flex;align-items:center;justify-content:center;gap:8px}
+.submit-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(74,124,89,0.42)}
+
+/* Confirm */
+.confirm-msg{display:none;text-align:center;padding:40px 20px}
+.confirm-msg.visible{display:block}
+.confirm-emoji{font-size:3.5rem;display:block;margin-bottom:16px;animation:bounceIn 0.5s cubic-bezier(0.34,1.56,0.64,1)}
+@keyframes bounceIn{from{transform:scale(0.3);opacity:0}to{transform:scale(1);opacity:1}}
+.confirm-title{font-family:'Fraunces',serif;font-size:1.6rem;font-weight:600;font-style:italic;color:var(--forest);margin-bottom:8px}
+.confirm-sub{font-size:0.85rem;color:var(--dust);line-height:1.7}
+
+/* Toast */
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--forest);color:var(--ivory);padding:12px 24px;border-radius:50px;font-size:0.82rem;font-weight:700;z-index:600;transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1);box-shadow:0 8px 24px rgba(45,74,62,0.3)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+</style>
+
+  <!-- Supabase SDK + Configuration Coup de Patte -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+</head>
+<body>
+
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+
+<nav>
+  <a href="coup-de-patte-landing.html" class="logo"><div class="logo-bubble" style="animation:pawPulse 2.5s ease-in-out infinite;"><span style="animation:pawWiggle 2.5s ease-in-out infinite;display:inline-block;filter:brightness(0) invert(1);font-size:1.1rem">🐾</span></div>Coup de Patte</a>
+  <ul class="nav-links">
+    <li><a href="coup-de-patte-landing.html#comment">Comment ça marche</a></li>
+    <li><a href="coup-de-patte-refuges.html">Les refuges</a></li>
+    <li><a href="coup-de-patte-enfin-moi.html">Enfin Moi ? ✨</a></li>
+    <li><a href="coup-de-patte-contact.html" class="active">Contact</a></li>
+    <li><a href="coup-de-patte-login.html" class="nav-cta">Se connecter</a></li>
+  </ul>
+</nav>
+
+<div class="page">
+
+  <!-- GAUCHE -->
+  <div class="left">
+    <span class="left-eyebrow">On est là</span>
+    <h1 class="left-title">Une question ?<br>On vous <em>répond</em></h1>
+    <p class="left-sub">Coup de Patte est un projet passion. Chaque message compte, que vous soyez adoptant, bénévole ou responsable d'un refuge.</p>
+
+    <div class="contact-links">
+      <a href="mailto:contact@coup-de-patte.fr" class="contact-link">
+        <div class="contact-link-icon cl-email">📧</div>
+        <div>
+          <span class="contact-link-label">Email</span>
+          <span class="contact-link-value">contact@coup-de-patte.fr</span>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- DROITE -->
+  <div class="right">
+    <div class="form-wrap">
+
+      <div id="formContent">
+        <span class="form-eyebrow">Formulaire de contact</span>
+        <h2 class="form-title">Écrivez-nous</h2>
+        <p class="form-sub">Pour les urgences concernant un animal, contactez directement le refuge concerné.</p>
+
+        <!-- Sujet -->
+        <p style="font-size:0.65rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--smoke);margin-bottom:10px">Votre sujet</p>
+        <div class="subject-grid">
+          <button class="subject-btn on" onclick="selectSubject(this)">🐾 Adoption / animal</button>
+          <button class="subject-btn" onclick="selectSubject(this)">🏡 Je gère un refuge</button>
+          <button class="subject-btn" onclick="selectSubject(this)">🤝 Partenariat</button>
+          <button class="subject-btn" onclick="selectSubject(this)">🐛 Signaler un bug</button>
+          <button class="subject-btn" onclick="selectSubject(this)">💡 Suggestion</button>
+          <button class="subject-btn" onclick="selectSubject(this)">💬 Autre</button>
+        </div>
+
+        <!-- Champs -->
+        <div class="field-row">
+          <div class="field-group">
+            <label class="field-label">Prénom</label>
+            <input class="field-input" type="text" placeholder="Sophie">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Nom</label>
+            <input class="field-input" type="text" placeholder="Martin">
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Email</label>
+          <input class="field-input" type="email" placeholder="sophie@email.fr">
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Votre message</label>
+          <textarea class="field-textarea" placeholder="Décrivez votre question ou votre demande…"></textarea>
+        </div>
+
+        <button class="submit-btn" onclick="sendMessage()"><span style="filter:brightness(0) invert(1)">🐾</span> Envoyer mon message</button>
+      </div>
+
+      <!-- Confirmation -->
+      <div class="confirm-msg" id="confirmMsg">
+        <span class="confirm-emoji">🐾</span>
+        <div class="confirm-title">Message envoyé !</div>
+        <p class="confirm-sub">Merci pour votre message. Nous vous répondrons dans les 48h.<br><br>En attendant, retrouvez les animaux qui vous correspondent sur Coup de Patte.</p>
+        <a href="coup-de-patte-login.html" style="display:inline-flex;align-items:center;gap:8px;margin-top:24px;background:linear-gradient(135deg,var(--moss),var(--forest));color:var(--ivory);font-family:'Nunito',sans-serif;font-size:0.9rem;font-weight:700;padding:13px 28px;border-radius:50px;text-decoration:none;box-shadow:0 4px 16px rgba(74,124,89,0.3)">Découvrir mes matchs →</a>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  function selectSubject(btn) {
+    document.querySelectorAll('.subject-btn').forEach(b => b.classList.remove('on'));
+    btn.classList.add('on');
+  }
+
+  function sendMessage() {
+    document.getElementById('formContent').style.display = 'none';
+    document.getElementById('confirmMsg').classList.add('visible');
+  }
+
+  let toastTimer;
+  function showToast(msg) {
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 3500);
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mes matchs — Coup de Patte</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --forest:#2D4A3E;--moss:#4A7C59;--sage:#7AAD89;--mint:#C8E6C0;--mint-lt:#EBF5E8;
+  --ivory:#F4F1E8;--paper:#FDFCF8;--bark:#6B4F3A;--gold:#D4A843;--amber:#C49A1A;
+  --blush:#E8C49A;--rose:#C9704A;--blue:#5B8DEF;--border:rgba(45,74,62,0.11);
+  --dust:#7A6E65;--smoke:#A89E96;--shadow:0 8px 32px rgba(45,74,62,0.10);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Nunito',sans-serif;background:var(--ivory);color:var(--forest);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.022'/%3E%3C/svg%3E");pointer-events:none;z-index:0}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:14px 48px;background:rgba(244,241,232,0.93);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.logo{font-family:'Fraunces',serif;font-size:1.4rem;font-weight:600;color:var(--forest);display:flex;align-items:center;gap:9px;text-decoration:none}
+.logo-bubble{width:40px;height:40px;background:var(--forest);border-radius:50% 50% 50% 50%/60% 60% 40% 40%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(45,74,62,0.32);animation:pawPulse 2.5s ease-in-out infinite}
+.logo-bubble span{font-size:1.1rem;animation:pawWiggle 2.5s ease-in-out infinite;display:inline-block;filter:brightness(0) invert(1)}
+@keyframes pawPulse{0%,100%{box-shadow:0 4px 12px rgba(45,74,62,0.3);transform:scale(1)}50%{box-shadow:0 6px 20px rgba(45,74,62,0.45);transform:scale(1.07)}}
+@keyframes pawWiggle{0%,100%{transform:rotate(0deg) scale(1)}20%{transform:rotate(-12deg) scale(1.1)}40%{transform:rotate(10deg) scale(1.05)}60%{transform:rotate(-6deg) scale(1.08)}80%{transform:rotate(4deg) scale(1.03)}}
+
+.nav-tabs{display:flex;gap:4px;background:var(--ivory);border-radius:50px;padding:4px;border:1.5px solid var(--border)}
+.nav-tab{padding:8px 18px;border-radius:50px;font-size:0.82rem;font-weight:700;cursor:pointer;transition:all 0.2s;color:var(--dust);border:none;background:transparent;font-family:'Nunito',sans-serif}
+.nav-tab:hover{color:var(--forest)}
+.nav-tab.active{background:var(--forest);color:var(--ivory);box-shadow:0 3px 10px rgba(45,74,62,0.2)}
+
+.nav-right{display:flex;align-items:center;gap:12px}
+.profile-pill{display:flex;align-items:center;gap:8px;padding:7px 14px;border-radius:50px;border:1.5px solid var(--border);background:var(--paper);font-size:0.82rem;font-weight:600;color:var(--dust);cursor:pointer;transition:all 0.2s}
+.profile-pill:hover{border-color:var(--moss);color:var(--forest)}
+.enfin-pill{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:50px;background:linear-gradient(135deg,#F5C77E,var(--gold));color:var(--forest);font-size:0.78rem;font-weight:700;cursor:pointer;border:none;font-family:'Nunito',sans-serif;box-shadow:0 3px 10px rgba(212,168,67,0.25);transition:transform 0.2s,box-shadow 0.2s}
+.enfin-pill:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(212,168,67,0.38)}
+.enfin-dot{width:5px;height:5px;border-radius:50%;background:var(--forest);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(1.5)}}
+
+/* LAYOUT */
+.app{display:flex;min-height:100vh;padding-top:72px;position:relative;z-index:1}
+
+/* SIDEBAR */
+.sidebar{width:280px;flex-shrink:0;border-right:1px solid var(--border);padding:24px 18px;display:flex;flex-direction:column;gap:20px;background:rgba(253,252,248,0.7);position:sticky;top:72px;height:calc(100vh - 72px);overflow-y:auto}
+
+/* Profil résumé */
+.profile-block{background:var(--paper);border-radius:18px;border:1.5px solid var(--border);padding:16px;box-shadow:var(--shadow)}
+.profile-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--sage),var(--moss));display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
+.profile-name{font-family:'Fraunces',serif;font-size:1rem;font-weight:600;font-style:italic;color:var(--forest)}
+.profile-sub{font-size:0.72rem;color:var(--dust);margin-top:1px}
+.profile-tags{display:flex;flex-wrap:wrap;gap:5px}
+.profile-tag{font-size:0.65rem;font-weight:600;padding:3px 9px;border-radius:50px;background:var(--mint-lt);border:1px solid rgba(74,124,89,0.15);color:var(--forest)}
+
+/* Stats sidebar */
+.stats-row{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.stat-mini{background:var(--paper);border:1.5px solid var(--border);border-radius:14px;padding:12px;text-align:center;cursor:pointer;transition:transform 0.2s;box-shadow:0 2px 8px rgba(45,74,62,0.05)}
+.stat-mini:hover{transform:translateY(-2px)}
+.stat-mini.active{border-color:var(--moss);background:var(--mint-lt)}
+.sm-n{font-family:'Fraunces',serif;font-size:1.5rem;font-weight:700;color:var(--moss);display:block;line-height:1}
+.sm-l{font-size:0.65rem;color:var(--dust);margin-top:2px;display:block}
+
+/* Conseil */
+.conseil-card{background:var(--forest);border-radius:16px;padding:16px;color:var(--ivory);position:relative;overflow:hidden}
+.conseil-card::after{content:'💡';position:absolute;right:-6px;bottom:-6px;font-size:4rem;opacity:0.07}
+.conseil-eyebrow{font-size:0.58rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(244,241,232,0.5);margin-bottom:6px;display:block}
+.conseil-text{font-family:'Fraunces',serif;font-size:0.85rem;font-style:italic;font-weight:300;line-height:1.6;color:rgba(244,241,232,0.85)}
+
+/* Affiner profil */
+.affiner-link{display:flex;align-items:center;gap:7px;font-size:0.76rem;font-weight:500;color:var(--dust);text-decoration:none;padding:9px 13px;border-radius:50px;border:1.5px dashed rgba(45,74,62,0.2);transition:all 0.2s;justify-content:center}
+.affiner-link:hover{color:var(--moss);border-color:var(--moss);background:var(--mint-lt)}
+
+/* MAIN */
+.main{flex:1;padding:24px 28px;min-width:0}
+
+/* Vue tabs */
+.view-panel{display:none;animation:fadeUp 0.3s ease both}
+.view-panel.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* Header vue */
+.vue-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+.vue-title{font-family:'Fraunces',serif;font-size:1.5rem;font-weight:600;font-style:italic;color:var(--forest)}
+.vue-sub{font-size:0.78rem;color:var(--dust);margin-top:3px}
+.sort-btn{display:flex;align-items:center;gap:6px;padding:8px 16px;border:1.5px solid var(--border);border-radius:50px;background:transparent;cursor:pointer;font-size:0.78rem;font-weight:600;color:var(--dust);font-family:'Nunito',sans-serif;transition:all 0.2s}
+.sort-btn:hover{border-color:var(--moss);color:var(--forest)}
+
+/* GRILLE MATCHS */
+.matches-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+
+/* CARTE MATCH */
+.match-card{background:var(--paper);border-radius:22px;border:1.5px solid var(--border);overflow:visible;cursor:pointer;transition:transform 0.22s cubic-bezier(0.34,1.56,0.64,1),box-shadow 0.2s;position:relative}
+.match-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(45,74,62,0.12)}
+.match-card.enfin{border-color:rgba(212,168,67,0.38);box-shadow:0 4px 18px rgba(212,168,67,0.12)}
+.match-card.new::after{content:'Nouveau';position:absolute;top:10px;right:10px;background:var(--moss);color:white;font-size:0.58rem;font-weight:700;padding:3px 8px;border-radius:50px;z-index:10;letter-spacing:0.5px}
+
+.mc-inner{border-radius:22px;overflow:hidden}
+.mc-img{height:160px;display:flex;align-items:center;justify-content:center;font-size:4rem;position:relative}
+.mc-score{position:absolute;bottom:-18px;right:14px;background:var(--paper);border:1.5px solid var(--border);border-radius:12px;padding:7px 12px;text-align:center;z-index:20;box-shadow:0 4px 14px rgba(45,74,62,0.1)}
+.mc-score-n{font-family:'Fraunces',serif;font-size:1.25rem;font-weight:700;line-height:1;display:block}
+.mc-ribbon{position:absolute;top:10px;left:-5px;background:linear-gradient(135deg,#F5C77E,var(--gold));color:var(--forest);font-size:0.58rem;font-weight:700;padding:3px 10px 3px 12px;border-radius:0 50px 50px 0;box-shadow:1px 1px 6px rgba(0,0,0,0.1);z-index:10}
+.mc-loc{position:absolute;bottom:10px;left:10px;background:rgba(45,74,62,0.5);color:rgba(244,241,232,0.9);font-size:0.65rem;font-weight:600;padding:3px 9px;border-radius:50px;backdrop-filter:blur(6px)}
+.mc-body{padding:26px 16px 14px}
+.mc-name{font-family:'Fraunces',serif;font-size:1.1rem;font-weight:700;font-style:italic;color:var(--forest);margin-bottom:2px}
+.mc-meta{font-size:0.7rem;color:var(--dust);margin-bottom:8px}
+.mc-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px}
+.mctag{font-size:0.65rem;font-weight:600;padding:3px 8px;border-radius:50px;background:var(--mint-lt);border:1px solid rgba(74,124,89,0.15);color:var(--forest)}
+.mctag-gold{background:rgba(212,168,67,0.1);border-color:rgba(196,154,26,0.2);color:var(--amber)}
+.mc-actions{display:flex;gap:6px}
+.mc-btn-like{flex:1;padding:9px;background:linear-gradient(135deg,var(--sage),var(--moss));color:white;border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.75rem;font-weight:700;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;box-shadow:0 3px 10px rgba(74,124,89,0.25)}
+.mc-btn-like:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(74,124,89,0.38)}
+.mc-btn-like.liked{background:linear-gradient(135deg,var(--rose),#A0503A)}
+.mc-btn-info{width:36px;height:36px;border-radius:50%;border:1.5px solid var(--border);background:var(--ivory);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:0.85rem;transition:all 0.2s;flex-shrink:0}
+.mc-btn-info:hover{border-color:var(--moss);background:var(--mint-lt)}
+
+/* VUE J'AIME */
+.liked-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.liked-card{background:var(--paper);border-radius:18px;border:1.5px solid var(--border);overflow:hidden;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;position:relative}
+.liked-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(45,74,62,0.1)}
+.liked-img{height:110px;display:flex;align-items:center;justify-content:center;font-size:2.8rem;position:relative}
+.liked-score{position:absolute;bottom:-14px;right:10px;background:var(--paper);border:1.5px solid var(--border);border-radius:10px;padding:5px 10px;font-family:'Fraunces',serif;font-size:1rem;font-weight:700;z-index:5;box-shadow:0 3px 10px rgba(45,74,62,0.1)}
+.liked-body{padding:20px 14px 12px}
+.liked-name{font-family:'Fraunces',serif;font-size:0.95rem;font-weight:700;font-style:italic;color:var(--forest);margin-bottom:2px}
+.liked-meta{font-size:0.68rem;color:var(--dust);margin-bottom:8px}
+.liked-remove{font-size:0.7rem;color:var(--smoke);cursor:pointer;transition:color 0.2s;background:none;border:none;font-family:'Nunito',sans-serif;padding:0}
+.liked-remove:hover{color:var(--rose)}
+
+/* VUE CONTACTS */
+.contacts-list{display:flex;flex-direction:column;gap:10px}
+.contact-card{background:var(--paper);border-radius:18px;border:1.5px solid var(--border);padding:16px 20px;display:flex;align-items:center;gap:16px;transition:transform 0.2s,box-shadow 0.2s}
+.contact-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(45,74,62,0.08)}
+.ct-thumb{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;flex-shrink:0}
+.ct-info{flex:1}
+.ct-name{font-family:'Fraunces',serif;font-size:0.95rem;font-weight:600;font-style:italic;color:var(--forest);margin-bottom:2px}
+.ct-refuge{font-size:0.73rem;color:var(--dust)}
+.ct-date{font-size:0.7rem;color:var(--smoke);margin-left:auto;white-space:nowrap;text-align:right}
+.status-select{appearance:none;border:1.5px solid var(--border);border-radius:50px;padding:5px 14px;font-family:'Nunito',sans-serif;font-size:0.72rem;font-weight:700;color:var(--forest);background:var(--ivory);cursor:pointer;outline:none;margin-top:6px;display:block;max-width:220px;transition:border-color 0.2s}
+.ct-btn{flex-shrink:0;display:inline-flex;align-items:center;gap:5px;background:var(--forest);color:var(--ivory);font-size:0.72rem;font-weight:700;padding:7px 14px;border-radius:50px;border:none;cursor:pointer;transition:background 0.2s;font-family:'Nunito',sans-serif}
+.ct-btn:hover{background:var(--moss)}
+
+/* Charger plus */
+.load-more{text-align:center;margin-top:28px}
+.load-btn{background:transparent;border:1.5px solid var(--border);border-radius:50px;padding:11px 28px;font-family:'Nunito',sans-serif;font-size:0.85rem;font-weight:700;color:var(--dust);cursor:pointer;transition:all 0.2s}
+.load-btn:hover{border-color:var(--moss);color:var(--forest)}
+</style>
+
+  <!-- Supabase SDK + Configuration Coup de Patte -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+
+  <script>
+    // Vérification authentification
+    (async () => {
+      var session = await checkSession();
+      if (!session) {
+        window.location.href = 'coup-de-patte-login.html';
+      }
+    })();
+  </script>
+</head>
+<body>
+
+<nav>
+  <a href="#" class="logo">
+    <div class="logo-bubble"><span>🐾</span></div>
+    Coup de Patte
+  </a>
+
+  <!-- Tabs de navigation centrale -->
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showView('matchs',this)">🐾 Mes matchs</button>
+    <button class="nav-tab" onclick="showView('jaime',this)">❤️ J'aime <span style="background:var(--moss);color:white;font-size:0.6rem;padding:1px 6px;border-radius:50px;margin-left:3px">6</span></button>
+    <button class="nav-tab" onclick="showView('contacts',this)">📞 Contacts <span style="background:rgba(45,74,62,0.15);color:var(--forest);font-size:0.6rem;padding:1px 6px;border-radius:50px;margin-left:3px">3</span></button>
+  </div>
+
+  <div class="nav-right">
+    <button class="enfin-pill" onclick="window.location.href='coup-de-patte-enfin-moi.html'">
+      <span class="enfin-dot"></span>✨ Enfin Moi ? <span style="background:rgba(45,74,62,0.15);font-size:0.65rem;padding:1px 7px;border-radius:50px;margin-left:2px">12</span>
+    </button>
+    <div class="profile-pill">👩 Sophie M.</div>
+  </div>
+</nav>
+
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+
+    <div class="profile-block">
+      <div class="profile-row">
+        <div class="avatar">👩</div>
+        <div>
+          <div class="profile-name">Sophie M.</div>
+          <div class="profile-sub">Île-de-France · Chiens</div>
+        </div>
+      </div>
+      <div class="profile-tags">
+        <span class="profile-tag">🏢 Appartement</span>
+        <span class="profile-tag">🪴 Terrasse</span>
+        <span class="profile-tag">⏰ 4 à 8h seul</span>
+        <span class="profile-tag">🏃 Modérée</span>
+      </div>
+    </div>
+
+    <a href="coup-de-patte-form.html" class="affiner-link">✦ Affiner mon profil de vie</a>
+
+    <div class="stats-row">
+      <div class="stat-mini active" onclick="showView('matchs',null)"><span class="sm-n">24</span><span class="sm-l">Matchs</span></div>
+      <div class="stat-mini" onclick="showView('jaime',null)"><span class="sm-n">6</span><span class="sm-l">J'aime</span></div>
+      <div class="stat-mini" onclick="showView('contacts',null)"><span class="sm-n">3</span><span class="sm-l">Contacts</span></div>
+      <div class="stat-mini"><span class="sm-n">87%</span><span class="sm-l">Meilleur match</span></div>
+    </div>
+
+    <div class="conseil-card">      <span class="conseil-eyebrow">💡 Pour vous aujourd'hui</span>
+      <p class="conseil-text">Rex vous correspond à 87% mais supporte moyennement la solitude. Avant de le contacter, réfléchissez à une solution de garde pour vos longues journées.</p>
+    </div>
+
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- ══ VUE MATCHS ══ -->
+    <div class="view-panel active" id="view-matchs">
+      <div class="vue-header">
+        <div>
+          <h2 class="vue-title">Vos matchs du jour</h2>
+          <p class="vue-sub">Triés par score de compatibilité · Basés sur votre profil</p>
+        </div>
+        <button class="sort-btn">↕ Trier</button>
+      </div>
+
+      <div class="matches-grid">
+
+        <div class="match-card new" onclick="window.location.href='coup-de-patte-fiche.html'">
+          <div class="mc-inner">
+            <div class="mc-img" style="background:linear-gradient(160deg,var(--mint),var(--sage))">🐕
+              <div class="mc-score"><span class="mc-score-n" style="color:var(--moss)">87%</span></div>
+              <div class="mc-loc">📍 Lyon · 45 km</div>
+            </div>
+            <div class="mc-body">
+              <div class="mc-name">Rex</div>
+              <div class="mc-meta">Berger croisé · 3 ans · Mâle</div>
+              <div class="mc-tags"><span class="mctag">🏃 Actif</span><span class="mctag">👧 Enfants ok</span><span class="mctag">🐱 Chats ok</span></div>
+              <div class="mc-actions">
+                <button class="mc-btn-like" onclick="event.stopPropagation();likeCard(this)"><span style="filter:brightness(0) invert(1)">🐾</span> J'aime</button>
+                <button class="mc-btn-info" onclick="event.stopPropagation();window.location.href='coup-de-patte-fiche.html'">ℹ</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="match-card new" onclick="window.location.href='coup-de-patte-fiche.html'">
+          <div class="mc-inner">
+            <div class="mc-img" style="background:linear-gradient(160deg,#E0D5C0,#B89870)">🐶
+              <div class="mc-score"><span class="mc-score-n" style="color:var(--blue)">82%</span></div>
+              <div class="mc-loc">📍 Grenoble · 80 km</div>
+            </div>
+            <div class="mc-body">
+              <div class="mc-name">Luna</div>
+              <div class="mc-meta">Croisée · 2 ans · Femelle</div>
+              <div class="mc-tags"><span class="mctag">💙 Affectueuse</span><span class="mctag">🛋️ Calme</span></div>
+              <div class="mc-actions">
+                <button class="mc-btn-like" onclick="event.stopPropagation();likeCard(this)"><span style="filter:brightness(0) invert(1)">🐾</span> J'aime</button>
+                <button class="mc-btn-info" onclick="event.stopPropagation();window.location.href='coup-de-patte-fiche.html'">ℹ</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="match-card" onclick="window.location.href='coup-de-patte-fiche.html'">
+          <div class="mc-inner">
+            <div class="mc-img" style="background:linear-gradient(160deg,#DDE5DD,#9AB89A)">🐕
+              <div class="mc-score"><span class="mc-score-n" style="color:var(--blue)">79%</span></div>
+              <div class="mc-loc">📍 Saint-Étienne · 55 km</div>
+            </div>
+            <div class="mc-body">
+              <div class="mc-name">Oscar</div>
+              <div class="mc-meta">Labrador · 4 ans · Mâle</div>
+              <div class="mc-tags"><span class="mctag">🏃 Actif</span><span class="mctag">🐱 Chats ok</span></div>
+              <div class="mc-actions">
+                <button class="mc-btn-like" onclick="event.stopPropagation();likeCard(this)"><span style="filter:brightness(0) invert(1)">🐾</span> J'aime</button>
+                <button class="mc-btn-info" onclick="event.stopPropagation();window.location.href='coup-de-patte-fiche.html'">ℹ</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="match-card" onclick="window.location.href='coup-de-patte-fiche.html'">
+          <div class="mc-inner">
+            <div class="mc-img" style="background:linear-gradient(160deg,#E8DDD0,#C4B098)">🐶
+              <div class="mc-score"><span class="mc-score-n" style="color:var(--amber)">71%</span></div>
+              <div class="mc-loc">📍 Clermont · 100 km</div>
+            </div>
+            <div class="mc-body">
+              <div class="mc-name">Noisette</div>
+              <div class="mc-meta">Croisée · 5 ans · Femelle</div>
+              <div class="mc-tags"><span class="mctag">👧 Enfants ok</span><span class="mctag">🏃 Modérée</span></div>
+              <div class="mc-actions">
+                <button class="mc-btn-like" onclick="event.stopPropagation();likeCard(this)"><span style="filter:brightness(0) invert(1)">🐾</span> J'aime</button>
+                <button class="mc-btn-info" onclick="event.stopPropagation();window.location.href='coup-de-patte-fiche.html'">ℹ</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="match-card" onclick="window.location.href='coup-de-patte-fiche.html'">
+          <div class="mc-inner">
+            <div class="mc-img" style="background:linear-gradient(160deg,#C8DFC8,#8AB89A)">🐕
+              <div class="mc-score"><span class="mc-score-n" style="color:var(--amber)">68%</span></div>
+              <div class="mc-loc">📍 Valence · 95 km</div>
+            </div>
+            <div class="mc-body">
+              <div class="mc-name">Max</div>
+              <div class="mc-meta">Golden · 6 ans · Mâle</div>
+              <div class="mc-tags"><span class="mctag">💙 Affectueux</span><span class="mctag">🐱 Chats ok</span></div>
+              <div class="mc-actions">
+                <button class="mc-btn-like" onclick="event.stopPropagation();likeCard(this)"><span style="filter:brightness(0) invert(1)">🐾</span> J'aime</button>
+                <button class="mc-btn-info" onclick="event.stopPropagation();window.location.href='coup-de-patte-fiche.html'">ℹ</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Enfin Moi ? -->
+        <div class="match-card enfin" onclick="window.location.href='coup-de-patte-fiche.html'">
+          <div class="mc-ribbon">✨ Enfin Moi ?</div>
+          <div class="mc-inner">
+            <div class="mc-img" style="background:linear-gradient(160deg,#E8D5B0,#C9A87A)">🐕
+              <div class="mc-score"><span class="mc-score-n" style="color:var(--amber)">65%</span></div>
+              <div class="mc-loc">📍 Toulouse · 180 km</div>
+            </div>
+            <div class="mc-body">
+              <div class="mc-name">Django</div>
+              <div class="mc-meta">Croisé · 7 ans · Mâle · 3 pattes</div>
+              <div class="mc-tags"><span class="mctag mctag-gold">⏰ 14 mois en refuge</span></div>
+              <div class="mc-actions">
+                <button class="mc-btn-like" onclick="event.stopPropagation();likeCard(this)"><span style="filter:brightness(0) invert(1)">🐾</span> J'aime</button>
+                <button class="mc-btn-info" onclick="event.stopPropagation();window.location.href='coup-de-patte-fiche.html'">ℹ</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="load-more">
+        <button class="load-btn" onclick="this.textContent='Chargement…'">Voir 2 autres matchs →</button>
+      </div>
+    </div>
+
+    <!-- ══ VUE J'AIME ══ -->
+    <div class="view-panel" id="view-jaime">
+      <div class="vue-header">
+        <div>
+          <h2 class="vue-title">Mes j'aime</h2>
+          <p class="vue-sub">6 animaux que vous avez likés</p>
+        </div>
+      </div>
+      <div class="liked-grid">
+        <div class="liked-card" onclick="window.location.href='coup-de-patte-fiche.html'">
+          <div class="liked-img" style="background:linear-gradient(160deg,var(--mint),var(--sage))">🐕<div class="liked-score" style="color:var(--moss)">87%</div></div>
+          <div class="liked-body"><div class="liked-name">Rex</div><div class="liked-meta">Berger · 3 ans · Lyon</div><button class="liked-remove" onclick="event.stopPropagation()">✕ Retirer</button></div>
+        </div>
+        <div class="liked-card" onclick="window.location.href='coup-de-patte-fiche.html'">
+          <div class="liked-img" style="background:linear-gradient(160deg,#E0D5C0,#B89870)">🐶<div class="liked-score" style="color:var(--blue)">82%</div></div>
+          <div class="liked-body"><div class="liked-name">Luna</div><div class="liked-meta">Croisée · 2 ans · Grenoble</div><button class="liked-remove" onclick="event.stopPropagation()">✕ Retirer</button></div>
+        </div>
+        <div class="liked-card" onclick="window.location.href='coup-de-patte-fiche.html'">
+          <div class="liked-img" style="background:linear-gradient(160deg,#DDE5DD,#9AB89A)">🐕<div class="liked-score" style="color:var(--blue)">79%</div></div>
+          <div class="liked-body"><div class="liked-name">Oscar</div><div class="liked-meta">Labrador · 4 ans · Saint-Étienne</div><button class="liked-remove" onclick="event.stopPropagation()">✕ Retirer</button></div>
+        </div>
+        <div class="liked-card" onclick="window.location.href='coup-de-patte-fiche.html'">
+          <div class="liked-img" style="background:linear-gradient(160deg,#E8DDD0,#C4B098)">🐶<div class="liked-score" style="color:var(--amber)">71%</div></div>
+          <div class="liked-body"><div class="liked-name">Noisette</div><div class="liked-meta">Croisée · 5 ans · Clermont</div><button class="liked-remove" onclick="event.stopPropagation()">✕ Retirer</button></div>
+        </div>
+        <div class="liked-card" onclick="window.location.href='coup-de-patte-fiche.html'">
+          <div class="liked-img" style="background:linear-gradient(160deg,#C8DFC8,#8AB89A)">🐕<div class="liked-score" style="color:var(--amber)">68%</div></div>
+          <div class="liked-body"><div class="liked-name">Max</div><div class="liked-meta">Golden · 6 ans · Valence</div><button class="liked-remove" onclick="event.stopPropagation()">✕ Retirer</button></div>
+        </div>
+        <div class="liked-card" style="border-color:rgba(212,168,67,0.35)" onclick="window.location.href='coup-de-patte-fiche.html'">
+          <div class="liked-img" style="background:linear-gradient(160deg,#E8D5B0,#C9A87A)">🐕<div class="liked-score" style="color:var(--amber)">65%</div></div>
+          <div class="liked-body"><div class="liked-name">Django ✨</div><div class="liked-meta">Croisé · 7 ans · Toulouse</div><button class="liked-remove" onclick="event.stopPropagation()">✕ Retirer</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ VUE CONTACTS ══ -->
+    <div class="view-panel" id="view-contacts">
+      <div class="vue-header">
+        <div>
+          <h2 class="vue-title">Mes contacts</h2>
+          <p class="vue-sub">Votre pense-bête, suivez vos démarches à votre rythme</p>
+        </div>
+      </div>
+      <div class="contacts-list">
+        <div class="contact-card">
+          <div class="ct-thumb" style="background:linear-gradient(135deg,var(--mint),var(--sage))">🐕</div>
+          <div class="ct-info">
+            <div class="ct-name">Rex · SPA de Lyon</div>
+            <div class="ct-refuge">📍 Lyon · 45 km · 87% compatible</div>
+            <select class="status-select" onchange="updateStatus(this)">
+              <option value="a-contacter">📋 À contacter</option>
+              <option value="en-attente">⏳ En attente de réponse</option>
+              <option value="rdv" selected>✅ Répondu, RDV proposé</option>
+            </select>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0">
+            <div class="ct-date">Il y a 2 jours</div>
+            <button class="ct-btn">📞 Appeler</button>
+            <button onclick="signalerAdoptionV3('Rex')" style="padding:5px 12px;background:transparent;border:1.5px solid rgba(74,124,89,0.3);border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.68rem;font-weight:700;color:var(--moss);cursor:pointer;white-space:nowrap;transition:all 0.2s" onmouseover="this.style.background='rgba(74,124,89,0.08)'" onmouseout="this.style.background='transparent'">🐾 Adopté via CDP</button>
+          </div>
+        </div>
+        <div class="contact-card">
+          <div class="ct-thumb" style="background:linear-gradient(135deg,#E8D5B0,#C9A87A)">🐕</div>
+          <div class="ct-info">
+            <div class="ct-name">Django · SPA de Toulouse</div>
+            <div class="ct-refuge">📍 Toulouse · 180 km · ✨ Enfin Moi ?</div>
+            <select class="status-select" onchange="updateStatus(this)">
+              <option value="a-contacter">📋 À contacter</option>
+              <option value="en-attente" selected>⏳ En attente de réponse</option>
+              <option value="rdv">✅ Répondu, RDV proposé</option>
+            </select>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0">
+            <div class="ct-date">Il y a 5 jours</div>
+            <button class="ct-btn">📞 Relancer</button>
+            <button onclick="signalerAdoptionV3('Django')" style="padding:5px 12px;background:transparent;border:1.5px solid rgba(74,124,89,0.3);border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.68rem;font-weight:700;color:var(--moss);cursor:pointer;white-space:nowrap;transition:all 0.2s" onmouseover="this.style.background='rgba(74,124,89,0.08)'" onmouseout="this.style.background='transparent'">🐾 Adopté via CDP</button>
+          </div>
+        </div>
+        <div class="contact-card">
+          <div class="ct-thumb" style="background:linear-gradient(135deg,#E0D5C0,#B89870)">🐶</div>
+          <div class="ct-info">
+            <div class="ct-name">Luna · SPA de Grenoble</div>
+            <div class="ct-refuge">📍 Grenoble · 80 km · 82% compatible</div>
+            <select class="status-select" onchange="updateStatus(this)">
+              <option value="a-contacter" selected>📋 À contacter</option>
+              <option value="en-attente">⏳ En attente de réponse</option>
+              <option value="rdv">✅ Répondu, RDV proposé</option>
+            </select>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0">
+            <div class="ct-date">Il y a 1 jour</div>
+            <button class="ct-btn">📞 Appeler</button>
+            <button onclick="signalerAdoptionV3('Luna')" style="padding:5px 12px;background:transparent;border:1.5px solid rgba(74,124,89,0.3);border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.68rem;font-weight:700;color:var(--moss);cursor:pointer;white-space:nowrap;transition:all 0.2s" onmouseover="this.style.background='rgba(74,124,89,0.08)'" onmouseout="this.style.background='transparent'">🐾 Adopté via CDP</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  function showView(id, tabEl) {
+    document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('view-' + id).classList.add('active');
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.stat-mini').forEach(s => s.classList.remove('active'));
+    if(tabEl) tabEl.classList.add('active');
+    // Sync sidebar stats
+    const map = {matchs:0, jaime:1, contacts:2};
+    if(map[id] !== undefined) document.querySelectorAll('.stat-mini')[map[id]].classList.add('active');
+    // Sync nav tab if called from sidebar
+    if(!tabEl) {
+      var tabs = document.querySelectorAll('.nav-tab');
+      const idx = {matchs:0,jaime:1,contacts:2}[id];
+      if(tabs[idx]) tabs[idx].classList.add('active');
+    }
+  }
+
+  function likeCard(btn) {
+    var isLiked = btn.classList.contains('liked');
+    btn.classList.toggle('liked');
+    btn.innerHTML = isLiked
+      ? '<span style="filter:brightness(0) invert(1)">🐾</span> J\'aime'
+      : '<span style="filter:brightness(0) invert(1)">🐾</span> Aimé !';
+  }
+
+  function signalerAdoptionV3(name) {
+    if(confirm(`Vous confirmez avoir adopté ${name} via Coup de Patte ?\n\n⚠️ La fiche de ${name} sera supprimée de la plateforme dès confirmation.\n\nCette action aidera à mesurer l'impact réel de Coup de Patte.`)) {
+      alert(`🐾 Merci ! La fiche de ${name} a été retirée et votre adoption transmise au refuge pour confirmation.\n\nElle sera comptabilisée dans les statistiques Coup de Patte.`);
+      setTimeout(() => {
+        var retour = confirm(`📬 Un dernier mot sur votre adoption de ${name} ?\n\nDans quelques semaines, Coup de Patte vous contactera pour savoir si le score de compatibilité reflétait bien la réalité.\n\nAcceptez-vous de recevoir ce suivi ?`);
+        if(retour) alert(`Parfait ! Nous vous contacterons dans 4 à 6 semaines.\n\nVotre retour nous aidera à améliorer les matchs pour les prochains adoptants. 🐾`);
+      }, 800);
+    }
+  }
+
+  function updateStatus(select) {
+    var colors = {'a-contacter':'var(--dust)','en-attente':'var(--amber)','rdv':'var(--moss)'};
+    select.style.borderColor = colors[select.value] || 'var(--border)';
+    select.style.color = colors[select.value] || 'var(--forest)';
+  }
+
+  // Init status colors
+  document.querySelectorAll('.status-select').forEach(s => updateStatus(s));
+</script>
+</body>
+</html>

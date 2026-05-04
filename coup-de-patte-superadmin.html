@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Super Admin, Coup de Patte</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --forest:#2D4A3E;--moss:#4A7C59;--sage:#7AAD89;--mint:#C8E6C0;--mint-lt:#EBF5E8;
+  --ivory:#F4F1E8;--paper:#FDFCF8;--bark:#6B4F3A;--gold:#D4A843;--amber:#C49A1A;
+  --blush:#E8C49A;--rose:#C9704A;--blue:#5B8DEF;--purple:#8B5CF6;
+  --border:rgba(45,74,62,0.11);--dust:#7A6E65;--smoke:#A89E96;
+  --shadow:0 8px 32px rgba(45,74,62,0.10);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Nunito',sans-serif;font-weight:400;background:var(--ivory);color:var(--forest);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.022'/%3E%3C/svg%3E");pointer-events:none;z-index:0}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:14px 48px;background:rgba(244,241,232,0.93);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.logo{font-family:'Fraunces',serif;font-size:1.4rem;font-weight:600;color:var(--forest);display:flex;align-items:center;gap:9px;text-decoration:none}
+.logo-bubble{width:40px;height:40px;background:var(--forest);border-radius:50% 50% 50% 50%/60% 60% 40% 40%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(45,74,62,0.32)}
+.logo-bubble span{filter:brightness(0) invert(1);font-size:0.95rem}
+.nav-center{display:flex;align-items:center;gap:8px}
+.nav-admin-badge{background:linear-gradient(135deg,var(--purple),#6D28D9);color:white;font-size:0.7rem;font-weight:700;padding:4px 12px;border-radius:50px;letter-spacing:0.5px}
+.nav-right{display:flex;align-items:center;gap:14px}
+.nav-name{font-size:0.82rem;font-weight:600;color:var(--dust)}
+.nav-logout{font-size:0.78rem;font-weight:600;color:var(--rose);cursor:pointer;background:none;border:none;font-family:'Nunito',sans-serif;opacity:0.7;transition:opacity 0.2s}
+.nav-logout:hover{opacity:1}
+
+/* LAYOUT */
+.app{display:flex;min-height:100vh;padding-top:72px;position:relative;z-index:1}
+
+/* SIDEBAR */
+.sidebar{width:256px;flex-shrink:0;border-right:1px solid var(--border);padding:24px 16px;display:flex;flex-direction:column;gap:4px;background:rgba(253,252,248,0.7);position:sticky;top:72px;height:calc(100vh - 72px);overflow-y:auto}
+
+.sb-section{font-size:0.58rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--smoke);padding:14px 12px 6px;margin-top:6px}
+.sb-section:first-child{margin-top:0;padding-top:4px}
+
+.sb-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;cursor:pointer;transition:all 0.16s;font-size:0.83rem;font-weight:600;color:var(--dust);text-decoration:none;position:relative}
+.sb-item:hover{background:var(--mint-lt);color:var(--forest)}
+.sb-item.active{background:var(--forest);color:var(--ivory);box-shadow:0 3px 10px rgba(45,74,62,0.18)}
+.sb-icon{font-size:0.95rem;width:18px;text-align:center;flex-shrink:0}
+.sb-badge{margin-left:auto;font-size:0.6rem;font-weight:700;padding:2px 6px;border-radius:50px;white-space:nowrap}
+.sb-badge-red{background:rgba(201,112,74,0.15);color:var(--rose);border:1px solid rgba(201,112,74,0.2)}
+.sb-badge-green{background:var(--moss);color:white}
+.sb-badge-blue{background:rgba(91,141,239,0.12);color:var(--blue);border:1px solid rgba(91,141,239,0.2)}
+.sb-badge-purple{background:rgba(139,92,246,0.12);color:var(--purple);border:1px solid rgba(139,92,246,0.2)}
+
+/* MAIN */
+.main{flex:1;padding:28px 32px;min-width:0}
+
+/* Page header */
+.page-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.page-title{font-family:'Fraunces',serif;font-size:1.55rem;font-weight:600;font-style:italic;color:var(--forest)}
+.page-sub{font-size:0.78rem;color:var(--dust);margin-top:3px}
+
+/* Boutons */
+.btn-primary{display:inline-flex;align-items:center;gap:7px;background:linear-gradient(135deg,var(--moss),var(--forest));color:var(--ivory);font-family:'Nunito',sans-serif;font-size:0.83rem;font-weight:700;padding:10px 20px;border-radius:50px;border:none;cursor:pointer;box-shadow:0 4px 12px rgba(74,124,89,0.28);transition:transform 0.2s cubic-bezier(0.34,1.56,0.64,1),box-shadow 0.2s}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(74,124,89,0.38)}
+.btn-secondary{display:inline-flex;align-items:center;gap:7px;background:transparent;color:var(--forest);font-family:'Nunito',sans-serif;font-size:0.83rem;font-weight:700;padding:9px 18px;border-radius:50px;border:1.5px solid var(--border);cursor:pointer;transition:all 0.18s}
+.btn-secondary:hover{border-color:var(--moss);background:var(--mint-lt)}
+.btn-danger{display:inline-flex;align-items:center;gap:6px;background:rgba(201,112,74,0.08);color:var(--rose);font-family:'Nunito',sans-serif;font-size:0.78rem;font-weight:700;padding:7px 14px;border-radius:50px;border:1.5px solid rgba(201,112,74,0.2);cursor:pointer;transition:all 0.18s}
+.btn-danger:hover{background:rgba(201,112,74,0.15)}
+
+/* Sections */
+.section{display:none;animation:fadeUp 0.3s ease both}
+.section.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ══ STATS GLOBALES ══ */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.kpi{background:var(--paper);border-radius:18px;border:1.5px solid var(--border);padding:18px 20px;box-shadow:var(--shadow);transition:transform 0.2s}
+.kpi:hover{transform:translateY(-2px)}
+.kpi-n{font-family:'Fraunces',serif;font-size:2rem;font-weight:700;color:var(--moss);display:block;line-height:1;margin-bottom:4px}
+.kpi-l{font-size:0.72rem;color:var(--dust);font-weight:500}
+.kpi-trend{font-size:0.68rem;font-weight:700;margin-top:6px;display:block}
+.trend-up{color:var(--moss)}.trend-down{color:var(--rose)}.trend-flat{color:var(--smoke)}
+
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.dash-card{background:var(--paper);border-radius:20px;border:1.5px solid var(--border);padding:22px;box-shadow:var(--shadow)}
+.dc-title{font-family:'Fraunces',serif;font-size:0.95rem;font-weight:600;font-style:italic;color:var(--forest);margin-bottom:14px}
+
+.activity-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);font-size:0.78rem}
+.activity-row:last-child{border-bottom:none}
+.act-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.act-text{flex:1;color:var(--forest);font-weight:500}
+.act-time{color:var(--smoke);font-size:0.7rem;white-space:nowrap}
+
+/* Graphique simplifié */
+.chart-bars{display:flex;align-items:flex-end;gap:6px;height:80px;padding-top:8px}
+.chart-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.chart-bar{width:100%;border-radius:4px 4px 0 0;background:linear-gradient(180deg,var(--moss),var(--sage));transition:height 0.6s cubic-bezier(0.34,1.56,0.64,1)}
+.chart-label{font-size:0.6rem;color:var(--smoke);font-weight:600}
+
+/* ══ REFUGES ══ */
+.refuge-toolbar{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+.search-input{flex:1;min-width:200px;padding:9px 16px;border-radius:50px;border:1.5px solid var(--border);background:var(--paper);font-family:'Nunito',sans-serif;font-size:0.82rem;color:var(--forest);outline:none;transition:border-color 0.2s}
+.search-input:focus{border-color:var(--moss)}
+.filter-select{padding:9px 16px;border-radius:50px;border:1.5px solid var(--border);background:var(--paper);font-family:'Nunito',sans-serif;font-size:0.82rem;color:var(--forest);cursor:pointer;outline:none;appearance:none;padding-right:28px}
+
+.table-wrap{background:var(--paper);border-radius:18px;border:1.5px solid var(--border);overflow:hidden;box-shadow:var(--shadow)}
+table{width:100%;border-collapse:collapse}
+thead th{text-align:left;font-size:0.63rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--smoke);padding:12px 16px;border-bottom:1px solid var(--border);background:rgba(235,245,232,0.3)}
+tbody td{padding:13px 16px;border-bottom:1px solid var(--border);font-size:0.8rem;vertical-align:middle}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:rgba(235,245,232,0.35)}
+
+.refuge-thumb{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--mint),var(--sage));display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.refuge-name{font-family:'Fraunces',serif;font-size:0.88rem;font-weight:600;font-style:italic;color:var(--forest)}
+.refuge-city{font-size:0.7rem;color:var(--dust);margin-top:1px}
+
+.status-pill{display:inline-flex;align-items:center;gap:4px;font-size:0.68rem;font-weight:700;padding:3px 9px;border-radius:50px}
+.sp-active{background:var(--mint-lt);color:var(--moss);border:1px solid rgba(74,124,89,0.2)}
+.sp-pending{background:rgba(212,168,67,0.12);color:var(--amber);border:1px solid rgba(196,154,26,0.2)}
+.sp-suspended{background:rgba(201,112,74,0.08);color:var(--rose);border:1px solid rgba(201,112,74,0.15)}
+
+.row-actions{display:flex;gap:5px}
+.row-btn{padding:5px 10px;border-radius:50px;font-size:0.68rem;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:transparent;font-family:'Nunito',sans-serif;color:var(--forest);transition:all 0.15s;white-space:nowrap}
+.row-btn:hover{border-color:var(--moss);background:var(--mint-lt)}
+.row-btn-red{border-color:rgba(201,112,74,0.25);color:var(--rose)}
+.row-btn-red:hover{background:rgba(201,112,74,0.08)}
+.row-btn-blue{border-color:rgba(91,141,239,0.25);color:var(--blue)}
+.row-btn-blue:hover{background:rgba(91,141,239,0.08)}
+.row-btn-green{border-color:rgba(74,124,89,0.25);color:var(--moss)}
+.row-btn-green:hover{background:var(--mint-lt)}
+
+/* ══ ALGORITHME ══ */
+.algo-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.algo-card{background:var(--paper);border-radius:20px;border:1.5px solid var(--border);padding:24px;box-shadow:var(--shadow)}
+.algo-card-full{grid-column:1/-1}
+.algo-title{font-family:'Fraunces',serif;font-size:0.95rem;font-weight:600;font-style:italic;color:var(--forest);margin-bottom:18px}
+
+.weight-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
+.weight-row:last-child{border-bottom:none}
+.weight-icon{font-size:1rem;width:24px;flex-shrink:0}
+.weight-name{font-size:0.82rem;font-weight:600;color:var(--forest);flex:1}
+.weight-slider{flex:1;max-width:160px;accent-color:var(--moss);cursor:pointer}
+.weight-val{font-family:'Fraunces',serif;font-size:1rem;font-weight:700;color:var(--moss);width:36px;text-align:right}
+.weight-total{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:var(--moss);border-radius:12px;margin-top:16px;color:var(--ivory)}
+.weight-total-label{font-size:0.82rem;font-weight:600;opacity:0.8}
+.weight-total-val{font-family:'Fraunces',serif;font-size:1.4rem;font-weight:700}
+.weight-total-val.ok{color:var(--ivory)}
+.weight-total-val.over{color:var(--gold)}
+
+.threshold-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
+.threshold-row:last-child{border-bottom:none}
+.threshold-label{font-size:0.82rem;font-weight:600;color:var(--forest);flex:1}
+.threshold-input{width:80px;padding:7px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--ivory);font-family:'Nunito',sans-serif;font-size:0.85rem;font-weight:700;text-align:center;outline:none;transition:border-color 0.2s}
+.threshold-input:focus{border-color:var(--moss)}
+.threshold-unit{font-size:0.75rem;color:var(--dust);font-weight:600}
+
+.save-btn{width:100%;padding:12px;background:linear-gradient(135deg,var(--moss),var(--forest));color:var(--ivory);border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.86rem;font-weight:700;cursor:pointer;transition:transform 0.2s cubic-bezier(0.34,1.56,0.64,1),box-shadow 0.2s;box-shadow:0 4px 14px rgba(74,124,89,0.28);margin-top:18px}
+.save-btn:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(74,124,89,0.4)}
+
+/* ══ ANIMAUX ══ */
+.animals-kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+
+/* ══ ADOPTANTS ══ */
+.adoptant-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
+
+/* ══ SCRAPING ══ */
+.scraping-card{background:var(--paper);border-radius:20px;border:1.5px solid var(--border);padding:24px;box-shadow:var(--shadow);margin-bottom:18px}
+.scraping-status{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.scraping-dot{width:10px;height:10px;border-radius:50%;background:var(--moss);animation:blink 1.5s ease-in-out infinite;flex-shrink:0}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+.scraping-label{font-size:0.85rem;font-weight:700;color:var(--forest)}
+.scraping-sub{font-size:0.75rem;color:var(--dust);margin-left:auto}
+
+.scraping-log{background:var(--forest);border-radius:12px;padding:16px;font-family:monospace;font-size:0.72rem;color:rgba(244,241,232,0.8);line-height:1.8;max-height:180px;overflow-y:auto}
+.log-ok{color:#7AAD89}.log-warn{color:var(--gold)}.log-err{color:var(--rose)}.log-info{color:rgba(244,241,232,0.5)}
+
+.scraping-table-wrap{background:var(--paper);border-radius:18px;border:1.5px solid var(--border);overflow:hidden;box-shadow:var(--shadow)}
+
+/* Toast */
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--forest);color:var(--ivory);padding:12px 24px;border-radius:50px;font-size:0.82rem;font-weight:700;z-index:600;transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1);box-shadow:0 8px 24px rgba(45,74,62,0.3);white-space:nowrap}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+/* Info tag */
+.info-tag{display:inline-flex;align-items:center;gap:4px;font-size:0.65rem;font-weight:700;padding:2px 7px;border-radius:50px}
+.it-purple{background:rgba(139,92,246,0.1);color:var(--purple);border:1px solid rgba(139,92,246,0.2)}
+.it-gold{background:rgba(212,168,67,0.12);color:var(--amber);border:1px solid rgba(196,154,26,0.2)}
+</style>
+
+  <!-- Supabase SDK + Configuration Coup de Patte -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+
+  <script>
+    // Vérification authentification
+    (async () => {
+      var session = await checkSession();
+      if (!session) {
+        window.location.href = 'coup-de-patte-login.html';
+      }
+    })();
+  </script>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="logo"><div class="logo-bubble" style="animation:pawPulse 2.5s ease-in-out infinite;"><span style="animation:pawWiggle 2.5s ease-in-out infinite;display:inline-block;filter:brightness(0) invert(1);font-size:1.1rem">🐾</span></div>Coup de Patte</a>
+  <div class="nav-center">
+    <span class="nav-admin-badge">⚡ Super Admin</span>
+  </div>
+  <div class="nav-right">
+    <span class="nav-name">👤 Fondateur</span>
+    <button class="nav-logout">Déconnexion</button>
+  </div>
+</nav>
+
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <span class="sb-section">Vue d'ensemble</span>
+    <a class="sb-item active" onclick="showSection('dashboard',this)"><span class="sb-icon">📊</span>Tableau de bord</a>
+
+    <span class="sb-section">Plateforme</span>
+    <a class="sb-item" onclick="showSection('refuges',this)"><span class="sb-icon">🏡</span>Refuges<span class="sb-badge sb-badge-red">3 en attente</span></a>
+    <a class="sb-item" onclick="showSection('animaux',this)"><span class="sb-icon">🐾</span>Animaux<span class="sb-badge sb-badge-green">1 247</span></a>
+    <a class="sb-item" onclick="showSection('adoptants',this)"><span class="sb-icon">👤</span>Adoptants<span class="sb-badge sb-badge-blue">892</span></a>
+    <a class="sb-item" onclick="showSection('scraping',this)"><span class="sb-icon">🤖</span>Scraping IA<span class="sb-badge sb-badge-green">Actif</span></a>
+    <a class="sb-item" onclick="showSection('signalements',this)"><span class="sb-icon">🚩</span>Signalements<span class="sb-badge sb-badge-red">7 actifs</span></a>
+
+    <span class="sb-section">Paramètres</span>
+    <a class="sb-item" onclick="showSection('algorithme',this)"><span class="sb-icon">⚙️</span>Algorithme<span class="sb-badge sb-badge-purple">Matching</span></a>
+    <a class="sb-item" onclick="showSection('enfin',this)"><span class="sb-icon">✨</span>Seuils Enfin Moi ?</a>
+
+    <span class="sb-section">Communication</span>
+    <a class="sb-item" onclick="showSection('communication',this)"><span class="sb-icon">📣</span>Kit communication</a>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- ══════════ TABLEAU DE BORD ══════════ -->
+    <div class="section active" id="section-dashboard">
+      <div class="page-hdr">
+        <div><h1 class="page-title">Bonjour, Fondateur 👋</h1><p class="page-sub">Voici l'état de Coup de Patte aujourd'hui</p></div>
+      </div>
+
+      <div class="kpi-grid">
+        <div class="kpi"><span class="kpi-n">4 218</span><span class="kpi-l">Refuges référencés</span><span class="kpi-trend trend-up">↑ +47 ce mois</span></div>
+        <div class="kpi"><span class="kpi-n">1 247</span><span class="kpi-l">Animaux disponibles</span><span class="kpi-trend trend-flat">= stable</span></div>
+        <div class="kpi"><span class="kpi-n">892</span><span class="kpi-l">Adoptants inscrits</span><span class="kpi-trend trend-up">↑ +83 ce mois</span></div>
+        <div class="kpi"><span class="kpi-n">134</span><span class="kpi-l">Adoptions via CDP ¹</span><span class="kpi-trend trend-up">↑ +12 ce mois</span></div>
+      </div>
+      <p style="font-size:0.68rem;color:var(--smoke);margin-top:-12px;margin-bottom:20px;font-style:italic">¹ Uniquement les adoptions déclarées "via Coup de Patte" par les refuges eux-mêmes, les adoptions hors CDP ne sont pas comptabilisées.</p>
+        <div class="dash-card">
+          <p class="dc-title">📈 Adoptions par mois</p>
+          <div class="chart-bars" id="adoptionChart"></div>
+          <div style="display:flex;justify-content:space-between;margin-top:8px">
+            <span style="font-size:0.62rem;color:var(--smoke)">Jan</span>
+            <span style="font-size:0.62rem;color:var(--smoke)">Fév</span>
+            <span style="font-size:0.62rem;color:var(--smoke)">Mar</span>
+            <span style="font-size:0.62rem;color:var(--smoke)">Avr</span>
+            <span style="font-size:0.62rem;color:var(--smoke)">Mai</span>
+            <span style="font-size:0.62rem;color:var(--smoke)">Jun</span>
+          </div>
+        </div>
+
+        <div class="dash-card">
+          <p class="dc-title">📋 Activité récente</p>
+          <div class="activity-row"><div class="act-dot" style="background:var(--moss)"></div><span class="act-text">SPA de Bordeaux vient de s'inscrire</span><span class="act-time">Il y a 12 min</span></div>
+          <div class="activity-row"><div class="act-dot" style="background:var(--blue)"></div><span class="act-text">892ème adoptant inscrit</span><span class="act-time">Il y a 38 min</span></div>
+          <div class="activity-row"><div class="act-dot" style="background:var(--gold)"></div><span class="act-text">Scraping SPA Lyon terminé, 23 fiches</span><span class="act-time">Il y a 2h</span></div>
+          <div class="activity-row"><div class="act-dot" style="background:var(--moss)"></div><span class="act-text">Rex (SPA Lyon), adoption confirmée</span><span class="act-time">Il y a 3h</span></div>
+          <div class="activity-row"><div class="act-dot" style="background:var(--rose)"></div><span class="act-text">Erreur scraping, site SPA Nantes inaccessible</span><span class="act-time">Il y a 5h</span></div>
+          <div class="activity-row"><div class="act-dot" style="background:var(--purple)"></div><span class="act-text">Algorithme matching mis à jour</span><span class="act-time">Hier</span></div>
+        </div>
+
+        <div class="dash-card">
+          <p class="dc-title">✨ Animaux Enfin Moi ?</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px">
+            <div style="text-align:center;background:var(--ivory);border-radius:12px;padding:12px 8px;border:1.5px solid var(--border)"><span style="font-family:'Fraunces',serif;font-size:1.5rem;font-weight:700;color:var(--amber);display:block">47</span><span style="font-size:0.65rem;color:var(--dust)">Total</span></div>
+            <div style="text-align:center;background:var(--ivory);border-radius:12px;padding:12px 8px;border:1.5px solid var(--border)"><span style="font-family:'Fraunces',serif;font-size:1.5rem;font-weight:700;color:var(--moss);display:block">8</span><span style="font-size:0.65rem;color:var(--dust)">Adoptés ce mois</span></div>
+            <div style="text-align:center;background:var(--ivory);border-radius:12px;padding:12px 8px;border:1.5px solid var(--border)"><span style="font-family:'Fraunces',serif;font-size:1.5rem;font-weight:700;color:var(--rose);display:block">2,3</span><span style="font-size:0.65rem;color:var(--dust)">Ans moy. en refuge</span></div>
+          </div>
+          <div style="font-size:0.78rem;color:var(--dust);font-style:italic;font-family:'Fraunces',serif;border-left:2px solid var(--gold);padding-left:12px;line-height:1.6">Ce mois, 8 animaux Enfin Moi ? ont trouvé une famille. C'est votre meilleur résultat depuis le lancement.</div>
+        </div>
+
+        <div class="dash-card">
+          <p class="dc-title">⚠️ Alertes</p>
+          <div class="activity-row"><div class="act-dot" style="background:var(--rose)"></div><span class="act-text" style="color:var(--rose);font-weight:700">3 refuges en attente de validation</span><span class="act-time"><a href="#" style="color:var(--moss);font-weight:700;font-size:0.7rem" onclick="showSection('refuges',document.querySelectorAll('.sb-item')[2])">Voir →</a></span></div>
+          <div class="activity-row"><div class="act-dot" style="background:var(--amber)"></div><span class="act-text">Site SPA Nantes inaccessible depuis 5h</span><span class="act-time"><a href="#" style="color:var(--moss);font-weight:700;font-size:0.7rem" onclick="showSection('scraping',document.querySelectorAll('.sb-item')[5])">Voir →</a></span></div>
+          <div class="activity-row"><div class="act-dot" style="background:var(--amber)"></div><span class="act-text">Pondérations matching = 105% (à corriger)</span><span class="act-time"><a href="#" style="color:var(--moss);font-weight:700;font-size:0.7rem" onclick="showSection('algorithme',document.querySelectorAll('.sb-item')[6])">Voir →</a></span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ REFUGES ══════════ -->
+    <div class="section" id="section-refuges">
+      <div class="page-hdr">
+        <div><h1 class="page-title">Refuges</h1><p class="page-sub">4 218 refuges référencés · 3 en attente de validation</p></div>
+        <button class="btn-primary" onclick="showToast('Ajout manuel refuge, fonctionnalité à venir')">+ Ajouter manuellement</button>
+      </div>
+
+      <!-- En attente -->
+      <div style="margin-bottom:24px">
+        <p style="font-family:'Fraunces',serif;font-size:0.95rem;font-weight:600;font-style:italic;color:var(--forest);margin-bottom:12px">⏳ En attente de validation <span style="background:rgba(201,112,74,0.1);color:var(--rose);font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:50px;border:1px solid rgba(201,112,74,0.2);font-style:normal;margin-left:6px">3</span></p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Refuge</th><th>Ville</th><th>Email</th><th>Site web</th><th>Inscrit le</th><th>Actions</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><div style="display:flex;align-items:center;gap:10px"><div class="refuge-thumb">🏠</div><div><div class="refuge-name">SPA de Bordeaux</div></div></div></td>
+                <td style="font-size:0.8rem;color:var(--dust)">Bordeaux · 33000</td>
+                <td style="font-size:0.78rem;color:var(--dust)">contact@spa-bordeaux.fr</td>
+                <td><a href="#" style="font-size:0.75rem;color:var(--blue);font-weight:700">spa-bordeaux.fr</a></td>
+                <td style="font-size:0.75rem;color:var(--dust)">Il y a 12 min</td>
+                <td><div class="row-actions"><button class="row-btn row-btn-green" onclick="validateRefuge(this,'SPA de Bordeaux')">✅ Valider</button><button class="row-btn row-btn-red" onclick="showToast('Refuge refusé')">✕ Refuser</button></div></td>
+              </tr>
+              <tr>
+                <td><div style="display:flex;align-items:center;gap:10px"><div class="refuge-thumb">🏡</div><div><div class="refuge-name">Refuge Les Griffes d'Or</div></div></div></td>
+                <td style="font-size:0.8rem;color:var(--dust)">Montpellier · 34000</td>
+                <td style="font-size:0.78rem;color:var(--dust)">contact@griffesdor.fr</td>
+                <td><a href="#" style="font-size:0.75rem;color:var(--blue);font-weight:700">griffesdor.fr</a></td>
+                <td style="font-size:0.75rem;color:var(--dust)">Il y a 2h</td>
+                <td><div class="row-actions"><button class="row-btn row-btn-green" onclick="validateRefuge(this,'Les Griffes d\'Or')">✅ Valider</button><button class="row-btn row-btn-red" onclick="showToast('Refuge refusé')">✕ Refuser</button></div></td>
+              </tr>
+              <tr>
+                <td><div style="display:flex;align-items:center;gap:10px"><div class="refuge-thumb">🐾</div><div><div class="refuge-name">Association Pattes Douces</div></div></div></td>
+                <td style="font-size:0.8rem;color:var(--dust)">Rennes · 35000</td>
+                <td style="font-size:0.78rem;color:var(--dust)">info@pattesdouces.fr</td>
+                <td><span style="font-size:0.75rem;color:var(--smoke)">Pas de site</span></td>
+                <td style="font-size:0.75rem;color:var(--dust)">Hier</td>
+                <td><div class="row-actions"><button class="row-btn row-btn-green" onclick="validateRefuge(this,'Pattes Douces')">✅ Valider</button><button class="row-btn row-btn-red" onclick="showToast('Refuge refusé')">✕ Refuser</button></div></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Tous les refuges -->
+      <p style="font-family:'Fraunces',serif;font-size:0.95rem;font-weight:600;font-style:italic;color:var(--forest);margin-bottom:12px">Tous les refuges actifs</p>
+      <div class="refuge-toolbar">
+        <input class="search-input" type="text" placeholder="🔍 Rechercher un refuge…">
+        <select class="filter-select"><option>Tous les statuts</option><option>Actifs</option><option>Suspendus</option></select>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Refuge</th><th>Ville</th><th>Animaux</th><th>Statut</th><th>Dernière activité</th><th>Actions</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><div style="display:flex;align-items:center;gap:10px"><div class="refuge-thumb">🏠</div><div><div class="refuge-name">SPA de Lyon</div></div></div></td>
+              <td style="font-size:0.8rem;color:var(--dust)">Lyon · 69009</td>
+              <td style="font-size:0.8rem;font-weight:700;color:var(--moss)">23</td>
+              <td><span class="status-pill sp-active">● Actif</span></td>
+              <td style="font-size:0.75rem;color:var(--dust)">Aujourd'hui</td>
+              <td><div class="row-actions"><button class="row-btn row-btn-blue" onclick="showToast('Scraping SPA Lyon lancé 🤖')">🤖 Scraper</button><button class="row-btn" onclick="showToast('Fiche refuge')">👁 Voir</button><button class="row-btn row-btn-red" onclick="showToast('Refuge suspendu')">⏸ Suspendre</button></div></td>
+            </tr>
+            <tr>
+              <td><div style="display:flex;align-items:center;gap:10px"><div class="refuge-thumb">🐾</div><div><div class="refuge-name">SPA de Paris</div></div></div></td>
+              <td style="font-size:0.8rem;color:var(--dust)">Paris · 75012</td>
+              <td style="font-size:0.8rem;font-weight:700;color:var(--moss)">67</td>
+              <td><span class="status-pill sp-active">● Actif</span></td>
+              <td style="font-size:0.75rem;color:var(--dust)">Il y a 2h</td>
+              <td><div class="row-actions"><button class="row-btn row-btn-blue" onclick="showToast('Scraping lancé 🤖')">🤖 Scraper</button><button class="row-btn" onclick="showToast('Fiche refuge')">👁 Voir</button><button class="row-btn row-btn-red" onclick="showToast('Suspendu')">⏸ Suspendre</button></div></td>
+            </tr>
+            <tr>
+              <td><div style="display:flex;align-items:center;gap:10px"><div class="refuge-thumb">🏡</div><div><div class="refuge-name">SPA de Nantes</div></div></div></td>
+              <td style="font-size:0.8rem;color:var(--dust)">Nantes · 44000</td>
+              <td style="font-size:0.8rem;font-weight:700;color:var(--rose)">14</td>
+              <td><span class="status-pill sp-pending">⚠ Erreur scraping</span></td>
+              <td style="font-size:0.75rem;color:var(--rose)">Il y a 5h</td>
+              <td><div class="row-actions"><button class="row-btn row-btn-blue" onclick="showToast('Relance scraping Nantes 🤖')">🔄 Relancer</button><button class="row-btn" onclick="showToast('Fiche refuge')">👁 Voir</button></div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══════════ ANIMAUX ══════════ -->
+    <div class="section" id="section-animaux">
+      <div class="page-hdr">
+        <div><h1 class="page-title">Animaux</h1><p class="page-sub">1 247 animaux référencés sur la plateforme</p></div>
+      </div>
+      <div class="animals-kpi">
+        <div class="kpi"><span class="kpi-n">1 247</span><span class="kpi-l">Total disponibles</span></div>
+        <div class="kpi"><span class="kpi-n">47</span><span class="kpi-l">✨ Enfin Moi ?</span></div>
+        <div class="kpi"><span class="kpi-n">134</span><span class="kpi-l">Adoptés ce mois</span></div>
+        <div class="kpi"><span class="kpi-n">12</span><span class="kpi-l">Fiches incomplètes</span></div>
+      </div>
+      <div class="refuge-toolbar">
+        <input class="search-input" type="text" placeholder="🔍 Rechercher un animal…">
+        <select class="filter-select"><option>Tous</option><option>🐶 Chiens</option><option>🐱 Chats</option></select>
+        <select class="filter-select"><option>Tous statuts</option><option>Disponible</option><option>✨ Enfin Moi ?</option><option>Fiche incomplète</option></select>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Animal</th><th>Refuge</th><th>Statut</th><th>Vues</th><th>En refuge depuis</th><th>Actions</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><div style="display:flex;align-items:center;gap:10px"><div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--mint),var(--sage));display:flex;align-items:center;justify-content:center;font-size:1.1rem">🐕</div><div><div style="font-family:'Fraunces',serif;font-size:0.88rem;font-weight:600;font-style:italic">Rex</div><div style="font-size:0.68rem;color:var(--dust)">Berger · 3 ans · Mâle</div></div></div></td>
+              <td style="font-size:0.78rem;color:var(--dust)">SPA de Lyon</td>
+              <td><span class="status-pill sp-active">● Disponible</span></td>
+              <td style="font-size:0.8rem;font-weight:700;color:var(--moss)">147</td>
+              <td style="font-size:0.78rem;color:var(--dust)">8 mois</td>
+              <td><div class="row-actions"><button class="row-btn" onclick="showToast('Fiche Rex ouverte')">✏️ Modifier</button><button class="row-btn row-btn-blue" onclick="showToast('Rex forcé en Enfin Moi ? ✨')">✨ Enfin Moi ?</button></div></td>
+            </tr>
+            <tr>
+              <td><div style="display:flex;align-items:center;gap:10px"><div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#E8D5B0,#C9A87A);display:flex;align-items:center;justify-content:center;font-size:1.1rem">🐕</div><div><div style="font-family:'Fraunces',serif;font-size:0.88rem;font-weight:600;font-style:italic">Brutus</div><div style="font-size:0.68rem;color:var(--dust)">Berger · 9 ans · Mâle</div></div></div></td>
+              <td style="font-size:0.78rem;color:var(--dust)">SPA de Toulouse</td>
+              <td><span class="status-pill" style="background:rgba(212,168,67,0.12);color:var(--amber);border:1px solid rgba(196,154,26,0.2)">✨ Enfin Moi ?</span></td>
+              <td style="font-size:0.8rem;font-weight:700;color:var(--moss)">38</td>
+              <td style="font-size:0.78rem;color:var(--rose);font-weight:700">2 ans</td>
+              <td><div class="row-actions"><button class="row-btn" onclick="showToast('Fiche Brutus ouverte')">✏️ Modifier</button></div></td>
+            </tr>
+            <tr>
+              <td><div style="display:flex;align-items:center;gap:10px"><div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#DDE5DD,#9AB89A);display:flex;align-items:center;justify-content:center;font-size:1.1rem">🐱</div><div><div style="font-family:'Fraunces',serif;font-size:0.88rem;font-weight:600;font-style:italic">Minette</div><div style="font-size:0.68rem;color:var(--dust)">Européenne · 4 ans · Femelle</div></div></div></td>
+              <td style="font-size:0.78rem;color:var(--dust)">SPA de Lyon</td>
+              <td><span class="status-pill sp-pending">⚠ Fiche incomplète</span></td>
+              <td style="font-size:0.8rem;font-weight:700;color:var(--moss)">83</td>
+              <td style="font-size:0.78rem;color:var(--dust)">5 mois</td>
+              <td><div class="row-actions"><button class="row-btn row-btn-blue" onclick="showToast('Fiche Minette complétée ✅')">🔧 Compléter</button></div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══════════ ADOPTANTS ══════════ -->
+    <div class="section" id="section-adoptants">
+      <div class="page-hdr">
+        <div><h1 class="page-title">Adoptants</h1><p class="page-sub">892 adoptants inscrits, données anonymisées</p></div>
+      </div>
+      <div class="adoptant-stats">
+        <div class="kpi"><span class="kpi-n">892</span><span class="kpi-l">Inscrits total</span><span class="kpi-trend trend-up">↑ +83 ce mois</span></div>
+        <div class="kpi"><span class="kpi-n">614</span><span class="kpi-l">Profils complétés</span><span class="kpi-trend trend-flat">69% de complétion</span></div>
+        <div class="kpi"><span class="kpi-n">134</span><span class="kpi-l">Adoptions réussies</span><span class="kpi-trend trend-up">↑ taux 15%</span></div>
+      </div>
+      <div class="dash-grid">
+        <div class="dash-card">
+          <p class="dc-title">📊 Répartition des profils</p>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:center;gap:10px;font-size:0.8rem"><span style="width:100px;color:var(--dust)">Appartement</span><div style="flex:1;height:8px;background:var(--mint-lt);border-radius:50px;overflow:hidden"><div style="width:62%;height:100%;background:linear-gradient(90deg,var(--sage),var(--moss));border-radius:50px"></div></div><span style="font-weight:700;color:var(--moss);width:32px;text-align:right">62%</span></div>
+            <div style="display:flex;align-items:center;gap:10px;font-size:0.8rem"><span style="width:100px;color:var(--dust)">Maison</span><div style="flex:1;height:8px;background:var(--mint-lt);border-radius:50px;overflow:hidden"><div style="width:38%;height:100%;background:linear-gradient(90deg,var(--sage),var(--moss));border-radius:50px"></div></div><span style="font-weight:700;color:var(--moss);width:32px;text-align:right">38%</span></div>
+            <div style="display:flex;align-items:center;gap:10px;font-size:0.8rem"><span style="width:100px;color:var(--dust)">Avec enfants</span><div style="flex:1;height:8px;background:var(--mint-lt);border-radius:50px;overflow:hidden"><div style="width:31%;height:100%;background:linear-gradient(90deg,var(--sage),var(--moss));border-radius:50px"></div></div><span style="font-weight:700;color:var(--moss);width:32px;text-align:right">31%</span></div>
+            <div style="display:flex;align-items:center;gap:10px;font-size:0.8rem"><span style="width:100px;color:var(--dust)">Chiens</span><div style="flex:1;height:8px;background:var(--mint-lt);border-radius:50px;overflow:hidden"><div style="width:71%;height:100%;background:linear-gradient(90deg,var(--sage),var(--moss));border-radius:50px"></div></div><span style="font-weight:700;color:var(--moss);width:32px;text-align:right">71%</span></div>
+            <div style="display:flex;align-items:center;gap:10px;font-size:0.8rem"><span style="width:100px;color:var(--dust)">Chats</span><div style="flex:1;height:8px;background:var(--mint-lt);border-radius:50px;overflow:hidden"><div style="width:29%;height:100%;background:linear-gradient(90deg,var(--sage),var(--moss));border-radius:50px"></div></div><span style="font-weight:700;color:var(--moss);width:32px;text-align:right">29%</span></div>
+          </div>
+        </div>
+        <div class="dash-card">
+          <p class="dc-title">💡 Insights</p>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div style="background:var(--mint-lt);border-radius:12px;padding:12px;font-size:0.78rem;line-height:1.6;color:var(--forest)"><strong>Score moyen de matching :</strong> 74%, les adoptants trouvent des animaux très compatibles.</div>
+            <div style="background:rgba(212,168,67,0.1);border-radius:12px;padding:12px;font-size:0.78rem;line-height:1.6;color:var(--forest)"><strong>Distance moyenne acceptée :</strong> 87 km, bien au-delà des recherches locales habituelles.</div>
+            <div style="background:rgba(91,141,239,0.08);border-radius:12px;padding:12px;font-size:0.78rem;line-height:1.6;color:var(--forest)"><strong>Taux de complétion du profil :</strong> 69%, 278 profils incomplets à relancer.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ SCRAPING IA ══════════ -->
+    <div class="section" id="section-scraping">
+      <div class="page-hdr">
+        <div><h1 class="page-title">Scraping IA</h1><p class="page-sub">Gestion des imports automatiques depuis les sites de refuges</p></div>
+        <button class="btn-primary" onclick="startGlobalScraping()">🤖 Lancer un scraping global</button>
+      </div>
+
+      <!-- Statut en cours -->
+      <div class="scraping-card">
+        <div class="scraping-status">
+          <div class="scraping-dot"></div>
+          <span class="scraping-label">IA active, scraping en cours</span>
+          <span class="scraping-sub">Prochaine passe automatique dans <strong id="nextScraping">4h 12min</strong></span>
+        </div>
+        <div class="scraping-log" id="scrapingLog">
+          <div class="log-info">[09:14:02] Début du scraping programmé, 4 218 refuges en file</div>
+          <div class="log-ok">[09:14:08] ✓ SPA de Lyon, 23 fiches importées (2 nouvelles)</div>
+          <div class="log-ok">[09:16:22] ✓ SPA de Paris, 67 fiches importées (5 nouvelles)</div>
+          <div class="log-warn">[09:18:45] ⚠ SPA de Bordeaux, site lent, retry dans 10min</div>
+          <div class="log-ok">[09:19:01] ✓ Refuge Griffes d'Or, 12 fiches importées</div>
+          <div class="log-err">[09:21:33] ✗ SPA de Nantes, site inaccessible (timeout)</div>
+          <div class="log-ok">[09:22:11] ✓ Association Pattes Douces, 8 fiches importées</div>
+          <div class="log-info">[09:22:12] Progression : 6/4218 refuges traités (0.1%)</div>
+        </div>
+      </div>
+
+      <!-- Planification automatique -->
+      <div class="algo-card" style="margin-bottom:20px">
+        <p class="algo-title">🗓 Planification automatique du scraping</p>
+        <p style="font-size:0.76rem;color:var(--dust);margin-bottom:18px;line-height:1.6">Définissez la fréquence à laquelle l'IA visite automatiquement les sites des refuges pour mettre à jour les fiches animaux.</p>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px">
+
+          <!-- Fréquence -->
+          <div>
+            <p style="font-size:0.65rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--smoke);margin-bottom:10px">Fréquence</p>
+            <div style="display:flex;flex-direction:column;gap:7px" id="freqOptions">
+              <label style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:12px;border:1.5px solid var(--border);cursor:pointer;transition:all 0.15s;font-size:0.82rem;font-weight:600;color:var(--forest)" class="freq-opt">
+                <input type="radio" name="freq" value="quotidien" style="accent-color:var(--moss)"> Tous les jours
+                <span style="margin-left:auto;font-size:0.65rem;color:var(--smoke)">Recommandé pour les grands refuges</span>
+              </label>
+              <label style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:12px;border:1.5px solid var(--moss);background:var(--mint-lt);cursor:pointer;transition:all 0.15s;font-size:0.82rem;font-weight:600;color:var(--forest)" class="freq-opt">
+                <input type="radio" name="freq" value="hebdo" checked style="accent-color:var(--moss)"> Toutes les semaines
+                <span style="margin-left:auto;font-size:0.65rem;color:var(--moss);font-weight:700">Actuel</span>
+              </label>
+              <label style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:12px;border:1.5px solid var(--border);cursor:pointer;transition:all 0.15s;font-size:0.82rem;font-weight:600;color:var(--forest)" class="freq-opt">
+                <input type="radio" name="freq" value="bimensuel" style="accent-color:var(--moss)"> Tous les 15 jours
+              </label>
+              <label style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:12px;border:1.5px solid var(--border);cursor:pointer;transition:all 0.15s;font-size:0.82rem;font-weight:600;color:var(--forest)" class="freq-opt">
+                <input type="radio" name="freq" value="mensuel" style="accent-color:var(--moss)"> Tous les mois
+              </label>
+            </div>
+          </div>
+
+          <!-- Paramètres avancés -->
+          <div>
+            <p style="font-size:0.65rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--smoke);margin-bottom:10px">Paramètres avancés</p>
+            <div style="display:flex;flex-direction:column;gap:12px">
+
+              <div style="background:var(--ivory);border-radius:12px;padding:14px;border:1.5px solid var(--border)">
+                <p style="font-size:0.75rem;font-weight:700;color:var(--forest);margin-bottom:6px">🕐 Heure de déclenchement</p>
+                <input type="time" value="03:00" style="padding:7px 12px;border-radius:8px;border:1.5px solid var(--border);background:var(--paper);font-family:'Nunito',sans-serif;font-size:0.82rem;color:var(--forest);outline:none;width:100%">
+                <p style="font-size:0.68rem;color:var(--smoke);margin-top:5px">Préférez la nuit pour éviter de surcharger les serveurs des refuges.</p>
+              </div>
+
+              <div style="background:var(--ivory);border-radius:12px;padding:14px;border:1.5px solid var(--border)">
+                <p style="font-size:0.75rem;font-weight:700;color:var(--forest);margin-bottom:8px">🔔 Notifications après scraping</p>
+                <label style="display:flex;align-items:center;gap:8px;font-size:0.78rem;cursor:pointer;margin-bottom:6px"><input type="checkbox" checked style="accent-color:var(--moss)"> Email si erreurs détectées</label>
+                <label style="display:flex;align-items:center;gap:8px;font-size:0.78rem;cursor:pointer"><input type="checkbox" checked style="accent-color:var(--moss)"> Résumé hebdomadaire</label>
+              </div>
+
+              <div style="background:var(--ivory);border-radius:12px;padding:14px;border:1.5px solid var(--border)">
+                <p style="font-size:0.75rem;font-weight:700;color:var(--forest);margin-bottom:6px">🚫 Exclusions temporaires</p>
+                <p style="font-size:0.7rem;color:var(--dust)">Animaux signalés absents : ignorés pendant <input type="number" value="12" min="1" max="24" style="width:44px;padding:3px 6px;border-radius:6px;border:1.5px solid var(--border);font-family:'Nunito',sans-serif;font-size:0.75rem;text-align:center"> mois</p>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- Prochaines passes prévues -->
+        <div style="background:var(--forest);border-radius:14px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+          <div>
+            <p style="font-size:0.7rem;font-weight:700;color:rgba(244,241,232,0.6);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Prochaines passes planifiées</p>
+            <p style="font-size:0.88rem;font-weight:600;color:var(--ivory)">Lun 28 avr · 03h00 &nbsp;·&nbsp; Lun 5 mai · 03h00 &nbsp;·&nbsp; Lun 12 mai · 03h00</p>
+          </div>
+          <button class="save-btn" style="width:auto;margin-top:0;padding:10px 20px;font-size:0.8rem" onclick="showToast('Planification sauvegardée ✅')">Sauvegarder</button>
+        </div>
+
+        <!-- Légende fréquences radio -->
+        <p style="font-size:0.72rem;color:var(--smoke);font-style:italic">💡 Le scraping quotidien est conseillé si vos refuges partenaires ont une forte activité. Hebdomadaire suffit pour la plupart.</p>
+      </div>
+
+      <!-- Table statut par refuge -->
+      <p style="font-family:'Fraunces',serif;font-size:0.95rem;font-weight:600;font-style:italic;color:var(--forest);margin-bottom:12px">Statut par refuge</p>
+      <div class="scraping-table-wrap">
+        <table>
+          <thead><tr><th>Refuge</th><th>Dernier scraping</th><th>Fiches importées</th><th>Statut</th><th>Actions</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><div style="font-family:'Fraunces',serif;font-size:0.88rem;font-weight:600;font-style:italic">SPA de Lyon</div></td>
+              <td style="font-size:0.78rem;color:var(--dust)">Aujourd'hui 03:00</td>
+              <td style="font-size:0.8rem;font-weight:700;color:var(--moss)">23 fiches · 2 nouvelles</td>
+              <td><span class="status-pill sp-active">✓ Succès</span></td>
+              <td><button class="row-btn row-btn-blue" onclick="showToast('Scraping SPA Lyon relancé 🤖')">🔄 Relancer</button></td>
+            </tr>
+            <tr>
+              <td><div style="font-family:'Fraunces',serif;font-size:0.88rem;font-weight:600;font-style:italic">SPA de Nantes</div></td>
+              <td style="font-size:0.78rem;color:var(--rose)">Il y a 5h, échec</td>
+              <td style="font-size:0.8rem;color:var(--smoke)">Dernière import : 14 fiches</td>
+              <td><span class="status-pill sp-suspended">✗ Erreur</span></td>
+              <td><div class="row-actions"><button class="row-btn row-btn-blue" onclick="showToast('Scraping Nantes relancé 🤖')">🔄 Relancer</button><button class="row-btn" onclick="showToast('Site Nantes vérifié')">🔍 Vérifier site</button></div></td>
+            </tr>
+            <tr>
+              <td><div style="font-family:'Fraunces',serif;font-size:0.88rem;font-weight:600;font-style:italic">SPA de Paris</div></td>
+              <td style="font-size:0.78rem;color:var(--dust)">Aujourd'hui 03:00</td>
+              <td style="font-size:0.8rem;font-weight:700;color:var(--moss)">67 fiches · 5 nouvelles</td>
+              <td><span class="status-pill sp-active">✓ Succès</span></td>
+              <td><button class="row-btn row-btn-blue" onclick="showToast('Scraping Paris relancé 🤖')">🔄 Relancer</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══════════ SIGNALEMENTS ══════════ -->
+    <div class="section" id="section-signalements">
+      <div class="page-hdr">
+        <div><h1 class="page-title">Signalements communautaires</h1><p class="page-sub">Animaux signalés absents par les adoptants, modération automatique et manuelle</p></div>
+      </div>
+
+      <!-- Explication du système -->
+      <div style="background:var(--paper);border-radius:18px;border:1.5px solid var(--border);padding:22px;margin-bottom:22px;box-shadow:var(--shadow)">
+        <p style="font-family:'Fraunces',serif;font-size:0.95rem;font-weight:600;font-style:italic;color:var(--forest);margin-bottom:12px">⚙️ Comment fonctionne ce système ?</p>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
+          <div style="background:var(--ivory);border-radius:12px;padding:14px;border:1.5px solid var(--border);text-align:center">
+            <span style="font-size:1.5rem;display:block;margin-bottom:6px">🚩</span>
+            <p style="font-size:0.75rem;font-weight:700;color:var(--forest);margin-bottom:3px">1 signalement</p>
+            <p style="font-size:0.68rem;color:var(--dust)">Badge discret sur la fiche</p>
+          </div>
+          <div style="background:var(--ivory);border-radius:12px;padding:14px;border:1.5px solid var(--border);text-align:center">
+            <span style="font-size:1.5rem;display:block;margin-bottom:6px">⚠️</span>
+            <p style="font-size:0.75rem;font-weight:700;color:var(--forest);margin-bottom:3px">3 signalements</p>
+            <p style="font-size:0.68rem;color:var(--dust)">Alerte visible sur la fiche + notification admin</p>
+          </div>
+          <div style="background:rgba(201,112,74,0.06);border-radius:12px;padding:14px;border:1.5px solid rgba(201,112,74,0.2);text-align:center">
+            <span style="font-size:1.5rem;display:block;margin-bottom:6px">🗑️</span>
+            <p style="font-size:0.75rem;font-weight:700;color:var(--rose);margin-bottom:3px">5 signalements</p>
+            <p style="font-size:0.68rem;color:var(--dust)">Suppression automatique + exclusion scraping 12 mois</p>
+          </div>
+          <div style="background:var(--mint-lt);border-radius:12px;padding:14px;border:1.5px solid rgba(74,124,89,0.2);text-align:center">
+            <span style="font-size:1.5rem;display:block;margin-bottom:6px">✅</span>
+            <p style="font-size:0.75rem;font-weight:700;color:var(--moss);margin-bottom:3px">Refuge</p>
+            <p style="font-size:0.68rem;color:var(--dust)">Peut toujours ré-ajouter manuellement</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats signalements -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px">
+        <div class="kpi"><span class="kpi-n">7</span><span class="kpi-l">Signalements actifs</span></div>
+        <div class="kpi"><span class="kpi-n">2</span><span class="kpi-l">À 4/5, suppression imminente</span><span class="kpi-trend trend-down">⚠ À surveiller</span></div>
+        <div class="kpi"><span class="kpi-n">23</span><span class="kpi-l">Supprimés automatiquement</span><span class="kpi-trend trend-flat">Ce mois</span></div>
+        <div class="kpi"><span class="kpi-n">14</span><span class="kpi-l">Ignorés au scraping</span><span class="kpi-trend trend-flat">Exclusions actives</span></div>
+      </div>
+
+      <!-- Table signalements actifs -->
+      <p style="font-family:'Fraunces',serif;font-size:0.95rem;font-weight:600;font-style:italic;color:var(--forest);margin-bottom:12px">Animaux actuellement signalés</p>
+      <div class="table-wrap" style="margin-bottom:28px">
+        <table>
+          <thead><tr><th>Animal</th><th>Refuge</th><th>Signalements</th><th>Progression</th><th>Dernier signalement</th><th>Actions</th></tr></thead>
+          <tbody>
+
+            <tr id="signal-row-brutus">
+              <td><div style="display:flex;align-items:center;gap:10px">
+                <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#E8D5B0,#C9A87A);display:flex;align-items:center;justify-content:center;font-size:1.1rem">🐕</div>
+                <div><div style="font-family:'Fraunces',serif;font-size:0.88rem;font-weight:600;font-style:italic">Brutus</div><div style="font-size:0.68rem;color:var(--dust)">Berger · 9 ans · Mâle</div></div>
+              </div></td>
+              <td style="font-size:0.78rem;color:var(--dust)">SPA de Toulouse</td>
+              <td>
+                <span style="font-family:'Fraunces',serif;font-size:1.1rem;font-weight:700;color:var(--rose)">4</span>
+                <span style="font-size:0.7rem;color:var(--smoke)">/5</span>
+              </td>
+              <td>
+                <div style="display:flex;gap:4px;align-items:center">
+                  <div style="width:12px;height:12px;border-radius:3px;background:var(--rose)"></div>
+                  <div style="width:12px;height:12px;border-radius:3px;background:var(--rose)"></div>
+                  <div style="width:12px;height:12px;border-radius:3px;background:var(--rose)"></div>
+                  <div style="width:12px;height:12px;border-radius:3px;background:var(--rose)"></div>
+                  <div style="width:12px;height:12px;border-radius:3px;background:var(--border)"></div>
+                  <span style="font-size:0.65rem;color:var(--rose);font-weight:700;margin-left:4px">⚠ Suppression imminente</span>
+                </div>
+              </td>
+              <td style="font-size:0.75rem;color:var(--dust)">Il y a 2h</td>
+              <td><div class="row-actions">
+                <button class="row-btn row-btn-red" onclick="suppressAnimal('signal-row-brutus','Brutus')">🗑️ Supprimer maintenant</button>
+                <button class="row-btn row-btn-green" onclick="clearSignals('signal-row-brutus','Brutus')">✅ Réinitialiser</button>
+              </div></td>
+            </tr>
+
+            <tr id="signal-row-luna">
+              <td><div style="display:flex;align-items:center;gap:10px">
+                <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#DDE5DD,#9AB89A);display:flex;align-items:center;justify-content:center;font-size:1.1rem">🐱</div>
+                <div><div style="font-family:'Fraunces',serif;font-size:0.88rem;font-weight:600;font-style:italic">Caramel</div><div style="font-size:0.68rem;color:var(--dust)">Persan · 11 ans · Femelle</div></div>
+              </div></td>
+              <td style="font-size:0.78rem;color:var(--dust)">SPA de Lyon</td>
+              <td>
+                <span style="font-family:'Fraunces',serif;font-size:1.1rem;font-weight:700;color:var(--rose)">4</span>
+                <span style="font-size:0.7rem;color:var(--smoke)">/5</span>
+              </td>
+              <td>
+                <div style="display:flex;gap:4px;align-items:center">
+                  <div style="width:12px;height:12px;border-radius:3px;background:var(--rose)"></div>
+                  <div style="width:12px;height:12px;border-radius:3px;background:var(--rose)"></div>
+                  <div style="width:12px;height:12px;border-radius:3px;background:var(--rose)"></div>
+                  <div style="width:12px;height:12px;border-radius:3px;background:var(--rose)"></div>
+                  <div style="width:12px;height:12px;border-radius:3px;background:var(--border)"></div>
+                  <span style="font-size:0.65rem;color:var(--rose);font-weight:700;margin-left:4px">⚠ Suppression imminente</span>
+                </div>
+              </td>
+              <td style="font-size:0.75rem;color:var(--dust)">Il y a 4h</td>
+              <td><div class="row-actions">
+                <button class="row-btn row-btn-red" onclick="suppressAnimal('signal-row-luna','Caramel')">🗑️ Supprimer maintenant</button>
+                <button class="row-btn row-btn-green" onclick="clearSignals('signal-row-luna','Caramel')">✅ Réinitialiser</button>
+              </div></td>
+            </tr>
+
+            <tr id="signal-row-rex">
+              <td><div style="display:flex;align-items:center;gap:10px">
+                <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--mint),var(--sage));display:flex;align-items:center;justify-content:center;font-size:1.1rem">🐕</div>
+                <div><div style="font-family:'Fraunces',serif;font-size:0.88rem;font-weight:600;font-style:italic">Rex</div><div style="font-size:0.68rem;color:var(--dust)">Berger · 3 ans · Mâle</div></div>
+              </div></td>
+              <td style="font-size:0.78rem;color:var(--dust)">SPA de Lyon</td>
+              <td>
+                <span style="font-family:'Fraunces',serif;font-size:1.1rem;font-weight:700;color:var(--amber)">2</span>
+                <span style="font-size:0.7rem;color:var(--smoke)">/5</span>
+              </td>
+              <td>
+                <div style="display:flex;gap:4px;align-items:center">
+                  <div style="width:12px;height:12px;border-radius:3px;background:var(--amber)"></div>
+                  <div style="width:12px;height:12px;border-radius:3px;background:var(--amber)"></div>
+                  <div style="width:12px;height:12px;border-radius:3px;background:var(--border)"></div>
+                  <div style="width:12px;height:12px;border-radius:3px;background:var(--border)"></div>
+                  <div style="width:12px;height:12px;border-radius:3px;background:var(--border)"></div>
+                </div>
+              </td>
+              <td style="font-size:0.75rem;color:var(--dust)">Hier</td>
+              <td><div class="row-actions">
+                <button class="row-btn row-btn-red" onclick="suppressAnimal('signal-row-rex','Rex')">🗑️ Supprimer</button>
+                <button class="row-btn row-btn-green" onclick="clearSignals('signal-row-rex','Rex')">✅ Réinitialiser</button>
+              </div></td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Exclusions scraping actives -->
+      <p style="font-family:'Fraunces',serif;font-size:0.95rem;font-weight:600;font-style:italic;color:var(--forest);margin-bottom:12px">🚫 Exclusions scraping actives <span style="font-size:0.75rem;font-family:'Nunito',sans-serif;color:var(--dust);font-style:normal;font-weight:600">(ignorés pendant 12 mois)</span></p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Animal</th><th>Refuge</th><th>Supprimé le</th><th>Exclusion jusqu'au</th><th>Actions</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><div style="font-family:'Fraunces',serif;font-size:0.88rem;font-weight:600;font-style:italic;color:var(--smoke)">🐕 Max</div><div style="font-size:0.68rem;color:var(--smoke)">Golden · 6 ans · Mâle</div></td>
+              <td style="font-size:0.78rem;color:var(--dust)">SPA de Grenoble</td>
+              <td style="font-size:0.75rem;color:var(--dust)">14 mars 2025</td>
+              <td style="font-size:0.75rem;color:var(--rose);font-weight:700">14 mars 2026</td>
+              <td><div class="row-actions">
+                <button class="row-btn row-btn-green" onclick="showToast('Exclusion levée pour Max ✅')">↩ Lever l'exclusion</button>
+              </div></td>
+            </tr>
+            <tr>
+              <td><div style="font-family:'Fraunces',serif;font-size:0.88rem;font-weight:600;font-style:italic;color:var(--smoke)">🐱 Lola</div><div style="font-size:0.68rem;color:var(--smoke)">Européenne · 3 ans · Femelle</div></td>
+              <td style="font-size:0.78rem;color:var(--dust)">SPA de Bordeaux</td>
+              <td style="font-size:0.75rem;color:var(--dust)">2 avril 2025</td>
+              <td style="font-size:0.75rem;color:var(--rose);font-weight:700">2 avril 2026</td>
+              <td><div class="row-actions">
+                <button class="row-btn row-btn-green" onclick="showToast('Exclusion levée pour Lola ✅')">↩ Lever l'exclusion</button>
+              </div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══════════ ALGORITHME ══════════ -->
+    <div class="section" id="section-algorithme">
+      <div class="page-hdr">
+        <div><h1 class="page-title">Algorithme de matching</h1><p class="page-sub">Ajustez les pondérations et paramètres du score de compatibilité</p></div>
+      </div>
+
+      <div class="algo-grid">
+        <div class="algo-card">
+          <p class="algo-title">⚖️ Pondérations des critères</p>
+          <p style="font-size:0.75rem;color:var(--dust);margin-bottom:16px;font-style:italic">Le total doit être égal à 100%.</p>
+
+          <div class="weight-row"><span class="weight-icon">🏠</span><span class="weight-name">Logement</span><input type="range" class="weight-slider" min="0" max="50" value="30" oninput="updateWeight(this,'w1')"><span class="weight-val" id="w1">30%</span></div>
+          <div class="weight-row"><span class="weight-icon">👨‍👩‍👧</span><span class="weight-name">Foyer</span><input type="range" class="weight-slider" min="0" max="50" value="25" oninput="updateWeight(this,'w2')"><span class="weight-val" id="w2">25%</span></div>
+          <div class="weight-row"><span class="weight-icon">⏰</span><span class="weight-name">Disponibilité</span><input type="range" class="weight-slider" min="0" max="50" value="20" oninput="updateWeight(this,'w3')"><span class="weight-val" id="w3">20%</span></div>
+          <div class="weight-row"><span class="weight-icon">🎓</span><span class="weight-name">Expérience</span><input type="range" class="weight-slider" min="0" max="50" value="15" oninput="updateWeight(this,'w4')"><span class="weight-val" id="w4">15%</span></div>
+          <div class="weight-row"><span class="weight-icon">🏃</span><span class="weight-name">Mode de vie</span><input type="range" class="weight-slider" min="0" max="50" value="10" oninput="updateWeight(this,'w5')"><span class="weight-val" id="w5">10%</span></div>
+
+          <div class="weight-total">
+            <span class="weight-total-label">Total des pondérations</span>
+            <span class="weight-total-val ok" id="weightTotal">100%</span>
+          </div>
+          <button class="save-btn" onclick="showToast('Pondérations sauvegardées ✅')">Sauvegarder les pondérations</button>
+        </div>
+
+        <div class="algo-card">
+          <p class="algo-title">🎯 Seuils d'affichage</p>
+          <p style="font-size:0.75rem;color:var(--dust);margin-bottom:16px;font-style:italic">Score minimum pour qu'un animal soit affiché à un adoptant.</p>
+
+          <div class="threshold-row"><span class="threshold-label">Score minimum affiché</span><input class="threshold-input" type="number" value="40" min="0" max="100"><span class="threshold-unit">%</span></div>
+          <div class="threshold-row"><span class="threshold-label">Seuil "Coup de Patte idéal"</span><input class="threshold-input" type="number" value="85" min="0" max="100"><span class="threshold-unit">%</span></div>
+          <div class="threshold-row"><span class="threshold-label">Seuil "Belle rencontre"</span><input class="threshold-input" type="number" value="70" min="0" max="100"><span class="threshold-unit">%</span></div>
+          <div class="threshold-row"><span class="threshold-label">Seuil "On s'apprivoise ?"</span><input class="threshold-input" type="number" value="55" min="0" max="100"><span class="threshold-unit">%</span></div>
+          <div class="threshold-row"><span class="threshold-label">Score min. Enfin Moi ? affiché</span><input class="threshold-input" type="number" value="50" min="0" max="100"><span class="threshold-unit">%</span></div>
+          <button class="save-btn" onclick="showToast('Seuils sauvegardés ✅')">Sauvegarder les seuils</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ ENFIN MOI ══════════ -->
+    <div class="section" id="section-enfin">
+      <div class="page-hdr">
+        <div><h1 class="page-title">Seuils Enfin Moi ?</h1><p class="page-sub">Définissez les critères qui font basculer un animal en catégorie Enfin Moi ?</p></div>
+      </div>
+
+      <div class="algo-grid">
+        <div class="algo-card algo-card-full">
+          <p class="algo-title">✨ Critères d'entrée en catégorie Enfin Moi ?</p>
+          <p style="font-size:0.78rem;color:var(--dust);margin-bottom:20px;line-height:1.6">Un animal bascule automatiquement en Enfin Moi ? dès qu'il remplit <strong>au moins un</strong> de ces critères.</p>
+
+          <div class="threshold-row">
+            <span class="threshold-label">⏰ Durée en refuge (mois)</span>
+            <input class="threshold-input" type="number" value="12" min="1" max="36">
+            <span class="threshold-unit">mois minimum</span>
+          </div>
+          <div class="threshold-row">
+            <span class="threshold-label">🌿 Âge senior, Chiens</span>
+            <input class="threshold-input" type="number" value="8" min="1" max="20">
+            <span class="threshold-unit">ans et plus</span>
+          </div>
+          <div class="threshold-row">
+            <span class="threshold-label">🌿 Âge senior, Chats</span>
+            <input class="threshold-input" type="number" value="10" min="1" max="25">
+            <span class="threshold-unit">ans et plus</span>
+          </div>
+          <div class="threshold-row">
+            <span class="threshold-label">😟 Supporte mal la vie en refuge</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              <label style="position:relative;width:42px;height:22px;display:inline-block"><input type="checkbox" checked style="opacity:0;width:0;height:0" id="refugeToggle"><span onclick="document.getElementById('refugeToggle').click()" style="position:absolute;inset:0;background:var(--moss);border-radius:50px;cursor:pointer;transition:background 0.2s"></span><span style="position:absolute;width:16px;height:16px;background:white;border-radius:50%;top:3px;left:23px;transition:left 0.2s;box-shadow:0 1px 4px rgba(0,0,0,0.2)"></span></label>
+              <span style="font-size:0.75rem;color:var(--moss);font-weight:700">Activé</span>
+            </div>
+          </div>
+          <div class="threshold-row">
+            <span class="threshold-label">💛 Besoins médicaux lourds</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              <label style="position:relative;width:42px;height:22px;display:inline-block"><input type="checkbox" checked style="opacity:0;width:0;height:0" id="medToggle"><span onclick="document.getElementById('medToggle').click()" style="position:absolute;inset:0;background:var(--moss);border-radius:50px;cursor:pointer;transition:background 0.2s"></span><span id="medDot" style="position:absolute;width:16px;height:16px;background:white;border-radius:50%;top:3px;left:23px;transition:left 0.2s;box-shadow:0 1px 4px rgba(0,0,0,0.2)"></span></label>
+              <span style="font-size:0.75rem;color:var(--moss);font-weight:700">Activé</span>
+            </div>
+          </div>
+          <div class="threshold-row">
+            <span class="threshold-label">🦽 Handicap mentionné</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              <label style="position:relative;width:42px;height:22px;display:inline-block"><input type="checkbox" checked style="opacity:0;width:0;height:0" id="handToggle"><span onclick="document.getElementById('handToggle').click()" style="position:absolute;inset:0;background:var(--moss);border-radius:50px;cursor:pointer;transition:background 0.2s"></span><span id="handDot" style="position:absolute;width:16px;height:16px;background:white;border-radius:50%;top:3px;left:23px;transition:left 0.2s;box-shadow:0 1px 4px rgba(0,0,0,0.2)"></span></label>
+              <span style="font-size:0.75rem;color:var(--moss);font-weight:700">Activé</span>
+            </div>
+          </div>
+
+          <button class="save-btn" style="max-width:280px;margin-top:24px" onclick="showToast('Seuils Enfin Moi ? sauvegardés ✅')">Sauvegarder les seuils</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ COMMUNICATION ══════════ -->
+    <div class="section" id="section-communication">
+      <div class="page-hdr">
+        <div><h1 class="page-title">Kit Communication</h1><p class="page-sub">Tous vos outils de communication centralisés en un endroit</p></div>
+      </div>
+
+      <!-- Plaquettes & Flyers -->
+      <p style="font-family:'Fraunces',serif;font-size:0.95rem;font-weight:600;font-style:italic;color:var(--forest);margin-bottom:14px">🖨️ Documents imprimables</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:28px">
+
+        <div class="dash-card" style="display:flex;flex-direction:column;justify-content:space-between">
+          <div>
+            <div style="font-size:2rem;margin-bottom:10px">📄</div>
+            <p style="font-family:'Fraunces',serif;font-size:1rem;font-weight:600;font-style:italic;color:var(--forest);margin-bottom:6px">Plaquette Refuges</p>
+            <p style="font-size:0.78rem;color:var(--dust);line-height:1.6;margin-bottom:14px">Format A4 recto-verso. Présente Coup de Patte aux refuges et associations. À imprimer ou envoyer en PDF par email.</p>
+            <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:16px">
+              <span style="font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:50px;background:var(--mint-lt);border:1px solid rgba(74,124,89,0.2);color:var(--moss)">Format A4</span>
+              <span style="font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:50px;background:var(--mint-lt);border:1px solid rgba(74,124,89,0.2);color:var(--moss)">Recto-verso</span>
+              <span style="font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:50px;background:var(--mint-lt);border:1px solid rgba(74,124,89,0.2);color:var(--moss)">Imprimable</span>
+            </div>
+          </div>
+          <a href="cdp-plaquette-refuge.html" target="_blank" class="btn-primary" style="justify-content:center">📄 Ouvrir la plaquette</a>
+        </div>
+
+        <div class="dash-card" style="display:flex;flex-direction:column;justify-content:space-between">
+          <div>
+            <div style="font-size:2rem;margin-bottom:10px">📋</div>
+            <p style="font-family:'Fraunces',serif;font-size:1rem;font-weight:600;font-style:italic;color:var(--forest);margin-bottom:6px">Flyer Adoptants</p>
+            <p style="font-size:0.78rem;color:var(--dust);line-height:1.6;margin-bottom:14px">Format A5 recto-verso. À distribuer lors de portes ouvertes, événements animaliers ou à laisser en refuges. Avec emplacement QR code.</p>
+            <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:16px">
+              <span style="font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:50px;background:var(--mint-lt);border:1px solid rgba(74,124,89,0.2);color:var(--moss)">Format A5</span>
+              <span style="font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:50px;background:var(--mint-lt);border:1px solid rgba(74,124,89,0.2);color:var(--moss)">Recto-verso</span>
+              <span style="font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:50px;background:rgba(212,168,67,0.12);border:1px solid rgba(196,154,26,0.2);color:var(--amber)">QR code à ajouter</span>
+            </div>
+          </div>
+          <a href="cdp-flyer-adoptant.html" target="_blank" class="btn-primary" style="justify-content:center">📋 Ouvrir le flyer</a>
+        </div>
+
+      </div>
+
+      <!-- Emails -->
+      <p style="font-family:'Fraunces',serif;font-size:0.95rem;font-weight:600;font-style:italic;color:var(--forest);margin-bottom:14px">📧 Modèles d'emails</p>
+      <div class="dash-card" style="margin-bottom:28px">
+        <p style="font-size:0.78rem;color:var(--dust);line-height:1.6;margin-bottom:16px">Trois versions selon le contexte : premier contact avec un refuge, invitation à devenir partenaire, et relance douce. Chacun avec des conseils d'envoi.</p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px">
+          <div style="flex:1;min-width:180px;background:var(--ivory);border-radius:12px;padding:12px 14px;border:1.5px solid var(--border)">
+            <p style="font-size:0.75rem;font-weight:700;color:var(--forest);margin-bottom:3px">📩 Premier contact</p>
+            <p style="font-size:0.7rem;color:var(--dust)">Pour référencer un nouveau refuge sur la plateforme.</p>
+          </div>
+          <div style="flex:1;min-width:180px;background:var(--ivory);border-radius:12px;padding:12px 14px;border:1.5px solid var(--border)">
+            <p style="font-size:0.75rem;font-weight:700;color:var(--forest);margin-bottom:3px">🤝 Devenir partenaire</p>
+            <p style="font-size:0.7rem;color:var(--dust)">Pour convaincre un refuge de gérer activement son espace.</p>
+          </div>
+          <div style="flex:1;min-width:180px;background:var(--ivory);border-radius:12px;padding:12px 14px;border:1.5px solid var(--border)">
+            <p style="font-size:0.75rem;font-weight:700;color:var(--forest);margin-bottom:3px">🔁 Relance douce</p>
+            <p style="font-size:0.7rem;color:var(--dust)">Après 2 semaines sans réponse, courte et bienveillante.</p>
+          </div>
+        </div>
+        <a href="cdp-emails-refuge.html" target="_blank" class="btn-primary" style="display:inline-flex">📧 Ouvrir les modèles d'emails</a>
+      </div>
+
+      <!-- Réseaux sociaux -->
+      <p style="font-family:'Fraunces',serif;font-size:0.95rem;font-weight:600;font-style:italic;color:var(--forest);margin-bottom:14px">📱 Kit réseaux sociaux</p>
+      <div class="dash-card" style="margin-bottom:28px">
+        <p style="font-size:0.78rem;color:var(--dust);line-height:1.6;margin-bottom:16px">Visuels prêts à publier (Instagram, Facebook), textes optimisés par plateforme (TikTok, Instagram, Facebook), et conseils stratégiques pour maximiser la portée sans budget publicitaire.</p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px">
+          <span style="font-size:0.7rem;font-weight:700;padding:4px 12px;border-radius:50px;background:#000;color:#fff">TikTok</span>
+          <span style="font-size:0.7rem;font-weight:700;padding:4px 12px;border-radius:50px;background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045);color:#fff">Instagram</span>
+          <span style="font-size:0.7rem;font-weight:700;padding:4px 12px;border-radius:50px;background:#1877f2;color:#fff">Facebook</span>
+          <span style="font-size:0.7rem;font-weight:700;padding:4px 12px;border-radius:50px;background:var(--mint-lt);border:1px solid rgba(74,124,89,0.2);color:var(--moss)">3 visuels prêts</span>
+          <span style="font-size:0.7rem;font-weight:700;padding:4px 12px;border-radius:50px;background:var(--mint-lt);border:1px solid rgba(74,124,89,0.2);color:var(--moss)">4 textes à copier</span>
+        </div>
+        <a href="cdp-kit-reseaux-sociaux.html" target="_blank" class="btn-primary" style="display:inline-flex">📱 Ouvrir le kit réseaux sociaux</a>
+      </div>
+
+      <!-- Pages du site -->
+      <p style="font-family:'Fraunces',serif;font-size:0.95rem;font-weight:600;font-style:italic;color:var(--forest);margin-bottom:14px">🌐 Pages du site à partager</p>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+        <a href="coup-de-patte-landing.html" target="_blank" style="text-decoration:none;background:var(--paper);border-radius:14px;border:1.5px solid var(--border);padding:16px;display:flex;align-items:center;gap:10px;transition:transform 0.2s" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+          <span style="font-size:1.3rem">🏠</span>
+          <div><p style="font-size:0.8rem;font-weight:700;color:var(--forest)">Landing page</p><p style="font-size:0.68rem;color:var(--dust)">Page d'accueil publique</p></div>
+        </a>
+        <a href="coup-de-patte-enfin-moi.html" target="_blank" style="text-decoration:none;background:var(--paper);border-radius:14px;border:1.5px solid var(--border);padding:16px;display:flex;align-items:center;gap:10px;transition:transform 0.2s" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+          <span style="font-size:1.3rem">✨</span>
+          <div><p style="font-size:0.8rem;font-weight:700;color:var(--forest)">Enfin Moi ?</p><p style="font-size:0.68rem;color:var(--dust)">À partager pour les animaux oubliés</p></div>
+        </a>
+        <a href="coup-de-patte-apropos.html" target="_blank" style="text-decoration:none;background:var(--paper);border-radius:14px;border:1.5px solid var(--border);padding:16px;display:flex;align-items:center;gap:10px;transition:transform 0.2s" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+          <span style="font-size:1.3rem">💛</span>
+          <div><p style="font-size:0.8rem;font-weight:700;color:var(--forest)">À propos + Don</p><p style="font-size:0.68rem;color:var(--dust)">Histoire du projet et soutien</p></div>
+        </a>
+      </div>
+
+    </div>
+
+  </main>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+  // Navigation
+  function showSection(id, el) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById('section-' + id).classList.add('active');
+    document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('active'));
+    if(el) el.classList.add('active');
+    else {
+      document.querySelectorAll('.sb-item').forEach(i => {
+        if(i.getAttribute('onclick') && i.getAttribute('onclick').includes(`'${id}'`))
+          i.classList.add('active');
+      });
+    }
+  }
+
+  // Pondérations
+  function updateWeight(slider, id) {
+    document.getElementById(id).textContent = slider.value + '%';
+    var sliders = document.querySelectorAll('.weight-slider');
+    var total = 0;
+    sliders.forEach(s => total += parseInt(s.value));
+    var totalEl = document.getElementById('weightTotal');
+    totalEl.textContent = total + '%';
+    totalEl.style.color = total === 100 ? 'var(--ivory)' : 'var(--gold)';
+  }
+
+  // Valider refuge
+  function validateRefuge(btn, name) {
+    var row = btn.closest('tr');
+    row.style.transition = 'opacity 0.4s';
+    row.style.opacity = '0';
+    setTimeout(() => row.remove(), 400);
+    showToast(`✅ ${name} validé et publié sur Coup de Patte`);
+  }
+
+  // Scraping global
+  let scrapingInterval;
+  function startGlobalScraping() {
+    var log = document.getElementById('scrapingLog');
+    showToast('🤖 Scraping global lancé sur 4 218 refuges');
+    var msgs = [
+      '<div class="log-info">[MAINTENANT] Scraping global lancé manuellement</div>',
+      '<div class="log-ok">[+2s] ✓ SPA de Marseille, 31 fiches importées</div>',
+      '<div class="log-ok">[+5s] ✓ Association Chats Libres, 8 fiches importées</div>',
+      '<div class="log-warn">[+8s] ⚠ Refuge du Soleil, structure HTML modifiée, adaptation en cours</div>',
+      '<div class="log-ok">[+11s] ✓ SPA de Strasbourg, 19 fiches importées</div>',
+    ];
+    var i = 0;
+    scrapingInterval = setInterval(() => {
+      if(i < msgs.length) {
+        log.innerHTML += msgs[i++];
+        log.scrollTop = log.scrollHeight;
+      } else clearInterval(scrapingInterval);
+    }, 1200);
+  }
+
+  // Toast
+  let toastTimer;
+  function showToast(msg) {
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 3500);
+  }
+
+  // Signalements
+  function suppressAnimal(rowId, name) {
+    var row = document.getElementById(rowId);
+    if(row){ row.style.transition='opacity 0.5s,transform 0.5s'; row.style.opacity='0'; row.style.transform='translateX(30px)'; setTimeout(()=>row.remove(),500); }
+    showToast(`🗑️ ${name} supprimé · Exclusion scraping 12 mois activée`);
+  }
+
+  function clearSignals(rowId, name) {
+    showToast(`✅ Signalements de ${name} réinitialisés`);
+    // Reset visual bars
+    var row = document.getElementById(rowId);
+    if(row){ row.querySelectorAll('[style*="background:var(--rose)"], [style*="background:var(--amber)"]').forEach(b=>{ b.style.background='var(--border)'; }); }
+  }
+  window.addEventListener('load', () => {
+    var data = [78,92,105,98,121,134];
+    var max = Math.max(...data);
+    var container = document.getElementById('adoptionChart');
+    if(!container) return;
+    data.forEach(v => {
+      var wrap = document.createElement('div');
+      wrap.className = 'chart-bar-wrap';
+      var bar = document.createElement('div');
+      bar.className = 'chart-bar';
+      bar.style.height = '0px';
+      bar.style.width = '100%';
+      wrap.appendChild(bar);
+      container.appendChild(wrap);
+      setTimeout(() => bar.style.height = Math.round((v/max)*68) + 'px', 300);
+    });
+  });
+</script>
+</body>
+</html>

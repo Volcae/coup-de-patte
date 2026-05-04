@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>À propos — Coup de Patte</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --forest:#2D4A3E;--moss:#4A7C59;--sage:#7AAD89;--mint:#C8E6C0;--mint-lt:#EBF5E8;
+  --ivory:#F4F1E8;--paper:#FDFCF8;--bark:#6B4F3A;--gold:#D4A843;--amber:#C49A1A;
+  --rose:#C9704A;--blue:#5B8DEF;--border:rgba(45,74,62,0.11);
+  --dust:#7A6E65;--smoke:#A89E96;--shadow:0 8px 32px rgba(45,74,62,0.10);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Nunito',sans-serif;background:var(--ivory);color:var(--forest);overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.022'/%3E%3C/svg%3E");pointer-events:none;z-index:0}
+
+/* Blobs */
+.blob{position:fixed;border-radius:60% 40% 55% 45%/50% 60% 40% 50%;pointer-events:none;z-index:0;animation:blobFloat 14s ease-in-out infinite}
+.blob-1{top:-15%;right:-10%;width:600px;height:600px;background:radial-gradient(ellipse,rgba(74,124,89,0.08) 0%,transparent 65%)}
+.blob-2{bottom:-10%;left:-8%;width:500px;height:500px;background:radial-gradient(ellipse,rgba(212,168,67,0.07) 0%,transparent 65%);animation-direction:reverse;animation-duration:18s}
+@keyframes blobFloat{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(20px,-18px) scale(1.04)}66%{transform:translate(-14px,10px) scale(0.97)}}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:16px 52px;background:rgba(244,241,232,0.93);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.logo{font-family:'Fraunces',serif;font-size:1.4rem;font-weight:600;color:var(--forest);display:flex;align-items:center;gap:9px;text-decoration:none}
+.logo-bubble{width:40px;height:40px;background:var(--forest);border-radius:50% 50% 50% 50%/60% 60% 40% 40%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(45,74,62,0.32);animation:pawPulse 2.5s ease-in-out infinite}
+.logo-bubble span{font-size:1.1rem;animation:pawWiggle 2.5s ease-in-out infinite;display:inline-block;filter:brightness(0) invert(1)}
+@keyframes pawPulse{0%,100%{box-shadow:0 4px 12px rgba(45,74,62,0.3);transform:scale(1)}50%{box-shadow:0 6px 20px rgba(45,74,62,0.45);transform:scale(1.07)}}
+@keyframes pawWiggle{0%,100%{transform:rotate(0deg) scale(1)}20%{transform:rotate(-12deg) scale(1.1)}40%{transform:rotate(10deg) scale(1.05)}60%{transform:rotate(-6deg) scale(1.08)}80%{transform:rotate(4deg) scale(1.03)}}
+.nav-links{display:flex;gap:28px;align-items:center;list-style:none}
+.nav-links a{text-decoration:none;color:var(--forest);font-size:0.88rem;font-weight:500;opacity:0.6;transition:opacity 0.2s}
+.nav-links a:hover{opacity:1}
+.nav-links a.active{opacity:1;font-weight:700}
+.nav-cta{background:var(--forest)!important;color:var(--ivory)!important;opacity:1!important;padding:9px 22px;border-radius:50px;font-weight:700!important;transition:background 0.2s!important}
+.nav-cta:hover{background:var(--moss)!important}
+
+/* HERO */
+.hero{padding:130px 52px 80px;max-width:1100px;margin:0 auto;position:relative;z-index:1;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+.hero-eyebrow{font-size:0.68rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--moss);display:block;margin-bottom:16px}
+.hero-title{font-family:'Fraunces',serif;font-size:3.2rem;font-weight:700;font-style:italic;color:var(--forest);line-height:1.05;letter-spacing:-1px;margin-bottom:20px}
+.hero-title em{font-style:normal;color:var(--moss)}
+.hero-sub{font-size:1rem;line-height:1.8;color:var(--dust);margin-bottom:32px}
+.hero-visual{position:relative}
+.hero-quote-card{background:var(--forest);border-radius:24px;padding:32px;color:var(--ivory);position:relative;overflow:hidden}
+.hero-quote-card::before{content:'❝';position:absolute;top:-10px;right:16px;font-size:8rem;opacity:0.07;font-family:'Fraunces',serif;line-height:1}
+.hero-quote{font-family:'Fraunces',serif;font-size:1.1rem;font-style:italic;font-weight:300;line-height:1.7;color:rgba(244,241,232,0.9);margin-bottom:20px}
+.hero-quote-author{font-size:0.78rem;font-weight:700;color:var(--gold);letter-spacing:0.5px}
+
+/* CONTENT */
+.content{max-width:1100px;margin:0 auto;padding:0 52px 100px;position:relative;z-index:1}
+
+/* SECTION */
+.section{margin-bottom:70px}
+.section-label{font-size:0.65rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--moss);display:block;margin-bottom:12px}
+.section-title{font-family:'Fraunces',serif;font-size:2rem;font-weight:600;font-style:italic;color:var(--forest);margin-bottom:20px;line-height:1.2}
+.section-body{font-size:0.92rem;line-height:1.85;color:var(--dust)}
+.section-body p{margin-bottom:14px}
+.section-body p:last-child{margin-bottom:0}
+
+/* STORIES */
+.stories{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:32px}
+.story-card{background:var(--paper);border-radius:22px;border:1.5px solid var(--border);padding:28px;box-shadow:var(--shadow);position:relative;overflow:hidden;transition:transform 0.22s cubic-bezier(0.34,1.56,0.64,1)}
+.story-card:hover{transform:translateY(-4px)}
+.story-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px}
+.story-card.green::before{background:linear-gradient(90deg,var(--sage),var(--moss))}
+.story-card.gold::before{background:linear-gradient(90deg,#F5C77E,var(--gold))}
+.story-card.rose::before{background:linear-gradient(90deg,#E8A088,var(--rose))}
+.story-card.blue::before{background:linear-gradient(90deg,#9BB8F5,var(--blue))}
+.story-emoji{font-size:2.2rem;margin-bottom:14px;display:block}
+.story-title{font-family:'Fraunces',serif;font-size:1rem;font-weight:600;font-style:italic;color:var(--forest);margin-bottom:10px}
+.story-text{font-size:0.82rem;line-height:1.75;color:var(--dust)}
+
+/* VALEURS */
+.valeurs{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:28px}
+.valeur{background:var(--paper);border-radius:18px;border:1.5px solid var(--border);padding:22px;text-align:center;box-shadow:var(--shadow)}
+.valeur-icon{font-size:1.8rem;display:block;margin-bottom:10px}
+.valeur-title{font-family:'Fraunces',serif;font-size:0.95rem;font-weight:600;font-style:italic;color:var(--forest);margin-bottom:8px}
+.valeur-text{font-size:0.76rem;line-height:1.6;color:var(--dust)}
+
+/* VISION */
+.vision-card{background:linear-gradient(160deg,var(--forest),var(--moss));border-radius:28px;padding:48px 52px;color:var(--ivory);position:relative;overflow:hidden;margin-bottom:60px}
+.vision-card::after{content:'🐾';position:absolute;right:-20px;bottom:-20px;font-size:18rem;opacity:0.04;line-height:1}
+.vision-eyebrow{font-size:0.65rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:rgba(244,241,232,0.5);display:block;margin-bottom:14px}
+.vision-title{font-family:'Fraunces',serif;font-size:2.2rem;font-weight:700;font-style:italic;color:var(--ivory);margin-bottom:16px;line-height:1.1}
+.vision-text{font-size:0.92rem;line-height:1.8;color:rgba(244,241,232,0.7);max-width:680px}
+
+/* DON */
+.don-section{background:var(--paper);border-radius:28px;border:1.5px solid var(--border);padding:44px 52px;box-shadow:var(--shadow);display:grid;grid-template-columns:1fr auto;gap:40px;align-items:center;margin-bottom:60px}
+.don-title{font-family:'Fraunces',serif;font-size:1.6rem;font-weight:600;font-style:italic;color:var(--forest);margin-bottom:10px}
+.don-text{font-size:0.88rem;line-height:1.75;color:var(--dust);margin-bottom:16px}
+.don-items{display:flex;flex-direction:column;gap:7px}
+.don-item{display:flex;align-items:center;gap:8px;font-size:0.8rem;color:var(--dust)}
+.don-item::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--moss);flex-shrink:0}
+.don-visual{display:flex;flex-direction:column;align-items:center;gap:12px;flex-shrink:0}
+.don-btn{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,#F5C77E,var(--gold));color:var(--forest);font-family:'Nunito',sans-serif;font-size:1rem;font-weight:700;padding:16px 32px;border-radius:50px;text-decoration:none;border:none;cursor:pointer;box-shadow:0 6px 20px rgba(212,168,67,0.35);transition:transform 0.2s cubic-bezier(0.34,1.56,0.64,1),box-shadow 0.2s;white-space:nowrap}
+.don-btn:hover{transform:translateY(-3px);box-shadow:0 10px 28px rgba(212,168,67,0.48)}
+.don-note{font-size:0.7rem;color:var(--smoke);text-align:center;max-width:180px;line-height:1.5}
+
+/* FOOTER */
+footer{background:var(--forest);padding:40px 52px;position:relative;z-index:1}
+.footer-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+.footer-logo{font-family:'Fraunces',serif;font-size:1.2rem;font-weight:600;font-style:italic;color:var(--ivory);display:flex;align-items:center;gap:10px}
+.footer-links{display:flex;gap:24px}
+.footer-links a{text-decoration:none;color:rgba(244,241,232,0.45);font-size:0.82rem;transition:color 0.2s}
+.footer-links a:hover{color:rgba(244,241,232,0.9)}
+.footer-copy{font-size:0.72rem;color:rgba(244,241,232,0.25)}
+
+/* Séparateur décoratif */
+.sep{display:flex;align-items:center;gap:16px;margin:60px 0}
+.sep-line{flex:1;height:1px;background:var(--border)}
+.sep-icon{font-size:1.2rem;color:var(--smoke);opacity:0.5}
+
+/* Reveal animation */
+.reveal{opacity:0;transform:translateY(20px);transition:opacity 0.6s ease,transform 0.6s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+</style>
+
+  <!-- Supabase SDK + Configuration Coup de Patte -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+</head>
+<body>
+
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+
+<nav>
+  <a href="coup-de-patte-landing.html" class="logo">
+    <div class="logo-bubble"><span>🐾</span></div>
+    Coup de Patte
+  </a>
+  <ul class="nav-links">
+    <li><a href="coup-de-patte-landing.html#comment">Comment ça marche</a></li>
+    <li><a href="coup-de-patte-refuges.html">Les refuges</a></li>
+    <li><a href="coup-de-patte-enfin-moi.html">Enfin Moi ? ✨</a></li>
+    <li><a href="coup-de-patte-apropos.html" class="active">À propos</a></li>
+    <li><a href="coup-de-patte-contact.html">Contact</a></li>
+    <li><a href="coup-de-patte-login.html" class="nav-cta">Se connecter</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="reveal">
+    <span class="hero-eyebrow">L'histoire de Coup de Patte</span>
+    <h1 class="hero-title">Un projet né<br>d'un <em>constat</em><br>et d'une émotion</h1>
+    <p class="hero-sub">Coup de Patte est un projet indépendant, porté seul, par conviction que chaque animal mérite la bonne personne, et que la technologie peut aider à les réunir.</p>
+    <a href="#don" class="don-btn" style="font-size:0.88rem;padding:12px 24px">💛 Soutenir le projet</a>
+  </div>
+  <div class="hero-visual reveal" style="transition-delay:0.2s">
+    <div class="hero-quote-card">
+      <p class="hero-quote">Un chien avait attendu 4 ans en refuge. Le personnel avait décidé de le transférer ailleurs, avec l'idée que ça pourrait lui ouvrir de nouvelles portes. J'ai trouvé ça dur pour lui. Dur aussi pour les animaliers qui s'y étaient attachés. C'est ce jour-là que Coup de Patte a commencé à exister dans ma tête.</p>
+      <span class="hero-quote-author">Le fondateur de Coup de Patte</span>
+    </div>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+  <!-- Pourquoi -->
+  <div class="section reveal">
+    <span class="section-label">Pourquoi Coup de Patte ?</span>
+    <h2 class="section-title">Des situations que j'ai vécues ou observées, et qui m'ont décidé</h2>
+    <div class="stories">
+      <div class="story-card green reveal">
+        <span class="story-emoji">🔍</span>
+        <p class="story-title">L'adoptant qui cherche dans le vide</p>
+        <p class="story-text">J'ai été adoptant. J'ai cherché. Les informations étaient éparpillées, souvent périmées. Les refuges n'ont pas toujours le temps de mettre à jour leur site. On se retrouve à appeler pour apprendre que l'animal est parti depuis des semaines.</p>
+      </div>
+      <div class="story-card gold reveal" style="transition-delay:0.1s">
+        <span class="story-emoji">🐕</span>
+        <p class="story-title">Le chien transféré après 4 ans</p>
+        <p class="story-text">Une émission de télé. Un chien de 4 ans en refuge, jamais adopté. Le refuge a décidé de le transférer vers un autre, avec l'idée qu'un nouveau départ lui ouvrirait de nouvelles portes. Pour lui, c'est encore un changement d'environnement. Pour le personnel qui s'y était attaché, c'est aussi une séparation.</p>
+      </div>
+      <div class="story-card rose reveal" style="transition-delay:0.15s">
+        <span class="story-emoji">🧓</span>
+        <p class="story-title">Le monsieur et les escaliers</p>
+        <p class="story-text">Il voulait vraiment un chien. Il s'est déplacé, il a rencontré l'animal, il l'a même promené. C'est au moment de finaliser que les animaliers ont remarqué qu'il avait des escaliers, alors que le chien avait de l'arthrose. L'adoption n'a pas pu se faire. Une meilleure information en amont aurait évité cette situation à tout le monde.</p>
+      </div>
+      <div class="story-card blue reveal" style="transition-delay:0.2s">
+        <span class="story-emoji">📱</span>
+        <p class="story-title">Les petites associations invisibles</p>
+        <p class="story-text">Beaucoup d'associations locales n'ont que les réseaux sociaux pour communiquer. Pas de site, pas de visibilité réelle. Leurs animaux existent, mais peu les trouvent. Coup de Patte peut leur servir de vitrine, sans qu'elles aient besoin de tout gérer elles-mêmes.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="sep"><div class="sep-line"></div><span class="sep-icon">🐾</span><div class="sep-line"></div></div>
+
+  <!-- Ce qu'on veut changer -->
+  <div class="section reveal">
+    <span class="section-label">Ce que Coup de Patte veut changer</span>
+    <h2 class="section-title">Moins de déplacements inutiles. Moins de retours. Plus de bonnes rencontres.</h2>
+    <div class="section-body">
+      <p>On trouve l'animal qui vous correspond vraiment. Ce n'est pas à l'adoptant de chercher : c'est l'algorithme qui fait le travail, en croisant votre mode de vie avec les profils des animaux disponibles en refuge.</p>
+      <p>Parce qu'un retour d'adoption, c'est difficile pour tout le monde. Pour l'animal qui retourne en refuge après avoir cru avoir trouvé un foyer. Pour l'adoptant qui se retrouve dans une situation qu'il n'avait pas anticipée. Une meilleure information en amont permet d'éviter beaucoup de ces situations.</p>
+      <p>Coup de Patte veut aussi réduire l'importance de la distance. L'animal qui vous correspond n'est peut-être pas à côté de chez vous. Si c'est la bonne rencontre, le trajet vaut la peine.</p>
+    </div>
+  </div>
+
+  <!-- Valeurs -->
+  <div class="section reveal">
+    <span class="section-label">Nos valeurs</span>
+    <div class="valeurs">
+      <div class="valeur">
+        <span class="valeur-icon">🤝</span>
+        <p class="valeur-title">Honnêteté</p>
+        <p class="valeur-text">On ne comptabilise que les adoptions réellement faites via Coup de Patte. On ne s'approprie pas ce qu'on n'a pas fait.</p>
+      </div>
+      <div class="valeur">
+        <span class="valeur-icon">🧠</span>
+        <p class="valeur-title">Responsabilité</p>
+        <p class="valeur-text">Adopter, c'est s'engager. Coup de Patte dit les choses clairement : l'amour seul ne suffit pas, et un jardin ne remplace pas les balades.</p>
+      </div>
+      <div class="valeur">
+        <span class="valeur-icon">🌿</span>
+        <p class="valeur-title">Bienveillance</p>
+        <p class="valeur-text">Pour les animaux d'abord. Mais aussi pour les refuges, les bénévoles, les adoptants. Tout le monde fait de son mieux.</p>
+      </div>
+      <div class="valeur">
+        <span class="valeur-icon">✨</span>
+        <p class="valeur-title">Équité</p>
+        <p class="valeur-text">Les animaux difficiles à adopter méritent autant de visibilité que les autres. C'est tout l'esprit de la catégorie Enfin Moi ?</p>
+      </div>
+      <div class="valeur">
+        <span class="valeur-icon">🤖</span>
+        <p class="valeur-title">Innovation utile</p>
+        <p class="valeur-text">La technologie au service du vivant. Le scraping IA permet aux refuges d'exister sur la plateforme sans y passer des heures.</p>
+      </div>
+      <div class="valeur">
+        <span class="valeur-icon">🆓</span>
+        <p class="valeur-title">Gratuité</p>
+        <p class="valeur-text">100% gratuit. Pour les adoptants, pour les refuges, pour les associations. Parce que la souffrance animale ne doit pas être un marché.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="sep"><div class="sep-line"></div><span class="sep-icon">🐾</span><div class="sep-line"></div></div>
+
+  <!-- Vision -->
+  <div class="vision-card reveal">
+    <span class="vision-eyebrow">Vision long terme</span>
+    <h2 class="vision-title">Le principal lien entre adoptants, refuges et animaux</h2>
+    <p class="vision-text">À terme, l'ambition de Coup de Patte est de devenir la référence en France pour l'adoption animale, pas par la taille, mais par la qualité des rencontres qu'elle permet. Un endroit où chaque animal a une vraie chance. Où chaque adoptant repart avec le bon compagnon. Et où les refuges peuvent souffler, parce que la plateforme travaille pour eux.</p>
+  </div>
+
+  <!-- DON -->
+  <div class="don-section reveal" id="don">
+    <div>
+      <h2 class="don-title">💛 Soutenir Coup de Patte</h2>
+      <p class="don-text">Coup de Patte est un projet indépendant, porté seul, sans investisseur et sans publicité. Les dons servent exclusivement à couvrir les frais de fonctionnement du site. Je ne cherche pas à me faire de l'argent sur le dos de la souffrance animale. Mais Coup de Patte représente aussi un coût que je finance seul.</p>
+      <div class="don-items">
+        <div class="don-item">Hébergement et nom de domaine</div>
+        <div class="don-item">Développement et maintenance technique</div>
+        <div class="don-item">Scraping IA pour indexer les refuges</div>
+        <div class="don-item">Envoi des notifications aux refuges</div>
+      </div>
+    </div>
+    <div class="don-visual">
+      <a href="https://www.helloasso.com" target="_blank" class="don-btn">💛 Faire un don</a>
+      <p class="don-note">Chaque contribution, même petite, aide à maintenir la plateforme active et gratuite pour tous.</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">
+      <div style="width:42px;height:42px;background:rgba(244,241,232,0.15);border:1.5px solid rgba(244,241,232,0.2);border-radius:50% 50% 50% 50%/60% 60% 40% 40%;display:flex;align-items:center;justify-content:center;animation:pawPulse 2.5s ease-in-out infinite;flex-shrink:0;"><span style="font-size:1.2rem;animation:pawWiggle 2.5s ease-in-out infinite;display:inline-block;filter:brightness(0) invert(1);">🐾</span></div>
+      Coup de Patte
+    </div>
+    <div class="footer-links">
+      <a href="coup-de-patte-landing.html#comment">Comment ça marche</a>
+      <a href="coup-de-patte-refuges.html">Les refuges</a>
+      <a href="coup-de-patte-enfin-moi.html">Enfin Moi ?</a>
+      <a href="coup-de-patte-apropos.html">À propos</a>
+      <a href="coup-de-patte-contact.html">Contact</a>
+    </div>
+    <span class="footer-copy">© 2025 Coup de Patte · Projet indépendant</span>
+  </div>
+</footer>
+
+<script>
+  // Reveal on scroll
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+  }, {threshold:0.1});
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
