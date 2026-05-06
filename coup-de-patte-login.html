@@ -517,29 +517,31 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 
   // ── Actions ──
   async function handleLogin() {
-    var email = document.getElementById('email-connexion-adoptant') || document.querySelector('input[type="email"]');
-    var password = document.getElementById('mdp-connexion-adoptant') || document.querySelector('input[type="password"]');
-    if (!email || !password) { showToast('⚠️ Remplissez tous les champs'); return; }
+    var emailEl = document.getElementById('email-connexion-adoptant');
+    var passwordEl = document.getElementById('pwd-login');
+    if (!emailEl || !passwordEl) { showToast('⚠️ Champs introuvables'); return; }
+    if (!emailEl.value || !passwordEl.value) { showToast('⚠️ Remplissez votre email et mot de passe'); return; }
     showToast('Connexion en cours…');
     var { data, error } = await supabase.auth.signInWithPassword({
-      email: email.value,
-      password: password.value
+      email: emailEl.value,
+      password: passwordEl.value
     });
-    if (error) { showToast('❌ ' + error.message); return; }
+    if (error) { showToast('❌ Email ou mot de passe incorrect'); return; }
     showToast('Connexion réussie ! Redirection vers vos matchs… 🐾');
     setTimeout(() => window.location.href = 'coup-de-patte-v3.html', 1500);
   }
 
   async function handleRefugeLogin() {
-    var email = document.getElementById('email-connexion-refuge') || document.querySelectorAll('input[type="email"]')[1];
-    var password = document.getElementById('mdp-connexion-refuge') || document.querySelectorAll('input[type="password"]')[1];
-    if (!email || !password) { showToast('⚠️ Remplissez tous les champs'); return; }
+    var emailEl = document.getElementById('email-connexion-refuge');
+    var passwordEl = document.getElementById('pwd-refuge-login');
+    if (!emailEl || !passwordEl) { showToast('⚠️ Champs introuvables'); return; }
+    if (!emailEl.value || !passwordEl.value) { showToast('⚠️ Remplissez votre email et mot de passe'); return; }
     showToast('Connexion en cours…');
     var { data, error } = await supabase.auth.signInWithPassword({
-      email: email.value,
-      password: password.value
+      email: emailEl.value,
+      password: passwordEl.value
     });
-    if (error) { showToast('❌ ' + error.message); return; }
+    if (error) { showToast('❌ Email ou mot de passe incorrect'); return; }
     showToast('Connexion réussie ! Redirection vers votre espace… 🏡');
     setTimeout(() => window.location.href = 'coup-de-patte-admin.html', 1500);
   }
@@ -547,20 +549,23 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
   async function handleRegister() {
     var cgu = document.getElementById('cgu-adoptant');
     if (!cgu || !cgu.checked) { showToast('⚠️ Veuillez accepter les conditions d\'utilisation'); return; }
-    var email = document.getElementById('email-inscription-adoptant');
-    var password = document.getElementById('mdp-inscription-adoptant');
-    var prenom = document.getElementById('prenom-adoptant');
-    var nom = document.getElementById('nom-adoptant');
-    if (!email || !password || !prenom || !nom) { showToast('⚠️ Remplissez tous les champs'); return; }
-    if (email.value === '' || password.value === '') { showToast('⚠️ Remplissez tous les champs'); return; }
+    var prenomEl = document.getElementById('prenom-adoptant');
+    var nomEl = document.getElementById('nom-adoptant');
+    var emailEl = document.getElementById('email-inscription-adoptant');
+    var passwordEl = document.getElementById('pwd-register');
+    if (!prenomEl || !nomEl || !emailEl || !passwordEl) { showToast('⚠️ Champs introuvables'); return; }
+    if (!prenomEl.value || !nomEl.value || !emailEl.value || !passwordEl.value) {
+      showToast('⚠️ Veuillez remplir tous les champs'); return;
+    }
+    if (passwordEl.value.length < 6) { showToast('⚠️ Le mot de passe doit faire au moins 6 caractères'); return; }
     showToast('Création du compte en cours…');
     var { data, error } = await supabase.auth.signUp({
-      email: email.value,
-      password: password.value,
+      email: emailEl.value,
+      password: passwordEl.value,
       options: {
         data: {
-          prenom: prenom.value,
-          nom: nom.value,
+          prenom: prenomEl.value,
+          nom: nomEl.value,
           role: 'adoptant',
           est_adoptant: true,
           est_refuge: false,
@@ -576,17 +581,24 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
   async function handleRefugeRegister() {
     var cgu = document.getElementById('cgu-refuge');
     if (!cgu || !cgu.checked) { showToast('⚠️ Veuillez accepter les conditions d\'utilisation'); return; }
-    var email = document.getElementById('email-inscription-refuge');
-    var password = document.getElementById('mdp-inscription-refuge');
-    var nom = document.getElementById('nom-refuge');
-    if (!email || !password || !nom) { showToast('⚠️ Remplissez tous les champs'); return; }
+    var nomEl = document.getElementById('nom-refuge');
+    var emailEl = document.getElementById('email-inscription-refuge');
+    var passwordEl = document.getElementById('pwd-refuge-register');
+    if (!nomEl || !emailEl || !passwordEl) { showToast('⚠️ Champs introuvables'); return; }
+    if (!nomEl.value || !emailEl.value || !passwordEl.value) {
+      showToast('⚠️ Veuillez remplir tous les champs obligatoires'); return;
+    }
+    if (passwordEl.value.length < 6) { showToast('⚠️ Le mot de passe doit faire au moins 6 caractères'); return; }
     showToast('Création de l\'espace refuge en cours…');
     var { data, error } = await supabase.auth.signUp({
-      email: email.value,
-      password: password.value,
+      email: emailEl.value,
+      password: passwordEl.value,
       options: {
         data: {
-          nom: nom.value,
+          nom: nomEl.value,
+          ville: document.getElementById('ville-refuge')?.value || '',
+          code_postal: document.getElementById('cp-refuge')?.value || '',
+          site_web: document.getElementById('site-refuge')?.value || '',
           role: 'refuge',
           est_adoptant: false,
           est_refuge: true,
