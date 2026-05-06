@@ -122,7 +122,7 @@
 
 <nav>
   <a href="#" class="logo"><div class="logo-bubble" style="animation:pawPulse 2.5s ease-in-out infinite;"><span style="animation:pawWiggle 2.5s ease-in-out infinite;display:inline-block;filter:brightness(0) invert(1);font-size:1.1rem">🐾</span></div>Coup de Patte</a>
-  <a href="coup-de-patte-landing.html" class="nav-back">← Retour à l'accueil</a>
+  <a href="index.html" class="nav-back">← Retour à l'accueil</a>
 </nav>
 
 <div class="page">
@@ -923,7 +923,7 @@ function updateSummary(){
   var logL={appart:'Appartement',maison:'Maison'};
   var extL={jardin:'Jardin',terrasse:'Terrasse',aucun:'Sans extérieur'};
   document.getElementById('sum-logement').textContent=`${logL[a.q10]||'—'} · ${extL[a.q11]||'—'}`;
-  var fL={non:'Pas d'enfants',moins13:'Enfants < 13 ans',plus13:'Ados 13 ans et plus'};
+  var fL={non:"Pas d'enfants",moins13:'Enfants < 13 ans',plus13:'Ados 13 ans et plus'};
   document.getElementById('sum-foyer').textContent=fL[a.q13]||'—';
   var dL={'0-2':'< 2h seul','2-4':'2 à 4h','4-8':'4 à 8h','8+':'+ 8h seul'};
   document.getElementById('sum-dispo').textContent=dL[a.q15]||'—';
