@@ -965,10 +965,10 @@ async function saveProfilToSupabase() {
       etage_ascenseur: a.q12 || null,
       enfants_foyer: a.q13 ? (Array.isArray(a.q13) ? a.q13.join(',') : a.q13) : null,
       animaux_foyer: a.q14 ? (Array.isArray(a.q14) ? a.q14.join(',') : a.q14) : null,
-      heures_seul: a.q15 || null,
+      heures_seul: a.q15 === '0-2' ? 1 : a.q15 === '2-4' ? 3 : a.q15 === '4-8' ? 6 : a.q15 === '8+' ? 10 : null,
       situation_travail: a.q16 || null,
       temps_dedie: a.q17 || null,
-      distance_max_km: a.q18 ? parseFloat(a.q18) : null,
+      distance_max_km: a.q18 === '30min' ? 30 : a.q18 === '1h' ? 60 : a.q18 === '2h' ? 120 : a.q18 === '2h+' ? 200 : null,
       profil_complete: true,
       date_completion: new Date().toISOString()
     };

@@ -126,9 +126,9 @@ function calculerScore(profil, animal) {
   scores.foyer = Math.max(0, foyer);
   
   // Disponibilité (20%)
-  if (profil.heures_seul <= 4) scores.disponibilite = 100;
-  else if (profil.heures_seul <= 6) scores.disponibilite = 75;
-  else if (profil.heures_seul <= 8) scores.disponibilite = 50;
+  if (profil.heures_seul <= 1) scores.disponibilite = 100;
+  else if (profil.heures_seul <= 3) scores.disponibilite = 80;
+  else if (profil.heures_seul <= 6) scores.disponibilite = 50;
   else scores.disponibilite = 25;
   
   // Expérience (15%)

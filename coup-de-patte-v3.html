@@ -420,10 +420,10 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
     if (profil.animaux_foyer && profil.animaux_foyer.includes('chien') && !animal.compat_chiens) foyer -= 50;
     if (profil.animaux_foyer && profil.animaux_foyer.includes('chat') && !animal.compat_chats) foyer -= 50;
     scores.foyer = Math.max(0, foyer);
-    var h = profil.heures_seul || '2-4';
-    if (h === '0-2') scores.disponibilite = 100;
-    else if (h === '2-4') scores.disponibilite = 80;
-    else if (h === '4-8') scores.disponibilite = 50;
+    var h = profil.heures_seul || 3;
+    if (h <= 1) scores.disponibilite = 100;
+    else if (h <= 3) scores.disponibilite = 80;
+    else if (h <= 6) scores.disponibilite = 50;
     else scores.disponibilite = 20;
     var exp = profil.experience_animale || 'jamais';
     var req = animal.experience_requise || 'debutant';
