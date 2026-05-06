@@ -71,7 +71,20 @@ footer{background:var(--forest);padding:36px 52px;position:relative;z-index:1;ma
 
   <!-- Supabase SDK + Configuration Coup de Patte -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase-config.js"></script>
+  <!-- Supabase SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    var _supabaseClient = null;
+    function getSupabase() {
+      if (!_supabaseClient) {
+        _supabaseClient = window.supabase.createClient(
+          'https://mbqsaaxaglcemdxmfvkc.supabase.co',
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1icXNhYXhhZ2xjZW1keG1mdmtjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MjAwMTQsImV4cCI6MjA5MzQ5NjAxNH0.lGK0LL5h-4N4DqMVy2Q_SKJgnzuy7BPQJEtSsc8plfk'
+        );
+      }
+      return _supabaseClient;
+    }
+  </script>
 </head>
 <body id="top">
 

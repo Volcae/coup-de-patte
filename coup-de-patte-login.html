@@ -165,11 +165,9 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 .pwd-bar.strong{background:var(--moss)}
 .pwd-strength-label{font-size:0.65rem;color:var(--smoke);margin-top:4px;display:block}
 </style>
-
-  <!-- Supabase SDK + Configuration Coup de Patte -->
+  <!-- Supabase SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    // Initialisation Supabase
     var _supabaseClient = null;
     function getSupabase() {
       if (!_supabaseClient) {

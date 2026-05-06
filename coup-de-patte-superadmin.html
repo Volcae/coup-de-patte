@@ -183,19 +183,19 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
 .it-purple{background:rgba(139,92,246,0.1);color:var(--purple);border:1px solid rgba(139,92,246,0.2)}
 .it-gold{background:rgba(212,168,67,0.12);color:var(--amber);border:1px solid rgba(196,154,26,0.2)}
 </style>
-
-  <!-- Supabase SDK + Configuration Coup de Patte -->
+  <!-- Supabase SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase-config.js"></script>
-
   <script>
-    // Vérification authentification
-    (async () => {
-      var session = await checkSession();
-      if (!session) {
-        window.location.href = 'coup-de-patte-login.html';
+    var _supabaseClient = null;
+    function getSupabase() {
+      if (!_supabaseClient) {
+        _supabaseClient = window.supabase.createClient(
+          'https://mbqsaaxaglcemdxmfvkc.supabase.co',
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1icXNhYXhhZ2xjZW1keG1mdmtjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MjAwMTQsImV4cCI6MjA5MzQ5NjAxNH0.lGK0LL5h-4N4DqMVy2Q_SKJgnzuy7BPQJEtSsc8plfk'
+        );
       }
-    })();
+      return _supabaseClient;
+    }
   </script>
 </head>
 <body>
@@ -910,7 +910,7 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
       <!-- Pages du site -->
       <p style="font-family:'Fraunces',serif;font-size:0.95rem;font-weight:600;font-style:italic;color:var(--forest);margin-bottom:14px">🌐 Pages du site à partager</p>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
-        <a href="coup-de-patte-landing.html" target="_blank" style="text-decoration:none;background:var(--paper);border-radius:14px;border:1.5px solid var(--border);padding:16px;display:flex;align-items:center;gap:10px;transition:transform 0.2s" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+        <a href="index.html" target="_blank" style="text-decoration:none;background:var(--paper);border-radius:14px;border:1.5px solid var(--border);padding:16px;display:flex;align-items:center;gap:10px;transition:transform 0.2s" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
           <span style="font-size:1.3rem">🏠</span>
           <div><p style="font-size:0.8rem;font-weight:700;color:var(--forest)">Landing page</p><p style="font-size:0.68rem;color:var(--dust)">Page d'accueil publique</p></div>
         </a>

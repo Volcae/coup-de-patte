@@ -144,19 +144,25 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 .load-btn{background:transparent;border:1.5px solid var(--border);border-radius:50px;padding:11px 28px;font-family:'Nunito',sans-serif;font-size:0.85rem;font-weight:700;color:var(--dust);cursor:pointer;transition:all 0.2s}
 .load-btn:hover{border-color:var(--moss);color:var(--forest)}
 </style>
-
-  <!-- Supabase SDK + Configuration Coup de Patte -->
+  <!-- Supabase SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase-config.js"></script>
-
   <script>
-    // Vérification authentification
-    (async () => {
-      var session = await checkSession();
-      if (!session) {
-        window.location.href = 'coup-de-patte-login.html';
+    var _supabaseClient = null;
+    function getSupabase() {
+      if (!_supabaseClient) {
+        _supabaseClient = window.supabase.createClient(
+          'https://mbqsaaxaglcemdxmfvkc.supabase.co',
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1icXNhYXhhZ2xjZW1keG1mdmtjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MjAwMTQsImV4cCI6MjA5MzQ5NjAxNH0.lGK0LL5h-4N4DqMVy2Q_SKJgnzuy7BPQJEtSsc8plfk'
+        );
       }
-    })();
+      return _supabaseClient;
+    }
+  </script>
+  <script>
+    window.addEventListener('load', async function() {
+      var { data: { session } } = await getSupabase().auth.getSession();
+      if (!session) { window.location.href = 'coup-de-patte-login.html'; }
+    });
   </script>
 </head>
 <body>
