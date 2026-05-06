@@ -169,14 +169,17 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
   <!-- Supabase SDK + Configuration Coup de Patte -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    // Initialisation Supabase inline
-    var supabase;
-    window.addEventListener('load', function() {
-      supabase = window.supabase.createClient(
-        'https://mbqsaaxaglcemdxmfvkc.supabase.co',
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1icXNhYXhhZ2xjZW1keG1mdmtjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MjAwMTQsImV4cCI6MjA5MzQ5NjAxNH0.lGK0LL5h-4N4DqMVy2Q_SKJgnzuy7BPQJEtSsc8plfk'
-      );
-    });
+    // Initialisation Supabase
+    var _supabaseClient = null;
+    function getSupabase() {
+      if (!_supabaseClient) {
+        _supabaseClient = window.supabase.createClient(
+          'https://mbqsaaxaglcemdxmfvkc.supabase.co',
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1icXNhYXhhZ2xjZW1keG1mdmtjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MjAwMTQsImV4cCI6MjA5MzQ5NjAxNH0.lGK0LL5h-4N4DqMVy2Q_SKJgnzuy7BPQJEtSsc8plfk'
+        );
+      }
+      return _supabaseClient;
+    }
   </script>
 </head>
 <body>
@@ -531,7 +534,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
     if (!emailEl || !passwordEl) { showToast('⚠️ Champs introuvables'); return; }
     if (!emailEl.value || !passwordEl.value) { showToast('⚠️ Remplissez votre email et mot de passe'); return; }
     showToast('Connexion en cours…');
-    var { data, error } = await supabase.auth.signInWithPassword({
+    var { data, error } = await getSupabase().auth.signInWithPassword({
       email: emailEl.value,
       password: passwordEl.value
     });
@@ -546,7 +549,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
     if (!emailEl || !passwordEl) { showToast('⚠️ Champs introuvables'); return; }
     if (!emailEl.value || !passwordEl.value) { showToast('⚠️ Remplissez votre email et mot de passe'); return; }
     showToast('Connexion en cours…');
-    var { data, error } = await supabase.auth.signInWithPassword({
+    var { data, error } = await getSupabase().auth.signInWithPassword({
       email: emailEl.value,
       password: passwordEl.value
     });
@@ -568,7 +571,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
     }
     if (passwordEl.value.length < 6) { showToast('⚠️ Le mot de passe doit faire au moins 6 caractères'); return; }
     showToast('Création du compte en cours…');
-    var { data, error } = await supabase.auth.signUp({
+    var { data, error } = await getSupabase().auth.signUp({
       email: emailEl.value,
       password: passwordEl.value,
       options: {
@@ -599,7 +602,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
     }
     if (passwordEl.value.length < 6) { showToast('⚠️ Le mot de passe doit faire au moins 6 caractères'); return; }
     showToast('Création de l\'espace refuge en cours…');
-    var { data, error } = await supabase.auth.signUp({
+    var { data, error } = await getSupabase().auth.signUp({
       email: emailEl.value,
       password: passwordEl.value,
       options: {
@@ -634,14 +637,14 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
   <script>
     // Connexion
     async function loginUser(email, password) {
-      var { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      var { data, error } = await getSupabase().auth.signInWithPassword({ email, password });
       if (error) { alert('Erreur : ' + error.message); return; }
       window.location.href = 'coup-de-patte-v3.html';
     }
     
     // Inscription
     async function signupUser(email, password, prenom, nom, role) {
-      var { data, error } = await supabase.auth.signUp({
+      var { data, error } = await getSupabase().auth.signUp({
         email, password,
         options: { data: { prenom, nom, role, est_adoptant: role === 'adoptant', est_refuge: role === 'refuge', est_admin: false } }
       });
