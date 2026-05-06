@@ -177,11 +177,11 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 
 <!-- NAV -->
 <nav>
-  <a href="coup-de-patte-landing.html" class="logo">
+  <a href="index.html" class="logo">
     <div class="logo-bubble" style="animation:pawPulse 2.5s ease-in-out infinite;"><span style="animation:pawWiggle 2.5s ease-in-out infinite;display:inline-block;filter:brightness(0) invert(1);font-size:1.1rem">🐾</span></div>
     Coup de Patte
   </a>
-  <a href="coup-de-patte-landing.html" class="nav-back">← Retour à l'accueil</a>
+  <a href="index.html" class="nav-back">← Retour à l'accueil</a>
 </nav>
 
 <div class="page">
@@ -358,7 +358,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 
           <div class="cgu-row">
             <input type="checkbox" class="cgu-check" id="cgu-adoptant">
-            <label class="cgu-label" for="cgu-adoptant">J'accepte les <a href="coup-de-patte-cgu.html">conditions d'utilisation</a> et la <a href="coup-de-patte-cgu.html">politique de confidentialité</a> de Coup de Patte.</label>
+            <label class="cgu-label" for="cgu-adoptant">J'accepte les <a href="coup-de-patte-cgu.html#top">conditions d'utilisation</a> et la <a href="coup-de-patte-cgu.html#top">politique de confidentialité</a> de Coup de Patte.</label>
           </div>
 
           <button class="submit-btn" onclick="handleRegister()">Créer mon compte et compléter mon profil →</button>
@@ -430,7 +430,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 
           <div class="cgu-row">
             <input type="checkbox" class="cgu-check" id="cgu-refuge">
-            <label class="cgu-label" for="cgu-refuge">J'accepte les <a href="coup-de-patte-cgu.html">conditions d'utilisation</a> pour les refuges partenaires de Coup de Patte.</label>
+            <label class="cgu-label" for="cgu-refuge">J'accepte les <a href="coup-de-patte-cgu.html#top">conditions d'utilisation</a> pour les refuges partenaires de Coup de Patte.</label>
           </div>
 
           <button class="submit-btn" onclick="handleRefugeRegister()">🏡 Créer l'espace de mon refuge →</button>
@@ -518,7 +518,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
   // ── Actions ──
   function handleLogin() {
     showToast('Connexion réussie ! Redirection vers vos matchs… 🐾');
-    setTimeout(() => window.location.href = 'coup-de-patte-dashboard.html', 1800);
+    setTimeout(() => window.location.href = 'coup-de-patte-v3.html', 1800);
   }
 
   function handleRefugeLogin() {
