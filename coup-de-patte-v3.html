@@ -104,7 +104,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 .mc-body{padding:26px 16px 14px}
 .mc-name{font-family:'Fraunces',serif;font-size:1.1rem;font-weight:700;font-style:italic;color:var(--forest);margin-bottom:2px}
 .mc-meta{font-size:0.7rem;color:var(--dust);margin-bottom:8px}
-.mc-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px}
+.mc-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px;max-height:52px;overflow:hidden}
 .mctag{font-size:0.65rem;font-weight:600;padding:3px 8px;border-radius:50px;background:var(--mint-lt);border:1px solid rgba(74,124,89,0.15);color:var(--forest)}
 .mctag-gold{background:rgba(212,168,67,0.1);border-color:rgba(196,154,26,0.2);color:var(--amber)}
 .mc-actions{display:flex;gap:6px}
@@ -448,7 +448,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
     return { label: 'Faible compatibilité', color: 'var(--rose)' };
   }
 
-  function renderMatchCard(animal, score) {
+  function renderMatchCard(animal, score, profil) {
     var label = getLabelScore(score);
     var enfin = animal.enfin_moi ? '<div class="mc-ribbon">✨ Enfin Moi ?</div>' : '';
     var enfinClass = animal.enfin_moi ? ' enfin' : '';
@@ -457,9 +457,13 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
     var sexe = animal.sexe === 'male' ? 'Mâle' : animal.sexe === 'femelle' ? 'Femelle' : '';
     var ville = animal.refuge ? animal.refuge.ville : '';
     var tags = '';
-    if (animal.compat_enfants_moins13) tags += '<span class="mctag">👶 Enfants ok</span>';
-    if (animal.compat_chats) tags += '<span class="mctag">🐱 Chats ok</span>';
-    if (animal.compat_chiens) tags += '<span class="mctag">🐶 Chiens ok</span>';
+    // N'afficher que les tags pertinents selon le profil de l'adoptant
+    var aEnfantsMoins13 = profil && profil.enfants_foyer && profil.enfants_foyer.includes('moins13');
+    var aChat = profil && profil.animaux_foyer && profil.animaux_foyer.includes('chat');
+    var aChien = profil && profil.animaux_foyer && profil.animaux_foyer.includes('chien');
+    if (aEnfantsMoins13 && animal.compat_enfants_moins13) tags += '<span class="mctag">👶 Enfants ok</span>';
+    if (aChat && animal.compat_chats) tags += '<span class="mctag">🐱 Chats ok</span>';
+    if (aChien && animal.compat_chiens) tags += '<span class="mctag">🐶 Chiens ok</span>';
     if (animal.enfin_moi) tags += '<span class="mctag mctag-gold">✨ Enfin Moi ?</span>';
     return '<div class="match-card' + enfinClass + '" onclick="window.location.href=\'coup-de-patte-fiche.html?id=' + animal.id + '\'">' + enfin + '<div class="mc-inner"><div class="mc-img" style="background:linear-gradient(160deg,var(--mint),var(--sage));font-size:3rem;display:flex;align-items:center;justify-content:center;position:relative">' + emoji + '<div class="mc-score"><span class="mc-score-n" style="color:' + label.color + '">' + score + '%</span></div>' + (ville ? '<div class="mc-loc">📍 ' + ville + '</div>' : '') + '</div><div class="mc-body"><div class="mc-name">' + animal.nom + '</div><div class="mc-meta">' + (animal.race || animal.espece) + ' · ' + age + ' · ' + sexe + '</div><div style="font-size:0.7rem;font-weight:700;color:' + label.color + ';margin:4px 0">' + label.label + '</div><div class="mc-tags">' + tags + '</div><div class="mc-actions"><button class="mc-btn-like" onclick="event.stopPropagation();likeCard(this)"><span style="filter:brightness(0) invert(1)">🐾</span> J\'aime</button><button class="mc-btn-info" onclick="event.stopPropagation();window.location.href=\'coup-de-patte-fiche.html?id=' + animal.id + '\'">ℹ</button></div></div></div></div>';
   }
@@ -467,7 +471,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
   function displayMatchs() {
     var grid = document.getElementById('matches-grid');
     var batch = allMatchs.slice(displayedCount, displayedCount + BATCH_SIZE);
-    batch.forEach(function(m) { grid.insertAdjacentHTML('beforeend', renderMatchCard(m.animal, m.score)); });
+    batch.forEach(function(m) { grid.insertAdjacentHTML('beforeend', renderMatchCard(m.animal, m.score, currentProfil)); });
     displayedCount += batch.length;
     document.getElementById('load-more').style.display = displayedCount < allMatchs.length ? 'block' : 'none';
   }
@@ -489,13 +493,30 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
       var result = profil ? calculerScore(profil, animal) : { global: 0 };
       return { animal: animal, score: result.global };
     }).sort(function(a, b) { return b.score - a.score; });
-    var { data: userProfil } = await sb.from('Profils').select('prenom, nom').eq('id', userId).single();
-    if (userProfil) {
-      var pill = document.querySelector('.profile-pill');
-      if (pill) pill.textContent = '👤 ' + (userProfil.prenom || '') + ' ' + ((userProfil.nom || '').charAt(0) + '.');
-      var name = document.querySelector('.profile-name');
-      if (name) name.textContent = (userProfil.prenom || '') + ' ' + ((userProfil.nom || '').charAt(0) + '.');
+    // Récupération du prénom depuis auth.users (metadata) — fonctionne même si table Profils vide
+    var { data: { user: authUser } } = await sb.auth.getUser();
+    var prenom = '';
+    var nomInitiale = '';
+    if (authUser) {
+      var meta = authUser.user_metadata || {};
+      prenom = meta.prenom || meta.first_name || meta.name || authUser.email.split('@')[0] || '';
+      var nom = meta.nom || meta.last_name || '';
+      nomInitiale = nom ? nom.charAt(0) + '.' : '';
+      // Fallback : essayer aussi la table Profils si metadata vide
+      if (!prenom) {
+        var { data: userProfil } = await sb.from('ProfilAdoptant').select('prenom, nom').eq('utilisateur', userId).single();
+        if (userProfil) {
+          prenom = userProfil.prenom || '';
+          nomInitiale = userProfil.nom ? userProfil.nom.charAt(0) + '.' : '';
+        }
+      }
     }
+    var displayName = (prenom + ' ' + nomInitiale).trim() || 'Mon profil';
+    var pill = document.querySelector('.profile-pill');
+    if (pill) pill.innerHTML = '👤 ' + displayName;
+    var nameEl = document.querySelector('.profile-name');
+    if (nameEl) nameEl.textContent = displayName;
+    window.currentProfil = profil;
     document.getElementById('matches-grid').innerHTML = '';
     displayMatchs();
   });
