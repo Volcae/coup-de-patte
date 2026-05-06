@@ -105,15 +105,6 @@
   <!-- Supabase SDK + Configuration Coup de Patte -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <script>
-    // Vérification authentification
-    (async () => {
-      var session = await checkSession();
-      if (!session) {
-        window.location.href = 'coup-de-patte-login.html';
-      }
-    })();
-  </script>
   <!-- Supabase SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
@@ -127,6 +118,13 @@
       }
       return _supabaseClient;
     }
+    // Vérification authentification
+    window.addEventListener('load', async function() {
+      var { data: { session } } = await getSupabase().auth.getSession();
+      if (!session) {
+        window.location.href = 'coup-de-patte-login.html';
+      }
+    });
   </script>
 </head>
 <body>
