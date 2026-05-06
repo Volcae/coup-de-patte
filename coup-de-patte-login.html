@@ -261,7 +261,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 
           <div class="field-group">
             <label class="field-label">Email</label>
-            <input class="field-input" type="email" placeholder="sophie@email.fr">
+            <input class="field-input" type="email" id="email-connexion-adoptant" placeholder="sophie@email.fr">
           </div>
 
           <div class="field-group">
@@ -295,7 +295,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 
           <div class="field-group">
             <label class="field-label">Email du refuge</label>
-            <input class="field-input" type="email" placeholder="contact@spa-lyon.fr">
+            <input class="field-input" type="email" id="email-connexion-refuge" placeholder="contact@spa-lyon.fr">
           </div>
 
           <div class="field-group">
@@ -328,23 +328,23 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
           <div class="field-row">
             <div class="field-group">
               <label class="field-label">Prénom</label>
-              <input class="field-input" type="text" placeholder="Sophie">
+              <input class="field-input" type="text" id="prenom-adoptant" placeholder="Sophie">
             </div>
             <div class="field-group">
               <label class="field-label">Nom</label>
-              <input class="field-input" type="text" placeholder="Martin">
+              <input class="field-input" type="text" id="nom-adoptant" placeholder="Martin">
             </div>
           </div>
 
           <div class="field-group">
             <label class="field-label">Email</label>
-            <input class="field-input" type="email" placeholder="sophie@email.fr">
+            <input class="field-input" type="email" id="email-inscription-adoptant" placeholder="sophie@email.fr">
           </div>
 
           <div class="field-group">
             <label class="field-label">Mot de passe</label>
             <div class="field-pwd-wrap">
-              <input class="field-input" type="password" id="pwd-register" placeholder="••••••••" oninput="checkStrength(this.value)">
+              <input class="field-input" type="password" id="mdp-inscription-adoptant" id="pwd-register" placeholder="••••••••" oninput="checkStrength(this.value)">
               <button class="pwd-toggle" onclick="togglePwd('pwd-register',this)">👁</button>
             </div>
             <div class="pwd-strength">
@@ -387,30 +387,30 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 
           <div class="field-group">
             <label class="field-label">Nom du refuge</label>
-            <input class="field-input" type="text" placeholder="SPA de Lyon, Fondation">
+            <input class="field-input" type="text" id="nom-refuge" placeholder="SPA de Lyon, Fondation">
           </div>
 
           <div class="field-row">
             <div class="field-group">
               <label class="field-label">Ville</label>
-              <input class="field-input" type="text" placeholder="Lyon">
+              <input class="field-input" type="text" id="ville-refuge" placeholder="Lyon">
             </div>
             <div class="field-group">
               <label class="field-label">Code postal</label>
-              <input class="field-input" type="text" placeholder="69009">
+              <input class="field-input" type="text" id="cp-refuge" placeholder="69009">
             </div>
           </div>
 
           <div class="field-group">
             <label class="field-label">Site web du refuge (optionnel)</label>
-            <input class="field-input" type="url" placeholder="www.spa-lyon.fr">
+            <input class="field-input" type="url" id="site-refuge" placeholder="www.spa-lyon.fr">
           </div>
 
           <div class="section-divider">Compte administrateur</div>
 
           <div class="field-group">
             <label class="field-label">Email professionnel</label>
-            <input class="field-input" type="email" placeholder="contact@spa-lyon.fr">
+            <input class="field-input" type="email" id="email-inscription-refuge" placeholder="contact@spa-lyon.fr">
           </div>
 
           <div class="field-group">
@@ -516,28 +516,87 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
   }
 
   // ── Actions ──
-  function handleLogin() {
+  async function handleLogin() {
+    var email = document.getElementById('email-connexion-adoptant') || document.querySelector('input[type="email"]');
+    var password = document.getElementById('mdp-connexion-adoptant') || document.querySelector('input[type="password"]');
+    if (!email || !password) { showToast('⚠️ Remplissez tous les champs'); return; }
+    showToast('Connexion en cours…');
+    var { data, error } = await supabase.auth.signInWithPassword({
+      email: email.value,
+      password: password.value
+    });
+    if (error) { showToast('❌ ' + error.message); return; }
     showToast('Connexion réussie ! Redirection vers vos matchs… 🐾');
-    setTimeout(() => window.location.href = 'coup-de-patte-v3.html', 1800);
+    setTimeout(() => window.location.href = 'coup-de-patte-v3.html', 1500);
   }
 
-  function handleRefugeLogin() {
+  async function handleRefugeLogin() {
+    var email = document.getElementById('email-connexion-refuge') || document.querySelectorAll('input[type="email"]')[1];
+    var password = document.getElementById('mdp-connexion-refuge') || document.querySelectorAll('input[type="password"]')[1];
+    if (!email || !password) { showToast('⚠️ Remplissez tous les champs'); return; }
+    showToast('Connexion en cours…');
+    var { data, error } = await supabase.auth.signInWithPassword({
+      email: email.value,
+      password: password.value
+    });
+    if (error) { showToast('❌ ' + error.message); return; }
     showToast('Connexion réussie ! Redirection vers votre espace… 🏡');
-    setTimeout(() => window.location.href = 'coup-de-patte-admin.html', 1800);
+    setTimeout(() => window.location.href = 'coup-de-patte-admin.html', 1500);
   }
 
-  function handleRegister() {
+  async function handleRegister() {
     var cgu = document.getElementById('cgu-adoptant');
-    if(!cgu.checked) { showToast('⚠️ Veuillez accepter les conditions d\'utilisation'); return; }
+    if (!cgu || !cgu.checked) { showToast('⚠️ Veuillez accepter les conditions d\'utilisation'); return; }
+    var email = document.getElementById('email-inscription-adoptant');
+    var password = document.getElementById('mdp-inscription-adoptant');
+    var prenom = document.getElementById('prenom-adoptant');
+    var nom = document.getElementById('nom-adoptant');
+    if (!email || !password || !prenom || !nom) { showToast('⚠️ Remplissez tous les champs'); return; }
+    if (email.value === '' || password.value === '') { showToast('⚠️ Remplissez tous les champs'); return; }
+    showToast('Création du compte en cours…');
+    var { data, error } = await supabase.auth.signUp({
+      email: email.value,
+      password: password.value,
+      options: {
+        data: {
+          prenom: prenom.value,
+          nom: nom.value,
+          role: 'adoptant',
+          est_adoptant: true,
+          est_refuge: false,
+          est_admin: false
+        }
+      }
+    });
+    if (error) { showToast('❌ ' + error.message); return; }
     showToast('Compte créé ! Complétez maintenant votre profil 🐾');
-    setTimeout(() => window.location.href = 'coup-de-patte-form.html', 1800);
+    setTimeout(() => window.location.href = 'coup-de-patte-form.html', 1500);
   }
 
-  function handleRefugeRegister() {
+  async function handleRefugeRegister() {
     var cgu = document.getElementById('cgu-refuge');
-    if(!cgu.checked) { showToast('⚠️ Veuillez accepter les conditions d\'utilisation'); return; }
+    if (!cgu || !cgu.checked) { showToast('⚠️ Veuillez accepter les conditions d\'utilisation'); return; }
+    var email = document.getElementById('email-inscription-refuge');
+    var password = document.getElementById('mdp-inscription-refuge');
+    var nom = document.getElementById('nom-refuge');
+    if (!email || !password || !nom) { showToast('⚠️ Remplissez tous les champs'); return; }
+    showToast('Création de l\'espace refuge en cours…');
+    var { data, error } = await supabase.auth.signUp({
+      email: email.value,
+      password: password.value,
+      options: {
+        data: {
+          nom: nom.value,
+          role: 'refuge',
+          est_adoptant: false,
+          est_refuge: true,
+          est_admin: false
+        }
+      }
+    });
+    if (error) { showToast('❌ ' + error.message); return; }
     showToast('Refuge créé ! Bienvenue sur Coup de Patte 🏡');
-    setTimeout(() => window.location.href = 'coup-de-patte-admin.html', 1800);
+    setTimeout(() => window.location.href = 'coup-de-patte-admin.html', 1500);
   }
 
   // ── Toast ──
