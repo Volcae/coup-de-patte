@@ -388,8 +388,13 @@ function getSupabase() {
       </div>
       <div class="form-group">
         <label class="form-label">Race</label>
+        <label style="display:flex;align-items:center;gap:8px;font-size:0.82rem;font-weight:600;color:var(--forest);margin-bottom:6px;cursor:pointer">
+          <input type="checkbox" id="fieldCroise" onchange="toggleCroise(this)" style="width:16px;height:16px;accent-color:var(--moss)">
+          Croisé (plusieurs races)
+        </label>
         <input class="form-input" placeholder="Tapez pour chercher ou saisissez librement…" id="fieldRace" oninput="filterRacesAdmin(this.value)" autocomplete="off">
         <div id="raceDropdown" style="display:none;position:absolute;z-index:100;background:var(--paper);border:1.5px solid var(--border);border-radius:12px;max-height:200px;overflow-y:auto;width:100%;box-shadow:0 8px 24px rgba(45,74,62,0.12);margin-top:4px"></div>
+        <div id="racesSelectedBadges" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px"></div>
       </div>
       <div class="form-group">
         <label class="form-label">Âge (années)</label>
@@ -733,6 +738,10 @@ function openModal() {
   document.getElementById('fieldId').value = '';
   document.getElementById('fieldNom').value = '';
   document.getElementById('fieldRace').value = '';
+  document.getElementById('fieldCroise').checked = false;
+  selectedRacesAdmin = [];
+  document.getElementById('racesSelectedBadges').style.display = 'none';
+  document.getElementById('racesSelectedBadges').innerHTML = '';
   document.getElementById('fieldAge').value = '';
   document.getElementById('fieldDesc').value = '';
   document.getElementById('fieldDate').value = new Date().toISOString().split('T')[0];
@@ -781,7 +790,7 @@ async function saveAnimal() {
   var payload = {
     nom: nom,
     espece: espece,
-    race: document.getElementById('fieldRace').value.trim() || null,
+    race: getRaceValue(),
     age_annees: age,
     sexe: document.getElementById('fieldSexe').value,
     gabarit: document.getElementById('fieldGabarit').value,
@@ -931,6 +940,43 @@ function voirFichePublique() {
 }
 
 // ══ RACES DROPDOWN ══
+var selectedRacesAdmin = [];
+
+function toggleCroise(cb) {
+  var badges = document.getElementById('racesSelectedBadges');
+  if (cb.checked) {
+    document.getElementById('fieldRace').placeholder = 'Ajoutez les races du croisé…';
+    badges.style.display = 'flex';
+    selectedRacesAdmin = [];
+    renderRacesBadges();
+  } else {
+    badges.style.display = 'none';
+    selectedRacesAdmin = [];
+    document.getElementById('fieldRace').value = '';
+    document.getElementById('fieldRace').placeholder = 'Tapez pour chercher ou saisissez librement…';
+  }
+}
+
+function renderRacesBadges() {
+  var badges = document.getElementById('racesSelectedBadges');
+  badges.innerHTML = selectedRacesAdmin.map(function(r) {
+    return '<span style="display:inline-flex;align-items:center;gap:5px;background:var(--forest);color:var(--ivory);padding:4px 12px;border-radius:50px;font-size:0.75rem;font-weight:700">' +
+      r + ' <span onclick="removeRaceAdmin(\'' + r.replace(/'/g,"\\'") + '\')" style="cursor:pointer;opacity:0.7">✕</span></span>';
+  }).join('');
+}
+
+function removeRaceAdmin(race) {
+  selectedRacesAdmin = selectedRacesAdmin.filter(function(r) { return r !== race; });
+  renderRacesBadges();
+}
+
+function getRaceValue() {
+  var croise = document.getElementById('fieldCroise').checked;
+  if (croise && selectedRacesAdmin.length > 0) return 'Croisé ' + selectedRacesAdmin.join('/');
+  return document.getElementById('fieldRace').value.trim() || null;
+}
+
+// ══ RACES DROPDOWN ══
 var racesAdmin = [
   'Croisé','Croisé Berger','Croisé Labrador','Croisé Teckel',
   'Affenpinscher','Airedale Terrier','Akita Inu','Alaskan Malamute',
@@ -970,7 +1016,16 @@ function filterRacesAdmin(val) {
 }
 
 function selectRaceAdmin(race) {
-  document.getElementById('fieldRace').value = race;
+  var croise = document.getElementById('fieldCroise').checked;
+  if (croise) {
+    if (!selectedRacesAdmin.includes(race)) {
+      selectedRacesAdmin.push(race);
+      renderRacesBadges();
+    }
+    document.getElementById('fieldRace').value = '';
+  } else {
+    document.getElementById('fieldRace').value = race;
+  }
   document.getElementById('raceDropdown').style.display = 'none';
 }
 

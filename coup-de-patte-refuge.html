@@ -444,35 +444,69 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
     var { data: refuge } = await sb.from('Refuge').select('*').eq('id', refugeId).single();
     if (!refuge) return;
 
-    // Mettre à jour le nom
-    var nameEls = document.querySelectorAll('.refuge-name, .hero-name, h1');
-    nameEls.forEach(function(el) { if (el.textContent.includes('SPA') || el.textContent.includes('Refuge')) el.textContent = refuge.nom; });
+    // Remplacer TOUS les éléments contenant "SPA de Lyon" ou le nom statique
+    document.querySelectorAll('h1, h2, h3, .refuge-name, .hero-name, .map-pin-bubble, strong').forEach(function(el) {
+      if (el.textContent.includes('SPA de Lyon') || el.textContent.includes('SPA de Lyon, Fondation')) {
+        el.textContent = el.textContent.replace('SPA de Lyon, Fondation', refuge.nom).replace('SPA de Lyon', refuge.nom);
+      }
+    });
+
+    // Titre de la page
+    document.title = (refuge.nom || 'Refuge') + ' · Coup de Patte';
+
+    // Ville et adresse
+    document.querySelectorAll('.refuge-loc, .hero-loc').forEach(function(el) {
+      if (refuge.ville) el.textContent = '📍 ' + refuge.ville + (refuge.code_postal ? ' · ' + refuge.code_postal : '');
+    });
+
+    // Description
+    document.querySelectorAll('.refuge-desc, .hero-desc, .about-text').forEach(function(el) {
+      if (refuge.description) el.textContent = refuge.description;
+    });
 
     // Infos contact
-    var telEls = document.querySelectorAll('[href^="tel:"]');
-    telEls.forEach(function(el) { if (refuge.telephone) { el.href = 'tel:' + refuge.telephone; el.textContent = refuge.telephone; }});
-    var mailEls = document.querySelectorAll('[href^="mailto:"]');
-    mailEls.forEach(function(el) { if (refuge.email) { el.href = 'mailto:' + refuge.email; el.textContent = refuge.email; }});
+    document.querySelectorAll('[href^="tel:"]').forEach(function(el) {
+      if (refuge.telephone) { el.href = 'tel:' + refuge.telephone; el.textContent = refuge.telephone; }
+    });
+    document.querySelectorAll('[href^="mailto:"]').forEach(function(el) {
+      if (refuge.email) { el.href = 'mailto:' + refuge.email; el.textContent = refuge.email; }
+    });
+    document.querySelectorAll('[href^="http"]').forEach(function(el) {
+      if (refuge.site_web && el.textContent.includes('spa-lyon') || el.textContent.includes('www.')) {
+        el.href = refuge.site_web.startsWith('http') ? refuge.site_web : 'https://' + refuge.site_web;
+        el.textContent = refuge.site_web;
+      }
+    });
+
+    // Lien retour selon le rôle
+    var { data: { session } } = await sb.auth.getSession();
+    var retourLink = document.querySelector('.nav-back, [href*="v3"]');
+    if (retourLink && session) {
+      var { data: profil } = await sb.from('Profils').select('role, est_refuge').eq('id', session.user.id).single();
+      if (profil && profil.est_refuge) {
+        retourLink.href = 'coup-de-patte-admin.html';
+        retourLink.textContent = '← Mon espace refuge';
+      }
+    }
 
     // Charger les animaux du refuge
     var { data: animaux } = await sb.from('Animal').select('*').eq('refuge', refugeId).eq('disponible', true);
-    if (!animaux || animaux.length === 0) return;
-
-    var grid = document.querySelector('.animaux-grid') || document.querySelector('.animals-list');
-    if (!grid) return;
-    grid.innerHTML = '';
-    animaux.forEach(function(a) {
-      var emoji = a.espece && a.espece.toLowerCase() === 'chat' ? '🐱' : '🐕';
-      var age = a.age_annees ? a.age_annees + ' an' + (a.age_annees > 1 ? 's' : '') : '';
-      grid.insertAdjacentHTML('beforeend',
-        '<div class="animal-card" onclick="window.location.href='coup-de-patte-fiche.html?id=' + a.id + ''" style="cursor:pointer;background:var(--paper);border-radius:16px;border:1.5px solid var(--border);padding:16px;transition:transform 0.2s">' +
-        '<div style="font-size:2.5rem;text-align:center;margin-bottom:8px">' + emoji + '</div>' +
-        '<div style="font-family:Fraunces,serif;font-weight:600;font-style:italic;color:var(--forest)">' + a.nom + '</div>' +
-        '<div style="font-size:0.75rem;color:var(--dust)">' + (a.race || a.espece) + ' · ' + age + '</div>' +
-        (a.enfin_moi ? '<div style="font-size:0.65rem;color:var(--amber);font-weight:700;margin-top:4px">✨ Enfin Moi ?</div>' : '') +
-        '</div>'
-      );
-    });
+    var grid = document.querySelector('.animaux-grid, .animals-grid, .animals-list');
+    if (grid && animaux && animaux.length > 0) {
+      grid.innerHTML = '';
+      animaux.forEach(function(a) {
+        var emoji = a.espece && a.espece.toLowerCase() === 'chat' ? '🐱' : '🐕';
+        var age = a.age_annees ? a.age_annees + ' an' + (a.age_annees > 1 ? 's' : '') : '';
+        grid.insertAdjacentHTML('beforeend',
+          '<div onclick="window.location.href=\'coup-de-patte-fiche.html?id=' + a.id + '\'" style="cursor:pointer;background:var(--paper);border-radius:16px;border:1.5px solid var(--border);padding:16px;transition:transform 0.2s;text-align:center" onmouseover="this.style.transform=\'translateY(-3px)\'" onmouseout="this.style.transform=\'\'">' +
+          '<div style="font-size:2.5rem;margin-bottom:8px">' + emoji + '</div>' +
+          '<div style="font-family:Fraunces,serif;font-weight:600;font-style:italic;color:var(--forest)">' + a.nom + '</div>' +
+          '<div style="font-size:0.75rem;color:var(--dust);margin-top:3px">' + (a.race || a.espece) + ' · ' + age + '</div>' +
+          (a.enfin_moi ? '<div style="font-size:0.65rem;color:var(--amber);font-weight:700;margin-top:4px">✨ Enfin Moi ?</div>' : '') +
+          '</div>'
+        );
+      });
+    }
   });
 </script>
 </body>
