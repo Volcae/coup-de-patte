@@ -166,10 +166,10 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 
 <!-- NAV -->
 <nav>
-  <a href="#" class="logo"><div class="logo-bubble" style="animation:pawPulse 2.5s ease-in-out infinite;"><span style="animation:pawWiggle 2.5s ease-in-out infinite;display:inline-block;filter:brightness(0) invert(1);font-size:1.1rem">🐾</span></div>Coup de Patte</a>
+  <a href="index.html" class="logo"><div class="logo-bubble" style="animation:pawPulse 2.5s ease-in-out infinite;"><span style="animation:pawWiggle 2.5s ease-in-out infinite;display:inline-block;filter:brightness(0) invert(1);font-size:1.1rem">🐾</span></div>Coup de Patte</a>
   <ul class="nav-links">
     <li><a href="index.html">Accueil</a></li>
-    <li><a href="#" style="color:var(--amber);opacity:1;font-weight:700">✨ Enfin Moi ?</a></li>
+    <li><a href="coup-de-patte-enfin-moi.html" style="color:var(--amber);opacity:1;font-weight:700">✨ Enfin Moi ?</a></li>
     <li><a href="coup-de-patte-refuges.html">Les refuges</a></li>
     <li><a href="coup-de-patte-v3.html" class="nav-cta">Mes matchs</a></li>
   </ul>
@@ -424,6 +424,32 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
   function goToFiche() {
     window.location.href = 'coup-de-patte-fiche.html';
   }
+
+  // ══ CHARGEMENT VRAIS ANIMAUX ENFIN MOI ══
+  window.addEventListener('load', async function() {
+    var sb = getSupabase();
+    var { data: animaux } = await sb.from('Animal').select('*, refuge:Refuge(*)').eq('enfin_moi', true).eq('disponible', true);
+    if (!animaux || animaux.length === 0) return;
+
+    var grid = document.querySelector('.em-grid') || document.querySelector('.animals-grid');
+    if (!grid) return;
+
+    grid.innerHTML = '';
+    animaux.forEach(function(a) {
+      var emoji = a.espece && a.espece.toLowerCase() === 'chat' ? '🐱' : '🐕';
+      var age = a.age_annees ? a.age_annees + ' an' + (a.age_annees > 1 ? 's' : '') : '';
+      var ville = a.refuge ? a.refuge.ville : '';
+      grid.insertAdjacentHTML('beforeend',
+        '<div class="em-card" onclick="window.location.href='coup-de-patte-fiche.html?id=' + a.id + ''">' +
+        '<div class="em-img" style="background:linear-gradient(160deg,#E8D5B0,#C9A87A);font-size:3rem;display:flex;align-items:center;justify-content:center;height:140px">' + emoji + '</div>' +
+        '<div class="em-body">' +
+        '<div class="em-name">' + a.nom + '</div>' +
+        '<div class="em-meta">' + (a.race || a.espece) + ' · ' + age + (ville ? ' · ' + ville : '') + '</div>' +
+        '<div class="em-reason">' + (a.raison_enfin_moi || '✨ Animal en attente depuis longtemps') + '</div>' +
+        '</div></div>'
+      );
+    });
+  });
 </script>
 </body>
 </html>

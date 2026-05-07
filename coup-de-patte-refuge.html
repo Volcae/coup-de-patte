@@ -433,6 +433,47 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
   function goFiche() {
     window.location.href = 'coup-de-patte-fiche.html';
   }
+
+  // ══ CHARGEMENT VRAI REFUGE ══
+  window.addEventListener('load', async function() {
+    var params = new URLSearchParams(window.location.search);
+    var refugeId = params.get('id');
+    if (!refugeId) return;
+
+    var sb = getSupabase();
+    var { data: refuge } = await sb.from('Refuge').select('*').eq('id', refugeId).single();
+    if (!refuge) return;
+
+    // Mettre à jour le nom
+    var nameEls = document.querySelectorAll('.refuge-name, .hero-name, h1');
+    nameEls.forEach(function(el) { if (el.textContent.includes('SPA') || el.textContent.includes('Refuge')) el.textContent = refuge.nom; });
+
+    // Infos contact
+    var telEls = document.querySelectorAll('[href^="tel:"]');
+    telEls.forEach(function(el) { if (refuge.telephone) { el.href = 'tel:' + refuge.telephone; el.textContent = refuge.telephone; }});
+    var mailEls = document.querySelectorAll('[href^="mailto:"]');
+    mailEls.forEach(function(el) { if (refuge.email) { el.href = 'mailto:' + refuge.email; el.textContent = refuge.email; }});
+
+    // Charger les animaux du refuge
+    var { data: animaux } = await sb.from('Animal').select('*').eq('refuge', refugeId).eq('disponible', true);
+    if (!animaux || animaux.length === 0) return;
+
+    var grid = document.querySelector('.animaux-grid') || document.querySelector('.animals-list');
+    if (!grid) return;
+    grid.innerHTML = '';
+    animaux.forEach(function(a) {
+      var emoji = a.espece && a.espece.toLowerCase() === 'chat' ? '🐱' : '🐕';
+      var age = a.age_annees ? a.age_annees + ' an' + (a.age_annees > 1 ? 's' : '') : '';
+      grid.insertAdjacentHTML('beforeend',
+        '<div class="animal-card" onclick="window.location.href='coup-de-patte-fiche.html?id=' + a.id + ''" style="cursor:pointer;background:var(--paper);border-radius:16px;border:1.5px solid var(--border);padding:16px;transition:transform 0.2s">' +
+        '<div style="font-size:2.5rem;text-align:center;margin-bottom:8px">' + emoji + '</div>' +
+        '<div style="font-family:Fraunces,serif;font-weight:600;font-style:italic;color:var(--forest)">' + a.nom + '</div>' +
+        '<div style="font-size:0.75rem;color:var(--dust)">' + (a.race || a.espece) + ' · ' + age + '</div>' +
+        (a.enfin_moi ? '<div style="font-size:0.65rem;color:var(--amber);font-weight:700;margin-top:4px">✨ Enfin Moi ?</div>' : '') +
+        '</div>'
+      );
+    });
+  });
 </script>
 </body>
 </html>

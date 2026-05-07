@@ -162,7 +162,50 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
   <script>
     window.addEventListener('load', async function() {
       var { data: { session } } = await getSupabase().auth.getSession();
-      if (!session) { window.location.href = 'coup-de-patte-login.html'; }
+      if (!session) { window.location.href = 'coup-de-patte-login.html'; return; }
+
+      // Charger les données de l'animal depuis l'URL ?id=
+      var params = new URLSearchParams(window.location.search);
+      var animalId = params.get('id');
+      if (!animalId) return;
+
+      var sb = getSupabase();
+      var { data: animal } = await sb.from('Animal').select('*, refuge:Refuge(*)').eq('id', animalId).single();
+      if (!animal) return;
+
+      // Mettre à jour le contenu
+      var heroImg = document.querySelector('.hero-img');
+      if (heroImg) {
+        var emoji = animal.espece && animal.espece.toLowerCase() === 'chat' ? '🐱' : '🐕';
+        heroImg.innerHTML = heroImg.innerHTML.replace('🐕', emoji).replace('🐱', emoji);
+        var loc = heroImg.querySelector('.hero-loc');
+        if (loc && animal.refuge) loc.textContent = '📍 ' + animal.refuge.nom + ' · ' + (animal.refuge.ville || '');
+      }
+
+      // Nom et infos
+      var nameEl = document.querySelector('.hero-name');
+      if (nameEl) nameEl.textContent = animal.nom || '';
+      var metaEl = document.querySelector('.hero-meta');
+      if (metaEl) metaEl.textContent = (animal.race || animal.espece || '') + ' · ' + (animal.age_annees ? animal.age_annees + ' ans' : '') + ' · ' + (animal.sexe === 'male' ? 'Mâle' : 'Femelle');
+
+      // Description
+      var descEl = document.querySelector('.section-text');
+      if (descEl && animal.description) descEl.textContent = animal.description;
+
+      // Badge Enfin Moi ?
+      if (animal.enfin_moi) {
+        var badge = document.querySelector('.enfin-badge');
+        if (badge) badge.style.display = 'flex';
+      }
+
+      // Score (si profil adoptant existe)
+      var { data: profil } = await sb.from('ProfilAdoptant').select('*').eq('utilisateur', session.user.id).single();
+      if (profil) {
+        var scoreEl = document.querySelector('.hero-score-n');
+        // Score simple basé sur logement
+        var score = 70; // score par défaut
+        if (scoreEl) scoreEl.textContent = score + '%';
+      }
     });
   </script>
 </head>
