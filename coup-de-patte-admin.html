@@ -294,7 +294,9 @@ function getSupabase() {
       <div class="tabs-wrap">
         <div class="tab active" data-tab="disponibles" onclick="showTab('disponibles',this)">🐾 Disponibles <span class="tab-count" id="countDispo">–</span></div>
         <div class="tab" data-tab="enfin" onclick="showTab('enfin',this)">✨ Enfin Moi ? <span class="tab-count" id="countEnfin">–</span></div>
+        <div class="tab" data-tab="reserves" onclick="showTab('reserves',this)">🤞 Réservés <span class="tab-count" id="countReserves">–</span></div>
         <div class="tab" data-tab="adoptes" onclick="showTab('adoptes',this)">✅ Adoptés <span class="tab-count" id="countAdoptes">–</span></div>
+        <div class="tab" data-tab="decedes" onclick="showTab('decedes',this)">🕊️ Décédés <span class="tab-count" id="countDecedes">–</span></div>
       </div>
       <div class="animals-toolbar">
         <input class="search-input" type="text" placeholder="🔍 Rechercher un animal…" oninput="filterAnimals(this.value)">
@@ -320,8 +322,22 @@ function getSupabase() {
       <div class="tab-panel" id="tab-adoptes">
         <p style="font-size:0.8rem;color:var(--dust);margin-bottom:16px;font-family:'Fraunces',serif;font-style:italic;">Historique des adoptions. Ces animaux ne sont plus visibles sur Coup de Patte.</p>
         <table class="animals-table">
-          <thead><tr><th>Animal</th><th>Statut</th><th>Date adoption</th><th>Actions</th></tr></thead>
+          <thead><tr><th>Animal</th><th>Statut</th><th>Date</th><th>Actions</th></tr></thead>
           <tbody id="tbody-adoptes"><tr class="loading-row"><td colspan="4"><span class="spinner"></span>Chargement…</td></tr></tbody>
+        </table>
+      </div>
+      <div class="tab-panel" id="tab-reserves">
+        <p style="font-size:0.8rem;color:var(--dust);margin-bottom:16px;font-family:'Fraunces',serif;font-style:italic;">Animaux en cours de réservation.</p>
+        <table class="animals-table">
+          <thead><tr><th>Animal</th><th>Statut</th><th>Date</th><th>Actions</th></tr></thead>
+          <tbody id="tbody-reserves"><tr class="loading-row"><td colspan="4"><span class="spinner"></span>Chargement…</td></tr></tbody>
+        </table>
+      </div>
+      <div class="tab-panel" id="tab-decedes">
+        <p style="font-size:0.8rem;color:var(--dust);margin-bottom:16px;font-family:'Fraunces',serif;font-style:italic;">Animaux décédés. Fiches conservées pour mémoire.</p>
+        <table class="animals-table">
+          <thead><tr><th>Animal</th><th>Date</th><th>Actions</th></tr></thead>
+          <tbody id="tbody-decedes"><tr class="loading-row"><td colspan="3"><span class="spinner"></span>Chargement…</td></tr></tbody>
         </table>
       </div>
     </div>
@@ -542,28 +558,32 @@ async function loadAnimals() {
 }
 
 function renderAll() {
-  var disponibles = allAnimals.filter(a => a.disponible && !a.enfin_moi);
-  var enfin       = allAnimals.filter(a => a.enfin_moi && a.disponible);
-  var adoptes     = allAnimals.filter(a => !a.disponible);
+  var disponibles = allAnimals.filter(a => a.disponible && !a.enfin_moi && (!a.statut || a.statut === 'disponible'));
+  var enfin       = allAnimals.filter(a => a.enfin_moi && a.disponible && (!a.statut || a.statut === 'disponible'));
+  var reserves    = allAnimals.filter(a => a.statut === 'reserve');
+  var adoptes     = allAnimals.filter(a => a.statut === 'adopte' || a.statut === 'adopte_cdp');
+  var decedes     = allAnimals.filter(a => a.statut === 'decede');
 
   // Badges sidebar
-  document.getElementById('badgeTotal').textContent   = allAnimals.filter(a => a.disponible).length;
+  document.getElementById('badgeTotal').textContent   = disponibles.length + enfin.length;
   document.getElementById('badgeEnfin').textContent   = enfin.length;
   document.getElementById('badgeAdoptes').textContent = adoptes.length;
 
   // Tabs counts
-  document.getElementById('countDispo').textContent   = disponibles.length;
-  document.getElementById('countEnfin').textContent   = enfin.length;
-  document.getElementById('countAdoptes').textContent = adoptes.length;
+  document.getElementById('countDispo').textContent    = disponibles.length;
+  document.getElementById('countEnfin').textContent    = enfin.length;
+  document.getElementById('countReserves').textContent = reserves.length;
+  document.getElementById('countAdoptes').textContent  = adoptes.length;
+  document.getElementById('countDecedes').textContent  = decedes.length;
 
   // Stats dashboard
-  document.getElementById('statDispo').textContent    = disponibles.length;
+  document.getElementById('statDispo').textContent    = disponibles.length + enfin.length;
   document.getElementById('statEnfin').textContent    = enfin.length;
   document.getElementById('statAdoptes').textContent  = adoptes.length;
   document.getElementById('statTotal').textContent    = allAnimals.length;
 
   var avgMois = enfin.length > 0
-    ? Math.round(enfin.reduce((s, a) => s + moisEnRefuge(a.date_arrivee), 0) / enfin.length)
+    ? Math.round(enfin.reduce((s, a) => s + moisEnRefuge(a.date_arrivee_refuge), 0) / enfin.length)
     : 0;
   document.getElementById('statEnfinSub').textContent = enfin.length > 0
     ? 'Attente moyenne : ' + avgMois + ' mois' : '';
@@ -571,7 +591,9 @@ function renderAll() {
   // Tables
   renderTable('tbody-disponibles', disponibles, 'dispo');
   renderTable('tbody-enfin',       enfin,       'enfin');
+  renderTable('tbody-reserves',    reserves,    'reserves');
   renderTable('tbody-adoptes',     adoptes,     'adoptes');
+  renderTable('tbody-decedes',     decedes,     'decedes');
 
   // Dashboard widgets
   renderDashRecents();
@@ -635,9 +657,24 @@ function renderTable(tbodyId, animals, mode) {
     if (mode === 'adoptes') {
       return '<tr id="row-' + a.id + '">'
         + '<td><div style="display:flex;align-items:center;gap:12px"><div class="animal-row-thumb" style="background:linear-gradient(135deg,var(--mint),var(--sage))">' + emoji + '</div><div><div class="animal-row-name">' + a.nom + '</div><div class="animal-row-meta">' + (a.race || a.espece) + ' · ' + age + '</div></div></div></td>'
-        + '<td><span class="status-badge sb-adopte">✅ Adopté</span></td>'
+        + '<td><span class="status-badge sb-adopte">✅ ' + (a.statut === 'adopte_cdp' ? 'Via Coup de Patte' : 'Adopté') + '</span></td>'
         + '<td style="font-size:0.82rem;color:var(--dust)">' + (a.updated_at ? new Date(a.updated_at).toLocaleDateString('fr-FR') : '–') + '</td>'
-        + '<td><button class="row-btn" onclick="reactiverAnimal(\'' + a.id + '\',\'' + a.nom + '\')">↩ Remettre disponible</button></td>'
+        + '<td><div style="display:flex;gap:6px"><button class="row-btn" onclick="reactiverAnimal(\'' + a.id + '\',\'' + a.nom + '\')">↩ Remettre disponible</button><button class="row-btn row-btn-danger" onclick="confirmDelete(\'' + a.id + '\',\'' + a.nom + '\')">🗑</button></div></td>'
+        + '</tr>';
+    }
+    if (mode === 'reserves') {
+      return '<tr id="row-' + a.id + '">'
+        + '<td><div style="display:flex;align-items:center;gap:12px"><div class="animal-row-thumb" style="background:linear-gradient(135deg,var(--mint),var(--sage))">' + emoji + '</div><div><div class="animal-row-name">' + a.nom + '</div><div class="animal-row-meta">' + (a.race || a.espece) + ' · ' + age + '</div></div></div></td>'
+        + '<td><span style="font-size:0.72rem;font-weight:700;color:var(--amber)">🤞 Réservé</span></td>'
+        + '<td style="font-size:0.82rem;color:var(--dust)">' + (a.updated_at ? new Date(a.updated_at).toLocaleDateString('fr-FR') : '–') + '</td>'
+        + '<td><div style="display:flex;gap:6px"><button class="row-btn" onclick="reactiverAnimal(\'' + a.id + '\',\'' + a.nom + '\')">↩ Remettre disponible</button><button class="row-btn row-btn-danger" onclick="confirmDelete(\'' + a.id + '\',\'' + a.nom + '\')">🗑</button></div></td>'
+        + '</tr>';
+    }
+    if (mode === 'decedes') {
+      return '<tr id="row-' + a.id + '">'
+        + '<td><div style="display:flex;align-items:center;gap:12px"><div class="animal-row-thumb" style="background:linear-gradient(135deg,#ddd,#bbb)">' + emoji + '</div><div><div class="animal-row-name" style="opacity:0.6">' + a.nom + '</div><div class="animal-row-meta">' + (a.race || a.espece) + ' · ' + age + '</div></div></div></td>'
+        + '<td style="font-size:0.82rem;color:var(--dust)">' + (a.updated_at ? new Date(a.updated_at).toLocaleDateString('fr-FR') : '–') + '</td>'
+        + '<td><button class="row-btn row-btn-danger" onclick="confirmDelete(\'' + a.id + '\',\'' + a.nom + '\')">🗑 Supprimer définitivement</button></td>'
         + '</tr>';
     }
     // mode dispo
@@ -707,24 +744,42 @@ async function changeStatus(animalId, status, nom) {
   document.querySelectorAll('.status-menu').forEach(m => m.classList.add('hidden'));
   launchEffect(status);
   var updates = {};
-  if (status === 'adopte' || status === 'adopte_cdp') {
-    updates = { disponible: false };
+  if (status === 'adopte_cdp') {
+    updates = { statut: 'adopte_cdp', disponible: false };
+  } else if (status === 'adopte') {
+    updates = { statut: 'adopte', disponible: false };
   } else if (status === 'reserve') {
-    updates = { disponible: false };
+    updates = { statut: 'reserve', disponible: false };
   } else if (status === 'decede') {
-    updates = { disponible: false };
+    updates = { statut: 'decede', disponible: false };
   }
   var sb = getSupabase();
   var { error } = await sb.from('Animal').update(updates).eq('id', animalId);
   if (error) { showToast('Erreur : ' + error.message); return; }
-  var msgs = { adopte_cdp: '🐾 ' + nom + ' adopté(e) via Coup de Patte !', adopte: '✅ ' + nom + ' adopté(e) !', reserve: '🤞 ' + nom + ' réservé(e)', decede: '🕊️ ' + nom + ', fiche mise à jour' };
+  var msgs = {
+    adopte_cdp: '🐾 ' + nom + ' adopté(e) via Coup de Patte !',
+    adopte: '✅ ' + nom + ' adopté(e) !',
+    reserve: '🤞 ' + nom + ' réservé(e)',
+    decede: '🕊️ ' + nom + ', fiche mise à jour'
+  };
   showToast(msgs[status] || 'Statut mis à jour');
+
+  // Demander confirmation de suppression pour adoption/décès
+  if (status === 'adopte' || status === 'adopte_cdp' || status === 'decede') {
+    setTimeout(() => {
+      var label = status === 'decede' ? 'décédé(e)' : 'adopté(e)';
+      if (confirm('Souhaitez-vous supprimer définitivement la fiche de ' + nom + ' ?\n\nCela libérera de l\'espace et la fiche ne sera plus visible nulle part.')) {
+        deleteAnimal(animalId, nom, true);
+      }
+    }, 1500);
+  }
+
   await loadAnimals();
 }
 
 async function reactiverAnimal(id, nom) {
   var sb = getSupabase();
-  var { error } = await sb.from('Animal').update({ disponible: true }).eq('id', id);
+  var { error } = await sb.from('Animal').update({ disponible: true, statut: 'disponible' }).eq('id', id);
   if (error) { showToast('Erreur : ' + error.message); return; }
   showToast(nom + ' remis(e) disponible ✅');
   await loadAnimals();
@@ -834,12 +889,12 @@ function confirmDelete(id, nom) {
   document.getElementById('confirmPopup').classList.add('open');
 }
 
-async function deleteAnimal(id, nom) {
-  closeConfirm();
+async function deleteAnimal(id, nom, silent) {
+  if (!silent) closeConfirm();
   var sb = getSupabase();
   var { error } = await sb.from('Animal').delete().eq('id', id);
   if (error) { showToast('Erreur : ' + error.message); return; }
-  showToast(nom + ' supprimé(e) ✅');
+  if (!silent) showToast(nom + ' supprimé(e) ✅');
   await loadAnimals();
 }
 
