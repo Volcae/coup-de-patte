@@ -118,7 +118,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 .modal-sub{font-size:0.8rem;color:var(--dust);margin-bottom:24px}
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
 .form-full{grid-column:1/-1}
-.form-group{display:flex;flex-direction:column;gap:5px}
+.form-group{display:flex;flex-direction:column;gap:5px;position:relative}
 .form-label{font-size:0.68rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--smoke)}
 .form-input,.form-select,.form-textarea{padding:10px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--ivory);font-family:'Nunito',sans-serif;font-size:0.83rem;color:var(--forest);outline:none;transition:border-color 0.2s}
 .form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--moss)}
@@ -208,7 +208,7 @@ function getSupabase() {
     <span class="nav-refuge-name" id="navRefugeName">Chargement…</span>
   </div>
   <div class="nav-right">
-    <a href="coup-de-patte-refuge.html" class="nav-view-btn">👁 Voir ma fiche publique</a>
+    <a href="#" id="btnFichePublique" class="nav-view-btn" onclick="voirFichePublique()">👁 Voir ma fiche publique</a>
     <button class="nav-logout" onclick="handleLogout()">Déconnexion</button>
   </div>
 </nav>
@@ -388,7 +388,8 @@ function getSupabase() {
       </div>
       <div class="form-group">
         <label class="form-label">Race</label>
-        <input class="form-input" placeholder="Ex : Berger croisé" id="fieldRace">
+        <input class="form-input" placeholder="Tapez pour chercher ou saisissez librement…" id="fieldRace" oninput="filterRacesAdmin(this.value)" autocomplete="off">
+        <div id="raceDropdown" style="display:none;position:absolute;z-index:100;background:var(--paper);border:1.5px solid var(--border);border-radius:12px;max-height:200px;overflow-y:auto;width:100%;box-shadow:0 8px 24px rgba(45,74,62,0.12);margin-top:4px"></div>
       </div>
       <div class="form-group">
         <label class="form-label">Âge (années)</label>
@@ -788,12 +789,11 @@ async function saveAnimal() {
     experience_requise: document.getElementById('fieldExperience').value,
     besoins_medicaux: besoins,
     description: document.getElementById('fieldDesc').value.trim() || null,
-    date_arrivee: dateArrivee,
+    date_arrivee_refuge: dateArrivee,
     compat_enfants_moins13: document.getElementById('optEnfants').classList.contains('on'),
     compat_chats: document.getElementById('optChats2').classList.contains('on'),
     compat_chiens: document.getElementById('optChiens2').classList.contains('on'),
     disponible: true,
-    statut: 'disponible',
     enfin_moi: enfinMoi,
     refuge: currentRefuge.id
   };
@@ -919,6 +919,66 @@ document.addEventListener('keydown', e => {
 });
 document.getElementById('animalModal').addEventListener('click', function(e) {
   if(e.target === this) closeModal();
+});
+
+// ══ FICHE PUBLIQUE ══
+function voirFichePublique() {
+  if (currentRefuge && currentRefuge.id) {
+    window.open('coup-de-patte-refuge.html?id=' + currentRefuge.id, '_blank');
+  } else {
+    showToast('Refuge non chargé, veuillez patienter.');
+  }
+}
+
+// ══ RACES DROPDOWN ══
+var racesAdmin = [
+  'Croisé','Croisé Berger','Croisé Labrador','Croisé Teckel',
+  'Affenpinscher','Airedale Terrier','Akita Inu','Alaskan Malamute',
+  'Basenji','Basset Hound','Beagle','Berger Allemand','Berger Australien',
+  'Berger Belge Malinois','Berger Belge Tervueren','Berger Blanc Suisse',
+  'Bichon Frisé','Border Collie','Bouledogue Français','Bouvier Bernois',
+  'Boxer','Braque Allemand','Bull Terrier','Bulldog Anglais',
+  'Cairn Terrier','Caniche','Cane Corso','Cavalier King Charles',
+  'Chihuahua','Chow-Chow','Cocker Anglais','Cocker Américain',
+  'Dalmatien','Dobermann','Dogue Allemand','Dogue de Bordeaux',
+  'Épagneul Breton','Fox Terrier','Golden Retriever','Greyhound',
+  'Husky Sibérien','Jack Russell Terrier','Labrador Retriever',
+  'Leonberg','Lévrier Afghan','Lhassa Apso','Malinois','Maltais',
+  'Mastiff','Pékinois','Pointer','Rottweiler','Saint-Bernard',
+  'Samoyède','Schnauzer','Scottish Terrier','Setter Irlandais',
+  'Shiba Inu','Shih Tzu','Spitz','Staffordshire Bull Terrier',
+  'Teckel','Terre-Neuve','Welsh Corgi','Whippet','Yorkshire Terrier',
+  // Chats
+  'Abyssin','Bengal','Birman','British Shorthair','Chartreux',
+  'Européen','Exotic Shorthair','Maine Coon','Norvégien','Persan',
+  'Ragdoll','Sacré de Birmanie','Siamois','Sibérien','Sphynx',
+  'Turkish Angora'
+];
+
+function filterRacesAdmin(val) {
+  var dropdown = document.getElementById('raceDropdown');
+  if (!val || val.length < 2) { dropdown.style.display = 'none'; return; }
+  var filtered = racesAdmin.filter(r => r.toLowerCase().includes(val.toLowerCase()));
+  if (filtered.length === 0) { dropdown.style.display = 'none'; return; }
+  dropdown.innerHTML = filtered.slice(0, 10).map(r =>
+    '<div style="padding:10px 14px;cursor:pointer;font-size:0.85rem;transition:background 0.15s" ' +
+    'onmouseover="this.style.background=\'var(--mint-lt)\'" ' +
+    'onmouseout="this.style.background=\'\'" ' +
+    'onclick="selectRaceAdmin(\'' + r.replace(/'/g, "\\'") + '\')">' + r + '</div>'
+  ).join('');
+  dropdown.style.display = 'block';
+}
+
+function selectRaceAdmin(race) {
+  document.getElementById('fieldRace').value = race;
+  document.getElementById('raceDropdown').style.display = 'none';
+}
+
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('#fieldRace') && !e.target.closest('#raceDropdown')) {
+    var d = document.getElementById('raceDropdown');
+    if (d) d.style.display = 'none';
+  }
 });
 </script>
 </body>
