@@ -542,9 +542,9 @@ async function loadAnimals() {
 }
 
 function renderAll() {
-  var disponibles = allAnimals.filter(a => a.disponible && !a.enfin_moi && a.statut !== 'adopte');
-  var enfin       = allAnimals.filter(a => a.enfin_moi && a.statut !== 'adopte');
-  var adoptes     = allAnimals.filter(a => a.statut === 'adopte');
+  var disponibles = allAnimals.filter(a => a.disponible && !a.enfin_moi);
+  var enfin       = allAnimals.filter(a => a.enfin_moi && a.disponible);
+  var adoptes     = allAnimals.filter(a => !a.disponible);
 
   // Badges sidebar
   document.getElementById('badgeTotal').textContent   = allAnimals.filter(a => a.disponible).length;
@@ -708,11 +708,11 @@ async function changeStatus(animalId, status, nom) {
   launchEffect(status);
   var updates = {};
   if (status === 'adopte' || status === 'adopte_cdp') {
-    updates = { statut: 'adopte', disponible: false };
+    updates = { disponible: false };
   } else if (status === 'reserve') {
-    updates = { statut: 'reserve', disponible: false };
+    updates = { disponible: false };
   } else if (status === 'decede') {
-    updates = { statut: 'decede', disponible: false };
+    updates = { disponible: false };
   }
   var sb = getSupabase();
   var { error } = await sb.from('Animal').update(updates).eq('id', animalId);
@@ -724,7 +724,7 @@ async function changeStatus(animalId, status, nom) {
 
 async function reactiverAnimal(id, nom) {
   var sb = getSupabase();
-  var { error } = await sb.from('Animal').update({ statut: 'disponible', disponible: true }).eq('id', id);
+  var { error } = await sb.from('Animal').update({ disponible: true }).eq('id', id);
   if (error) { showToast('Erreur : ' + error.message); return; }
   showToast(nom + ' remis(e) disponible ✅');
   await loadAnimals();

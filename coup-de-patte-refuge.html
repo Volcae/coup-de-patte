@@ -188,7 +188,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 <nav>
   <a href="coup-de-patte-login.html" class="logo"><div class="logo-bubble" style="animation:pawPulse 2.5s ease-in-out infinite;"><span style="animation:pawWiggle 2.5s ease-in-out infinite;display:inline-block;filter:brightness(0) invert(1);font-size:1.1rem">🐾</span></div>Coup de Patte</a>
   <div></div>
-  <a href="coup-de-patte-v3.html" class="nav-back">← Retour à mes matchs</a>
+  <a href="coup-de-patte-v3.html" class="nav-back" id="navBackLink">← Retour</a>
 </nav>
 
 <!-- HERO -->
@@ -480,13 +480,20 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 
     // Lien retour selon le rôle
     var { data: { session } } = await sb.auth.getSession();
-    var retourLink = document.querySelector('.nav-back, [href*="v3"]');
+    var retourLink = document.getElementById('navBackLink');
     if (retourLink && session) {
-      var { data: profil } = await sb.from('Profils').select('role, est_refuge').eq('id', session.user.id).single();
-      if (profil && profil.est_refuge) {
+      var { data: authUser } = await sb.auth.getUser();
+      var meta = authUser && authUser.user ? authUser.user.user_metadata || {} : {};
+      if (meta.est_refuge || meta.role === 'refuge') {
         retourLink.href = 'coup-de-patte-admin.html';
         retourLink.textContent = '← Mon espace refuge';
+      } else {
+        retourLink.href = 'coup-de-patte-v3.html';
+        retourLink.textContent = '← Retour à mes matchs';
       }
+    } else if (retourLink) {
+      retourLink.href = 'index.html';
+      retourLink.textContent = '← Accueil';
     }
 
     // Charger les animaux du refuge
