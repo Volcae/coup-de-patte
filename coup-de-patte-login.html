@@ -617,6 +617,23 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
       }
     });
     if (error) { showToast('❌ ' + error.message); return; }
+
+    // Créer automatiquement la fiche Refuge dans la base
+    var userId = data.user ? data.user.id : null;
+    if (userId) {
+      var { error: refugeError } = await getSupabase().from('Refuge').insert({
+        nom: nomEl.value,
+        ville: document.getElementById('ville-refuge')?.value || '',
+        code_postal: document.getElementById('cp-refuge')?.value || '',
+        site_web: document.getElementById('site-refuge')?.value || '',
+        email: emailEl.value,
+        utilisateur: userId,
+        est_partenaire: false,
+        valide_par_admin: false
+      });
+      if (refugeError) console.error('Erreur création refuge:', refugeError);
+    }
+
     showToast('Refuge créé ! Bienvenue sur Coup de Patte 🏡');
     setTimeout(() => window.location.href = 'coup-de-patte-admin.html', 1500);
   }
