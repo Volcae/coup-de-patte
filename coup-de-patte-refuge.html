@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SPA de Lyon, Coup de Patte</title>
+<title id="pageTitle">SPA de Lyon, Coup de Patte</title>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -165,8 +165,6 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0.4}}
 </style>
 
-  <!-- Supabase SDK + Configuration Coup de Patte -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <!-- Supabase SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
@@ -197,7 +195,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
     <div class="refuge-identity">
       <div class="refuge-logo">🏠</div>
       <div class="refuge-name-block">
-        <h1>SPA de Lyon, Fondation</h1>
+        <h1 id="refugeNomHero">SPA de Lyon, Fondation</h1>
         <p>
           <span class="open-now"><span class="open-dot dot-open"></span>Ouvert maintenant</span>
           &nbsp;·&nbsp; Jusqu'à 18h00
@@ -223,17 +221,17 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
         <div class="info-grid" style="margin-bottom:16px">
           <div class="info-item">
             <span class="info-item-label">Adresse</span>
-            <div class="info-item-value">12 chemin de la Ferme</div>
-            <div class="info-item-sub">Lyon 9ème · 69009</div>
+            <div class="info-item-value" id="refugeAdresse">12 chemin de la Ferme</div>
+            <div class="info-item-sub" id="refugeVilleCP">Lyon 9ème · 69009</div>
           </div>
           <div class="info-item">
             <span class="info-item-label">Téléphone</span>
-            <div class="info-item-value">04 72 00 00 00</div>
+            <div class="info-item-value" id="refugeTel">04 72 00 00 00</div>
             <div class="info-item-sub">Appels du mar au dim</div>
           </div>
           <div class="info-item">
             <span class="info-item-label">Email</span>
-            <div class="info-item-value" style="font-size:0.78rem">contact@spa-lyon.fr</div>
+            <div class="info-item-value" style="font-size:0.78rem" id="refugeEmail">contact@spa-lyon.fr</div>
             <div class="info-item-sub">Réponse sous 48h</div>
           </div>
           <div class="info-item">
@@ -377,8 +375,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
       <div class="contact-card">
         <h3>Visiter le refuge</h3>
         <p>Nous vous conseillons de prendre rendez-vous avant de vous déplacer pour rencontrer un animal en particulier.</p>
-        <button class="cta-btn cta-primary" onclick="window.location.href='tel:0472000000'">📞 Appeler maintenant</button>
-        <button class="cta-btn cta-secondary">✉️ Envoyer un email</button>
+        <button class="cta-btn cta-primary" id="btnAppeler" onclick="window.location.href='tel:0472000000'">📞 Appeler maintenant</button>
+        <button class="cta-btn cta-secondary" id="btnEmail" onclick="window.location.href='mailto:contact@spa-lyon.fr'">✉️ Envoyer un email</button>
       </div>
 
       <!-- Carte -->
@@ -400,7 +398,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
           <div class="map-block" style="top:70%;left:65%;width:28%;height:22%"></div>
           <div style="position:absolute;top:30%;left:32%;width:24%;height:28%;background:rgba(74,124,89,0.18);border-radius:8px;border:2px solid rgba(74,124,89,0.3)"></div>
           <div class="map-pin" style="top:42%;left:44%">
-            <div class="map-pin-bubble">🏠 SPA de Lyon</div>
+            <div class="map-pin-bubble" id="refugeNomPin">🏠 SPA de Lyon</div>
             <div class="map-pin-dot"></div>
           </div>
           <div style="position:absolute;top:72%;left:72%;width:14px;height:14px;border-radius:50%;background:var(--blue);border:3px solid white;box-shadow:0 0 0 4px rgba(91,141,239,0.2);z-index:10"></div>
@@ -412,8 +410,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
         <div class="map-footer">
           <div>
             <div class="map-address">
-              <strong>SPA de Lyon, Fondation</strong>
-              12 chemin de la Ferme · Lyon 9ème · 69009
+              <strong id="refugeNomMap">SPA de Lyon, Fondation</strong>
+              <span id="refugeAdresseMap">12 chemin de la Ferme · Lyon 9ème · 69009</span>
             </div>
             <div class="distance-badge" style="margin-top:8px">📍 45 km · ~40 min en voiture</div>
           </div>
