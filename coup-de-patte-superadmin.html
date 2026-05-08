@@ -1049,7 +1049,7 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
             '<td><strong>' + (r.nom || '–') + '</strong><br><small style="color:var(--dust)">' + (r.ville || '') + '</small></td>' +
             '<td>' + (r.email || '–') + '</td>' +
             '<td><span style="font-size:0.75rem;padding:3px 10px;border-radius:50px;background:' + (r.valide_par_admin ? 'var(--mint-lt);color:var(--moss)' : 'rgba(212,168,67,0.1);color:var(--amber)') + ';font-weight:700">' + (r.valide_par_admin ? '✅ Validé' : '⏳ En attente') + '</span></td>' +
-            '<td><button onclick="validerRefuge('' + r.id + '')" style="padding:5px 12px;border-radius:50px;border:1.5px solid var(--moss);background:transparent;color:var(--moss);font-weight:700;cursor:pointer;font-size:0.75rem">' + (r.valide_par_admin ? '✓ Validé' : 'Valider') + '</button></td>' +
+            '<td><button onclick="validerRefuge(\'' + r.id + '\')" style="padding:5px 12px;border-radius:50px;border:1.5px solid var(--moss);background:transparent;color:var(--moss);font-weight:700;cursor:pointer;font-size:0.75rem">' + (r.valide_par_admin ? '✓ Validé' : 'Valider') + '</button></td>' +
             '</tr>'
           );
         });
