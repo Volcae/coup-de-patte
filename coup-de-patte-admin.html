@@ -988,7 +988,7 @@ document.getElementById('animalModal').addEventListener('click', function(e) {
 // ══ FICHE PUBLIQUE ══
 function voirFichePublique() {
   if (currentRefuge && currentRefuge.id) {
-    window.open('coup-de-patte-refuge.html?id=' + currentRefuge.id, '_blank');
+    window.location.href = 'coup-de-patte-refuge.html?id=' + currentRefuge.id;
   } else {
     showToast('Refuge non chargé, veuillez patienter.');
   }
