@@ -537,7 +537,7 @@ window.addEventListener('load', async function() {
   document.getElementById('infoVille').value   = refuge.ville     || '';
   document.getElementById('infoTel').value     = refuge.telephone || '';
   document.getElementById('infoEmail').value   = refuge.email     || '';
-  document.getElementById('infoSite').value    = refuge.site_web  || '';
+  document.getElementById('infoSite').value    = (refuge.site_web||'').replace(/\[([^\]]+)\]\([^)]+\)/g,'$1').replace(/^https?:\/\//i,'');
   document.getElementById('infoDesc').value    = refuge.description || '';
 
   // Charger les animaux
@@ -910,7 +910,12 @@ async function saveRefugeInfos() {
     ville: document.getElementById('infoVille').value.trim(),
     telephone: document.getElementById('infoTel').value.trim(),
     email: document.getElementById('infoEmail').value.trim(),
-    site_web: document.getElementById('infoSite').value.trim().replace(/\[([^\]]+)\]\([^)]+\)/g, '$1'),
+    site_web: (function() {
+      var s = document.getElementById('infoSite').value.trim();
+      s = s.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1'); // strip markdown
+      s = s.replace(/^https?:\/\//i, ''); // remove existing protocol
+      return s;
+    })(),
     description: document.getElementById('infoDesc').value.trim(),
   };
   var { error } = await sb.from('Refuge').update(payload).eq('id', currentRefuge.id);
