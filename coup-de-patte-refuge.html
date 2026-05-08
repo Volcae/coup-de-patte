@@ -459,6 +459,9 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
     // Contact
     el = document.getElementById('refugeTel'); if (el) el.textContent = refuge.telephone || '–';
     el = document.getElementById('refugeEmail'); if (el) el.textContent = refuge.email || '–';
+    // Site web - nettoyer le format Markdown éventuel [text](url) -> text
+    var siteWeb = (refuge.site_web || '–').replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
+    el = document.getElementById('refugeSite'); if (el) el.textContent = siteWeb;
 
     // Boutons
     el = document.getElementById('btnAppeler');
