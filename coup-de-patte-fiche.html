@@ -2,8 +2,9 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rex, Coup de Patte</title>
+<title id="pageTitle">Rex, Coup de Patte</title>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{--forest:#2D4A3E;--moss:#4A7C59;--sage:#7AAD89;--mint:#C8E6C0;--mint-lt:#EBF5E8;--ivory:#F4F1E8;--paper:#FDFCF8;--bark:#6B4F3A;--gold:#D4A843;--amber:#C49A1A;--blush:#E8C49A;--rose:#C9704A;--blue:#5B8DEF;--border:rgba(45,74,62,0.11);--dust:#7A6E65;--smoke:#A89E96;--shadow:0 12px 48px rgba(45,74,62,0.12)}
@@ -164,7 +165,6 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
       var { data: { session } } = await getSupabase().auth.getSession();
       if (!session) { window.location.href = 'coup-de-patte-login.html'; return; }
 
-      // Charger les données de l'animal depuis l'URL ?id=
       var params = new URLSearchParams(window.location.search);
       var animalId = params.get('id');
       if (!animalId) return;
@@ -173,38 +173,96 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
       var { data: animal } = await sb.from('Animal').select('*, refuge:Refuge(*)').eq('id', animalId).single();
       if (!animal) return;
 
-      // Mettre à jour le contenu
-      var heroImg = document.querySelector('.hero-img');
-      if (heroImg) {
-        var emoji = animal.espece && animal.espece.toLowerCase() === 'chat' ? '🐱' : '🐕';
-        heroImg.innerHTML = heroImg.innerHTML.replace('🐕', emoji).replace('🐱', emoji);
-        var loc = heroImg.querySelector('.hero-loc');
-        if (loc && animal.refuge) loc.textContent = '📍 ' + animal.refuge.nom + ' · ' + (animal.refuge.ville || '');
+      // Titre page
+      document.title = (animal.nom || 'Animal') + ' · Coup de Patte';
+
+      // Emoji espèce
+      var emoji = animal.espece && animal.espece.toLowerCase() === 'chat' ? '🐱' : '🐕';
+      var emojiEl = document.getElementById('animalEmoji');
+      if (emojiEl) emojiEl.textContent = emoji;
+
+      // Localisation
+      var locEl = document.getElementById('animalLoc');
+      if (locEl && animal.refuge) locEl.textContent = '📍 ' + animal.refuge.nom + (animal.refuge.ville ? ' · ' + animal.refuge.ville : '');
+
+      // Nom
+      var nomEl = document.getElementById('animalNom');
+      if (nomEl) nomEl.textContent = animal.nom || '';
+
+      // Meta (race, âge, sexe)
+      var metaEl = document.querySelector('.hero-meta, .animal-meta');
+      if (metaEl) {
+        var age = animal.age_annees ? animal.age_annees + ' an' + (animal.age_annees > 1 ? 's' : '') : '';
+        var sexe = animal.sexe === 'male' ? 'Mâle' : animal.sexe === 'femelle' ? 'Femelle' : '';
+        metaEl.textContent = (animal.race || animal.espece || '') + (age ? ' · ' + age : '') + (sexe ? ' · ' + sexe : '');
       }
 
-      // Nom et infos
-      var nameEl = document.querySelector('.hero-name');
-      if (nameEl) nameEl.textContent = animal.nom || '';
-      var metaEl = document.querySelector('.hero-meta');
-      if (metaEl) metaEl.textContent = (animal.race || animal.espece || '') + ' · ' + (animal.age_annees ? animal.age_annees + ' ans' : '') + ' · ' + (animal.sexe === 'male' ? 'Mâle' : 'Femelle');
+      // Description principale
+      document.querySelectorAll('.pres-quote, .section-text').forEach(function(el) {
+        if (animal.description) el.textContent = animal.description;
+      });
 
-      // Description
-      var descEl = document.querySelector('.section-text');
-      if (descEl && animal.description) descEl.textContent = animal.description;
+      // Infos dans le tableau
+      document.querySelectorAll('.info-row').forEach(function(row) {
+        var label = row.querySelector('.info-label');
+        var value = row.querySelector('.info-value');
+        if (!label || !value) return;
+        var txt = label.textContent;
+        if (txt.includes('Race') && animal.race) value.textContent = animal.race;
+        if (txt.includes('Âge') && animal.age_annees) value.textContent = animal.age_annees + ' ans';
+        if (txt.includes('Sexe') && animal.sexe) value.textContent = animal.sexe === 'male' ? 'Mâle' : 'Femelle';
+        if (txt.includes('Gabarit') && animal.gabarit) value.textContent = animal.gabarit;
+        if (txt.includes('Pelage') && animal.pelage) value.textContent = animal.pelage;
+        if (txt.includes('Refuge') && animal.refuge) value.textContent = animal.refuge.nom;
+      });
 
       // Badge Enfin Moi ?
       if (animal.enfin_moi) {
-        var badge = document.querySelector('.enfin-badge');
+        var badge = document.querySelector('.enfin-badge, .am-ribbon');
         if (badge) badge.style.display = 'flex';
       }
 
-      // Score (si profil adoptant existe)
+      // Calcul vrai score
       var { data: profil } = await sb.from('ProfilAdoptant').select('*').eq('utilisateur', session.user.id).single();
       if (profil) {
-        var scoreEl = document.querySelector('.hero-score-n');
-        // Score simple basé sur logement
-        var score = 70; // score par défaut
-        if (scoreEl) scoreEl.textContent = score + '%';
+        var scores = { logement: 50, foyer: 100, disponibilite: 50, experience: 100, mode_vie: 50 };
+        if (animal.gabarit) {
+          var g = animal.gabarit.toLowerCase();
+          if (profil.type_logement === 'maison') scores.logement = 100;
+          else if (profil.type_logement === 'appart') { scores.logement = g === 'petit' ? 100 : g === 'moyen' ? 70 : 30; }
+        }
+        var foyer = 100;
+        if (profil.enfants_foyer && profil.enfants_foyer.includes('moins13') && !animal.compat_enfants_moins13) foyer -= 50;
+        if (profil.animaux_foyer && profil.animaux_foyer.includes('chien') && !animal.compat_chiens) foyer -= 50;
+        if (profil.animaux_foyer && profil.animaux_foyer.includes('chat') && !animal.compat_chats) foyer -= 50;
+        scores.foyer = Math.max(0, foyer);
+        var h = profil.heures_seul || 3;
+        scores.disponibilite = h <= 1 ? 100 : h <= 3 ? 80 : h <= 6 ? 50 : 20;
+        var req = animal.experience_requise || 'debutant';
+        var exp = profil.experience_animale || 'jamais';
+        scores.experience = req === 'debutant' ? 100 : (req === 'intermediaire' && exp !== 'jamais') ? 100 : (req === 'experimente' && exp === 'adulte') ? 100 : 40;
+        var mode = profil.temps_dedie || 'modere';
+        var energie = animal.energie || 'moyen';
+        scores.mode_vie = ((mode === 'actif' || mode === 'sportif') && energie === 'eleve') || (mode === 'modere' && energie === 'moyen') || (mode === 'sedentaire' && energie === 'faible') ? 100 : 50;
+        var score = Math.round(scores.logement*0.30 + scores.foyer*0.25 + scores.disponibilite*0.20 + scores.experience*0.15 + scores.mode_vie*0.10);
+
+        var scoreEl = document.getElementById('animalScore');
+        var labelEl = document.getElementById('animalScoreLabel');
+        var colors = { 85: 'var(--moss)', 70: 'var(--blue)', 55: 'var(--amber)', 0: 'var(--rose)' };
+        var labels = { 85: 'Coup de Patte idéal', 70: 'Belle rencontre', 55: "On s'apprivoise ?", 0: 'Faible compatibilité' };
+        var threshold = score >= 85 ? 85 : score >= 70 ? 70 : score >= 55 ? 55 : 0;
+        if (scoreEl) { scoreEl.textContent = score + '%'; scoreEl.style.color = colors[threshold]; }
+        if (labelEl) { labelEl.textContent = labels[threshold]; labelEl.style.color = colors[threshold]; }
+
+        // Score global dans la section compatibilité
+        var scoreTotalEl = document.querySelector('.score-total-num');
+        if (scoreTotalEl) scoreTotalEl.textContent = score + '%';
+      }
+
+      // Lien refuge dans onglet contact
+      var refugeLinkEl = document.querySelector('#tab-contact a[href*="refuge"]');
+      if (refugeLinkEl && animal.refuge) {
+        refugeLinkEl.href = 'coup-de-patte-refuge.html?id=' + animal.refuge.id;
       }
     });
   </script>
@@ -218,22 +276,21 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 </nav>
 
 <div class="hero">
-  <div class="hero-img">
+  <div class="hero-img" id="heroImg"><span id="animalEmoji" style="position:relative;z-index:5">🐕</span>
     <!-- Badge signalement -->
     <div id="badge-absence" style="display:none;position:absolute;top:14px;left:14px;z-index:30;background:rgba(201,112,74,0.92);color:white;font-size:0.68rem;font-weight:700;padding:5px 12px;border-radius:50px;box-shadow:0 2px 8px rgba(0,0,0,0.2)">🚩 <span id="badge-count">1</span> signalement</div>
-    🐕
-    <div class="hero-loc">📍 SPA de Lyon · 45 km</div>
+    <div class="hero-loc" id="animalLoc">📍 SPA de Lyon</div>
   </div>
   <div class="hero-score" style="position:absolute;bottom:-26px;right:52px;background:var(--paper);border:1.5px solid var(--border);border-radius:20px;padding:14px 22px;box-shadow:0 8px 28px rgba(45,74,62,0.15);text-align:center;z-index:20;">
-    <span class="hero-score-n">87%</span>
-    <span class="hero-score-l">Coup de Patte idéal</span>
+    <span class="hero-score-n" id="animalScore">87%</span>
+    <span class="hero-score-l" id="animalScoreLabel">Coup de Patte idéal</span>
   </div>
 </div>
 
 <div class="content">
 
   <div class="animal-header">
-    <h1 class="animal-name">Rex</h1>
+    <h1 class="animal-name" id="animalNom">Rex</h1>
     <div class="animal-meta">
       <span>Berger croisé</span><span class="meta-dot">·</span>
       <span>3 ans</span><span class="meta-dot">·</span>

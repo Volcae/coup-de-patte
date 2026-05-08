@@ -2,6 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mes matchs — Coup de Patte</title>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -392,6 +393,81 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 
   // Init status colors
   document.querySelectorAll('.status-select').forEach(s => updateStatus(s));
+
+  // ══ J'AIME & CONTACTS DYNAMIQUES ══
+  async function loadJaime() {
+    var sb = getSupabase();
+    var { data: { session } } = await sb.auth.getSession();
+    if (!session) return;
+    var { data: matchs } = await sb.from('Correspondre')
+      .select('*, animal:Animal(*, refuge:Refuge(*))')
+      .eq('utilisateur', session.user.id)
+      .eq('aime', true);
+    
+    var grid = document.querySelector('.liked-grid');
+    if (!grid || !matchs || matchs.length === 0) return;
+    
+    grid.innerHTML = '';
+    matchs.forEach(function(m) {
+      var a = m.animal;
+      if (!a) return;
+      var emoji = a.espece && a.espece.toLowerCase() === 'chat' ? '🐱' : '🐕';
+      var age = a.age_annees ? a.age_annees + ' an' + (a.age_annees > 1 ? 's' : '') : '';
+      var ville = a.refuge ? a.refuge.ville : '';
+      grid.insertAdjacentHTML('beforeend',
+        '<div class="liked-card" onclick="window.location.href='coup-de-patte-fiche.html?id=' + a.id + ''">' +
+        '<div class="liked-img" style="background:linear-gradient(160deg,var(--mint),var(--sage));font-size:2.8rem;display:flex;align-items:center;justify-content:center">' + emoji +
+        '<div class="liked-score" style="color:var(--moss)">' + (m.score_global || 0) + '%</div></div>' +
+        '<div class="liked-body"><div class="liked-name">' + a.nom + '</div>' +
+        '<div class="liked-meta">' + (a.race || a.espece) + ' · ' + age + (ville ? ' · ' + ville : '') + '</div>' +
+        '<button class="liked-remove" onclick="event.stopPropagation();retirerJaime('' + m.id + '',this)">✕ Retirer</button></div></div>'
+      );
+    });
+
+    // Update count
+    var jaimeCount = document.querySelector('.nav-tab span');
+    if (jaimeCount) jaimeCount.textContent = matchs.length;
+  }
+
+  async function retirerJaime(matchId, btn) {
+    var sb = getSupabase();
+    var { error } = await sb.from('Correspondre').update({ aime: false }).eq('id', matchId);
+    if (!error) { btn.closest('.liked-card').remove(); }
+  }
+
+  // Like button in match cards saves to Supabase
+  async function likeCard(btn) {
+    var isLiked = btn.classList.contains('liked');
+    btn.classList.toggle('liked');
+    btn.innerHTML = isLiked
+      ? '<span style="filter:brightness(0) invert(1)">🐾</span> J'aime'
+      : '<span style="filter:brightness(0) invert(1)">🐾</span> Aimé !';
+
+    var card = btn.closest('.match-card');
+    if (!card) return;
+    var animalId = card.onclick && card.onclick.toString().match(/id=([a-f0-9-]+)/)?.[1];
+    if (!animalId) return;
+
+    var sb = getSupabase();
+    var { data: { session } } = await sb.auth.getSession();
+    if (!session) return;
+
+    // Upsert dans Correspondre
+    var { data: existing } = await sb.from('Correspondre').select('id').eq('utilisateur', session.user.id).eq('animal', animalId).single();
+    if (existing) {
+      await sb.from('Correspondre').update({ aime: !isLiked }).eq('id', existing.id);
+    } else {
+      await sb.from('Correspondre').insert({ utilisateur: session.user.id, animal: animalId, aime: true, vu: true });
+    }
+  }
+
+  // Load J'aime when tab is clicked
+  var originalShowView = showView;
+  function showView(id, tabEl) {
+    originalShowView(id, tabEl);
+    if (id === 'jaime') loadJaime();
+  }
+
 
   // ══ CHARGEMENT DES VRAIS MATCHS ══
   var allMatchs = [];

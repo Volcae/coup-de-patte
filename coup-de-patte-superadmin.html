@@ -2,6 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Super Admin, Coup de Patte</title>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -1028,6 +1029,64 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
       setTimeout(() => bar.style.height = Math.round((v/max)*68) + 'px', 300);
     });
   });
+
+  // ══ CHARGEMENT DONNÉES SUPERADMIN ══
+  window.addEventListener('load', async function() {
+    var { data: { session } } = await getSupabase().auth.getSession();
+    if (!session) { window.location.href = 'coup-de-patte-login.html'; return; }
+
+    var sb = getSupabase();
+
+    // Charger les refuges
+    var { data: refuges } = await sb.from('Refuge').select('*, animals:Animal(count)').order('created_at', { ascending: false });
+    if (refuges) {
+      var refTable = document.querySelector('#tbody-refuges, .refuges-table tbody, table tbody');
+      if (refTable) {
+        refTable.innerHTML = '';
+        refuges.forEach(function(r) {
+          refTable.insertAdjacentHTML('beforeend',
+            '<tr>' +
+            '<td><strong>' + (r.nom || '–') + '</strong><br><small style="color:var(--dust)">' + (r.ville || '') + '</small></td>' +
+            '<td>' + (r.email || '–') + '</td>' +
+            '<td><span style="font-size:0.75rem;padding:3px 10px;border-radius:50px;background:' + (r.valide_par_admin ? 'var(--mint-lt);color:var(--moss)' : 'rgba(212,168,67,0.1);color:var(--amber)') + ';font-weight:700">' + (r.valide_par_admin ? '✅ Validé' : '⏳ En attente') + '</span></td>' +
+            '<td><button onclick="validerRefuge('' + r.id + '')" style="padding:5px 12px;border-radius:50px;border:1.5px solid var(--moss);background:transparent;color:var(--moss);font-weight:700;cursor:pointer;font-size:0.75rem">' + (r.valide_par_admin ? '✓ Validé' : 'Valider') + '</button></td>' +
+            '</tr>'
+          );
+        });
+      }
+
+      // Stats
+      var totalRef = document.querySelector('#statTotalRefuges, .stat-refuges');
+      if (totalRef) totalRef.textContent = refuges.length;
+      var valides = refuges.filter(function(r) { return r.valide_par_admin; }).length;
+      var enAttente = document.querySelector('#statEnAttente, .stat-attente');
+      if (enAttente) enAttente.textContent = refuges.length - valides;
+    }
+
+    // Charger les animaux
+    var { data: animaux } = await sb.from('Animal').select('*, refuge:Refuge(nom)').eq('disponible', true);
+    if (animaux) {
+      var totalAnim = document.querySelector('#statTotalAnimaux, .stat-animaux');
+      if (totalAnim) totalAnim.textContent = animaux.length;
+      var enfinCount = animaux.filter(function(a) { return a.enfin_moi; }).length;
+      var enfinEl = document.querySelector('#statEnfinMoi, .stat-enfin');
+      if (enfinEl) enfinEl.textContent = enfinCount;
+    }
+
+    // Charger les utilisateurs
+    var { data: profils } = await sb.from('ProfilAdoptant').select('id');
+    if (profils) {
+      var totalAdopt = document.querySelector('#statTotalAdoptants, .stat-adoptants');
+      if (totalAdopt) totalAdopt.textContent = profils.length;
+    }
+  });
+
+  async function validerRefuge(refugeId) {
+    var sb = getSupabase();
+    var { error } = await sb.from('Refuge').update({ valide_par_admin: true }).eq('id', refugeId);
+    if (!error) { alert('Refuge validé ✅'); window.location.reload(); }
+    else alert('Erreur : ' + error.message);
+  }
 </script>
 </body>
 </html>
