@@ -177,15 +177,15 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
   <!-- Tabs de navigation centrale -->
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="showView('matchs',this)">🐾 Mes matchs</button>
-    <button class="nav-tab" onclick="showView('jaime',this)">❤️ J'aime <span style="background:var(--moss);color:white;font-size:0.6rem;padding:1px 6px;border-radius:50px;margin-left:3px">6</span></button>
+    <button class="nav-tab" onclick="showView('jaime',this)">❤️ J'aime <span id="navJaimeCount" style="background:var(--moss);color:white;font-size:0.6rem;padding:1px 6px;border-radius:50px;margin-left:3px">0</span></button>
     <button class="nav-tab" onclick="showView('contacts',this)">📞 Contacts <span style="background:rgba(45,74,62,0.15);color:var(--forest);font-size:0.6rem;padding:1px 6px;border-radius:50px;margin-left:3px">3</span></button>
   </div>
 
   <div class="nav-right">
     <button class="enfin-pill" onclick="window.location.href='coup-de-patte-enfin-moi.html'">
-      <span class="enfin-dot"></span>✨ Enfin Moi ? <span style="background:rgba(45,74,62,0.15);font-size:0.65rem;padding:1px 7px;border-radius:50px;margin-left:2px">12</span>
+      <span class="enfin-dot"></span>✨ Enfin Moi ? <span id="navEnfinCount" style="background:rgba(45,74,62,0.15);font-size:0.65rem;padding:1px 7px;border-radius:50px;margin-left:2px">–</span>
     </button>
-    <div class="profile-pill">👤 Chargement…</div>
+    <div class="profile-pill" id="profilePill" onclick="toggleProfileMenu()">👤 Chargement…</div>
   </div>
 </nav>
 
@@ -196,31 +196,26 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 
     <div class="profile-block">
       <div class="profile-row">
-        <div class="avatar">👩</div>
+        <div class="avatar" id="sidebarAvatar">👤</div>
         <div>
-          <div class="profile-name">Chargement…</div>
-          <div class="profile-sub">Île-de-France · Chiens</div>
+          <div class="profile-name" id="sidebarName">Chargement…</div>
+          <div class="profile-sub" id="sidebarSub">–</div>
         </div>
       </div>
-      <div class="profile-tags">
-        <span class="profile-tag">🏢 Appartement</span>
-        <span class="profile-tag">🪴 Terrasse</span>
-        <span class="profile-tag">⏰ 4 à 8h seul</span>
-        <span class="profile-tag">🏃 Modérée</span>
-      </div>
+      <div class="profile-tags" id="sidebarTags"></div>
     </div>
 
     <a href="coup-de-patte-form.html" class="affiner-link">✦ Affiner mon profil de vie</a>
 
     <div class="stats-row">
-      <div class="stat-mini active" onclick="showView('matchs',null)"><span class="sm-n">24</span><span class="sm-l">Matchs</span></div>
-      <div class="stat-mini" onclick="showView('jaime',null)"><span class="sm-n">6</span><span class="sm-l">J'aime</span></div>
-      <div class="stat-mini" onclick="showView('contacts',null)"><span class="sm-n">3</span><span class="sm-l">Contacts</span></div>
-      <div class="stat-mini"><span class="sm-n">87%</span><span class="sm-l">Meilleur match</span></div>
+      <div class="stat-mini active" onclick="showView('matchs',null)"><span class="sm-n" id="statMatchs">–</span><span class="sm-l">Matchs</span></div>
+      <div class="stat-mini" onclick="showView('jaime',null);loadJaime()"><span class="sm-n" id="statJaime">–</span><span class="sm-l">J'aime</span></div>
+      <div class="stat-mini" onclick="showView('contacts',null)"><span class="sm-n" id="statContacts">–</span><span class="sm-l">Contacts</span></div>
+      <div class="stat-mini"><span class="sm-n" id="statBestScore">–</span><span class="sm-l">Meilleur match</span></div>
     </div>
 
     <div class="conseil-card">      <span class="conseil-eyebrow">💡 Pour vous aujourd'hui</span>
-      <p class="conseil-text">Rex vous correspond à 87% mais supporte moyennement la solitude. Avant de le contacter, réfléchissez à une solution de garde pour vos longues journées.</p>
+      <p class="conseil-text" id="conseilText">Complétez votre profil pour recevoir des conseils personnalisés.</p>
     </div>
 
   </aside>
@@ -391,6 +386,21 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
     select.style.color = colors[select.value] || 'var(--forest)';
   }
 
+
+  function toggleProfileMenu() {
+    var existing = document.getElementById('profileMenu');
+    if (existing) { existing.remove(); return; }
+    var menu = document.createElement('div');
+    menu.id = 'profileMenu';
+    menu.style.cssText = 'position:absolute;top:68px;right:24px;background:var(--paper);border:1.5px solid var(--border);border-radius:16px;padding:8px;box-shadow:0 8px 24px rgba(45,74,62,0.15);z-index:300;min-width:180px';
+    menu.innerHTML = '<a href="coup-de-patte-form.html" style="display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;color:var(--forest);text-decoration:none;font-size:0.83rem;font-weight:600;transition:background 0.15s" onmouseover="this.style.background='var(--mint-lt)'" onmouseout="this.style.background=''">✦ Modifier mon profil</a>' +
+      '<div onclick="getSupabase().auth.signOut().then(()=>window.location.href='coup-de-patte-login.html')" style="display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;color:var(--rose);font-size:0.83rem;font-weight:600;cursor:pointer;transition:background 0.15s" onmouseover="this.style.background='rgba(201,112,74,0.08)'" onmouseout="this.style.background=''">← Se déconnecter</div>';
+    document.body.appendChild(menu);
+    setTimeout(() => document.addEventListener('click', function closeMenu(e) {
+      if (!menu.contains(e.target) && e.target.id !== 'profilePill') { menu.remove(); document.removeEventListener('click', closeMenu); }
+    }), 100);
+  }
+
   // Init status colors
   document.querySelectorAll('.status-select').forEach(s => updateStatus(s));
 
@@ -461,12 +471,15 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
     }
   }
 
-  // Load J'aime when tab is clicked
-  var originalShowView = showView;
-  function showView(id, tabEl) {
-    originalShowView(id, tabEl);
-    if (id === 'jaime') loadJaime();
-  }
+  // Load J'aime when tab is clicked - patch the original
+  var _origShowView = window.showView || showView;
+  document.querySelectorAll('.nav-tab').forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      if (this.textContent.includes('aime') || this.textContent.includes('J\'aime')) {
+        setTimeout(loadJaime, 100);
+      }
+    });
+  });
 
 
   // ══ CHARGEMENT DES VRAIS MATCHS ══
@@ -570,6 +583,70 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
     if (nameEl) nameEl.textContent = displayName;
     document.getElementById('matches-grid').innerHTML = '';
     displayMatchs();
+
+    // Stats sidebar
+    var nbMatchs = allMatchs.length;
+    var bestScore = allMatchs.length > 0 ? allMatchs[0].score : 0;
+    var el;
+    el = document.getElementById('statMatchs'); if (el) el.textContent = nbMatchs;
+    el = document.getElementById('statBestScore'); if (el) el.textContent = bestScore + '%';
+
+    // Profil sidebar dynamique
+    var sidebarName = document.getElementById('sidebarName');
+    var sidebarAvatar = document.getElementById('sidebarAvatar');
+    var sidebarSub = document.getElementById('sidebarSub');
+    var sidebarTags = document.getElementById('sidebarTags');
+    if (sidebarName) sidebarName.textContent = displayName;
+    if (sidebarAvatar) sidebarAvatar.textContent = prenom ? prenom.charAt(0).toUpperCase() : '👤';
+
+    if (profil) {
+      // Sous-titre
+      var animalLabel = profil.animal_souhaite === 'chat' ? 'Chats' : profil.animal_souhaite === 'chien' ? 'Chiens' : 'Chiens & Chats';
+      var logLabel = profil.type_logement === 'maison' ? 'Maison' : profil.type_logement === 'appart' ? 'Appartement' : '';
+      if (sidebarSub) sidebarSub.textContent = (logLabel || '') + (animalLabel ? ' · ' + animalLabel : '');
+
+      // Tags profil
+      if (sidebarTags) {
+        var tags = [];
+        if (profil.type_logement) tags.push(profil.type_logement === 'maison' ? '🏠 Maison' : '🏢 Appartement');
+        if (profil.type_exterieur && profil.type_exterieur !== 'aucun') tags.push(profil.type_exterieur === 'jardin' ? '🌿 Jardin' : '🪴 Terrasse');
+        if (profil.heures_seul) {
+          var h = profil.heures_seul;
+          tags.push(h <= 2 ? '⏰ Peu seul' : h <= 4 ? '⏰ 2-4h seul' : h <= 6 ? '⏰ 4-6h seul' : '⏰ +6h seul');
+        }
+        if (profil.temps_dedie) tags.push(
+          profil.temps_dedie === 'sedentaire' ? '🛋️ Calme' :
+          profil.temps_dedie === 'modere' ? '🚶 Modéré' :
+          profil.temps_dedie === 'actif' ? '🏃 Actif' : '⚡ Sportif'
+        );
+        sidebarTags.innerHTML = tags.map(function(t) {
+          return '<span class="profile-tag">' + t + '</span>';
+        }).join('');
+      }
+
+      // Conseil personnalisé
+      var conseilEl = document.getElementById('conseilText');
+      if (conseilEl && bestScore > 0) {
+        var bestAnimal = allMatchs[0] && allMatchs[0].animal ? allMatchs[0].animal.nom : '';
+        conseilEl.textContent = bestAnimal 
+          ? bestAnimal + ' vous correspond à ' + bestScore + '%. Prenez le temps de lire sa fiche avant de contacter le refuge.'
+          : 'Vos matchs sont prêts ! Explorez les animaux qui vous correspondent.';
+      }
+    }
+
+    // Profile pill
+    var pill = document.querySelector('.profile-pill');
+    if (pill) pill.innerHTML = '👤 ' + displayName;
+
+    // Compter les Enfin Moi
+    var { data: enfinAnimaux } = await sb.from('Animal').select('id').eq('enfin_moi', true).eq('disponible', true);
+    el = document.getElementById('navEnfinCount'); if (el) el.textContent = enfinAnimaux ? enfinAnimaux.length : '0';
+
+    // Compter les J'aime
+    var { data: jaimeData } = await sb.from('Correspondre').select('id').eq('utilisateur', userId).eq('aime', true);
+    var nbJaime = jaimeData ? jaimeData.length : 0;
+    el = document.getElementById('statJaime'); if (el) el.textContent = nbJaime;
+    el = document.getElementById('navJaimeCount'); if (el) el.textContent = nbJaime;
   });
 </script>
 </body>
