@@ -910,7 +910,7 @@ async function saveRefugeInfos() {
     ville: document.getElementById('infoVille').value.trim(),
     telephone: document.getElementById('infoTel').value.trim(),
     email: document.getElementById('infoEmail').value.trim(),
-    site_web: document.getElementById('infoSite').value.trim(),
+    site_web: document.getElementById('infoSite').value.trim().replace(/\[([^\]]+)\]\([^)]+\)/g, '$1'),
     description: document.getElementById('infoDesc').value.trim(),
   };
   var { error } = await sb.from('Refuge').update(payload).eq('id', currentRefuge.id);
