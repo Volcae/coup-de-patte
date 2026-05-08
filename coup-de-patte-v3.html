@@ -559,13 +559,15 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
       var result = profil ? calculerScore(profil, animal) : { global: 0 };
       return { animal: animal, score: result.global };
     }).sort(function(a, b) { return b.score - a.score; });
-    var { data: userProfil } = await sb.from('Profils').select('prenom, nom').eq('id', userId).single();
-    if (userProfil) {
-      var pill = document.querySelector('.profile-pill');
-      if (pill) pill.textContent = '👤 ' + (userProfil.prenom || '') + ' ' + ((userProfil.nom || '').charAt(0) + '.');
-      var name = document.querySelector('.profile-name');
-      if (name) name.textContent = (userProfil.prenom || '') + ' ' + ((userProfil.nom || '').charAt(0) + '.');
-    }
+    var { data: authUser } = await sb.auth.getUser();
+    var meta = authUser && authUser.user ? authUser.user.user_metadata || {} : {};
+    var prenom = meta.prenom || meta.first_name || meta.name || (authUser.user ? authUser.user.email.split('@')[0] : '');
+    var nom = meta.nom || meta.last_name || '';
+    var displayName = (prenom + (nom ? ' ' + nom.charAt(0) + '.' : '')).trim() || 'Mon profil';
+    var pill = document.querySelector('.profile-pill');
+    if (pill) pill.innerHTML = '👤 ' + displayName;
+    var nameEl = document.querySelector('.profile-name');
+    if (nameEl) nameEl.textContent = displayName;
     document.getElementById('matches-grid').innerHTML = '';
     displayMatchs();
   });

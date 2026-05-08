@@ -221,9 +221,9 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
     <a class="sb-item active" onclick="showSection('dashboard',this)"><span class="sb-icon">📊</span>Tableau de bord</a>
 
     <span class="sb-section">Plateforme</span>
-    <a class="sb-item" onclick="showSection('refuges',this)"><span class="sb-icon">🏡</span>Refuges<span class="sb-badge sb-badge-red">3 en attente</span></a>
-    <a class="sb-item" onclick="showSection('animaux',this)"><span class="sb-icon">🐾</span>Animaux<span class="sb-badge sb-badge-green">1 247</span></a>
-    <a class="sb-item" onclick="showSection('adoptants',this)"><span class="sb-icon">👤</span>Adoptants<span class="sb-badge sb-badge-blue">892</span></a>
+    <a class="sb-item" onclick="showSection('refuges',this)"><span class="sb-icon">🏡</span>Refuges<span class="sb-badge sb-badge-red" id="badgeRefuges">–</span></a>
+    <a class="sb-item" onclick="showSection('animaux',this)"><span class="sb-icon">🐾</span>Animaux<span class="sb-badge sb-badge-green" id="badgeAnimaux">–</span></a>
+    <a class="sb-item" onclick="showSection('adoptants',this)"><span class="sb-icon">👤</span>Adoptants<span class="sb-badge sb-badge-blue" id="badgeAdoptants">–</span></a>
     <a class="sb-item" onclick="showSection('scraping',this)"><span class="sb-icon">🤖</span>Scraping IA<span class="sb-badge sb-badge-green">Actif</span></a>
     <a class="sb-item" onclick="showSection('signalements',this)"><span class="sb-icon">🚩</span>Signalements<span class="sb-badge sb-badge-red">7 actifs</span></a>
 
@@ -245,9 +245,9 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
       </div>
 
       <div class="kpi-grid">
-        <div class="kpi"><span class="kpi-n">4 218</span><span class="kpi-l">Refuges référencés</span><span class="kpi-trend trend-up">↑ +47 ce mois</span></div>
-        <div class="kpi"><span class="kpi-n">1 247</span><span class="kpi-l">Animaux disponibles</span><span class="kpi-trend trend-flat">= stable</span></div>
-        <div class="kpi"><span class="kpi-n">892</span><span class="kpi-l">Adoptants inscrits</span><span class="kpi-trend trend-up">↑ +83 ce mois</span></div>
+        <div class="kpi"><span class="kpi-n" id="kpiRefuges">–</span><span class="kpi-l">Refuges référencés</span><span class="kpi-trend trend-up">↑ +47 ce mois</span></div>
+        <div class="kpi"><span class="kpi-n" id="kpiAnimaux">–</span><span class="kpi-l">Animaux disponibles</span><span class="kpi-trend trend-flat">= stable</span></div>
+        <div class="kpi"><span class="kpi-n" id="kpiAdoptants">–</span><span class="kpi-l">Adoptants inscrits</span><span class="kpi-trend trend-up">↑ +83 ce mois</span></div>
         <div class="kpi"><span class="kpi-n">134</span><span class="kpi-l">Adoptions via CDP ¹</span><span class="kpi-trend trend-up">↑ +12 ce mois</span></div>
       </div>
       <p style="font-size:0.68rem;color:var(--smoke);margin-top:-12px;margin-bottom:20px;font-style:italic">¹ Uniquement les adoptions déclarées "via Coup de Patte" par les refuges eux-mêmes, les adoptions hors CDP ne sont pas comptabilisées.</p>
@@ -1034,13 +1034,23 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
   window.addEventListener('load', async function() {
     var { data: { session } } = await getSupabase().auth.getSession();
     if (!session) { window.location.href = 'coup-de-patte-login.html'; return; }
+    
+    // Vérification admin - seul l'admin peut accéder
+    var { data: authUser } = await getSupabase().auth.getUser();
+    var meta = authUser && authUser.user ? authUser.user.user_metadata || {} : {};
+    var isAdmin = meta.est_admin === true || meta.role === 'admin' || authUser.user.email === 'contact@coup-de-patte.fr';
+    if (!isAdmin) {
+      alert('Accès non autorisé');
+      window.location.href = 'coup-de-patte-login.html';
+      return;
+    }
 
     var sb = getSupabase();
 
     // Charger les refuges
     var { data: refuges } = await sb.from('Refuge').select('*, animals:Animal(count)').order('created_at', { ascending: false });
     if (refuges) {
-      var refTable = document.querySelector('#tbody-refuges, .refuges-table tbody, table tbody');
+      var refTable = document.querySelector('#tbody-refuges') || document.querySelector('#section-refuges table tbody');
       if (refTable) {
         refTable.innerHTML = '';
         refuges.forEach(function(r) {
@@ -1055,29 +1065,30 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
         });
       }
 
-      // Stats
-      var totalRef = document.querySelector('#statTotalRefuges, .stat-refuges');
-      if (totalRef) totalRef.textContent = refuges.length;
-      var valides = refuges.filter(function(r) { return r.valide_par_admin; }).length;
-      var enAttente = document.querySelector('#statEnAttente, .stat-attente');
-      if (enAttente) enAttente.textContent = refuges.length - valides;
+      // Stats refuges
+      var nbRefuges = refuges.length;
+      var nbEnAttente = refuges.filter(function(r) { return !r.valide_par_admin; }).length;
+      var el;
+      el = document.getElementById('kpiRefuges'); if (el) el.textContent = nbRefuges;
+      el = document.getElementById('badgeRefuges'); if (el) el.textContent = nbEnAttente > 0 ? nbEnAttente + ' en attente' : '✓';
+      el = document.getElementById('subRefuges'); if (el) el.textContent = nbRefuges + ' refuge(s) · ' + nbEnAttente + ' en attente de validation';
     }
 
     // Charger les animaux
-    var { data: animaux } = await sb.from('Animal').select('*, refuge:Refuge(nom)').eq('disponible', true);
+    var { data: animaux } = await sb.from('Animal').select('id, enfin_moi').eq('disponible', true);
     if (animaux) {
-      var totalAnim = document.querySelector('#statTotalAnimaux, .stat-animaux');
-      if (totalAnim) totalAnim.textContent = animaux.length;
-      var enfinCount = animaux.filter(function(a) { return a.enfin_moi; }).length;
-      var enfinEl = document.querySelector('#statEnfinMoi, .stat-enfin');
-      if (enfinEl) enfinEl.textContent = enfinCount;
+      var nbAnimaux = animaux.length;
+      var nbEnfin = animaux.filter(function(a) { return a.enfin_moi; }).length;
+      el = document.getElementById('kpiAnimaux'); if (el) el.textContent = nbAnimaux;
+      el = document.getElementById('badgeAnimaux'); if (el) el.textContent = nbAnimaux;
     }
 
-    // Charger les utilisateurs
+    // Charger les adoptants
     var { data: profils } = await sb.from('ProfilAdoptant').select('id');
     if (profils) {
-      var totalAdopt = document.querySelector('#statTotalAdoptants, .stat-adoptants');
-      if (totalAdopt) totalAdopt.textContent = profils.length;
+      var nbAdoptants = profils.length;
+      el = document.getElementById('kpiAdoptants'); if (el) el.textContent = nbAdoptants;
+      el = document.getElementById('badgeAdoptants'); if (el) el.textContent = nbAdoptants;
     }
   });
 
