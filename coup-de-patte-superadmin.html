@@ -1035,13 +1035,19 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
     var { data: { session } } = await getSupabase().auth.getSession();
     if (!session) { window.location.href = 'coup-de-patte-login.html'; return; }
     
-    // Vérification admin - seul l'admin peut accéder
+    // Vérification admin
     var { data: authUser } = await getSupabase().auth.getUser();
     var meta = authUser && authUser.user ? authUser.user.user_metadata || {} : {};
-    var isAdmin = meta.est_admin === true || meta.role === 'admin' || authUser.user.email === 'contact@coup-de-patte.fr';
+    var userEmail = authUser && authUser.user ? authUser.user.email : '';
+    var isAdmin = meta.est_admin === true || meta.role === 'admin' || userEmail === 'cedric.galland21@gmail.com' || userEmail === 'contact@coup-de-patte.fr';
     if (!isAdmin) {
-      alert('Accès non autorisé');
-      window.location.href = 'coup-de-patte-login.html';
+      document.body.innerHTML = '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--ivory);font-family:Nunito,sans-serif">' +
+        '<div style="background:var(--paper);border-radius:24px;border:1.5px solid var(--border);padding:48px 40px;max-width:400px;text-align:center;box-shadow:0 16px 56px rgba(45,74,62,0.13)">' +
+        '<div style="font-size:3rem;margin-bottom:16px">🔒</div>' +
+        '<h2 style="font-family:Fraunces,serif;font-size:1.4rem;font-style:italic;color:var(--forest);margin-bottom:8px">Accès restreint</h2>' +
+        '<p style="color:var(--dust);font-size:0.85rem;margin-bottom:24px">Cette page est réservée aux administrateurs de Coup de Patte.</p>' +
+        '<a href="coup-de-patte-login.html" style="display:inline-block;background:linear-gradient(135deg,var(--moss),var(--forest));color:white;padding:12px 28px;border-radius:50px;font-weight:700;text-decoration:none">← Retour à la connexion</a>' +
+        '</div></div>';
       return;
     }
 
