@@ -415,12 +415,12 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
       var age = a.age_annees ? a.age_annees + ' an' + (a.age_annees > 1 ? 's' : '') : '';
       var ville = a.refuge ? a.refuge.ville : '';
       grid.insertAdjacentHTML('beforeend',
-        '<div class="liked-card" onclick="window.location.href='coup-de-patte-fiche.html?id=' + a.id + ''">' +
+        '<div class="liked-card" onclick="window.location.href=\'coup-de-patte-fiche.html?id=' + a.id + '\'">' +
         '<div class="liked-img" style="background:linear-gradient(160deg,var(--mint),var(--sage));font-size:2.8rem;display:flex;align-items:center;justify-content:center">' + emoji +
         '<div class="liked-score" style="color:var(--moss)">' + (m.score_global || 0) + '%</div></div>' +
         '<div class="liked-body"><div class="liked-name">' + a.nom + '</div>' +
         '<div class="liked-meta">' + (a.race || a.espece) + ' · ' + age + (ville ? ' · ' + ville : '') + '</div>' +
-        '<button class="liked-remove" onclick="event.stopPropagation();retirerJaime('' + m.id + '',this)">✕ Retirer</button></div></div>'
+        '<button class="liked-remove" onclick="event.stopPropagation();retirerJaime(\'' + m.id + '\',this)">✕ Retirer</button></div></div>'
       );
     });
 
