@@ -375,7 +375,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
       <div class="contact-card">
         <h3>Visiter le refuge</h3>
         <p>Nous vous conseillons de prendre rendez-vous avant de vous déplacer pour rencontrer un animal en particulier.</p>
-        <button class="cta-btn cta-primary" id="btnAppeler" onclick="window.location.href='tel:0472000000'">📞 Appeler maintenant</button>
+        <button class="cta-btn cta-primary" id="btnAppeler" id="btnAppeler" onclick="window.location.href='tel:0472000000'">📞 Appeler maintenant</button>
         <button class="cta-btn cta-secondary" id="btnEmail" onclick="window.location.href='mailto:contact@spa-lyon.fr'">✉️ Envoyer un email</button>
       </div>
 
@@ -442,37 +442,37 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
     var { data: refuge } = await sb.from('Refuge').select('*').eq('id', refugeId).single();
     if (!refuge) return;
 
-    // Remplacer TOUS les éléments contenant "SPA de Lyon" ou le nom statique
-    document.querySelectorAll('h1, h2, h3, .refuge-name, .hero-name, .map-pin-bubble, strong').forEach(function(el) {
-      if (el.textContent.includes('SPA de Lyon') || el.textContent.includes('SPA de Lyon, Fondation')) {
-        el.textContent = el.textContent.replace('SPA de Lyon, Fondation', refuge.nom).replace('SPA de Lyon', refuge.nom);
-      }
-    });
-
-    // Titre de la page
+    // Titre
     document.title = (refuge.nom || 'Refuge') + ' · Coup de Patte';
 
-    // Ville et adresse
-    document.querySelectorAll('.refuge-loc, .hero-loc').forEach(function(el) {
-      if (refuge.ville) el.textContent = '📍 ' + refuge.ville + (refuge.code_postal ? ' · ' + refuge.code_postal : '');
-    });
+    // Nom
+    var el;
+    el = document.getElementById('refugeNomHero'); if (el) el.textContent = refuge.nom || '';
+    el = document.getElementById('refugeNomMap'); if (el) el.textContent = refuge.nom || '';
+    el = document.getElementById('refugeNomPin'); if (el) el.textContent = '🏠 ' + (refuge.nom || '');
 
-    // Description
-    document.querySelectorAll('.refuge-desc, .hero-desc, .about-text').forEach(function(el) {
-      if (refuge.description) el.textContent = refuge.description;
-    });
+    // Adresse
+    el = document.getElementById('refugeAdresse'); if (el) el.textContent = refuge.adresse || '–';
+    el = document.getElementById('refugeVilleCP'); if (el) el.textContent = (refuge.ville || '') + (refuge.code_postal ? ' · ' + refuge.code_postal : '');
+    el = document.getElementById('refugeAdresseMap'); if (el) el.textContent = (refuge.adresse ? refuge.adresse + ' · ' : '') + (refuge.ville || '') + (refuge.code_postal ? ' · ' + refuge.code_postal : '');
 
-    // Infos contact
-    document.querySelectorAll('[href^="tel:"]').forEach(function(el) {
-      if (refuge.telephone) { el.href = 'tel:' + refuge.telephone; el.textContent = refuge.telephone; }
-    });
-    document.querySelectorAll('[href^="mailto:"]').forEach(function(el) {
-      if (refuge.email) { el.href = 'mailto:' + refuge.email; el.textContent = refuge.email; }
-    });
-    document.querySelectorAll('[href^="http"]').forEach(function(el) {
-      if (refuge.site_web && el.textContent.includes('spa-lyon') || el.textContent.includes('www.')) {
-        el.href = refuge.site_web.startsWith('http') ? refuge.site_web : 'https://' + refuge.site_web;
-        el.textContent = refuge.site_web;
+    // Contact
+    el = document.getElementById('refugeTel'); if (el) el.textContent = refuge.telephone || '–';
+    el = document.getElementById('refugeEmail'); if (el) el.textContent = refuge.email || '–';
+
+    // Boutons
+    el = document.getElementById('btnAppeler');
+    if (el && refuge.telephone) { var tel = refuge.telephone; el.onclick = function() { window.location.href = 'tel:' + tel.replace(/ /g,''); }; }
+    el = document.getElementById('btnEmail');
+    if (el && refuge.email) { var mail = refuge.email; el.onclick = function() { window.location.href = 'mailto:' + mail; }; }
+
+    // Google Maps
+    var adresseMap = encodeURIComponent((refuge.adresse || refuge.nom || '') + ' ' + (refuge.ville || ''));
+    document.querySelectorAll('[href*="maps.google.com"]').forEach(function(link) {
+      if (link.href.includes('dir/?')) {
+        link.href = 'https://maps.google.com/dir/?api=1&destination=' + adresseMap;
+      } else {
+        link.href = 'https://maps.google.com/?q=' + adresseMap;
       }
     });
 
