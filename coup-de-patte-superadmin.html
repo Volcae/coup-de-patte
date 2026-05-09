@@ -209,7 +209,7 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
   </div>
   <div class="nav-right">
     <span class="nav-name">👤 Fondateur</span>
-    <button class="nav-logout">Déconnexion</button>
+    <button class="nav-logout" onclick="getSupabase().auth.signOut().then(()=>window.location.reload())">Déconnexion</button>
   </div>
 </nav>
 
@@ -248,7 +248,7 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
         <div class="kpi"><span class="kpi-n" id="kpiRefuges">–</span><span class="kpi-l">Refuges référencés</span><span class="kpi-trend trend-up">↑ +47 ce mois</span></div>
         <div class="kpi"><span class="kpi-n" id="kpiAnimaux">–</span><span class="kpi-l">Animaux disponibles</span><span class="kpi-trend trend-flat">= stable</span></div>
         <div class="kpi"><span class="kpi-n" id="kpiAdoptants">–</span><span class="kpi-l">Adoptants inscrits</span><span class="kpi-trend trend-up">↑ +83 ce mois</span></div>
-        <div class="kpi"><span class="kpi-n">134</span><span class="kpi-l">Adoptions via CDP ¹</span><span class="kpi-trend trend-up">↑ +12 ce mois</span></div>
+        <div class="kpi"><span class="kpi-n" id="kpiAdoptions">–</span><span class="kpi-l">Adoptions via CDP ¹</span><span class="kpi-trend trend-up">↑ +12 ce mois</span></div>
       </div>
       <p style="font-size:0.68rem;color:var(--smoke);margin-top:-12px;margin-bottom:20px;font-style:italic">¹ Uniquement les adoptions déclarées "via Coup de Patte" par les refuges eux-mêmes, les adoptions hors CDP ne sont pas comptabilisées.</p>
         <div class="dash-card">
@@ -266,12 +266,7 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
 
         <div class="dash-card">
           <p class="dc-title">📋 Activité récente</p>
-          <div class="activity-row"><div class="act-dot" style="background:var(--moss)"></div><span class="act-text">SPA de Bordeaux vient de s'inscrire</span><span class="act-time">Il y a 12 min</span></div>
-          <div class="activity-row"><div class="act-dot" style="background:var(--blue)"></div><span class="act-text">892ème adoptant inscrit</span><span class="act-time">Il y a 38 min</span></div>
-          <div class="activity-row"><div class="act-dot" style="background:var(--gold)"></div><span class="act-text">Scraping SPA Lyon terminé, 23 fiches</span><span class="act-time">Il y a 2h</span></div>
-          <div class="activity-row"><div class="act-dot" style="background:var(--moss)"></div><span class="act-text">Rex (SPA Lyon), adoption confirmée</span><span class="act-time">Il y a 3h</span></div>
-          <div class="activity-row"><div class="act-dot" style="background:var(--rose)"></div><span class="act-text">Erreur scraping, site SPA Nantes inaccessible</span><span class="act-time">Il y a 5h</span></div>
-          <div class="activity-row"><div class="act-dot" style="background:var(--purple)"></div><span class="act-text">Algorithme matching mis à jour</span><span class="act-time">Hier</span></div>
+          <div id="activityFeed"><div style="text-align:center;padding:20px;color:var(--dust);font-size:0.8rem">Chargement…</div></div>
         </div>
 
         <div class="dash-card">
@@ -942,7 +937,7 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
     if(el) el.classList.add('active');
     else {
       document.querySelectorAll('.sb-item').forEach(i => {
-        if(i.getAttribute('onclick') && i.getAttribute('onclick').includes(`'${id}'`))
+        if(i.getAttribute('onclick') && i.getAttribute('onclick').indexOf("'" + id + "'") !== -1)
           i.classList.add('active');
       });
     }
@@ -1047,7 +1042,7 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
         '<div style="text-align:center;margin-bottom:28px">' +
         '<div style="width:56px;height:56px;background:var(--forest);border-radius:50% 50% 50% 50%/60% 60% 40% 40%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:1.4rem">&#128062;</div>' +
         '<h2 style="font-family:Fraunces,serif;font-size:1.5rem;font-style:italic;color:var(--forest);margin-bottom:4px">Super Admin</h2>' +
-        '<p style="color:var(--dust);font-size:0.82rem">Acc&egrave;s r&eacute;serv&eacute; &agrave; l'&eacute;quipe Coup de Patte</p>' +
+        '<p style="color:var(--dust);font-size:0.82rem">Acc&egrave;s r&eacute;serv&eacute; &agrave; l\'&eacute;quipe Coup de Patte</p>' +
         '</div>' +
         '<div style="margin-bottom:14px">' +
         '<label style="display:block;font-size:0.78rem;font-weight:700;color:var(--forest);margin-bottom:6px">Email administrateur</label>' +
@@ -1124,6 +1119,36 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
       var nbAdoptants = profils.length;
       el = document.getElementById('kpiAdoptants'); if (el) el.textContent = nbAdoptants;
       el = document.getElementById('badgeAdoptants'); if (el) el.textContent = nbAdoptants;
+    }
+
+    // Adoptions via CDP
+    var { data: adoptionsCDP } = await sb.from('Animal').select('id').eq('statut', 'adopte_cdp');
+    el = document.getElementById('kpiAdoptions'); if (el) el.textContent = adoptionsCDP ? adoptionsCDP.length : 0;
+
+    // Activité récente - refuges récents
+    var feed = document.getElementById('activityFeed');
+    if (feed && refuges) {
+      feed.innerHTML = '';
+      var recent = refuges.slice(0, 5);
+      recent.forEach(function(r) {
+        var date = r.created_at ? new Date(r.created_at).toLocaleDateString('fr-FR') : '';
+        feed.insertAdjacentHTML('beforeend',
+          '<div class="activity-row"><div class="act-dot" style="background:var(--moss)"></div>' +
+          '<span class="act-text">' + (r.nom || 'Refuge') + ' inscrit' + (r.valide_par_admin ? ' ✅' : ' ⏳') + '</span>' +
+          '<span class="act-time">' + date + '</span></div>'
+        );
+      });
+      if (recent.length === 0) {
+        feed.innerHTML = '<div style="text-align:center;padding:20px;color:var(--dust);font-size:0.8rem">Aucune activité récente</div>';
+      }
+    }
+
+    // Déconnexion bouton nav
+    var logoutBtn = document.querySelector('.nav-logout');
+    if (logoutBtn) {
+      logoutBtn.onclick = function() {
+        getSupabase().auth.signOut().then(function() { window.location.reload(); });
+      };
     }
   });
 
