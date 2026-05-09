@@ -178,7 +178,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="showView('matchs',this)">🐾 Mes matchs</button>
     <button class="nav-tab" onclick="showView('jaime',this)">❤️ J'aime <span id="navJaimeCount" style="background:var(--moss);color:white;font-size:0.6rem;padding:1px 6px;border-radius:50px;margin-left:3px">0</span></button>
-    <button class="nav-tab" onclick="showView('contacts',this)">📞 Contacts <span style="background:rgba(45,74,62,0.15);color:var(--forest);font-size:0.6rem;padding:1px 6px;border-radius:50px;margin-left:3px">3</span></button>
+    <button class="nav-tab" onclick="showView('contacts',this);loadContacts()">📞 Contacts <span style="background:rgba(45,74,62,0.15);color:var(--forest);font-size:0.6rem;padding:1px 6px;border-radius:50px;margin-left:3px">3</span></button>
   </div>
 
   <div class="nav-right">
@@ -210,7 +210,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
     <div class="stats-row">
       <div class="stat-mini active" onclick="showView('matchs',null)"><span class="sm-n" id="statMatchs">–</span><span class="sm-l">Matchs</span></div>
       <div class="stat-mini" onclick="showView('jaime',null);loadJaime()"><span class="sm-n" id="statJaime">–</span><span class="sm-l">J'aime</span></div>
-      <div class="stat-mini" onclick="showView('contacts',null)"><span class="sm-n" id="statContacts">–</span><span class="sm-l">Contacts</span></div>
+      <div class="stat-mini" onclick="showView('contacts',null);loadContacts()"><span class="sm-n" id="statContacts">–</span><span class="sm-l">Contacts</span></div>
       <div class="stat-mini"><span class="sm-n" id="statBestScore">–</span><span class="sm-l">Meilleur match</span></div>
     </div>
 
@@ -251,30 +251,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
         </div>
       </div>
       <div class="liked-grid">
-        <div class="liked-card" onclick="window.location.href='coup-de-patte-fiche.html'">
-          <div class="liked-img" style="background:linear-gradient(160deg,var(--mint),var(--sage))">🐕<div class="liked-score" style="color:var(--moss)">87%</div></div>
-          <div class="liked-body"><div class="liked-name">Rex</div><div class="liked-meta">Berger · 3 ans · Lyon</div><button class="liked-remove" onclick="event.stopPropagation()">✕ Retirer</button></div>
-        </div>
-        <div class="liked-card" onclick="window.location.href='coup-de-patte-fiche.html'">
-          <div class="liked-img" style="background:linear-gradient(160deg,#E0D5C0,#B89870)">🐶<div class="liked-score" style="color:var(--blue)">82%</div></div>
-          <div class="liked-body"><div class="liked-name">Luna</div><div class="liked-meta">Croisée · 2 ans · Grenoble</div><button class="liked-remove" onclick="event.stopPropagation()">✕ Retirer</button></div>
-        </div>
-        <div class="liked-card" onclick="window.location.href='coup-de-patte-fiche.html'">
-          <div class="liked-img" style="background:linear-gradient(160deg,#DDE5DD,#9AB89A)">🐕<div class="liked-score" style="color:var(--blue)">79%</div></div>
-          <div class="liked-body"><div class="liked-name">Oscar</div><div class="liked-meta">Labrador · 4 ans · Saint-Étienne</div><button class="liked-remove" onclick="event.stopPropagation()">✕ Retirer</button></div>
-        </div>
-        <div class="liked-card" onclick="window.location.href='coup-de-patte-fiche.html'">
-          <div class="liked-img" style="background:linear-gradient(160deg,#E8DDD0,#C4B098)">🐶<div class="liked-score" style="color:var(--amber)">71%</div></div>
-          <div class="liked-body"><div class="liked-name">Noisette</div><div class="liked-meta">Croisée · 5 ans · Clermont</div><button class="liked-remove" onclick="event.stopPropagation()">✕ Retirer</button></div>
-        </div>
-        <div class="liked-card" onclick="window.location.href='coup-de-patte-fiche.html'">
-          <div class="liked-img" style="background:linear-gradient(160deg,#C8DFC8,#8AB89A)">🐕<div class="liked-score" style="color:var(--amber)">68%</div></div>
-          <div class="liked-body"><div class="liked-name">Max</div><div class="liked-meta">Golden · 6 ans · Valence</div><button class="liked-remove" onclick="event.stopPropagation()">✕ Retirer</button></div>
-        </div>
-        <div class="liked-card" style="border-color:rgba(212,168,67,0.35)" onclick="window.location.href='coup-de-patte-fiche.html'">
-          <div class="liked-img" style="background:linear-gradient(160deg,#E8D5B0,#C9A87A)">🐕<div class="liked-score" style="color:var(--amber)">65%</div></div>
-          <div class="liked-body"><div class="liked-name">Django ✨</div><div class="liked-meta">Croisé · 7 ans · Toulouse</div><button class="liked-remove" onclick="event.stopPropagation()">✕ Retirer</button></div>
-        </div>
+        
       </div>
     </div>
 
@@ -286,58 +263,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
           <p class="vue-sub">Votre pense-bête, suivez vos démarches à votre rythme</p>
         </div>
       </div>
-      <div class="contacts-list">
-        <div class="contact-card">
-          <div class="ct-thumb" style="background:linear-gradient(135deg,var(--mint),var(--sage))">🐕</div>
-          <div class="ct-info">
-            <div class="ct-name">Rex · SPA de Lyon</div>
-            <div class="ct-refuge">📍 Lyon · 45 km · 87% compatible</div>
-            <select class="status-select" onchange="updateStatus(this)">
-              <option value="a-contacter">📋 À contacter</option>
-              <option value="en-attente">⏳ En attente de réponse</option>
-              <option value="rdv" selected>✅ Répondu, RDV proposé</option>
-            </select>
-          </div>
-          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0">
-            <div class="ct-date">Il y a 2 jours</div>
-            <button class="ct-btn">📞 Appeler</button>
-            <button onclick="signalerAdoptionV3('Rex')" style="padding:5px 12px;background:transparent;border:1.5px solid rgba(74,124,89,0.3);border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.68rem;font-weight:700;color:var(--moss);cursor:pointer;white-space:nowrap;transition:all 0.2s" onmouseover="this.style.background='rgba(74,124,89,0.08)'" onmouseout="this.style.background='transparent'">🐾 Adopté via CDP</button>
-          </div>
-        </div>
-        <div class="contact-card">
-          <div class="ct-thumb" style="background:linear-gradient(135deg,#E8D5B0,#C9A87A)">🐕</div>
-          <div class="ct-info">
-            <div class="ct-name">Django · SPA de Toulouse</div>
-            <div class="ct-refuge">📍 Toulouse · 180 km · ✨ Enfin Moi ?</div>
-            <select class="status-select" onchange="updateStatus(this)">
-              <option value="a-contacter">📋 À contacter</option>
-              <option value="en-attente" selected>⏳ En attente de réponse</option>
-              <option value="rdv">✅ Répondu, RDV proposé</option>
-            </select>
-          </div>
-          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0">
-            <div class="ct-date">Il y a 5 jours</div>
-            <button class="ct-btn">📞 Relancer</button>
-            <button onclick="signalerAdoptionV3('Django')" style="padding:5px 12px;background:transparent;border:1.5px solid rgba(74,124,89,0.3);border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.68rem;font-weight:700;color:var(--moss);cursor:pointer;white-space:nowrap;transition:all 0.2s" onmouseover="this.style.background='rgba(74,124,89,0.08)'" onmouseout="this.style.background='transparent'">🐾 Adopté via CDP</button>
-          </div>
-        </div>
-        <div class="contact-card">
-          <div class="ct-thumb" style="background:linear-gradient(135deg,#E0D5C0,#B89870)">🐶</div>
-          <div class="ct-info">
-            <div class="ct-name">Luna · SPA de Grenoble</div>
-            <div class="ct-refuge">📍 Grenoble · 80 km · 82% compatible</div>
-            <select class="status-select" onchange="updateStatus(this)">
-              <option value="a-contacter" selected>📋 À contacter</option>
-              <option value="en-attente">⏳ En attente de réponse</option>
-              <option value="rdv">✅ Répondu, RDV proposé</option>
-            </select>
-          </div>
-          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0">
-            <div class="ct-date">Il y a 1 jour</div>
-            <button class="ct-btn">📞 Appeler</button>
-            <button onclick="signalerAdoptionV3('Luna')" style="padding:5px 12px;background:transparent;border:1.5px solid rgba(74,124,89,0.3);border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.68rem;font-weight:700;color:var(--moss);cursor:pointer;white-space:nowrap;transition:all 0.2s" onmouseover="this.style.background='rgba(74,124,89,0.08)'" onmouseout="this.style.background='transparent'">🐾 Adopté via CDP</button>
-          </div>
-        </div>
+      <div class="contacts-list" id="contactsList">
+        <div style="text-align:center;padding:40px;color:var(--dust)">Chargement de vos contacts… 🐾</div>
       </div>
     </div>
 
@@ -405,6 +332,54 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
   document.querySelectorAll('.status-select').forEach(s => updateStatus(s));
 
   // ══ J'AIME & CONTACTS DYNAMIQUES ══
+
+  async function loadContacts() {
+    var sb = getSupabase();
+    var { data: { session } } = await sb.auth.getSession();
+    if (!session) return;
+    var { data: matchs } = await sb.from('Correspondre')
+      .select('*, animal:Animal(*, refuge:Refuge(nom,ville,telephone))')
+      .eq('utilisateur', session.user.id)
+      .eq('contacte', true);
+
+    var list = document.getElementById('contactsList');
+    if (!list) return;
+    if (!matchs || matchs.length === 0) {
+      list.innerHTML = '<div style="text-align:center;padding:40px;color:var(--dust)">Vous n'avez pas encore contacté de refuge. Likez des animaux et contactez leur refuge depuis leur fiche ! 🐾</div>';
+      var el = document.getElementById('statContacts'); if (el) el.textContent = '0';
+      return;
+    }
+    list.innerHTML = '';
+    matchs.forEach(function(m) {
+      var a = m.animal;
+      if (!a) return;
+      var emoji = a.espece && a.espece.toLowerCase() === 'chat' ? '🐱' : '🐕';
+      var refuge = a.refuge || {};
+      var score = m.score_global ? m.score_global + '% compatible' : '';
+      var tel = refuge.telephone ? refuge.telephone.replace(/ /g,'') : '';
+      list.insertAdjacentHTML('beforeend',
+        '<div class="contact-card">' +
+        '<div class="ct-thumb" style="background:linear-gradient(135deg,var(--mint),var(--sage));font-size:1.6rem;display:flex;align-items:center;justify-content:center">' + emoji + '</div>' +
+        '<div class="ct-info">' +
+        '<div class="ct-name">' + a.nom + (refuge.nom ? ' · ' + refuge.nom : '') + '</div>' +
+        '<div class="ct-refuge">📍 ' + (refuge.ville || '') + (score ? ' · ' + score : '') + (a.enfin_moi ? ' · ✨ Enfin Moi ?' : '') + '</div>' +
+        '<select class="status-select" onchange="updateStatus(this)">' +
+        '<option value="a-contacter">📋 À contacter</option>' +
+        '<option value="en-attente">⏳ En attente de réponse</option>' +
+        '<option value="rdv">✅ Répondu, RDV proposé</option>' +
+        '</select></div>' +
+        '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0">' +
+        (tel ? '<button class="ct-btn" onclick="window.location.href='tel:' + tel + ''">📞 Appeler</button>' : '<button class="ct-btn" disabled>📞 Appeler</button>') +
+        '<button onclick="signalerAdoptionV3('' + a.id + '','' + a.nom + '')" style="padding:5px 12px;background:transparent;border:1.5px solid rgba(74,124,89,0.3);border-radius:50px;font-family:Nunito,sans-serif;font-size:0.68rem;font-weight:700;color:var(--moss);cursor:pointer;white-space:nowrap">🐾 Adopté via CDP</button>' +
+        '</div></div>'
+      );
+      // Update status select
+      var selects = list.querySelectorAll('.status-select');
+      selects.forEach(function(s) { updateStatus(s); });
+    });
+    var el = document.getElementById('statContacts'); if (el) el.textContent = matchs.length;
+  }
+
   async function loadJaime() {
     var sb = getSupabase();
     var { data: { session } } = await sb.auth.getSession();

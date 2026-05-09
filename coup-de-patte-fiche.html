@@ -197,9 +197,62 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
         metaEl.textContent = (animal.race || animal.espece || '') + (age ? ' · ' + age : '') + (sexe ? ' · ' + sexe : '');
       }
 
+
+      // Mise à jour barre meta en haut
+      el = document.getElementById('metaRace'); if (el) el.textContent = animal.race || animal.espece || '–';
+      el = document.getElementById('metaAge'); if (el) el.textContent = animal.age_annees ? animal.age_annees + ' an' + (animal.age_annees > 1 ? 's' : '') : '–';
+      el = document.getElementById('metaSexe'); if (el) el.textContent = animal.sexe === 'male' ? 'Mâle' : animal.sexe === 'femelle' ? 'Femelle' : '–';
+      el = document.getElementById('metaGabarit'); if (el) el.textContent = (animal.gabarit || '') + (animal.poids_kg ? ' · ~' + animal.poids_kg + ' kg' : '');
+      
+      // Tags dynamiques
+      var tagsEl = document.getElementById('animalTags');
+      if (tagsEl) {
+        var tags = [];
+        if (animal.energie === 'eleve') tags.push('🏃 Actif');
+        else if (animal.energie === 'faible') tags.push('🛋️ Calme');
+        if (animal.compat_enfants_moins13) tags.push('👧 Enfants ok');
+        if (animal.compat_ados_plus13) tags.push('🧑 Ados ok');
+        if (animal.compat_chats) tags.push('🐱 Chats ok');
+        if (animal.compat_chiens) tags.push('🐶 Chiens ok');
+        if (animal.sterilisation) tags.push('✂️ Stérilisé(e)');
+        if (animal.vaccination) tags.push('💉 Vacciné(e)');
+        if (animal.identification) tags.push('🔖 Identifié(e)');
+        if (animal.enfin_moi) tags.push('✨ Enfin Moi ?');
+        tagsEl.innerHTML = tags.map(function(t) { return '<span class="tag">' + t + '</span>'; }).join('');
+      }
+
+      // Lien vers refuge
+      if (animal.refuge) {
+        var refugeLinks = document.querySelectorAll('[href*="coup-de-patte-refuge"]');
+        refugeLinks.forEach(function(link) {
+          link.href = 'coup-de-patte-refuge.html?id=' + animal.refuge.id;
+        });
+        // Bouton contact refuge
+        var contactBtn = document.querySelector('.contact-refuge-btn, [onclick*="refuge"]');
+        if (contactBtn && animal.refuge.telephone) {
+          contactBtn.onclick = function() { window.location.href = 'tel:' + animal.refuge.telephone.replace(/ /g,''); };
+        }
+      }
+
+      // Mise à jour des IDs supplémentaires
+      el = document.getElementById('ficheRace'); if (el) el.textContent = animal.race || animal.espece || '–';
+      el = document.getElementById('ficheAge'); if (el) el.textContent = animal.age_annees ? animal.age_annees + ' ans' : '–';
+      el = document.getElementById('ficheSexe'); if (el) el.textContent = animal.sexe === 'male' ? 'Mâle' : animal.sexe === 'femelle' ? 'Femelle' : '–';
+      el = document.getElementById('ficheGabarit'); if (el) el.textContent = animal.gabarit || '–';
+      el = document.getElementById('fichePelage'); if (el) el.textContent = animal.pelage || '–';
+      el = document.getElementById('ficheRefugeNom'); if (el) el.textContent = animal.refuge ? animal.refuge.nom : '–';
+      el = document.getElementById('ficheRefugeAdresse'); if (el && animal.refuge) el.textContent = '📍 ' + (animal.refuge.adresse || '') + (animal.refuge.ville ? ' · ' + animal.refuge.ville : '') + (animal.refuge.code_postal ? ' · ' + animal.refuge.code_postal : '');
+
       // Description principale
-      document.querySelectorAll('.pres-quote, .section-text').forEach(function(el) {
-        if (animal.description) el.textContent = animal.description;
+      var descEls = document.querySelectorAll('.pres-quote, .section-text, .animal-description, .hero-desc');
+      descEls.forEach(function(descEl) {
+        if (animal.description) descEl.textContent = animal.description;
+        else descEl.textContent = '';
+      });
+      // Histoire
+      var histEls = document.querySelectorAll('.histoire-text, .animal-history');
+      histEls.forEach(function(el) {
+        if (animal.histoire) el.textContent = animal.histoire;
       });
 
       // Infos dans le tableau
@@ -259,6 +312,19 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
         if (scoreTotalEl) scoreTotalEl.textContent = score + '%';
       }
 
+
+      // Contact refuge section
+      if (animal.refuge) {
+        var el2 = document.getElementById('ficheContactRefugeNom'); 
+        if (el2) el2.textContent = animal.refuge.nom || '';
+        var el3 = document.getElementById('ficheRefugeAdresse2');
+        if (el3) el3.textContent = (animal.refuge.adresse || '') + (animal.refuge.ville ? ' · ' + animal.refuge.ville : '');
+        var callBtn = document.getElementById('ficheCallBtn');
+        if (callBtn && animal.refuge.telephone) {
+          callBtn.href = 'tel:' + animal.refuge.telephone.replace(/ /g,'');
+          callBtn.textContent = '📞 Appeler ' + animal.refuge.nom;
+        }
+      }
       // Lien refuge dans onglet contact
       var refugeLinkEl = document.querySelector('#tab-contact a[href*="refuge"]');
       if (refugeLinkEl && animal.refuge) {
@@ -279,7 +345,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
   <div class="hero-img" id="heroImg"><span id="animalEmoji" style="position:relative;z-index:5">🐕</span>
     <!-- Badge signalement -->
     <div id="badge-absence" style="display:none;position:absolute;top:14px;left:14px;z-index:30;background:rgba(201,112,74,0.92);color:white;font-size:0.68rem;font-weight:700;padding:5px 12px;border-radius:50px;box-shadow:0 2px 8px rgba(0,0,0,0.2)">🚩 <span id="badge-count">1</span> signalement</div>
-    <div class="hero-loc" id="animalLoc">📍 SPA de Lyon</div>
+    <div class="hero-loc" id="animalLoc">📍 Chargement…</div>
   </div>
   <div class="hero-score" style="position:absolute;bottom:-26px;right:52px;background:var(--paper);border:1.5px solid var(--border);border-radius:20px;padding:14px 22px;box-shadow:0 8px 28px rgba(45,74,62,0.15);text-align:center;z-index:20;">
     <span class="hero-score-n" id="animalScore">87%</span>
@@ -290,20 +356,15 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 <div class="content">
 
   <div class="animal-header">
-    <h1 class="animal-name" id="animalNom">Rex</h1>
-    <div class="animal-meta">
-      <span>Berger croisé</span><span class="meta-dot">·</span>
-      <span>3 ans</span><span class="meta-dot">·</span>
-      <span>Mâle</span><span class="meta-dot">·</span>
-      <span>Grand gabarit · ~28 kg</span><span class="meta-dot">·</span>
-      <span>Pelage mi-long</span>
+    <h1 class="animal-name" id="animalNom">–</h1>
+    <div class="animal-meta" id="animalMetaBar">
+      <span id="metaRace">–</span><span class="meta-dot">·</span>
+      <span id="metaAge">–</span><span class="meta-dot">·</span>
+      <span id="metaSexe">–</span><span class="meta-dot">·</span>
+      <span id="metaGabarit">–</span>
     </div>
-    <div class="animal-tags">
-      <span class="tag">🏃 Actif</span>
-      <span class="tag">👧 Enfants ok</span>
-      <span class="tag">🐱 Chats ok</span>
-      <span class="tag">💙 Affectueux</span>
-      <span class="tag">🏠 Appartement ok</span>
+    <div class="animal-tags" id="animalTags">
+    </div>
       <span class="tag">📅 En refuge depuis 8 mois</span>
     </div>
   </div>
@@ -323,13 +384,13 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
     <div class="pres-grid">
       <div class="pres-card">
         <p class="pres-card-title">📋 Informations générales</p>
-        <div class="info-row"><span class="info-label">🐕 Race</span><span class="info-value">Berger croisé</span></div>
-        <div class="info-row"><span class="info-label">🎂 Âge</span><span class="info-value">3 ans</span></div>
+        <div class="info-row"><span class="info-label">🐕 Race</span><span class="info-value" id="ficheRace">–</span></div>
+        <div class="info-row"><span class="info-label">🎂 Âge</span><span class="info-value" id="ficheAge">–</span></div>
         <div class="info-row"><span class="info-label">⚖️ Poids</span><span class="info-value">~28 kg</span></div>
-        <div class="info-row"><span class="info-label">📏 Gabarit</span><span class="info-value">Grand</span></div>
+        <div class="info-row"><span class="info-label">📏 Gabarit</span><span class="info-value" id="ficheGabarit">–</span></div>
         <div class="info-row"><span class="info-label">🌿 Pelage</span><span class="info-value">Mi-long</span></div>
         <div class="info-row"><span class="info-label">🏠 En refuge depuis</span><span class="info-value">8 mois</span></div>
-        <div class="info-row"><span class="info-label">📍 Refuge</span><span class="info-value">SPA de Lyon</span></div>
+        <div class="info-row"><span class="info-label">📍 Refuge</span><span class="info-value" id="ficheRefugeNom">–</span></div>
         <div class="alert-box" style="border-color:var(--amber);background:rgba(212,168,67,0.08);margin-top:14px">🏡 Rex supporte moyennement bien la vie en refuge. Cela ne reflète pas nécessairement son comportement à la maison.</div>
       </div>
 
@@ -342,15 +403,15 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
         <div class="crit-row"><span class="crit-icon">🏃</span><span class="crit-name">Mode de vie</span><div class="crit-bar-wrap"><div class="crit-bar"><div class="crit-fill cf-blue" style="width:75%"></div></div><span class="crit-val" style="color:var(--blue)">75%</span></div></div>
         <div class="score-total">
           <div><span class="score-total-label">Compatibilité globale</span><span class="score-total-badge">Coup de Patte idéal 🟢</span></div>
-          <span class="score-total-num">87%</span>
+          <span class="score-total-num" id="scoreTotalNum">–</span>
         </div>
         <div class="alert-box">💡 Rex supporte moyennement la solitude. Prévoir une solution pour les longues journées.</div>
       </div>
 
       <div class="refuge-card">
         <div class="refuge-info">
-          <h3>SPA de Lyon, Fondation</h3>
-          <p>📍 12 chemin de la Ferme · Lyon 9ème · 69009</p>
+          <h3 id="ficheContactRefugeNom">–</h3>
+          <p id="ficheRefugeAdresse">–</p>
           <p>🕐 Mar, Dim · 10h à 18h · Fermé le lundi</p>
         </div>
         <a href="tel:0472000000" class="refuge-btn">📞 Contacter le refuge</a>
@@ -395,18 +456,18 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
       <div class="health-item"><div class="health-icon">🩺</div><div><span class="health-label">Besoins médicaux</span><span class="health-value">Aucun suivi particulier</span></div></div>
       <div class="health-item"><div class="health-icon">🏃</div><div><span class="health-label">Mobilité</span><span class="health-value health-ok">✅ Aucun problème</span></div></div>
     </div>
-    <div class="alert-box" style="border-color:var(--sage);background:var(--mint-lt);">🌿 Rex est en excellente santé générale. Aucun traitement en cours. Son dossier vétérinaire complet est disponible à la SPA de Lyon sur demande.</div>
+    <div class="alert-box" id="ficheAlertBox" style="display:none"></div>
   </div>
 
   <!-- ══ CONTACT ══ -->
   <div class="tab-panel" id="tab-contact">
     <div class="contact-hero">
       <h3>Vous souhaitez rencontrer Rex ?</h3>
-      <p>Appelez directement la SPA de Lyon pour convenir d'un rendez-vous. L'équipe du refuge vous guidera dans toutes les démarches d'adoption.</p>
-      <a href="tel:0472000000" class="contact-btn">📞 Appeler la SPA de Lyon</a>
+      <p>Appelez directement le refuge pour convenir d'un rendez-vous.a dans toutes les démarches d'adoption.</p>
+      <a href="#" class="contact-btn" id="ficheCallBtn">📞 Appeler le refuge</a>
     </div>
     <div class="contact-infos">
-      <div class="contact-info-card"><span class="contact-info-label">Adresse</span><div class="contact-info-value">SPA de Lyon, Fondation</div><div class="contact-info-sub">12 chemin de la Ferme, Lyon 9ème</div></div>
+      <div class="contact-info-card"><span class="contact-info-label">Adresse</span><div class="contact-info-value" id="ficheRefugeAdresse2">–</div></div><div class="contact-info-sub">12 chemin de la Ferme, Lyon 9ème</div></div>
       <div class="contact-info-card"><span class="contact-info-label">Horaires</span><div class="contact-info-value">Mar, Dim · 10h à 18h</div><div class="contact-info-sub">Fermé le lundi</div></div>
       <div class="contact-info-card"><span class="contact-info-label">Distance depuis vous</span><div class="contact-info-value">45 km</div><div class="contact-info-sub">~40 min en voiture</div></div>
     </div>
