@@ -1058,23 +1058,16 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
           var dateInscrit = r.created_at ? new Date(r.created_at).toLocaleDateString('fr-FR') : '–';
           refTable.insertAdjacentHTML('beforeend',
             '<tr>' +
-            '<td><div style="display:flex;align-items:center;gap:10px"><div class="refuge-thumb">🏠</div><div><div class="refuge-name">' + (r.nom || '–') + '</div></div></div></td>' +
-            '<td style="font-size:0.78rem;color:var(--dust)">' + (r.email || '–') + '</td>' +
-            '<td style="font-size:0.8rem;color:var(--dust)">' + (r.ville || '–') + '</td>' +
-            '<td style="font-size:0.75rem;color:var(--dust)">' + dateInscrit + '</td>' +
-            '<td><div class="row-actions">' +
-            '<button class="row-btn row-btn-blue" onclick="voirRefuge(this)" data-id="' + r.id + '">👁 Voir</button>' +
-            '<button class="row-btn row-btn-red" onclick="supprimerRefugeBtn(this)" data-id="' + r.id + '" data-nom="' + (r.nom||'').replace(/"/g,'&quot;') + '">✕ Supprimer</button>' +
-            '</div></td>' +
+            '<td>' + (r.nom || '–') + '<br><small>' + (r.email || '') + '</small></td>' +
+            '<td>' + (r.ville || '–') + '</td>' +
+            '<td>' + dateInscrit + '</td>' +
+            '<td><button class="row-btn row-btn-blue" onclick="voirRefuge(this)" data-id="' + r.id + '">👁 Voir</button> ' +
+            '<button class="row-btn row-btn-red" onclick="supprimerRefugeBtn(this)" data-id="' + r.id + '" data-nom="' + (r.nom||'').replace(/"/g, '') + '">✕</button></td>' +
             '</tr>'
           );
-        });
-      }
+        }); // end forEach
+      } // end if refuges
 
-      // Stats refuges
-      var nbRefuges = refuges.length;
-      var el;
-      el = document.getElementById('kpiRefuges'); if (el) el.textContent = nbRefuges;
       el = document.getElementById('badgeRefuges'); if (el) el.textContent = nbRefuges;
       el = document.getElementById('subRefuges'); if (el) el.textContent = nbRefuges + ' refuge(s) inscrits';
     }
