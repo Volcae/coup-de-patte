@@ -5,4 +5,262 @@
 <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2">
 <link rel="icon" type="image/x-icon" href="favicon.ico?v=2">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title id="pageTitle">Refuge · Coup de Patte</title>
+<title>Refuge · Coup de Patte</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--forest:#2D4A3E;--moss:#4A7C59;--sage:#7AAD89;--mint:#C8E6C0;--mint-lt:#EBF5E8;--ivory:#F4F1E8;--paper:#FDFCF8;--gold:#D4A843;--amber:#C49A1A;--rose:#C9704A;--blue:#5B8DEF;--border:rgba(45,74,62,0.11);--dust:#7A6E65;--smoke:#A89E96;--shadow:0 8px 32px rgba(45,74,62,0.10);}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:"Nunito",sans-serif;background:var(--ivory);color:var(--forest);min-height:100vh;overflow-x:hidden}
+nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:16px 52px;background:rgba(244,241,232,0.93);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.logo{font-family:"Fraunces",serif;font-size:1.4rem;font-weight:600;color:var(--forest);display:flex;align-items:center;gap:9px;text-decoration:none}
+.logo-bubble{width:40px;height:40px;background:var(--forest);border-radius:50% 50% 50% 50%/60% 60% 40% 40%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(45,74,62,0.32)}
+.nav-back{font-size:0.83rem;font-weight:600;color:var(--dust);text-decoration:none;opacity:0.7;transition:opacity 0.2s}
+.nav-back:hover{opacity:1}
+.hero{padding-top:74px;position:relative;z-index:1}
+.hero-banner{width:100%;height:260px;background:linear-gradient(160deg,var(--forest) 0%,var(--moss) 60%,var(--sage) 100%);position:relative;overflow:hidden}
+.hero-banner::before{content:"🐾";position:absolute;font-size:20rem;opacity:0.05;right:-60px;top:-40px;line-height:1}
+.hero-banner::after{content:"";position:absolute;bottom:0;left:0;right:0;height:80px;background:linear-gradient(to bottom,transparent,var(--ivory))}
+.refuge-identity{position:absolute;bottom:28px;left:52px;z-index:5;display:flex;align-items:center;gap:20px}
+.refuge-logo{width:72px;height:72px;border-radius:18px;background:var(--paper);display:flex;align-items:center;justify-content:center;font-size:2rem}
+.refuge-name-block h1{font-family:"Fraunces",serif;font-size:1.9rem;font-weight:700;font-style:italic;color:var(--ivory);line-height:1;margin-bottom:5px}
+.content{max-width:1160px;margin:0 auto;padding:40px 52px 80px;position:relative;z-index:1}
+.page-grid{display:grid;grid-template-columns:1fr 360px;gap:32px;align-items:start}
+.left-col{display:flex;flex-direction:column;gap:28px}
+.info-card{background:var(--paper);border-radius:24px;border:1.5px solid var(--border);padding:26px;box-shadow:var(--shadow)}
+.card-title{font-family:"Fraunces",serif;font-size:1rem;font-weight:600;font-style:italic;color:var(--forest);margin-bottom:16px}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.info-item{padding:14px 16px;background:var(--ivory);border-radius:14px;border:1.5px solid var(--border)}
+.info-item-label{font-size:0.62rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--smoke);display:block;margin-bottom:4px}
+.info-item-value{font-weight:700;font-size:0.86rem;color:var(--forest)}
+.horaires-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.jour{text-align:center}
+.jour-label{font-size:0.6rem;font-weight:700;text-transform:uppercase;color:var(--smoke);display:block;margin-bottom:5px}
+.jour-status{width:100%;padding:6px 2px;border-radius:8px;font-size:0.65rem;font-weight:700;text-align:center}
+.jour-open{background:var(--mint-lt);color:var(--moss);border:1px solid rgba(74,124,89,0.2)}
+.jour-closed{background:rgba(201,112,74,0.08);color:var(--rose);border:1px solid rgba(201,112,74,0.15)}
+.jour-today{border:2px solid var(--moss);background:var(--moss);color:white}
+.animaux-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.right-col{display:flex;flex-direction:column;gap:20px;position:sticky;top:96px}
+.contact-card{background:var(--forest);border-radius:22px;padding:26px;color:var(--ivory)}
+.contact-card h3{font-family:"Fraunces",serif;font-size:1.2rem;font-weight:600;font-style:italic;margin-bottom:5px}
+.contact-card p{font-size:0.78rem;opacity:0.6;margin-bottom:20px;line-height:1.5}
+.cta-btn{width:100%;padding:13px;border:none;border-radius:50px;font-family:"Nunito",sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer;margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:8px;transition:transform 0.2s}
+.cta-primary{background:linear-gradient(135deg,#F5C77E,var(--gold));color:var(--forest)}
+.cta-secondary{background:rgba(255,255,255,0.1);color:var(--ivory);border:1.5px solid rgba(255,255,255,0.15)}
+.info-quick{background:var(--paper);border-radius:22px;border:1.5px solid var(--border);padding:22px;box-shadow:var(--shadow)}
+.iq-row{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
+.iq-row:last-child{border-bottom:none}
+.iq-icon{width:32px;height:32px;border-radius:10px;background:var(--mint-lt);border:1.5px solid var(--mint);display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0}
+.iq-label{font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--smoke);display:block;margin-bottom:2px}
+.iq-value{font-weight:700;color:var(--forest);font-size:0.83rem}
+.map-footer{padding:18px 22px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-top:1px solid var(--border);background:var(--paper);border-radius:0 0 22px 22px}
+.map-address{font-size:0.8rem;color:var(--dust);line-height:1.5}
+.map-address strong{color:var(--forest);font-weight:700;display:block;margin-bottom:2px}
+.map-btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:50px;font-size:0.78rem;font-weight:700;text-decoration:none;transition:transform 0.2s}
+.map-btn-primary{background:linear-gradient(135deg,var(--moss),var(--forest));color:white}
+.map-btn-secondary{background:var(--ivory);color:var(--forest);border:1.5px solid var(--border)}
+.map-actions{display:flex;gap:8px;flex-shrink:0}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+var _sb=null;
+function getSupabase(){
+  if(!_sb){_sb=window.supabase.createClient("https://mbqsaaxaglcemdxmfvkc.supabase.co","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1icXNhYXhhZ2xjZW1keG1mdmtjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MjAwMTQsImV4cCI6MjA5MzQ5NjAxNH0.lGK0LL5h-4N4DqMVy2Q_SKJgnzuy7BPQJEtSsc8plfk");}
+  return _sb;
+}
+</script>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="logo"><div class="logo-bubble"><span style="filter:brightness(0) invert(1);font-size:1.1rem">🐾</span></div>Coup de Patte</a>
+  <a href="coup-de-patte-v3.html" class="nav-back" id="navBackLink">← Retour</a>
+</nav>
+<div class="hero">
+  <div class="hero-banner">
+    <div class="refuge-identity">
+      <div class="refuge-logo">🏠</div>
+      <div class="refuge-name-block">
+        <h1 id="refugeNomHero">Chargement…</h1>
+        <p id="refugeVillePara" style="font-size:0.8rem;color:rgba(244,241,232,0.7)"></p>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="content">
+  <div class="page-grid">
+    <div class="left-col">
+      <div class="info-card">
+        <p class="card-title">📋 Informations générales</p>
+        <div class="info-grid">
+          <div class="info-item"><span class="info-item-label">Adresse</span><div class="info-item-value" id="refugeAdresse">–</div><div style="font-size:0.73rem;color:var(--dust);margin-top:2px" id="refugeVilleCP"></div></div>
+          <div class="info-item"><span class="info-item-label">Téléphone</span><div class="info-item-value" id="refugeTel">–</div></div>
+          <div class="info-item"><span class="info-item-label">Email</span><div class="info-item-value" style="font-size:0.78rem" id="refugeEmail">–</div></div>
+          <div class="info-item"><span class="info-item-label">Site web</span><div class="info-item-value" style="font-size:0.78rem" id="refugeSite">–</div></div>
+        </div>
+        <p style="font-size:0.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--smoke);margin-bottom:10px">Horaires d'ouverture</p>
+        <div class="horaires-grid">
+          <div class="jour"><span class="jour-label">Lun</span><div class="jour-status" id="hLun">–</div></div>
+          <div class="jour"><span class="jour-label">Mar</span><div class="jour-status" id="hMar">–</div></div>
+          <div class="jour"><span class="jour-label">Mer</span><div class="jour-status" id="hMer">–</div></div>
+          <div class="jour"><span class="jour-label">Jeu</span><div class="jour-status" id="hJeu">–</div></div>
+          <div class="jour"><span class="jour-label">Ven</span><div class="jour-status" id="hVen">–</div></div>
+          <div class="jour"><span class="jour-label">Sam</span><div class="jour-status" id="hSam">–</div></div>
+          <div class="jour"><span class="jour-label">Dim</span><div class="jour-status" id="hDim">–</div></div>
+        </div>
+      </div>
+      <div class="info-card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+          <h2 style="font-family:Fraunces,serif;font-size:1.1rem;font-weight:600;font-style:italic;color:var(--forest)">🐾 Animaux disponibles <span id="animauxCount" style="font-size:0.75rem;font-family:Nunito,sans-serif;color:var(--dust);font-style:normal;font-weight:600">(0)</span></h2>
+          <a href="coup-de-patte-refuges.html" style="font-size:0.78rem;font-weight:700;color:var(--moss);text-decoration:none">Tous les refuges →</a>
+        </div>
+        <div class="animaux-grid" id="animauxGrid"><div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--dust);font-size:0.85rem">Chargement…</div></div>
+        <div id="voirPlusAnimaux" style="text-align:center;margin-top:18px;display:none"><a href="coup-de-patte-refuges.html" style="font-size:0.8rem;font-weight:700;color:var(--moss);text-decoration:none">Voir tous les animaux →</a></div>
+      </div>
+    </div>
+    <div class="right-col">
+      <div class="contact-card">
+        <h3>Visiter le refuge</h3>
+        <p>Nous vous conseillons de prendre rendez-vous avant de vous déplacer.</p>
+        <button class="cta-btn cta-primary" id="btnAppeler">📞 Appeler maintenant</button>
+        <button class="cta-btn cta-secondary" id="btnEmail">✉️ Envoyer un email</button>
+      </div>
+      <div class="info-quick">
+        <div class="iq-row"><div class="iq-icon">📍</div><div><span class="iq-label">Ville</span><span class="iq-value" id="iqVille">–</span></div></div>
+        <div class="iq-row"><div class="iq-icon">📞</div><div><span class="iq-label">Téléphone</span><span class="iq-value" id="iqTel">–</span></div></div>
+        <div class="iq-row"><div class="iq-icon">✉️</div><div><span class="iq-label">Email</span><span class="iq-value" id="iqEmail">–</span></div></div>
+        <div class="iq-row"><div class="iq-icon">🌐</div><div><span class="iq-label">Site web</span><span class="iq-value" id="iqSite">–</span></div></div>
+      </div>
+      <div style="background:var(--paper);border-radius:22px;border:1.5px solid var(--border);overflow:hidden;box-shadow:var(--shadow)">
+        <div class="map-footer">
+          <div class="map-address"><strong id="refugeNomMap">–</strong><span id="refugeAdresseMap">–</span></div>
+          <div class="map-actions">
+            <a href="#" target="_blank" class="map-btn map-btn-secondary" id="btnMaps">🗺 Maps</a>
+            <a href="#" target="_blank" class="map-btn map-btn-primary" id="btnItineraire">🧭 Itinéraire</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+window.addEventListener("load", async function() {
+  var params = new URLSearchParams(window.location.search);
+  var refugeId = params.get("id");
+  if (!refugeId) { document.getElementById("refugeNomHero").textContent = "Refuge introuvable"; return; }
+  var sb = getSupabase();
+  var res = await sb.from("Refuge").select("*").eq("id", refugeId).single();
+  var refuge = res.data;
+  if (!refuge) { document.getElementById("refugeNomHero").textContent = "Refuge introuvable"; return; }
+
+  // Nom
+  document.title = (refuge.nom || "Refuge") + " · Coup de Patte";
+  var set = function(id, val) { var e = document.getElementById(id); if(e) e.textContent = val || "–"; };
+  set("refugeNomHero", refuge.nom);
+  set("refugeNomMap", refuge.nom);
+
+  // Adresse
+  var adresse = refuge.adresse || "";
+  var ville = refuge.ville || "";
+  var cp = refuge.code_postal || "";
+  set("refugeAdresse", adresse || "–");
+  set("refugeVilleCP", ville + (cp ? " · " + cp : ""));
+  set("refugeVillePara", ville);
+  set("refugeAdresseMap", (adresse ? adresse + " · " : "") + ville + (cp ? " · " + cp : ""));
+  set("iqVille", ville + (cp ? " · " + cp : ""));
+
+  // Contact
+  var tel = refuge.telephone || "";
+  var email = refuge.email || "";
+  var site = (refuge.site_web || "").replace(/\[([^\]]+)\]\([^)]+\)/g,"$1").replace(/^https?:\/\//i,"");
+  set("refugeTel", tel); set("iqTel", tel);
+  set("refugeEmail", email); set("iqEmail", email);
+
+  var siteEl = document.getElementById("refugeSite");
+  var iqSiteEl = document.getElementById("iqSite");
+  if (site) {
+    var link = "<a href='https://" + site + "' target='_blank' style='color:var(--moss);text-decoration:none'>" + site + "</a>";
+    if (siteEl) siteEl.innerHTML = link;
+    if (iqSiteEl) iqSiteEl.innerHTML = link;
+  }
+
+  // Boutons
+  var btnA = document.getElementById("btnAppeler");
+  if (btnA && tel) { btnA.onclick = function() { window.location.href = "tel:" + tel.replace(/ /g,""); }; }
+  var btnE = document.getElementById("btnEmail");
+  if (btnE && email) { btnE.onclick = function() { window.location.href = "mailto:" + email; }; }
+
+  // Maps
+  var adresseMap = encodeURIComponent((adresse || refuge.nom || "") + " " + ville);
+  var btnM = document.getElementById("btnMaps"); if (btnM) btnM.href = "https://maps.google.com/?q=" + adresseMap;
+  var btnI = document.getElementById("btnItineraire"); if (btnI) btnI.href = "https://maps.google.com/dir/?api=1&destination=" + adresseMap;
+
+  // Horaires
+  if (refuge.horaires) {
+    try {
+      var todayIdx = new Date().getDay();
+      var keys = ["dim","lun","mar","mer","jeu","ven","sam"];
+      var ids  = ["hDim","hLun","hMar","hMer","hJeu","hVen","hSam"];
+      var h = typeof refuge.horaires === "string" ? JSON.parse(refuge.horaires) : refuge.horaires;
+      keys.forEach(function(j, idx) {
+        var el = document.getElementById(ids[idx]);
+        if (!el) return;
+        var val = h[j] || "";
+        var closed = !val || val.toLowerCase() === "fermé";
+        var today = idx === todayIdx;
+        el.textContent = closed ? "Fermé" : val.replace("-"," – ");
+        el.className = "jour-status " + (today ? "jour-today" : closed ? "jour-closed" : "jour-open");
+      });
+    } catch(e) {}
+  }
+
+  // Lien retour selon rôle
+  var sessRes = await sb.auth.getSession();
+  var session = sessRes.data && sessRes.data.session ? sessRes.data.session : null;
+  var navBack = document.getElementById("navBackLink");
+  if (navBack && session) {
+    var authRes = await sb.auth.getUser();
+    var meta = authRes.data && authRes.data.user ? authRes.data.user.user_metadata || {} : {};
+    if (meta.role === "refuge" || meta.est_refuge) {
+      navBack.href = "coup-de-patte-admin.html";
+      navBack.textContent = "← Mon espace refuge";
+    } else {
+      navBack.href = "coup-de-patte-v3.html";
+      navBack.textContent = "← Retour à mes matchs";
+    }
+  } else if (navBack) {
+    navBack.href = "index.html";
+    navBack.textContent = "← Accueil";
+  }
+
+  // Animaux
+  var animRes = await sb.from("Animal").select("*").eq("refuge", refugeId).eq("disponible", true);
+  var animaux = animRes.data || [];
+  var countEl = document.getElementById("animauxCount");
+  if (countEl) countEl.textContent = "(" + animaux.length + ")";
+  var voirPlus = document.getElementById("voirPlusAnimaux");
+  if (voirPlus) voirPlus.style.display = animaux.length > 6 ? "block" : "none";
+  var grid = document.getElementById("animauxGrid");
+  if (grid) {
+    if (animaux.length > 0) {
+      grid.innerHTML = "";
+      animaux.forEach(function(a) {
+        var emoji = a.espece && a.espece.toLowerCase() === "chat" ? "🐱" : "🐕";
+        var age = a.age_annees ? a.age_annees + " an" + (a.age_annees > 1 ? "s" : "") : "";
+        grid.insertAdjacentHTML("beforeend",
+          "<div onclick="window.location.href='coup-de-patte-fiche.html?id=" + a.id + "'" style='cursor:pointer;background:var(--paper);border-radius:16px;border:1.5px solid var(--border);padding:16px;transition:transform 0.2s;text-align:center' onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">" +
+          "<div style='font-size:2.5rem;margin-bottom:8px'>" + emoji + "</div>" +
+          "<div style='font-family:Fraunces,serif;font-weight:600;font-style:italic;color:var(--forest)'>" + a.nom + "</div>" +
+          "<div style='font-size:0.75rem;color:var(--dust);margin-top:3px'>" + (a.race || a.espece) + (age ? " · " + age : "") + "</div>" +
+          (a.enfin_moi ? "<div style='font-size:0.65rem;color:var(--amber);font-weight:700;margin-top:4px'>✨ Enfin Moi ?</div>" : "") +
+          "</div>"
+        );
+      });
+    } else {
+      grid.innerHTML = "<div style='grid-column:1/-1;text-align:center;padding:30px;color:var(--dust);font-size:0.85rem'>Aucun animal disponible pour le moment.</div>";
+    }
+  }
+});
+</script>
+</body>
+</html>
