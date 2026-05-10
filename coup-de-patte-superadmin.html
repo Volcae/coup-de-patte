@@ -218,21 +218,21 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
   <!-- SIDEBAR -->
   <aside class="sidebar">
     <span class="sb-section">Vue d'ensemble</span>
-    <a class="sb-item active" onclick="showSection('dashboard',this)"><span class="sb-icon">📊</span>Tableau de bord</a>
+    <a class="sb-item active" onclick="showSectionFn('dashboard',this)"><span class="sb-icon">📊</span>Tableau de bord</a>
 
     <span class="sb-section">Plateforme</span>
-    <a class="sb-item" onclick="showSection('refuges',this)"><span class="sb-icon">🏡</span>Refuges<span class="sb-badge sb-badge-red" id="badgeRefuges">–</span></a>
-    <a class="sb-item" onclick="showSection('animaux',this)"><span class="sb-icon">🐾</span>Animaux<span class="sb-badge sb-badge-green" id="badgeAnimaux">–</span></a>
-    <a class="sb-item" onclick="showSection('adoptants',this)"><span class="sb-icon">👤</span>Adoptants<span class="sb-badge sb-badge-blue" id="badgeAdoptants">–</span></a>
-    <a class="sb-item" onclick="showSection('scraping',this)"><span class="sb-icon">🤖</span>Scraping IA<span class="sb-badge sb-badge-green">Actif</span></a>
-    <a class="sb-item" onclick="showSection('signalements',this)"><span class="sb-icon">🚩</span>Signalements<span class="sb-badge sb-badge-red">7 actifs</span></a>
+    <a class="sb-item" onclick="showSectionFn('refuges',this)"><span class="sb-icon">🏡</span>Refuges<span class="sb-badge sb-badge-red" id="badgeRefuges">–</span></a>
+    <a class="sb-item" onclick="showSectionFn('animaux',this)"><span class="sb-icon">🐾</span>Animaux<span class="sb-badge sb-badge-green" id="badgeAnimaux">–</span></a>
+    <a class="sb-item" onclick="showSectionFn('adoptants',this)"><span class="sb-icon">👤</span>Adoptants<span class="sb-badge sb-badge-blue" id="badgeAdoptants">–</span></a>
+    <a class="sb-item" onclick="showSectionFn('scraping',this)"><span class="sb-icon">🤖</span>Scraping IA<span class="sb-badge sb-badge-green">Actif</span></a>
+    <a class="sb-item" onclick="showSectionFn('signalements',this)"><span class="sb-icon">🚩</span>Signalements<span class="sb-badge sb-badge-red">7 actifs</span></a>
 
     <span class="sb-section">Paramètres</span>
-    <a class="sb-item" onclick="showSection('algorithme',this)"><span class="sb-icon">⚙️</span>Algorithme<span class="sb-badge sb-badge-purple">Matching</span></a>
-    <a class="sb-item" onclick="showSection('enfin',this)"><span class="sb-icon">✨</span>Seuils Enfin Moi ?</a>
+    <a class="sb-item" onclick="showSectionFn('algorithme',this)"><span class="sb-icon">⚙️</span>Algorithme<span class="sb-badge sb-badge-purple">Matching</span></a>
+    <a class="sb-item" onclick="showSectionFn('enfin',this)"><span class="sb-icon">✨</span>Seuils Enfin Moi ?</a>
 
     <span class="sb-section">Communication</span>
-    <a class="sb-item" onclick="showSection('communication',this)"><span class="sb-icon">📣</span>Kit communication</a>
+    <a class="sb-item" onclick="showSectionFn('communication',this)"><span class="sb-icon">📣</span>Kit communication</a>
   </aside>
 
   <!-- MAIN -->
@@ -245,10 +245,10 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
       </div>
 
       <div class="kpi-grid">
-        <div class="kpi"><span class="kpi-n" id="kpiRefuges">–</span><span class="kpi-l">Refuges référencés</span><span class="kpi-trend trend-up">↑ +47 ce mois</span></div>
-        <div class="kpi"><span class="kpi-n" id="kpiAnimaux">–</span><span class="kpi-l">Animaux disponibles</span><span class="kpi-trend trend-flat">= stable</span></div>
-        <div class="kpi"><span class="kpi-n" id="kpiAdoptants">–</span><span class="kpi-l">Adoptants inscrits</span><span class="kpi-trend trend-up">↑ +83 ce mois</span></div>
-        <div class="kpi"><span class="kpi-n" id="kpiAdoptions">–</span><span class="kpi-l">Adoptions via CDP ¹</span><span class="kpi-trend trend-up">↑ +12 ce mois</span></div>
+        <div class="kpi"><span class="kpi-n" id="kpiRefuges">–</span><span class="kpi-l">Refuges référencés</span><span class="kpi-trend" id="trendRefuges">–</span></div>
+        <div class="kpi"><span class="kpi-n" id="kpiAnimaux">–</span><span class="kpi-l">Animaux disponibles</span><span class="kpi-trend" id="trendAnimaux">–</span></div>
+        <div class="kpi"><span class="kpi-n" id="kpiAdoptants">–</span><span class="kpi-l">Adoptants inscrits</span><span class="kpi-trend" id="trendAdoptants">–</span></div>
+        <div class="kpi"><span class="kpi-n" id="kpiAdoptions">–</span><span class="kpi-l">Adoptions via CDP ¹</span><span class="kpi-trend" id="trendAdoptions">–</span></div>
       </div>
       <p style="font-size:0.68rem;color:var(--smoke);margin-top:-12px;margin-bottom:20px;font-style:italic">¹ Uniquement les adoptions déclarées "via Coup de Patte" par les refuges eux-mêmes, les adoptions hors CDP ne sont pas comptabilisées.</p>
         <div class="dash-card">
@@ -272,18 +272,18 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
         <div class="dash-card">
           <p class="dc-title">✨ Animaux Enfin Moi ?</p>
           <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px">
-            <div style="text-align:center;background:var(--ivory);border-radius:12px;padding:12px 8px;border:1.5px solid var(--border)"><span style="font-family:'Fraunces',serif;font-size:1.5rem;font-weight:700;color:var(--amber);display:block">47</span><span style="font-size:0.65rem;color:var(--dust)">Total</span></div>
-            <div style="text-align:center;background:var(--ivory);border-radius:12px;padding:12px 8px;border:1.5px solid var(--border)"><span style="font-family:'Fraunces',serif;font-size:1.5rem;font-weight:700;color:var(--moss);display:block">8</span><span style="font-size:0.65rem;color:var(--dust)">Adoptés ce mois</span></div>
-            <div style="text-align:center;background:var(--ivory);border-radius:12px;padding:12px 8px;border:1.5px solid var(--border)"><span style="font-family:'Fraunces',serif;font-size:1.5rem;font-weight:700;color:var(--rose);display:block">2,3</span><span style="font-size:0.65rem;color:var(--dust)">Ans moy. en refuge</span></div>
+            <div style="text-align:center;background:var(--ivory);border-radius:12px;padding:12px 8px;border:1.5px solid var(--border)"><span style="font-family:'Fraunces',serif;font-size:1.5rem;font-weight:700;color:var(--amber);display:block" id="enfinTotal">–</span><span style="font-size:0.65rem;color:var(--dust)">Total</span></div>
+            <div style="text-align:center;background:var(--ivory);border-radius:12px;padding:12px 8px;border:1.5px solid var(--border)"><span style="font-family:'Fraunces',serif;font-size:1.5rem;font-weight:700;color:var(--moss);display:block" id="enfinAdoptesMois">–</span><span style="font-size:0.65rem;color:var(--dust)">Adoptés ce mois</span></div>
+            <div style="text-align:center;background:var(--ivory);border-radius:12px;padding:12px 8px;border:1.5px solid var(--border)"><span style="font-family:'Fraunces',serif;font-size:1.5rem;font-weight:700;color:var(--rose);display:block" id="enfinAnsMoy">–</span><span style="font-size:0.65rem;color:var(--dust)">Ans moy. en refuge</span></div>
           </div>
           <div style="font-size:0.78rem;color:var(--dust);font-style:italic;font-family:'Fraunces',serif;border-left:2px solid var(--gold);padding-left:12px;line-height:1.6">Ce mois, 8 animaux Enfin Moi ? ont trouvé une famille. C'est votre meilleur résultat depuis le lancement.</div>
         </div>
 
         <div class="dash-card">
           <p class="dc-title">⚠️ Alertes</p>
-          <div class="activity-row"><div class="act-dot" style="background:var(--rose)"></div><span class="act-text" style="color:var(--rose);font-weight:700">3 refuges en attente de validation</span><span class="act-time"><a href="#" style="color:var(--moss);font-weight:700;font-size:0.7rem" onclick="showSection('refuges',document.querySelectorAll('.sb-item')[2])">Voir →</a></span></div>
-          <div class="activity-row"><div class="act-dot" style="background:var(--amber)"></div><span class="act-text">Site SPA Nantes inaccessible depuis 5h</span><span class="act-time"><a href="#" style="color:var(--moss);font-weight:700;font-size:0.7rem" onclick="showSection('scraping',document.querySelectorAll('.sb-item')[5])">Voir →</a></span></div>
-          <div class="activity-row"><div class="act-dot" style="background:var(--amber)"></div><span class="act-text">Pondérations matching = 105% (à corriger)</span><span class="act-time"><a href="#" style="color:var(--moss);font-weight:700;font-size:0.7rem" onclick="showSection('algorithme',document.querySelectorAll('.sb-item')[6])">Voir →</a></span></div>
+          <div class="activity-row"><div class="act-dot" style="background:var(--rose)"></div><span class="act-text" style="color:var(--rose);font-weight:700" id="alerteRefuges">– refuges en attente de validation</span><span class="act-time"><a href="#" style="color:var(--moss);font-weight:700;font-size:0.7rem" onclick="showSectionFn('refuges',document.querySelectorAll('.sb-item')[2])">Voir →</a></span></div>
+          <div class="activity-row"><div class="act-dot" style="background:var(--amber)"></div><span class="act-text">Site SPA Nantes inaccessible depuis 5h</span><span class="act-time"><a href="#" style="color:var(--moss);font-weight:700;font-size:0.7rem" onclick="showSectionFn('scraping',document.querySelectorAll('.sb-item')[5])">Voir →</a></span></div>
+          <div class="activity-row"><div class="act-dot" style="background:var(--amber)"></div><span class="act-text">Pondérations matching = 105% (à corriger)</span><span class="act-time"><a href="#" style="color:var(--moss);font-weight:700;font-size:0.7rem" onclick="showSectionFn('algorithme',document.querySelectorAll('.sb-item')[6])">Voir →</a></span></div>
         </div>
       </div>
     </div>
@@ -291,7 +291,7 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
     <!-- ══════════ REFUGES ══════════ -->
     <div class="section" id="section-refuges">
       <div class="page-hdr">
-        <div><h1 class="page-title">Refuges</h1><p class="page-sub">4 218 refuges référencés · 3 en attente de validation</p></div>
+        <div><h1 class="page-title">Refuges</h1><p class="page-sub" id="subRefuges">Chargement…</p></div>
         <button class="btn-primary" onclick="showToast('Ajout manuel refuge, fonctionnalité à venir')">+ Ajouter manuellement</button>
       </div>
 
@@ -373,13 +373,13 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
     <!-- ══════════ ANIMAUX ══════════ -->
     <div class="section" id="section-animaux">
       <div class="page-hdr">
-        <div><h1 class="page-title">Animaux</h1><p class="page-sub">1 247 animaux référencés sur la plateforme</p></div>
+        <div><h1 class="page-title">Animaux</h1><p class="page-sub" id="subAnimaux">Chargement…</p></div>
       </div>
       <div class="animals-kpi">
-        <div class="kpi"><span class="kpi-n">1 247</span><span class="kpi-l">Total disponibles</span></div>
-        <div class="kpi"><span class="kpi-n">47</span><span class="kpi-l">✨ Enfin Moi ?</span></div>
-        <div class="kpi"><span class="kpi-n">134</span><span class="kpi-l">Adoptés ce mois</span></div>
-        <div class="kpi"><span class="kpi-n">12</span><span class="kpi-l">Fiches incomplètes</span></div>
+        <div class="kpi"><span class="kpi-n" id="animauxTotal">–</span><span class="kpi-l">Total disponibles</span></div>
+        <div class="kpi"><span class="kpi-n" id="animauxEnfin">–</span><span class="kpi-l">✨ Enfin Moi ?</span></div>
+        <div class="kpi"><span class="kpi-n" id="animauxAdoptes">–</span><span class="kpi-l">Adoptés ce mois</span></div>
+        <div class="kpi"><span class="kpi-n" id="animauxIncomplets">–</span><span class="kpi-l">Fiches incomplètes</span></div>
       </div>
       <div class="refuge-toolbar">
         <input class="search-input" type="text" placeholder="🔍 Rechercher un animal…">
@@ -422,12 +422,12 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
     <!-- ══════════ ADOPTANTS ══════════ -->
     <div class="section" id="section-adoptants">
       <div class="page-hdr">
-        <div><h1 class="page-title">Adoptants</h1><p class="page-sub">892 adoptants inscrits, données anonymisées</p></div>
+        <div><h1 class="page-title">Adoptants</h1><p class="page-sub" id="subAdoptants">Chargement…</p></div>
       </div>
       <div class="adoptant-stats">
-        <div class="kpi"><span class="kpi-n">892</span><span class="kpi-l">Inscrits total</span><span class="kpi-trend trend-up">↑ +83 ce mois</span></div>
-        <div class="kpi"><span class="kpi-n">614</span><span class="kpi-l">Profils complétés</span><span class="kpi-trend trend-flat">69% de complétion</span></div>
-        <div class="kpi"><span class="kpi-n">134</span><span class="kpi-l">Adoptions réussies</span><span class="kpi-trend trend-up">↑ taux 15%</span></div>
+        <div class="kpi"><span class="kpi-n">892</span><span class="kpi-l">Inscrits total</span><span class="kpi-trend" id="trendAdoptants">–</span></div>
+        <div class="kpi"><span class="kpi-n" id="adoptantsComplets">–</span><span class="kpi-l">Profils complétés</span><span class="kpi-trend" id="adoptantsCompletsTaux">–</span></div>
+        <div class="kpi"><span class="kpi-n" id="adoptantsAdoptions">–</span><span class="kpi-l">Adoptions réussies</span><span class="kpi-trend" id="adoptantsAdoptionsTaux">–</span></div>
       </div>
       <div class="dash-grid">
         <div class="dash-card">
@@ -611,7 +611,7 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
 
       <!-- Stats signalements -->
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px">
-        <div class="kpi"><span class="kpi-n">7</span><span class="kpi-l">Signalements actifs</span></div>
+        <div class="kpi"><span class="kpi-n" id="signalActifs">–</span><span class="kpi-l">Signalements actifs</span></div>
         <div class="kpi"><span class="kpi-n">2</span><span class="kpi-l">À 4/5, suppression imminente</span><span class="kpi-trend trend-down">⚠ À surveiller</span></div>
         <div class="kpi"><span class="kpi-n">23</span><span class="kpi-l">Supprimés automatiquement</span><span class="kpi-trend trend-flat">Ce mois</span></div>
         <div class="kpi"><span class="kpi-n">14</span><span class="kpi-l">Ignorés au scraping</span><span class="kpi-trend trend-flat">Exclusions actives</span></div>
@@ -930,7 +930,7 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
 
 <script>
   // Navigation
-  function showSection(id, el) {
+  function showSectionFn(id, el) {
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     document.getElementById('section-' + id).classList.add('active');
     document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('active'));
@@ -1150,6 +1150,61 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
         getSupabase().auth.signOut().then(function() { window.location.reload(); });
       };
     }
+
+    // Animaux stats complets
+    var { data: animauxAll } = await sb.from('Animal').select('id, enfin_moi, statut, description, race, age_annees');
+    if (animauxAll) {
+      var nbAll = animauxAll.length;
+      var nbEnfinAll = animauxAll.filter(function(a) { return a.enfin_moi; }).length;
+      var nbAdoptesAll = animauxAll.filter(function(a) { return a.statut === 'adopte_cdp'; }).length;
+      var nbIncomplets = animauxAll.filter(function(a) { return !a.description || !a.race; }).length;
+      var setEl = function(id, val) { var e = document.getElementById(id); if(e) e.textContent = val; };
+      setEl('animauxTotal', nbAll);
+      setEl('animauxEnfin', nbEnfinAll);
+      setEl('animauxAdoptes', nbAdoptesAll);
+      setEl('animauxIncomplets', nbIncomplets);
+      setEl('subAnimaux', nbAll + ' animaux référencés sur la plateforme');
+      setEl('enfinTotal', nbEnfinAll);
+      setEl('enfinAdoptesMois', nbAdoptesAll);
+    }
+
+    // Adoptants stats
+    if (profils) {
+      var nbProfilsComplets = profils.filter ? profils.length : 0;
+      var setEl2 = function(id, val) { var e = document.getElementById(id); if(e) e.textContent = val; };
+      setEl2('adoptantsTotal', profils.length);
+      setEl2('adoptantsComplets', profils.length);
+      setEl2('subAdoptants', profils.length + ' adoptants inscrits');
+      setEl2('adoptantsAdoptions', adoptionsCDP ? adoptionsCDP.length : 0);
+    }
+
+    // Signalements
+    var { data: signalements } = await sb.from('Signalisation').select('id');
+    if (signalements) {
+      var setEl3 = function(id, val) { var e = document.getElementById(id); if(e) e.textContent = val; };
+      setEl3('signalActifs', signalements.length);
+    }
+
+    // Alertes dynamiques
+    if (refuges) {
+      var nbAttente = refuges.filter(function(r) { return !r.valide_par_admin; }).length;
+      var alerteEl = document.getElementById('alerteRefuges');
+      if (alerteEl) alerteEl.textContent = nbAttente + ' refuge(s) en attente de validation';
+    }
+
+    // Trends (mois courant vs total - approximation)
+    var now = new Date();
+    var moisDebut = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+    var { data: refugesMois } = await sb.from('Refuge').select('id').gte('created_at', moisDebut);
+    var { data: adoptantsMois } = await sb.from('ProfilAdoptant').select('id').gte('created_at', moisDebut);
+    var setTrend = function(id, data, cls) {
+      var e = document.getElementById(id);
+      if (!e || !data) return;
+      e.textContent = '↑ +' + data.length + ' ce mois';
+      e.className = 'kpi-trend ' + (cls || 'trend-up');
+    };
+    setTrend('trendRefuges', refugesMois);
+    setTrend('trendAdoptants', adoptantsMois);
   });
 
   async function validerRefuge(refugeId) {
