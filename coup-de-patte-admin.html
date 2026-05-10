@@ -361,16 +361,79 @@ function getSupabase() {
           <div class="field-row"><span class="field-label">Téléphone</span><input class="form-input" style="width:100%" id="infoTel"></div>
           <div class="field-row"><span class="field-label">Email</span><input class="form-input" style="width:100%" id="infoEmail"></div>
           <div class="field-row"><span class="field-label">Site web</span><input class="form-input" style="width:100%" id="infoSite"></div>
-          <div class="field-row" style="flex-direction:column;gap:8px">
+          <div class="field-row" style="flex-direction:column;gap:10px">
             <span class="field-label">Horaires d'ouverture</span>
-            <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px" id="horairesGrid">
-              <div style="text-align:center"><span style="font-size:0.65rem;font-weight:700;color:var(--smoke);display:block;margin-bottom:4px">Lun</span><input type="text" id="hLun" placeholder="Fermé" class="form-input" style="text-align:center;font-size:0.72rem;padding:6px 4px"></div>
-              <div style="text-align:center"><span style="font-size:0.65rem;font-weight:700;color:var(--smoke);display:block;margin-bottom:4px">Mar</span><input type="text" id="hMar" placeholder="10-18h" class="form-input" style="text-align:center;font-size:0.72rem;padding:6px 4px"></div>
-              <div style="text-align:center"><span style="font-size:0.65rem;font-weight:700;color:var(--smoke);display:block;margin-bottom:4px">Mer</span><input type="text" id="hMer" placeholder="10-18h" class="form-input" style="text-align:center;font-size:0.72rem;padding:6px 4px"></div>
-              <div style="text-align:center"><span style="font-size:0.65rem;font-weight:700;color:var(--smoke);display:block;margin-bottom:4px">Jeu</span><input type="text" id="hJeu" placeholder="10-18h" class="form-input" style="text-align:center;font-size:0.72rem;padding:6px 4px"></div>
-              <div style="text-align:center"><span style="font-size:0.65rem;font-weight:700;color:var(--smoke);display:block;margin-bottom:4px">Ven</span><input type="text" id="hVen" placeholder="10-18h" class="form-input" style="text-align:center;font-size:0.72rem;padding:6px 4px"></div>
-              <div style="text-align:center"><span style="font-size:0.65rem;font-weight:700;color:var(--smoke);display:block;margin-bottom:4px">Sam</span><input type="text" id="hSam" placeholder="10-18h" class="form-input" style="text-align:center;font-size:0.72rem;padding:6px 4px"></div>
-              <div style="text-align:center"><span style="font-size:0.65rem;font-weight:700;color:var(--smoke);display:block;margin-bottom:4px">Dim</span><input type="text" id="hDim" placeholder="Fermé" class="form-input" style="text-align:center;font-size:0.72rem;padding:6px 4px"></div>
+            <div id="horairesGrid">              <div style="display:grid;grid-template-columns:80px 1fr 1fr;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)">
+                <span style="font-size:0.8rem;font-weight:700;color:var(--forest)">Lundi</span>
+                <label style="display:flex;align-items:center;gap:6px;font-size:0.78rem">
+                  <input type="checkbox" id="hLunOuvert" onchange="toggleJour('Lun')" style="accent-color:var(--moss)"> Ouvert
+                </label>
+                <div id="hLunHeures" style="display:none;display:flex;gap:6px;align-items:center">
+                  <select id="hLunOpen" class="form-select" style="padding:4px 8px;font-size:0.75rem"><option value="07:00">07h00</option><option value="08:00">08h00</option><option value="09:00">09h00</option><option value="10:00">10h00</option><option value="11:00">11h00</option><option value="12:00">12h00</option><option value="13:00">13h00</option><option value="14:00">14h00</option><option value="15:00">15h00</option><option value="16:00">16h00</option><option value="17:00">17h00</option><option value="18:00">18h00</option><option value="19:00">19h00</option><option value="20:00">20h00</option></select>
+                  <span style="font-size:0.75rem;color:var(--dust)">→</span>
+                  <select id="hLunClose" class="form-select" style="padding:4px 8px;font-size:0.75rem"><option value="08:00">08h00</option><option value="09:00">09h00</option><option value="10:00">10h00</option><option value="11:00">11h00</option><option value="12:00">12h00</option><option value="13:00">13h00</option><option value="14:00">14h00</option><option value="15:00">15h00</option><option value="16:00">16h00</option><option value="17:00">17h00</option><option value="18:00">18h00</option><option value="19:00">19h00</option><option value="20:00">20h00</option><option value="21:00">21h00</option></select>
+                </div>
+              </div>              <div style="display:grid;grid-template-columns:80px 1fr 1fr;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)">
+                <span style="font-size:0.8rem;font-weight:700;color:var(--forest)">Mardi</span>
+                <label style="display:flex;align-items:center;gap:6px;font-size:0.78rem">
+                  <input type="checkbox" id="hMarOuvert" onchange="toggleJour('Mar')" style="accent-color:var(--moss)"> Ouvert
+                </label>
+                <div id="hMarHeures" style="display:none;display:flex;gap:6px;align-items:center">
+                  <select id="hMarOpen" class="form-select" style="padding:4px 8px;font-size:0.75rem"><option value="07:00">07h00</option><option value="08:00">08h00</option><option value="09:00">09h00</option><option value="10:00">10h00</option><option value="11:00">11h00</option><option value="12:00">12h00</option><option value="13:00">13h00</option><option value="14:00">14h00</option><option value="15:00">15h00</option><option value="16:00">16h00</option><option value="17:00">17h00</option><option value="18:00">18h00</option><option value="19:00">19h00</option><option value="20:00">20h00</option></select>
+                  <span style="font-size:0.75rem;color:var(--dust)">→</span>
+                  <select id="hMarClose" class="form-select" style="padding:4px 8px;font-size:0.75rem"><option value="08:00">08h00</option><option value="09:00">09h00</option><option value="10:00">10h00</option><option value="11:00">11h00</option><option value="12:00">12h00</option><option value="13:00">13h00</option><option value="14:00">14h00</option><option value="15:00">15h00</option><option value="16:00">16h00</option><option value="17:00">17h00</option><option value="18:00">18h00</option><option value="19:00">19h00</option><option value="20:00">20h00</option><option value="21:00">21h00</option></select>
+                </div>
+              </div>              <div style="display:grid;grid-template-columns:80px 1fr 1fr;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)">
+                <span style="font-size:0.8rem;font-weight:700;color:var(--forest)">Mercredi</span>
+                <label style="display:flex;align-items:center;gap:6px;font-size:0.78rem">
+                  <input type="checkbox" id="hMerOuvert" onchange="toggleJour('Mer')" style="accent-color:var(--moss)"> Ouvert
+                </label>
+                <div id="hMerHeures" style="display:none;display:flex;gap:6px;align-items:center">
+                  <select id="hMerOpen" class="form-select" style="padding:4px 8px;font-size:0.75rem"><option value="07:00">07h00</option><option value="08:00">08h00</option><option value="09:00">09h00</option><option value="10:00">10h00</option><option value="11:00">11h00</option><option value="12:00">12h00</option><option value="13:00">13h00</option><option value="14:00">14h00</option><option value="15:00">15h00</option><option value="16:00">16h00</option><option value="17:00">17h00</option><option value="18:00">18h00</option><option value="19:00">19h00</option><option value="20:00">20h00</option></select>
+                  <span style="font-size:0.75rem;color:var(--dust)">→</span>
+                  <select id="hMerClose" class="form-select" style="padding:4px 8px;font-size:0.75rem"><option value="08:00">08h00</option><option value="09:00">09h00</option><option value="10:00">10h00</option><option value="11:00">11h00</option><option value="12:00">12h00</option><option value="13:00">13h00</option><option value="14:00">14h00</option><option value="15:00">15h00</option><option value="16:00">16h00</option><option value="17:00">17h00</option><option value="18:00">18h00</option><option value="19:00">19h00</option><option value="20:00">20h00</option><option value="21:00">21h00</option></select>
+                </div>
+              </div>              <div style="display:grid;grid-template-columns:80px 1fr 1fr;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)">
+                <span style="font-size:0.8rem;font-weight:700;color:var(--forest)">Jeudi</span>
+                <label style="display:flex;align-items:center;gap:6px;font-size:0.78rem">
+                  <input type="checkbox" id="hJeuOuvert" onchange="toggleJour('Jeu')" style="accent-color:var(--moss)"> Ouvert
+                </label>
+                <div id="hJeuHeures" style="display:none;display:flex;gap:6px;align-items:center">
+                  <select id="hJeuOpen" class="form-select" style="padding:4px 8px;font-size:0.75rem"><option value="07:00">07h00</option><option value="08:00">08h00</option><option value="09:00">09h00</option><option value="10:00">10h00</option><option value="11:00">11h00</option><option value="12:00">12h00</option><option value="13:00">13h00</option><option value="14:00">14h00</option><option value="15:00">15h00</option><option value="16:00">16h00</option><option value="17:00">17h00</option><option value="18:00">18h00</option><option value="19:00">19h00</option><option value="20:00">20h00</option></select>
+                  <span style="font-size:0.75rem;color:var(--dust)">→</span>
+                  <select id="hJeuClose" class="form-select" style="padding:4px 8px;font-size:0.75rem"><option value="08:00">08h00</option><option value="09:00">09h00</option><option value="10:00">10h00</option><option value="11:00">11h00</option><option value="12:00">12h00</option><option value="13:00">13h00</option><option value="14:00">14h00</option><option value="15:00">15h00</option><option value="16:00">16h00</option><option value="17:00">17h00</option><option value="18:00">18h00</option><option value="19:00">19h00</option><option value="20:00">20h00</option><option value="21:00">21h00</option></select>
+                </div>
+              </div>              <div style="display:grid;grid-template-columns:80px 1fr 1fr;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)">
+                <span style="font-size:0.8rem;font-weight:700;color:var(--forest)">Vendredi</span>
+                <label style="display:flex;align-items:center;gap:6px;font-size:0.78rem">
+                  <input type="checkbox" id="hVenOuvert" onchange="toggleJour('Ven')" style="accent-color:var(--moss)"> Ouvert
+                </label>
+                <div id="hVenHeures" style="display:none;display:flex;gap:6px;align-items:center">
+                  <select id="hVenOpen" class="form-select" style="padding:4px 8px;font-size:0.75rem"><option value="07:00">07h00</option><option value="08:00">08h00</option><option value="09:00">09h00</option><option value="10:00">10h00</option><option value="11:00">11h00</option><option value="12:00">12h00</option><option value="13:00">13h00</option><option value="14:00">14h00</option><option value="15:00">15h00</option><option value="16:00">16h00</option><option value="17:00">17h00</option><option value="18:00">18h00</option><option value="19:00">19h00</option><option value="20:00">20h00</option></select>
+                  <span style="font-size:0.75rem;color:var(--dust)">→</span>
+                  <select id="hVenClose" class="form-select" style="padding:4px 8px;font-size:0.75rem"><option value="08:00">08h00</option><option value="09:00">09h00</option><option value="10:00">10h00</option><option value="11:00">11h00</option><option value="12:00">12h00</option><option value="13:00">13h00</option><option value="14:00">14h00</option><option value="15:00">15h00</option><option value="16:00">16h00</option><option value="17:00">17h00</option><option value="18:00">18h00</option><option value="19:00">19h00</option><option value="20:00">20h00</option><option value="21:00">21h00</option></select>
+                </div>
+              </div>              <div style="display:grid;grid-template-columns:80px 1fr 1fr;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)">
+                <span style="font-size:0.8rem;font-weight:700;color:var(--forest)">Samedi</span>
+                <label style="display:flex;align-items:center;gap:6px;font-size:0.78rem">
+                  <input type="checkbox" id="hSamOuvert" onchange="toggleJour('Sam')" style="accent-color:var(--moss)"> Ouvert
+                </label>
+                <div id="hSamHeures" style="display:none;display:flex;gap:6px;align-items:center">
+                  <select id="hSamOpen" class="form-select" style="padding:4px 8px;font-size:0.75rem"><option value="07:00">07h00</option><option value="08:00">08h00</option><option value="09:00">09h00</option><option value="10:00">10h00</option><option value="11:00">11h00</option><option value="12:00">12h00</option><option value="13:00">13h00</option><option value="14:00">14h00</option><option value="15:00">15h00</option><option value="16:00">16h00</option><option value="17:00">17h00</option><option value="18:00">18h00</option><option value="19:00">19h00</option><option value="20:00">20h00</option></select>
+                  <span style="font-size:0.75rem;color:var(--dust)">→</span>
+                  <select id="hSamClose" class="form-select" style="padding:4px 8px;font-size:0.75rem"><option value="08:00">08h00</option><option value="09:00">09h00</option><option value="10:00">10h00</option><option value="11:00">11h00</option><option value="12:00">12h00</option><option value="13:00">13h00</option><option value="14:00">14h00</option><option value="15:00">15h00</option><option value="16:00">16h00</option><option value="17:00">17h00</option><option value="18:00">18h00</option><option value="19:00">19h00</option><option value="20:00">20h00</option><option value="21:00">21h00</option></select>
+                </div>
+              </div>              <div style="display:grid;grid-template-columns:80px 1fr 1fr;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)">
+                <span style="font-size:0.8rem;font-weight:700;color:var(--forest)">Dimanche</span>
+                <label style="display:flex;align-items:center;gap:6px;font-size:0.78rem">
+                  <input type="checkbox" id="hDimOuvert" onchange="toggleJour('Dim')" style="accent-color:var(--moss)"> Ouvert
+                </label>
+                <div id="hDimHeures" style="display:none;display:flex;gap:6px;align-items:center">
+                  <select id="hDimOpen" class="form-select" style="padding:4px 8px;font-size:0.75rem"><option value="07:00">07h00</option><option value="08:00">08h00</option><option value="09:00">09h00</option><option value="10:00">10h00</option><option value="11:00">11h00</option><option value="12:00">12h00</option><option value="13:00">13h00</option><option value="14:00">14h00</option><option value="15:00">15h00</option><option value="16:00">16h00</option><option value="17:00">17h00</option><option value="18:00">18h00</option><option value="19:00">19h00</option><option value="20:00">20h00</option></select>
+                  <span style="font-size:0.75rem;color:var(--dust)">→</span>
+                  <select id="hDimClose" class="form-select" style="padding:4px 8px;font-size:0.75rem"><option value="08:00">08h00</option><option value="09:00">09h00</option><option value="10:00">10h00</option><option value="11:00">11h00</option><option value="12:00">12h00</option><option value="13:00">13h00</option><option value="14:00">14h00</option><option value="15:00">15h00</option><option value="16:00">16h00</option><option value="17:00">17h00</option><option value="18:00">18h00</option><option value="19:00">19h00</option><option value="20:00">20h00</option><option value="21:00">21h00</option></select>
+                </div>
+              </div>
             </div>
           </div>
           <button class="save-btn" onclick="saveRefugeInfos()">Sauvegarder les informations →</button>
@@ -552,16 +615,7 @@ window.addEventListener('load', async function() {
   document.getElementById('infoTel').value     = refuge.telephone || '';
   document.getElementById('infoEmail').value   = refuge.email     || '';
   document.getElementById('infoSite').value    = (refuge.site_web||'').replace(/\[([^\]]+)\]\([^)]+\)/g,'$1').replace(/^https?:\/\//i,'');
-  // Charger les horaires
-  if (refuge.horaires) {
-    try {
-      var h = typeof refuge.horaires === 'string' ? JSON.parse(refuge.horaires) : refuge.horaires;
-      ['lun','mar','mer','jeu','ven','sam','dim'].forEach(function(j) {
-        var el = document.getElementById('h' + j.charAt(0).toUpperCase() + j.slice(1));
-        if (el && h[j]) el.value = h[j];
-      });
-    } catch(e) {}
-  }
+  loadHoraires(refuge.horaires);
   document.getElementById('infoDesc').value    = refuge.description || '';
 
   // Charger les animaux
@@ -817,9 +871,9 @@ function openModal() {
   document.getElementById('fieldId').value = '';
   document.getElementById('fieldNom').value = '';
   document.getElementById('fieldRace').value = '';
-  document.getElementById('fieldHistoire').value = '';
-  document.getElementById('fieldReactivite').value = '';
-  document.getElementById('fieldVieRefuge').value = '';
+  var fh = document.getElementById('fieldHistoire'); if(fh) fh.value = '';
+  var fr = document.getElementById('fieldReactivite'); if(fr) fr.value = '';
+  var fv = document.getElementById('fieldVieRefuge'); if(fv) fv.value = '';
   document.getElementById('fieldCroise').checked = false;
   selectedRacesAdmin = [];
   document.getElementById('racesSelectedBadges').style.display = 'none';
@@ -947,15 +1001,7 @@ async function saveRefugeInfos() {
       return s;
     })(),
     description: document.getElementById('infoDesc').value.trim(),
-    horaires: JSON.stringify({
-      lun: document.getElementById('hLun').value,
-      mar: document.getElementById('hMar').value,
-      mer: document.getElementById('hMer').value,
-      jeu: document.getElementById('hJeu').value,
-      ven: document.getElementById('hVen').value,
-      sam: document.getElementById('hSam').value,
-      dim: document.getElementById('hDim').value
-    }),
+    horaires: JSON.stringify(getHoraires()),
   };
   var { error } = await sb.from('Refuge').update(payload).eq('id', currentRefuge.id);
   if (error) { showToast('Erreur : ' + error.message); return; }
@@ -1052,9 +1098,9 @@ function toggleCroise(cb) {
     badges.style.display = 'none';
     selectedRacesAdmin = [];
     document.getElementById('fieldRace').value = '';
-  document.getElementById('fieldHistoire').value = '';
-  document.getElementById('fieldReactivite').value = '';
-  document.getElementById('fieldVieRefuge').value = '';
+  var fh = document.getElementById('fieldHistoire'); if(fh) fh.value = '';
+  var fr = document.getElementById('fieldReactivite'); if(fr) fr.value = '';
+  var fv = document.getElementById('fieldVieRefuge'); if(fv) fv.value = '';
     document.getElementById('fieldRace').placeholder = 'Tapez pour chercher ou saisissez librement…';
   }
 }
@@ -1125,9 +1171,9 @@ function selectRaceAdmin(race) {
       renderRacesBadges();
     }
     document.getElementById('fieldRace').value = '';
-  document.getElementById('fieldHistoire').value = '';
-  document.getElementById('fieldReactivite').value = '';
-  document.getElementById('fieldVieRefuge').value = '';
+  var fh = document.getElementById('fieldHistoire'); if(fh) fh.value = '';
+  var fr = document.getElementById('fieldReactivite'); if(fr) fr.value = '';
+  var fv = document.getElementById('fieldVieRefuge'); if(fv) fv.value = '';
   } else {
     document.getElementById('fieldRace').value = race;
   }
