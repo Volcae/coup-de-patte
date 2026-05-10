@@ -529,7 +529,12 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
     if (!session) { window.location.href = 'coup-de-patte-login.html'; return; }
     var userId = session.user.id;
     var { data: profil } = await sb.from('ProfilAdoptant').select('*').eq('utilisateur', userId).single();
-    var { data: animaux } = await sb.from('Animal').select('*, refuge:Refuge(*)').eq('disponible', true);
+    // Filtre espèce selon profil adoptant
+    var animauxQuery = sb.from('Animal').select('*, refuge:Refuge(*)').eq('disponible', true);
+    if (profil && profil.animal_souhaite && profil.animal_souhaite !== 'indifferent') {
+      animauxQuery = animauxQuery.eq('espece', profil.animal_souhaite);
+    }
+    var { data: animaux } = await animauxQuery;
     if (!animaux || animaux.length === 0) {
       document.getElementById('matches-grid').innerHTML = '<div style="text-align:center;padding:40px;color:var(--dust)">Aucun animal disponible pour le moment 🐾</div>';
       return;

@@ -1076,6 +1076,54 @@ document.getElementById('animalModal').addEventListener('click', function(e) {
 });
 
 // ══ FICHE PUBLIQUE ══
+function toggleJour(key) {
+  var cb = document.getElementById('h' + key + 'Ouvert');
+  var heures = document.getElementById('h' + key + 'Heures');
+  if (heures) heures.style.display = cb && cb.checked ? 'flex' : 'none';
+}
+
+function getHoraires() {
+  var jours = ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
+  var h = {};
+  jours.forEach(function(j) {
+    var ouvert = document.getElementById('h' + j + 'Ouvert');
+    if (ouvert && ouvert.checked) {
+      var open = document.getElementById('h' + j + 'Open');
+      var close = document.getElementById('h' + j + 'Close');
+      h[j.toLowerCase()] = (open ? open.value : '09:00') + '-' + (close ? close.value : '18:00');
+    } else {
+      h[j.toLowerCase()] = 'Fermé';
+    }
+  });
+  return h;
+}
+
+function loadHoraires(horaires) {
+  if (!horaires) return;
+  try {
+    var h = typeof horaires === 'string' ? JSON.parse(horaires) : horaires;
+    var jours = ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
+    jours.forEach(function(j) {
+      var val = h[j.toLowerCase()];
+      var cb = document.getElementById('h' + j + 'Ouvert');
+      var heures = document.getElementById('h' + j + 'Heures');
+      if (!cb) return;
+      if (val && val !== 'Fermé') {
+        cb.checked = true;
+        if (heures) heures.style.display = 'flex';
+        var parts = val.split('-');
+        var open = document.getElementById('h' + j + 'Open');
+        var close = document.getElementById('h' + j + 'Close');
+        if (open && parts[0]) open.value = parts[0];
+        if (close && parts[1]) close.value = parts[1];
+      } else {
+        cb.checked = false;
+        if (heures) heures.style.display = 'none';
+      }
+    });
+  } catch(e) { console.error('loadHoraires error:', e); }
+}
+
 function voirFichePublique() {
   if (currentRefuge && currentRefuge.id) {
     window.location.href = 'coup-de-patte-refuge.html?id=' + currentRefuge.id;
