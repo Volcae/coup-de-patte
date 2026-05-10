@@ -289,20 +289,12 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
     }
   }
 
-  function likeCard(btn) {
-    var isLiked = btn.classList.contains('liked');
-    btn.classList.toggle('liked');
-    btn.innerHTML = isLiked
-      ? '<span style="filter:brightness(0) invert(1)">🐾</span> J\'aime'
-      : '<span style="filter:brightness(0) invert(1)">🐾</span> Aimé !';
-  }
 
-  function signalerAdoptionV3(name) {
-    if(confirm(`Vous confirmez avoir adopté ${name} via Coup de Patte ?\n\n⚠️ La fiche de ${name} sera supprimée de la plateforme dès confirmation.\n\nCette action aidera à mesurer l'impact réel de Coup de Patte.`)) {
-      alert(`🐾 Merci ! La fiche de ${name} a été retirée et votre adoption transmise au refuge pour confirmation.\n\nElle sera comptabilisée dans les statistiques Coup de Patte.`);
-      setTimeout(() => {
-        var retour = confirm(`📬 Un dernier mot sur votre adoption de ${name} ?\n\nDans quelques semaines, Coup de Patte vous contactera pour savoir si le score de compatibilité reflétait bien la réalité.\n\nAcceptez-vous de recevoir ce suivi ?`);
-        if(retour) alert(`Parfait ! Nous vous contacterons dans 4 à 6 semaines.\n\nVotre retour nous aidera à améliorer les matchs pour les prochains adoptants. 🐾`);
+  function signalerAdoptionV3(animalId, name) {
+    if(confirm('Vous confirmez avoir adopté ' + name + ' via Coup de Patte ?\n\n⚠️ La fiche sera marquée comme adoptée.')) {
+      alert('🐾 Merci ! Cette adoption sera comptabilisée dans les statistiques Coup de Patte.');
+    }
+  }
       }, 800);
     }
   }
@@ -345,7 +337,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
     var list = document.getElementById('contactsList');
     if (!list) return;
     if (!matchs || matchs.length === 0) {
-      list.innerHTML = '<div style="text-align:center;padding:40px;color:var(--dust)">Vous n'avez pas encore contacté de refuge. Likez des animaux et contactez leur refuge depuis leur fiche ! 🐾</div>';
+      list.innerHTML = '<div style="text-align:center;padding:40px;color:var(--dust)">Vous n\'avez pas encore contact&eacute; de refuge. Likez des animaux et contactez leur refuge depuis leur fiche ! &#128062;</div>';
       var el = document.getElementById('statContacts'); if (el) el.textContent = '0';
       return;
     }
@@ -502,7 +494,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
   function getLabelScore(score) {
     if (score >= 85) return { label: 'Coup de Patte idéal', color: 'var(--moss)' };
     if (score >= 70) return { label: 'Belle rencontre', color: 'var(--blue)' };
-    if (score >= 55) return { label: "On s'apprivoise ?", color: 'var(--amber)' };
+    if (score >= 55) return { label: "On s'apprivoise ?", color: "var(--amber)" };
     return { label: 'Faible compatibilité', color: 'var(--rose)' };
   }
 
