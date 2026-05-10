@@ -244,14 +244,14 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 
         <!-- Horaires -->
         <p style="font-size:0.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--smoke);margin-bottom:10px">Horaires d'ouverture</p>
-        <div class="horaires-grid">
-          <div class="jour"><span class="jour-label">Lun</span><div class="jour-status jour-closed">Fermé</div></div>
-          <div class="jour"><span class="jour-label">Mar</span><div class="jour-status jour-open">10–18h</div></div>
-          <div class="jour"><span class="jour-label">Mer</span><div class="jour-status jour-open">10–18h</div></div>
-          <div class="jour"><span class="jour-label">Jeu</span><div class="jour-status jour-today">10–18h</div></div>
-          <div class="jour"><span class="jour-label">Ven</span><div class="jour-status jour-open">10–18h</div></div>
-          <div class="jour"><span class="jour-label">Sam</span><div class="jour-status jour-open">10–18h</div></div>
-          <div class="jour"><span class="jour-label">Dim</span><div class="jour-status jour-open">10–17h</div></div>
+        <div class="horaires-grid" id="horairesGrid">
+          <div class="jour"><span class="jour-label">Lun</span><div class="jour-status" id="hLun">–</div></div>
+          <div class="jour"><span class="jour-label">Mar</span><div class="jour-status" id="hMar">–</div></div>
+          <div class="jour"><span class="jour-label">Mer</span><div class="jour-status" id="hMer">–</div></div>
+          <div class="jour"><span class="jour-label">Jeu</span><div class="jour-status" id="hJeu">–</div></div>
+          <div class="jour"><span class="jour-label">Ven</span><div class="jour-status" id="hVen">–</div></div>
+          <div class="jour"><span class="jour-label">Sam</span><div class="jour-status" id="hSam">–</div></div>
+          <div class="jour"><span class="jour-label">Dim</span><div class="jour-status" id="hDim">–</div></div>
         </div>
       </div>
 
@@ -460,6 +460,25 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
     // Contact
     el = document.getElementById('refugeTel'); if (el) el.textContent = refuge.telephone || '–';
     el = document.getElementById('refugeEmail'); if (el) el.textContent = refuge.email || '–';
+    // Horaires
+    if (refuge.horaires) {
+      try {
+        var todayIdx = new Date().getDay(); // 0=dim, 1=lun...
+        var joursKeys = ['dim','lun','mar','mer','jeu','ven','sam'];
+        var joursIds = ['hDim','hLun','hMar','hMer','hJeu','hVen','hSam'];
+        var h = typeof refuge.horaires === 'string' ? JSON.parse(refuge.horaires) : refuge.horaires;
+        joursKeys.forEach(function(j, idx) {
+          var el = document.getElementById(joursIds[idx]);
+          if (!el) return;
+          var val = h[j] || '';
+          el.textContent = val || 'Fermé';
+          var isClosed = !val || val.toLowerCase() === 'fermé';
+          var isToday = idx === todayIdx;
+          el.className = 'jour-status ' + (isToday ? 'jour-today' : isClosed ? 'jour-closed' : 'jour-open');
+        });
+      } catch(e) {}
+    }
+
     // Site web - nettoyer le format Markdown éventuel [text](url) -> text
     var siteWeb = (refuge.site_web || '').replace(/\[([^\]]+)\]\([^)]+\)/g, '$1').replace(/^https?:\/\//i, '');
     el = document.getElementById('refugeSite'); 

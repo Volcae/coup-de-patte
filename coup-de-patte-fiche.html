@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title id="pageTitle">Rex, Coup de Patte</title>
+<title id="pageTitle">Fiche animal · Coup de Patte</title>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{--forest:#2D4A3E;--moss:#4A7C59;--sage:#7AAD89;--mint:#C8E6C0;--mint-lt:#EBF5E8;--ivory:#F4F1E8;--paper:#FDFCF8;--bark:#6B4F3A;--gold:#D4A843;--amber:#C49A1A;--blush:#E8C49A;--rose:#C9704A;--blue:#5B8DEF;--border:rgba(45,74,62,0.11);--dust:#7A6E65;--smoke:#A89E96;--shadow:0 12px 48px rgba(45,74,62,0.12)}
@@ -244,16 +244,32 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
       el = document.getElementById('ficheRefugeAdresse'); if (el && animal.refuge) el.textContent = '📍 ' + (animal.refuge.adresse || '') + (animal.refuge.ville ? ' · ' + animal.refuge.ville : '') + (animal.refuge.code_postal ? ' · ' + animal.refuge.code_postal : '');
 
       // Description principale
-      var descEls = document.querySelectorAll('.pres-quote, .section-text, .animal-description, .hero-desc');
-      descEls.forEach(function(descEl) {
-        if (animal.description) descEl.textContent = animal.description;
-        else descEl.textContent = '';
-      });
+      var descEl = document.getElementById('ficheDescription');
+      if (descEl) descEl.textContent = animal.description || 'Aucune description disponible.';
+      
       // Histoire
-      var histEls = document.querySelectorAll('.histoire-text, .animal-history');
-      histEls.forEach(function(el) {
-        if (animal.histoire) el.textContent = animal.histoire;
-      });
+      var histEl = document.getElementById('ficheHistoire');
+      if (histEl) histEl.textContent = animal.histoire || '';
+
+      // Réactivité aux inconnus et vie en refuge
+      var valReact = document.getElementById('valReactivite');
+      if (valReact) valReact.textContent = animal.reactivite_inconnus || '–';
+      var valVie = document.getElementById('valVieRefuge');
+      if (valVie) valVie.textContent = animal.vie_en_refuge || '–';
+
+      // Alert vie en refuge
+      if (animal.vie_en_refuge && animal.vie_en_refuge.toLowerCase().includes('moyenn')) {
+        ['alertVieRefuge', 'alertVieRefuge2'].forEach(function(id) {
+          var el = document.getElementById(id);
+          if (el) { el.textContent = '🏡 Cet animal supporte moyennement bien la vie en refuge. Cela ne reflète pas forcément son comportement dans un foyer stable.'; el.style.display = 'block'; }
+        });
+      }
+
+      // Alert solitude
+      if (profil && profil.heures_seul >= 6) {
+        var alertSol = document.getElementById('alertSolitude');
+        if (alertSol) { alertSol.textContent = '💡 Cet animal supporte difficilement les longues absences. Prévoir une solution de garde.'; alertSol.style.display = 'block'; }
+      }
 
       // Infos dans le tableau
       document.querySelectorAll('.info-row').forEach(function(row) {
@@ -276,7 +292,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
       }
 
       // Calcul vrai score
-      var { data: profil } = await sb.from('ProfilAdoptant').select('*').eq('utilisateur', session.user.id).single();
+      var profilResult = await sb.from('ProfilAdoptant').select('*').eq('utilisateur', session.user.id);
+      var profil = profilResult.data && profilResult.data.length > 0 ? profilResult.data[0] : null;
       if (profil) {
         var scores = { logement: 50, foyer: 100, disponibilite: 50, experience: 100, mode_vie: 50 };
         if (animal.gabarit) {
@@ -379,7 +396,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 
   <!-- ══ PRÉSENTATION ══ -->
   <div class="tab-panel active" id="tab-presentation">
-    <p class="pres-quote">Rex est arrivé à la SPA suite au déménagement de son propriétaire à l'étranger. Grand sensible, il a besoin d'une famille patiente qui lui redonnera confiance. Il adore les longues balades en forêt et réclame les câlins le soir venu. Il s'entend bien avec les chats et les enfants de plus de 13 ans, mais peut être jaloux avec d'autres chiens mâles.</p>
+    <p class="pres-quote" id="ficheDescription">Chargement de la description…</p>
 
     <div class="pres-grid">
       <div class="pres-card">
@@ -391,7 +408,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
         <div class="info-row"><span class="info-label">🌿 Pelage</span><span class="info-value">Mi-long</span></div>
         <div class="info-row"><span class="info-label">🏠 En refuge depuis</span><span class="info-value">8 mois</span></div>
         <div class="info-row"><span class="info-label">📍 Refuge</span><span class="info-value" id="ficheRefugeNom">–</span></div>
-        <div class="alert-box" style="border-color:var(--amber);background:rgba(212,168,67,0.08);margin-top:14px">🏡 Rex supporte moyennement bien la vie en refuge. Cela ne reflète pas nécessairement son comportement à la maison.</div>
+        <div class="alert-box" id="alertVieRefuge" style="border-color:var(--amber);background:rgba(212,168,67,0.08);margin-top:14px;display:none"></div>
       </div>
 
       <div class="pres-card">
@@ -405,7 +422,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
           <div><span class="score-total-label">Compatibilité globale</span><span class="score-total-badge">Coup de Patte idéal 🟢</span></div>
           <span class="score-total-num" id="scoreTotalNum">–</span>
         </div>
-        <div class="alert-box">💡 Rex supporte moyennement la solitude. Prévoir une solution pour les longues journées.</div>
+        <div class="alert-box" id="alertSolitude" style="display:none"></div>
       </div>
 
       <div class="refuge-card">
@@ -424,13 +441,13 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
     <div class="carac-grid">
       <div class="carac-item"><span class="carac-icon">⚡</span><span class="carac-label">Niveau d'énergie</span><span class="carac-value">Actif</span></div>
       <div class="carac-item"><span class="carac-icon">🤝</span><span class="carac-label">Lien avec l'humain</span><span class="carac-value">Affectueux</span></div>
-      <div class="carac-item"><span class="carac-icon">👀</span><span class="carac-label">Réactivité aux inconnus</span><span class="carac-value">Prudent</span></div>
+      <div class="carac-item" id="caracReactivite"><span class="carac-icon">👀</span><span class="carac-label">Réactivité aux inconnus</span><span class="carac-value" id="valReactivite">–</span></div>
       <div class="carac-item"><span class="carac-icon">🏠</span><span class="carac-label">Solitude</span><span class="carac-value">Moyennement bien</span></div>
       <div class="carac-item"><span class="carac-icon">🎓</span><span class="carac-label">Niveau requis</span><span class="carac-value">Intermédiaire</span></div>
-      <div class="carac-item"><span class="carac-icon">🏡</span><span class="carac-label">Vie en refuge</span><span class="carac-value" style="color:var(--amber)">Moyennement bien</span></div>
+      <div class="carac-item" id="caracVieRefuge"><span class="carac-icon">🏡</span><span class="carac-label">Vie en refuge</span><span class="carac-value" id="valVieRefuge">–</span></div>
     </div>
 
-    <div class="alert-box" style="border-color:var(--amber);background:rgba(212,168,67,0.08);margin-bottom:20px">🏡 Rex supporte moyennement bien la vie en refuge. Cela ne reflète pas forcément son comportement à la maison, de nombreux animaux s'épanouissent pleinement une fois dans un foyer stable.</div>
+    <div class="alert-box" id="alertVieRefuge2" style="border-color:var(--amber);background:rgba(212,168,67,0.08);margin-bottom:20px;display:none"></div>
 
     <p style="font-family:'Fraunces',serif;font-size:1rem;font-weight:600;font-style:italic;color:var(--forest);margin-bottom:13px;">Compatibilités</p>
     <div class="compat-grid">
@@ -442,7 +459,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 
     <div class="history-box">
       <p style="font-family:'Fraunces',serif;font-size:0.88rem;font-weight:600;font-style:normal;color:var(--forest);margin-bottom:10px;padding:0;border:none;">Son histoire</p>
-      <p>Rex est arrivé à la SPA à 2 ans et demi suite au déménagement de son propriétaire à l'étranger. Il n'a pas connu de maltraitance mais a souffert de cette séparation brutale. Il a retrouvé confiance avec les bénévoles mais reste prudent avec les inconnus. Une fois le lien établi, c'est un compagnon d'une loyauté absolue.</p>
+      <p id="ficheHistoire"></p>
     </div>
   </div>
 
@@ -462,7 +479,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
   <!-- ══ CONTACT ══ -->
   <div class="tab-panel" id="tab-contact">
     <div class="contact-hero">
-      <h3>Vous souhaitez rencontrer Rex ?</h3>
+      <h3 id="ficheContactTitre">Vous souhaitez rencontrer cet animal ?</h3>
       <p>Appelez directement le refuge pour convenir d'un rendez-vous.a dans toutes les démarches d'adoption.</p>
       <a href="#" class="contact-btn" id="ficheCallBtn">📞 Appeler le refuge</a>
     </div>
@@ -474,20 +491,20 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 
     <!-- Signalement communautaire -->
     <div style="margin-top:22px;background:var(--mint-lt);border:1.5px solid rgba(74,124,89,0.2);border-radius:14px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px">
-      <p style="font-size:0.78rem;color:var(--moss);font-weight:600">Vous avez des informations sur Rex ? Signalez-les à la communauté.</p>
+      <p style="font-size:0.78rem;color:var(--moss);font-weight:600">La fiche n'est pas à jour ? Signalez-le à la communauté.</p>
       <button onclick="showTab('communaute',document.querySelectorAll('.tab')[4])" style="flex-shrink:0;padding:8px 16px;background:var(--forest);border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.75rem;font-weight:700;color:var(--ivory);cursor:pointer">🤝 Espace communauté →</button>
     </div>
   </div>
 
   <!-- ══ COMMUNAUTÉ ══ -->
   <div class="tab-panel" id="tab-communaute">
-    <p style="font-family:'Fraunces',serif;font-size:1rem;font-weight:600;font-style:italic;color:var(--forest);margin-bottom:6px">🤝 Vous connaissez Rex ?</p>
+    <p style="font-family:'Fraunces',serif;font-size:1rem;font-weight:600;font-style:italic;color:var(--forest);margin-bottom:6px">🤝 Vous connaissez cet animal ?</p>
     <p style="font-size:0.78rem;color:var(--dust);line-height:1.6;margin-bottom:24px">Vos retours aident la communauté à garder les informations à jour et à améliorer les adoptions futures. Merci pour votre contribution.</p>
 
     <!-- Adoption CDP -->
     <div style="background:rgba(74,124,89,0.05);border:1.5px solid rgba(74,124,89,0.2);border-radius:18px;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:14px">
       <div>
-        <p style="font-family:'Fraunces',serif;font-size:0.92rem;font-weight:600;font-style:italic;color:var(--forest);margin-bottom:4px">🐾 Vous avez adopté Rex via Coup de Patte ?</p>
+        <p style="font-family:'Fraunces',serif;font-size:0.92rem;font-weight:600;font-style:italic;color:var(--forest);margin-bottom:4px">🐾 Vous avez adopté cet animal via Coup de Patte ?</p>
         <p style="font-size:0.75rem;color:var(--dust);line-height:1.5;max-width:480px">Signalez-le nous ! La fiche sera retirée et votre adoption comptabilisée dans nos statistiques.</p>
       </div>
       <button onclick="signalerAdoption()" style="flex-shrink:0;padding:10px 20px;background:transparent;border:1.5px solid rgba(74,124,89,0.35);border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.8rem;font-weight:700;color:var(--moss);cursor:pointer;transition:all 0.2s;white-space:nowrap" onmouseover="this.style.background='rgba(74,124,89,0.08)'" onmouseout="this.style.background='transparent'">🐾 Confirmer mon adoption</button>
@@ -520,7 +537,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 
     <!-- Confirmer / infirmer compatibilité -->
     <div style="background:rgba(91,141,239,0.04);border:1.5px solid rgba(91,141,239,0.15);border-radius:18px;padding:20px 24px;margin-bottom:14px">
-      <p style="font-family:'Fraunces',serif;font-size:0.92rem;font-weight:600;font-style:italic;color:var(--forest);margin-bottom:4px">💬 Vous avez visité ou connu Rex ?</p>
+      <p style="font-family:'Fraunces',serif;font-size:0.92rem;font-weight:600;font-style:italic;color:var(--forest);margin-bottom:4px">💬 Vous avez visité ou connu cet animal ?</p>
       <p style="font-size:0.75rem;color:var(--dust);line-height:1.5;margin-bottom:18px">Confirmez ou infirmez ses compatibilités pour aider les futurs adoptants. Vos retours sont agrégés avec ceux des autres visiteurs.</p>
 
       <div style="display:flex;flex-direction:column;gap:12px">
@@ -627,15 +644,15 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
   }
 
   function confirmerCompat(sujet, sens) {
-    var label = sens === 'oui' ? `compatible avec ${sujet}` : `pas compatible avec ${sujet}`;
-    if(confirm(`Vous confirmez que Rex est ${label} ?\n\nVotre retour sera agrégé avec ceux des autres visiteurs pour enrichir la fiche.`)) {
+    var label = sens === 'oui' ? 'compatible avec ' + sujet : 'pas compatible avec ' + sujet;
+    if(confirm('Vous confirmez ce signalement ?\n\nVotre retour sera agrégé avec ceux des autres visiteurs pour enrichir la fiche.')) {
       alert('💬 Merci pour votre retour ! Il sera pris en compte si d\'autres visiteurs confirment la même chose. 🐾');
     }
   }
 
   function signalerAdoption() {
-    if(confirm('Vous confirmez avoir adopté Rex via Coup de Patte ?\n\n⚠️ La fiche de Rex sera supprimée de la plateforme dès confirmation.\n\nCette action aidera à mesurer l\'impact réel de Coup de Patte.')) {
-      alert('🐾 Merci ! La fiche de Rex a été retirée et votre adoption transmise au refuge pour confirmation.\n\nElle sera comptabilisée dans les statistiques Coup de Patte.');
+    if(confirm('Vous confirmez avoir adopté cet animal via Coup de Patte ?\n\n⚠️ La fiche sera supprimée dès confirmation.\n\nCette action aidera à mesurer l\'impact réel de Coup de Patte.')) {
+      alert('🐾 Merci ! La fiche a été retirée et votre adoption transmise au refuge.\n\nElle sera comptabilisée dans les statistiques Coup de Patte.');
     }
   }
 
@@ -645,7 +662,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
   function notifierRefuge(count) {
     // Sur Bubble : déclencher un workflow d'email automatique au refuge
     // Simulation ici avec un log console
-    console.log(`[CDP] Notification refuge SPA de Lyon : ${count} signalement(s) d'absence pour Rex`);
+    console.log('[CDP] Notification refuge : ' + count + ' signalement(s) absence');
 
     if(count === 3) {
       // Email d'alerte au refuge : "3 signalements d'absence pour Rex : vérifiez sa disponibilité"
@@ -655,9 +672,9 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
     if(count === 5) {
       // Email au refuge : "Rex retiré automatiquement après 5 signalements"
       // + Fiche supprimée + exclusion scraping 12 mois
-      console.log('[CDP] Email envoyé au refuge : Rex retiré · exclusion scraping 12 mois activée');
+      console.log('[CDP] Email envoyé au refuge : animal retiré · exclusion scraping 12 mois activée');
       setTimeout(() => {
-        alert('🗑️ La fiche de Rex a été automatiquement retirée de Coup de Patte.\n\nLe refuge SPA de Lyon a été notifié par email.\n\nRex sera exclu du scraping automatique pendant 12 mois. Le refuge peut toujours le ré-ajouter manuellement si besoin.');
+        alert('🗑️ La fiche a été automatiquement retirée de Coup de Patte.\n\nLe refuge a été notifié par email.\n\nCet animal sera exclu du scraping automatique pendant 12 mois.');
       }, 400);
     }
   }
@@ -667,13 +684,13 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
       alert('Vous avez déjà signalé l\'absence de cet animal. Merci pour votre contribution !');
       return;
     }
-    if(confirm('Confirmer le signalement ?\n\nVous indiquez que Rex ne semble plus être disponible au refuge. Au bout de 5 signalements, la fiche sera automatiquement retirée.')) {
+    if(confirm('Confirmer le signalement ?\n\nVous indiquez que cet animal ne semble plus être disponible. Au bout de 5 signalements, la fiche sera automatiquement retirée.')) {
       dejaSignale = true;
       absenceCount++;
 
       // Compteur
       var label = absenceCount < 5
-        ? `${absenceCount} signalement${absenceCount > 1 ? 's' : ''} sur 5`
+        ? absenceCount + ' signalement' + (absenceCount > 1 ? 's' : '') + ' sur 5'
         : '5 signalements sur 5 · fiche en cours de suppression';
       document.getElementById('compteur-absence').textContent = label;
       document.getElementById('compteur-absence').style.color = 'var(--rose)';
@@ -712,7 +729,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
       notifierRefuge(absenceCount);
 
       if(absenceCount < 5) {
-        alert(`🚩 Signalement enregistré, merci !\n\nEncore ${5 - absenceCount} signalement${5 - absenceCount > 1 ? 's' : ''} avant le retrait automatique de la fiche.`);
+        var reste = 5 - absenceCount; alert('🚩 Signalement enregistré, merci !\n\nEncore ' + reste + ' signalement' + (reste > 1 ? 's' : '') + ' avant le retrait automatique de la fiche.');
       }
     }
   }
