@@ -548,6 +548,33 @@ function getSupabase() {
         <label class="form-label">Description</label>
         <textarea class="form-textarea" placeholder="Histoire, caractère…" id="fieldDesc"></textarea>
       </div>
+      <div class="form-group form-full">
+        <label class="form-label">Histoire / Passé</label>
+        <textarea class="form-textarea" rows="2" placeholder="Comment est-il arrivé au refuge ?" id="fieldHistoire"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Réactivité aux inconnus</label>
+        <select class="form-select" id="fieldReactivite">
+          <option value="">– Non renseigné</option>
+          <option value="Très sociable">🟢 Très sociable</option>
+          <option value="Sociable">🟢 Sociable</option>
+          <option value="Prudent">🟡 Prudent</option>
+          <option value="Réservé">🟠 Réservé</option>
+          <option value="Craintif">🔴 Craintif</option>
+          <option value="Réactif">🔴 Réactif</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Vie en refuge</label>
+        <select class="form-select" id="fieldVieRefuge">
+          <option value="">– Non renseigné</option>
+          <option value="Très bien">🟢 Très bien</option>
+          <option value="Bien">🟢 Bien</option>
+          <option value="Moyennement bien">🟡 Moyennement bien</option>
+          <option value="Difficilement">🔴 Difficilement</option>
+          <option value="Très difficilement">🔴 Très difficilement</option>
+        </select>
+      </div>
     </div>
     <div class="modal-footer">
       <button class="btn-secondary" onclick="closeModal()">Annuler</button>
@@ -941,9 +968,9 @@ async function saveAnimal() {
     disponible: true,
     enfin_moi: enfinMoi,
     refuge: currentRefuge.id,
-    histoire: document.getElementById('fieldHistoire').value.trim() || null,
-    reactivite_inconnus: document.getElementById('fieldReactivite').value || null,
-    vie_en_refuge: document.getElementById('fieldVieRefuge').value || null
+    histoire: (document.getElementById('fieldHistoire') ? document.getElementById('fieldHistoire').value.trim() : null) || null,
+    reactivite_inconnus: (document.getElementById('fieldReactivite') ? document.getElementById('fieldReactivite').value : null) || null,
+    vie_en_refuge: (document.getElementById('fieldVieRefuge') ? document.getElementById('fieldVieRefuge').value : null) || null
   };
 
   var sb = getSupabase();
