@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title id="pageTitle">Fiche animal · Coup de Patte</title>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -296,25 +297,29 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
       var profil = profilResult.data && profilResult.data.length > 0 ? profilResult.data[0] : null;
       if (profil) {
         var scores = { logement: 50, foyer: 100, disponibilite: 50, experience: 100, mode_vie: 50 };
-        if (animal.gabarit) {
-          var g = animal.gabarit.toLowerCase();
-          if (profil.type_logement === 'maison') scores.logement = 100;
-          else if (profil.type_logement === 'appart') { scores.logement = g === 'petit' ? 100 : g === 'moyen' ? 70 : 30; }
+        var g = (animal.gabarit || '').toLowerCase();
+        var logement = (profil.type_logement || '').toLowerCase();
+        if (logement === 'maison') {
+          scores.logement = 100;
+        } else if (logement === 'appartement' || logement === 'appart') {
+          scores.logement = (g === 'petit' || g === 'small') ? 100 : (g === 'moyen' || g === 'medium') ? 65 : 20;
+        } else {
+          scores.logement = 60;
         }
         var foyer = 100;
         if (profil.enfants_foyer && profil.enfants_foyer.includes('moins13') && !animal.compat_enfants_moins13) foyer -= 50;
         if (profil.animaux_foyer && profil.animaux_foyer.includes('chien') && !animal.compat_chiens) foyer -= 50;
         if (profil.animaux_foyer && profil.animaux_foyer.includes('chat') && !animal.compat_chats) foyer -= 50;
         scores.foyer = Math.max(0, foyer);
-        var h = profil.heures_seul || 3;
-        scores.disponibilite = h <= 1 ? 100 : h <= 3 ? 80 : h <= 6 ? 50 : 20;
+        var h = typeof profil.heures_seul === 'number' ? profil.heures_seul : 3;
+        scores.disponibilite = h <= 2 ? 100 : h <= 4 ? 75 : h <= 6 ? 50 : 25;
         var req = animal.experience_requise || 'debutant';
         var exp = profil.experience_animale || 'jamais';
         scores.experience = req === 'debutant' ? 100 : (req === 'intermediaire' && exp !== 'jamais') ? 100 : (req === 'experimente' && exp === 'adulte') ? 100 : 40;
         var mode = profil.temps_dedie || 'modere';
         var energie = animal.energie || 'moyen';
         scores.mode_vie = ((mode === 'actif' || mode === 'sportif') && energie === 'eleve') || (mode === 'modere' && energie === 'moyen') || (mode === 'sedentaire' && energie === 'faible') ? 100 : 50;
-        var score = Math.round(scores.logement*0.30 + scores.foyer*0.25 + scores.disponibilite*0.20 + scores.experience*0.15 + scores.mode_vie*0.10);
+        var score = Math.min(100, Math.round(scores.logement*0.30 + scores.foyer*0.25 + scores.disponibilite*0.20 + scores.experience*0.15 + scores.mode_vie*0.10));
 
         var scoreEl = document.getElementById('animalScore');
         var labelEl = document.getElementById('animalScoreLabel');
@@ -342,6 +347,38 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
           callBtn.textContent = '📞 Appeler ' + animal.refuge.nom;
         }
       }
+      // Suggestions dynamiques - autres animaux disponibles
+      var { data: suggestions } = await sb.from('Animal')
+        .select('id, nom, espece, race, age_annees, sexe, enfin_moi, date_arrivee_refuge, refuge:Refuge(ville)')
+        .eq('disponible', true)
+        .neq('id', animalId)
+        .limit(3);
+      
+      var grid = document.getElementById('suggestionsGrid');
+      if (grid && suggestions && suggestions.length > 0) {
+        grid.innerHTML = '';
+        // Sort: enfin_moi first
+        suggestions.sort(function(a, b) { return (b.enfin_moi ? 1 : 0) - (a.enfin_moi ? 1 : 0); });
+        suggestions.forEach(function(s) {
+          var emoji = s.espece && s.espece.toLowerCase() === 'chat' ? '🐱' : '🐕';
+          var age = s.age_annees ? s.age_annees + ' an' + (s.age_annees > 1 ? 's' : '') : '';
+          var ville = s.refuge ? s.refuge.ville : '';
+          var mois = s.date_arrivee_refuge ? Math.round((new Date() - new Date(s.date_arrivee_refuge)) / (1000*60*60*24*30)) : 0;
+          grid.insertAdjacentHTML('beforeend',
+            '<div class="sug-card' + (s.enfin_moi ? ' enfin' : '') + '" onclick="window.location.href=\'coup-de-patte-fiche.html?id=' + s.id + '\'" style="cursor:pointer">' +
+            (s.enfin_moi ? '<div class="sug-ribbon">✨ Enfin Moi ?</div>' : '') +
+            '<div class="sug-img" style="background:linear-gradient(160deg,var(--mint),var(--sage));font-size:2.5rem;display:flex;align-items:center;justify-content:center">' + emoji + '</div>' +
+            '<div class="sug-body">' +
+            '<div class="sug-name">' + s.nom + '</div>' +
+            '<div class="sug-meta">' + (s.race || s.espece) + ' · ' + age + (ville ? ' · ' + ville : '') + '</div>' +
+            (mois > 0 ? '<span class="sug-time">En refuge depuis ' + mois + ' mois</span>' : '') +
+            '</div></div>'
+          );
+        });
+      } else if (grid) {
+        grid.innerHTML = '<div style="text-align:center;padding:20px;color:var(--dust);font-size:0.85rem;grid-column:1/-1">Pas d\'autres animaux disponibles pour l\'instant.</div>';
+      }
+
       // Lien refuge dans onglet contact
       var refugeLinkEl = document.querySelector('#tab-contact a[href*="refuge"]');
       if (refugeLinkEl && animal.refuge) {
@@ -428,7 +465,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
       <div class="refuge-card">
         <div class="refuge-info">
           <h3 id="ficheContactRefugeNom">–</h3>
-          <p id="ficheRefugeAdresse">–</p>
+          <p id="ficheRefugeAdresse"></p>
           <p>🕐 Mar, Dim · 10h à 18h · Fermé le lundi</p>
         </div>
         <a href="tel:0472000000" class="refuge-btn">📞 Contacter le refuge</a>
@@ -484,16 +521,13 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
       <a href="#" class="contact-btn" id="ficheCallBtn">📞 Appeler le refuge</a>
     </div>
     <div class="contact-infos">
-      <div class="contact-info-card"><span class="contact-info-label">Adresse</span><div class="contact-info-value" id="ficheRefugeAdresse2">–</div></div><div class="contact-info-sub">12 chemin de la Ferme, Lyon 9ème</div></div>
+      <div class="contact-info-card"><span class="contact-info-label">Adresse</span><div class="contact-info-value" id="ficheRefugeAdresse2">–</div></div><div class="contact-info-sub">, Lyon 9ème</div></div>
       <div class="contact-info-card"><span class="contact-info-label">Horaires</span><div class="contact-info-value">Mar, Dim · 10h à 18h</div><div class="contact-info-sub">Fermé le lundi</div></div>
       <div class="contact-info-card"><span class="contact-info-label">Distance depuis vous</span><div class="contact-info-value">45 km</div><div class="contact-info-sub">~40 min en voiture</div></div>
     </div>
 
     <!-- Signalement communautaire -->
-    <div style="margin-top:22px;background:var(--mint-lt);border:1.5px solid rgba(74,124,89,0.2);border-radius:14px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px">
-      <p style="font-size:0.78rem;color:var(--moss);font-weight:600">La fiche n'est pas à jour ? Signalez-le à la communauté.</p>
-      <button onclick="showTab('communaute',document.querySelectorAll('.tab')[4])" style="flex-shrink:0;padding:8px 16px;background:var(--forest);border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.75rem;font-weight:700;color:var(--ivory);cursor:pointer">🤝 Espace communauté →</button>
-    </div>
+    
   </div>
 
   <!-- ══ COMMUNAUTÉ ══ -->
@@ -582,47 +616,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
   <div class="suggestions">
     <h2 class="suggestions-title">D'autres animaux pour vous</h2>
     <p class="suggestions-sub">En commençant par celui qui attend depuis le plus longtemps, il mérite qu'on le regarde.</p>
-    <div class="suggestions-grid">
-
-      <!-- 1. Enfin Moi en premier, meilleur taux parmi les oubliés -->
-      <div class="sug-card enfin" onclick="alert('Fiche de Brutus')">
-        <div class="sug-ribbon">✨ Enfin Moi ?</div>
-        <div class="sug-img" style="background:linear-gradient(160deg,#E8D5B0,#C9A87A);">
-          🐕
-          <div class="sug-score" style="color:var(--amber)">68%</div>
-        </div>
-        <div class="sug-body">
-          <div class="sug-name">Brutus</div>
-          <div class="sug-meta">Berger · 9 ans · Toulouse · 180 km</div>
-          <span class="sug-time">En refuge depuis 2 ans</span>
-          <p class="sug-msg">"Il ne coche pas toutes vos cases, mais il attend depuis 2 ans."</p>
-        </div>
-      </div>
-
-      <!-- 2. Meilleur match suivant -->
-      <div class="sug-card" onclick="alert('Fiche de Luna')">
-        <div class="sug-img" style="background:linear-gradient(160deg,var(--mint),var(--sage));">
-          🐶
-          <div class="sug-score" style="color:var(--moss)">82%</div>
-        </div>
-        <div class="sug-body">
-          <div class="sug-name">Luna</div>
-          <div class="sug-meta">Croisée · 2 ans · Femelle · Grenoble · 80 km</div>
-        </div>
-      </div>
-
-      <!-- 3. Deuxième meilleur match -->
-      <div class="sug-card" onclick="alert('Fiche d\'Oscar')">
-        <div class="sug-img" style="background:linear-gradient(160deg,#DDE5DD,#9AB89A);">
-          🐕
-          <div class="sug-score" style="color:var(--moss)">79%</div>
-        </div>
-        <div class="sug-body">
-          <div class="sug-name">Oscar</div>
-          <div class="sug-meta">Labrador · 4 ans · Mâle · Saint-Étienne · 55 km</div>
-        </div>
-      </div>
-
+    <div class="suggestions-grid" id="suggestionsGrid">
+      <div style="text-align:center;padding:20px;color:var(--dust);font-size:0.85rem">Chargement des suggestions…</div>
     </div>
   </div>
 
