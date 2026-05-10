@@ -320,8 +320,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
     var menu = document.createElement('div');
     menu.id = 'profileMenu';
     menu.style.cssText = 'position:absolute;top:68px;right:24px;background:var(--paper);border:1.5px solid var(--border);border-radius:16px;padding:8px;box-shadow:0 8px 24px rgba(45,74,62,0.15);z-index:300;min-width:180px';
-    menu.innerHTML = '<a href="coup-de-patte-form.html" style="display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;color:var(--forest);text-decoration:none;font-size:0.83rem;font-weight:600;transition:background 0.15s" onmouseover="this.style.background='var(--mint-lt)'" onmouseout="this.style.background=''">✦ Modifier mon profil</a>' +
-      '<div onclick="getSupabase().auth.signOut().then(()=>window.location.href='coup-de-patte-login.html')" style="display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;color:var(--rose);font-size:0.83rem;font-weight:600;cursor:pointer;transition:background 0.15s" onmouseover="this.style.background='rgba(201,112,74,0.08)'" onmouseout="this.style.background=''">← Se déconnecter</div>';
+    menu.innerHTML = '<a href="coup-de-patte-form.html" style="display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;color:var(--forest);text-decoration:none;font-size:0.83rem;font-weight:600" onmouseover="this.style.background=\'var(--mint-lt)\'" onmouseout="this.style.background=\'\'">✦ Modifier mon profil</a>' +
+      '<div onclick="getSupabase().auth.signOut().then(function(){window.location.href=\'coup-de-patte-login.html\'})" style="display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;color:var(--rose);font-size:0.83rem;font-weight:600;cursor:pointer" onmouseover="this.style.background=\'rgba(201,112,74,0.08)\'" onmouseout="this.style.background=\'\'">← Se déconnecter</div>';
     document.body.appendChild(menu);
     setTimeout(() => document.addEventListener('click', function closeMenu(e) {
       if (!menu.contains(e.target) && e.target.id !== 'profilePill') { menu.remove(); document.removeEventListener('click', closeMenu); }
