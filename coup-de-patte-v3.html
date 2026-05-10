@@ -358,8 +358,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
         '<option value="rdv">✅ Répondu, RDV proposé</option>' +
         '</select></div>' +
         '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0">' +
-        (tel ? '<button class="ct-btn" onclick="window.location.href='tel:' + tel + ''">📞 Appeler</button>' : '<button class="ct-btn" disabled>📞 Appeler</button>') +
-        '<button onclick="signalerAdoptionV3('' + a.id + '','' + a.nom + '')" style="padding:5px 12px;background:transparent;border:1.5px solid rgba(74,124,89,0.3);border-radius:50px;font-family:Nunito,sans-serif;font-size:0.68rem;font-weight:700;color:var(--moss);cursor:pointer;white-space:nowrap">🐾 Adopté via CDP</button>' +
+        (tel ? '<button class="ct-btn" onclick="window.location.href=\'tel:' + tel + '\'">📞 Appeler</button>' : '<button class="ct-btn" disabled>📞 Appeler</button>') +
+        '<button onclick="signalerAdoptionV3(\'' + a.id + '\',\'' + a.nom + '\')" style="padding:5px 12px;background:transparent;border:1.5px solid rgba(74,124,89,0.3);border-radius:50px;font-family:Nunito,sans-serif;font-size:0.68rem;font-weight:700;color:var(--moss);cursor:pointer;white-space:nowrap">🐾 Adopté via CDP</button>' +
         '</div></div>'
       );
       // Update status select
