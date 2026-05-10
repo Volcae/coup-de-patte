@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Super Admin, Coup de Patte</title>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -894,20 +895,7 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
 
 <script>
   // Navigation
-  function showSectionFn(id, el) {
-    document.querySelectorAll('.section').forEach(function(s) { s.classList.remove('active'); });
-    var target = document.getElementById('section-' + id);
-    if (target) target.classList.add('active');
-    document.querySelectorAll('.sb-item').forEach(function(i) { i.classList.remove('active'); });
-    if (el && el.classList) {
-      el.classList.add('active');
-    } else {
-      document.querySelectorAll('.sb-item').forEach(function(i) {
-        var oc = i.getAttribute('onclick') || '';
-        if (oc.indexOf("'" + id + "'") !== -1) i.classList.add('active');
-      });
-    }
-  }
+
 
   // Pondérations
   function updateWeight(slider, id) {
@@ -926,7 +914,7 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
     row.style.transition = 'opacity 0.4s';
     row.style.opacity = '0';
     setTimeout(() => row.remove(), 400);
-    showToast(`✅ ${name} validé et publié sur Coup de Patte`);
+    showToast('✅ ' + name + ' validé et publié sur Coup de Patte');
   }
 
   // Scraping global
@@ -964,11 +952,11 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
   function suppressAnimal(rowId, name) {
     var row = document.getElementById(rowId);
     if(row){ row.style.transition='opacity 0.5s,transform 0.5s'; row.style.opacity='0'; row.style.transform='translateX(30px)'; setTimeout(()=>row.remove(),500); }
-    showToast(`🗑️ ${name} supprimé · Exclusion scraping 12 mois activée`);
+    showToast('🗑️ ' + name + ' supprimé · Exclusion scraping 12 mois activée');
   }
 
   function clearSignals(rowId, name) {
-    showToast(`✅ Signalements de ${name} réinitialisés`);
+    showToast('✅ Signalements de ' + name + ' réinitialisés');
     // Reset visual bars
     var row = document.getElementById(rowId);
     if(row){ row.querySelectorAll('[style*="background:var(--rose)"], [style*="background:var(--amber)"]').forEach(b=>{ b.style.background='var(--border)'; }); }
@@ -992,6 +980,21 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
   });
 
   // ══ CHARGEMENT DONNÉES SUPERADMIN ══
+  function showSectionFn(id, el) {
+    document.querySelectorAll('.section').forEach(function(s) { s.classList.remove('active'); });
+    var target = document.getElementById('section-' + id);
+    if (target) target.classList.add('active');
+    document.querySelectorAll('.sb-item').forEach(function(i) { i.classList.remove('active'); });
+    if (el && el.classList) {
+      el.classList.add('active');
+    } else {
+      document.querySelectorAll('.sb-item').forEach(function(i) {
+        var oc = i.getAttribute('onclick') || '';
+        if (oc.indexOf("'" + id + "'") !== -1) i.classList.add('active');
+      });
+    }
+  }
+
   window.addEventListener('load', async function() {
     // Vérification admin - connexion requise avec contact@coup-de-patte.fr
     var { data: { session } } = await getSupabase().auth.getSession();
@@ -1000,6 +1003,8 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
       var { data: authUser } = await getSupabase().auth.getUser();
       isAdmin = authUser && authUser.user && authUser.user.email === 'contact@coup-de-patte.fr';
     }
+    // Si connecté mais pas admin, déconnecter d'abord
+    if (session && !isAdmin) { await getSupabase().auth.signOut(); session = null; }
 
     if (!isAdmin) {
       document.body.innerHTML =
@@ -1058,8 +1063,8 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
             '<td style="font-size:0.8rem;color:var(--dust)">' + (r.ville || '–') + '</td>' +
             '<td style="font-size:0.75rem;color:var(--dust)">' + dateInscrit + '</td>' +
             '<td><div class="row-actions">' +
-            '<button class="row-btn row-btn-blue" onclick="window.open('coup-de-patte-refuge.html?id=' + r.id + '','_blank')">👁 Voir</button>' +
-            '<button class="row-btn row-btn-red" onclick="supprimerRefuge('' + r.id + '','' + (r.nom||'').replace(/'/g,"\\'"  ) + '')">✕ Supprimer</button>' +
+            '<button class="row-btn row-btn-blue" onclick="voirRefuge(this)" data-id="' + r.id + '">👁 Voir</button>' +
+            '<button class="row-btn row-btn-red" onclick="supprimerRefugeBtn(this)" data-id="' + r.id + '" data-nom="' + (r.nom||'').replace(/"/g,'&quot;') + '">✕ Supprimer</button>' +
             '</div></td>' +
             '</tr>'
           );
@@ -1173,8 +1178,19 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
     setTrend('trendAdoptants', adoptantsMois);
   });
 
+  function voirRefuge(btn) {
+    var id = btn.getAttribute('data-id');
+    window.open('coup-de-patte-refuge.html?id=' + id, '_blank');
+  }
+
+  function supprimerRefugeBtn(btn) {
+    var id = btn.getAttribute('data-id');
+    var nom = btn.getAttribute('data-nom') || 'ce refuge';
+    supprimerRefuge(id, nom);
+  }
+
   async function supprimerRefuge(refugeId, nom) {
-    if (!confirm('Supprimer le refuge "' + nom + '" ? Cette action est irréversible.')) return;
+    if (!confirm('Supprimer ce refuge ? Cette action est irréversible.')) return;
     var sb = getSupabase();
     var { error } = await sb.from('Refuge').delete().eq('id', refugeId);
     if (!error) { showToast('Refuge supprimé ✅'); window.location.reload(); }

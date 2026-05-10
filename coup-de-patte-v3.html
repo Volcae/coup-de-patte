@@ -179,7 +179,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="showView('matchs',this)">🐾 Mes matchs</button>
     <button class="nav-tab" onclick="showView('jaime',this)">❤️ J'aime <span id="navJaimeCount" style="background:var(--moss);color:white;font-size:0.6rem;padding:1px 6px;border-radius:50px;margin-left:3px">0</span></button>
-    <button class="nav-tab" onclick="showView('contacts',this);loadContacts()">📞 Contacts <span style="background:rgba(45,74,62,0.15);color:var(--forest);font-size:0.6rem;padding:1px 6px;border-radius:50px;margin-left:3px">3</span></button>
+    <button class="nav-tab" onclick="showView('contacts',this);loadContacts()">📞 Contacts <span id="navContactsCount" style="background:rgba(45,74,62,0.15);color:var(--forest);font-size:0.6rem;padding:1px 6px;border-radius:50px;margin-left:3px">0</span></button>
   </div>
 
   <div class="nav-right">
@@ -368,6 +368,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
       selects.forEach(function(s) { updateStatus(s); });
     });
     var el = document.getElementById('statContacts'); if (el) el.textContent = matchs.length;
+    var el2 = document.getElementById('navContactsCount'); if (el2) el2.textContent = matchs.length;
   }
 
   async function loadJaime() {
