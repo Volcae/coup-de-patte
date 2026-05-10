@@ -281,7 +281,7 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
 
         <div class="dash-card">
           <p class="dc-title">⚠️ Alertes</p>
-          <div class="activity-row" id="alerteRefugesRow" style="display:none"><div class="act-dot" style="background:var(--rose)"></div><span class="act-text" style="color:var(--rose);font-weight:700" id="alerteRefuges">– refuges en attente de validation</span><span class="act-time"><a href="#" style="color:var(--moss);font-weight:700;font-size:0.7rem" onclick="showSectionFn('refuges',document.querySelectorAll('.sb-item')[2])">Voir →</a></span></div>
+          <div class="activity-row" id="alerteRefugesRow"><div class="act-dot" style="background:var(--moss)"></div><span class="act-text" id="alerteRefuges">Plateforme opérationnelle ✅</span></div>
 
 
         </div>
@@ -295,42 +295,6 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
         <button class="btn-primary" onclick="showToast('Ajout manuel refuge, fonctionnalité à venir')">+ Ajouter manuellement</button>
       </div>
 
-      <!-- En attente -->
-      <div style="margin-bottom:24px">
-        <p style="font-family:'Fraunces',serif;font-size:0.95rem;font-weight:600;font-style:italic;color:var(--forest);margin-bottom:12px">⏳ En attente de validation <span style="background:rgba(201,112,74,0.1);color:var(--rose);font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:50px;border:1px solid rgba(201,112,74,0.2);font-style:normal;margin-left:6px">3</span></p>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Refuge</th><th>Ville</th><th>Email</th><th>Site web</th><th>Inscrit le</th><th>Actions</th></tr></thead>
-            <tbody>
-              <tr>
-                <td><div style="display:flex;align-items:center;gap:10px"><div class="refuge-thumb">🏠</div><div><div class="refuge-name">SPA de Bordeaux</div></div></div></td>
-                <td style="font-size:0.8rem;color:var(--dust)">Bordeaux · 33000</td>
-                <td style="font-size:0.78rem;color:var(--dust)">contact@spa-bordeaux.fr</td>
-                <td><a href="#" style="font-size:0.75rem;color:var(--blue);font-weight:700">spa-bordeaux.fr</a></td>
-                <td style="font-size:0.75rem;color:var(--dust)">Il y a 12 min</td>
-                <td><div class="row-actions"><button class="row-btn row-btn-green" onclick="validateRefuge(this,'SPA de Bordeaux')">✅ Valider</button><button class="row-btn row-btn-red" onclick="showToast('Refuge refusé')">✕ Refuser</button></div></td>
-              </tr>
-              <tr>
-                <td><div style="display:flex;align-items:center;gap:10px"><div class="refuge-thumb">🏡</div><div><div class="refuge-name">Refuge Les Griffes d'Or</div></div></div></td>
-                <td style="font-size:0.8rem;color:var(--dust)">Montpellier · 34000</td>
-                <td style="font-size:0.78rem;color:var(--dust)">contact@griffesdor.fr</td>
-                <td><a href="#" style="font-size:0.75rem;color:var(--blue);font-weight:700">griffesdor.fr</a></td>
-                <td style="font-size:0.75rem;color:var(--dust)">Il y a 2h</td>
-                <td><div class="row-actions"><button class="row-btn row-btn-green" onclick="validateRefuge(this,'Les Griffes d\'Or')">✅ Valider</button><button class="row-btn row-btn-red" onclick="showToast('Refuge refusé')">✕ Refuser</button></div></td>
-              </tr>
-              <tr>
-                <td><div style="display:flex;align-items:center;gap:10px"><div class="refuge-thumb">🐾</div><div><div class="refuge-name">Association Pattes Douces</div></div></div></td>
-                <td style="font-size:0.8rem;color:var(--dust)">Rennes · 35000</td>
-                <td style="font-size:0.78rem;color:var(--dust)">info@pattesdouces.fr</td>
-                <td><span style="font-size:0.75rem;color:var(--smoke)">Pas de site</span></td>
-                <td style="font-size:0.75rem;color:var(--dust)">Hier</td>
-                <td><div class="row-actions"><button class="row-btn row-btn-green" onclick="validateRefuge(this,'Pattes Douces')">✅ Valider</button><button class="row-btn row-btn-red" onclick="showToast('Refuge refusé')">✕ Refuser</button></div></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
       <!-- Tous les refuges -->
       <p style="font-family:'Fraunces',serif;font-size:0.95rem;font-weight:600;font-style:italic;color:var(--forest);margin-bottom:12px">Tous les refuges actifs</p>
       <div class="refuge-toolbar">
@@ -339,7 +303,7 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
       </div>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Refuge</th><th>Ville</th><th>Animaux</th><th>Statut</th><th>Dernière activité</th><th>Actions</th></tr></thead>
+          <thead><tr><th>Refuge</th><th>Email</th><th>Ville</th><th>Inscription</th><th>Actions</th></tr></thead>
           <tbody>
             <tr>
               <td><div style="display:flex;align-items:center;gap:10px"><div class="refuge-thumb">🏠</div><div><div class="refuge-name">SPA de Lyon</div></div></div></td>
@@ -1086,12 +1050,17 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
       if (refTable) {
         refTable.innerHTML = '';
         refuges.forEach(function(r) {
+          var dateInscrit = r.created_at ? new Date(r.created_at).toLocaleDateString('fr-FR') : '–';
           refTable.insertAdjacentHTML('beforeend',
             '<tr>' +
-            '<td><strong>' + (r.nom || '–') + '</strong><br><small style="color:var(--dust)">' + (r.ville || '') + '</small></td>' +
-            '<td>' + (r.email || '–') + '</td>' +
-            '<td><span style="font-size:0.75rem;padding:3px 10px;border-radius:50px;background:' + (r.valide_par_admin ? 'var(--mint-lt);color:var(--moss)' : 'rgba(212,168,67,0.1);color:var(--amber)') + ';font-weight:700">' + (r.valide_par_admin ? '✅ Validé' : '⏳ En attente') + '</span></td>' +
-            '<td><button onclick="validerRefuge(\'' + r.id + '\')" style="padding:5px 12px;border-radius:50px;border:1.5px solid var(--moss);background:transparent;color:var(--moss);font-weight:700;cursor:pointer;font-size:0.75rem">' + (r.valide_par_admin ? '✓ Validé' : 'Valider') + '</button></td>' +
+            '<td><div style="display:flex;align-items:center;gap:10px"><div class="refuge-thumb">🏠</div><div><div class="refuge-name">' + (r.nom || '–') + '</div></div></div></td>' +
+            '<td style="font-size:0.78rem;color:var(--dust)">' + (r.email || '–') + '</td>' +
+            '<td style="font-size:0.8rem;color:var(--dust)">' + (r.ville || '–') + '</td>' +
+            '<td style="font-size:0.75rem;color:var(--dust)">' + dateInscrit + '</td>' +
+            '<td><div class="row-actions">' +
+            '<button class="row-btn row-btn-blue" onclick="window.open('coup-de-patte-refuge.html?id=' + r.id + '','_blank')">👁 Voir</button>' +
+            '<button class="row-btn row-btn-red" onclick="supprimerRefuge('' + r.id + '','' + (r.nom||'').replace(/'/g,"\\'"  ) + '')">✕ Supprimer</button>' +
+            '</div></td>' +
             '</tr>'
           );
         });
@@ -1099,11 +1068,10 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
 
       // Stats refuges
       var nbRefuges = refuges.length;
-      var nbEnAttente = refuges.filter(function(r) { return !r.valide_par_admin; }).length;
       var el;
       el = document.getElementById('kpiRefuges'); if (el) el.textContent = nbRefuges;
-      el = document.getElementById('badgeRefuges'); if (el) el.textContent = nbEnAttente > 0 ? nbEnAttente + ' en attente' : '✓';
-      el = document.getElementById('subRefuges'); if (el) el.textContent = nbRefuges + ' refuge(s) · ' + nbEnAttente + ' en attente de validation';
+      el = document.getElementById('badgeRefuges'); if (el) el.textContent = nbRefuges;
+      el = document.getElementById('subRefuges'); if (el) el.textContent = nbRefuges + ' refuge(s) inscrits';
     }
 
     // Charger les animaux
@@ -1136,7 +1104,7 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
         var date = r.created_at ? new Date(r.created_at).toLocaleDateString('fr-FR') : '';
         feed.insertAdjacentHTML('beforeend',
           '<div class="activity-row"><div class="act-dot" style="background:var(--moss)"></div>' +
-          '<span class="act-text">' + (r.nom || 'Refuge') + ' inscrit' + (r.valide_par_admin ? ' ✅' : ' ⏳') + '</span>' +
+          '<span class="act-text">' + (r.nom || 'Refuge') + ' inscrit</span>' +
           '<span class="act-time">' + date + '</span></div>'
         );
       });
@@ -1188,18 +1156,7 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
       setEl3('badgeSignalements', signalements.length || '–');
     }
 
-    // Alertes dynamiques
-    if (refuges) {
-      var nbAttente = refuges.filter(function(r) { return !r.valide_par_admin; }).length;
-      var alerteRow = document.getElementById('alerteRefugesRow');
-      var alerteEl = document.getElementById('alerteRefuges');
-      if (nbAttente > 0) {
-        if (alerteRow) alerteRow.style.display = 'flex';
-        if (alerteEl) alerteEl.textContent = nbAttente + ' refuge(s) en attente de validation';
-      } else {
-        if (alerteRow) alerteRow.style.display = 'none';
-      }
-    }
+    // Alertes: aucune validation requise
 
     // Trends (mois courant vs total - approximation)
     var now = new Date();
@@ -1216,11 +1173,12 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
     setTrend('trendAdoptants', adoptantsMois);
   });
 
-  async function validerRefuge(refugeId) {
+  async function supprimerRefuge(refugeId, nom) {
+    if (!confirm('Supprimer le refuge "' + nom + '" ? Cette action est irréversible.')) return;
     var sb = getSupabase();
-    var { error } = await sb.from('Refuge').update({ valide_par_admin: true }).eq('id', refugeId);
-    if (!error) { alert('Refuge validé ✅'); window.location.reload(); }
-    else alert('Erreur : ' + error.message);
+    var { error } = await sb.from('Refuge').delete().eq('id', refugeId);
+    if (!error) { showToast('Refuge supprimé ✅'); window.location.reload(); }
+    else showToast('Erreur : ' + error.message);
   }
 </script>
 </body>
