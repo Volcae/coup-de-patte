@@ -224,8 +224,8 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
     <a class="sb-item" onclick="showSectionFn('refuges',this)"><span class="sb-icon">🏡</span>Refuges<span class="sb-badge sb-badge-red" id="badgeRefuges">–</span></a>
     <a class="sb-item" onclick="showSectionFn('animaux',this)"><span class="sb-icon">🐾</span>Animaux<span class="sb-badge sb-badge-green" id="badgeAnimaux">–</span></a>
     <a class="sb-item" onclick="showSectionFn('adoptants',this)"><span class="sb-icon">👤</span>Adoptants<span class="sb-badge sb-badge-blue" id="badgeAdoptants">–</span></a>
-    <a class="sb-item" onclick="showSectionFn('scraping',this)"><span class="sb-icon">🤖</span>Scraping IA<span class="sb-badge sb-badge-green">Actif</span></a>
-    <a class="sb-item" onclick="showSectionFn('signalements',this)"><span class="sb-icon">🚩</span>Signalements<span class="sb-badge sb-badge-red">7 actifs</span></a>
+    <a class="sb-item" onclick="showSectionFn('scraping',this)"><span class="sb-icon">🤖</span>Scraping IA</a>
+    <a class="sb-item" onclick="showSectionFn('signalements',this)"><span class="sb-icon">🚩</span>Signalements<span class="sb-badge sb-badge-red" id="badgeSignalements">–</span></a>
 
     <span class="sb-section">Paramètres</span>
     <a class="sb-item" onclick="showSectionFn('algorithme',this)"><span class="sb-icon">⚙️</span>Algorithme<span class="sb-badge sb-badge-purple">Matching</span></a>
@@ -281,9 +281,9 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
 
         <div class="dash-card">
           <p class="dc-title">⚠️ Alertes</p>
-          <div class="activity-row"><div class="act-dot" style="background:var(--rose)"></div><span class="act-text" style="color:var(--rose);font-weight:700" id="alerteRefuges">– refuges en attente de validation</span><span class="act-time"><a href="#" style="color:var(--moss);font-weight:700;font-size:0.7rem" onclick="showSectionFn('refuges',document.querySelectorAll('.sb-item')[2])">Voir →</a></span></div>
-          <div class="activity-row"><div class="act-dot" style="background:var(--amber)"></div><span class="act-text">Site SPA Nantes inaccessible depuis 5h</span><span class="act-time"><a href="#" style="color:var(--moss);font-weight:700;font-size:0.7rem" onclick="showSectionFn('scraping',document.querySelectorAll('.sb-item')[5])">Voir →</a></span></div>
-          <div class="activity-row"><div class="act-dot" style="background:var(--amber)"></div><span class="act-text">Pondérations matching = 105% (à corriger)</span><span class="act-time"><a href="#" style="color:var(--moss);font-weight:700;font-size:0.7rem" onclick="showSectionFn('algorithme',document.querySelectorAll('.sb-item')[6])">Voir →</a></span></div>
+          <div class="activity-row" id="alerteRefugesRow" style="display:none"><div class="act-dot" style="background:var(--rose)"></div><span class="act-text" style="color:var(--rose);font-weight:700" id="alerteRefuges">– refuges en attente de validation</span><span class="act-time"><a href="#" style="color:var(--moss);font-weight:700;font-size:0.7rem" onclick="showSectionFn('refuges',document.querySelectorAll('.sb-item')[2])">Voir →</a></span></div>
+
+
         </div>
       </div>
     </div>
@@ -931,14 +931,16 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
 <script>
   // Navigation
   function showSectionFn(id, el) {
-    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-    document.getElementById('section-' + id).classList.add('active');
-    document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('active'));
-    if(el) el.classList.add('active');
-    else {
-      document.querySelectorAll('.sb-item').forEach(i => {
-        if(i.getAttribute('onclick') && i.getAttribute('onclick').indexOf("'" + id + "'") !== -1)
-          i.classList.add('active');
+    document.querySelectorAll('.section').forEach(function(s) { s.classList.remove('active'); });
+    var target = document.getElementById('section-' + id);
+    if (target) target.classList.add('active');
+    document.querySelectorAll('.sb-item').forEach(function(i) { i.classList.remove('active'); });
+    if (el && el.classList) {
+      el.classList.add('active');
+    } else {
+      document.querySelectorAll('.sb-item').forEach(function(i) {
+        var oc = i.getAttribute('onclick') || '';
+        if (oc.indexOf("'" + id + "'") !== -1) i.classList.add('active');
       });
     }
   }
@@ -1183,13 +1185,20 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
     if (signalements) {
       var setEl3 = function(id, val) { var e = document.getElementById(id); if(e) e.textContent = val; };
       setEl3('signalActifs', signalements.length);
+      setEl3('badgeSignalements', signalements.length || '–');
     }
 
     // Alertes dynamiques
     if (refuges) {
       var nbAttente = refuges.filter(function(r) { return !r.valide_par_admin; }).length;
+      var alerteRow = document.getElementById('alerteRefugesRow');
       var alerteEl = document.getElementById('alerteRefuges');
-      if (alerteEl) alerteEl.textContent = nbAttente + ' refuge(s) en attente de validation';
+      if (nbAttente > 0) {
+        if (alerteRow) alerteRow.style.display = 'flex';
+        if (alerteEl) alerteEl.textContent = nbAttente + ' refuge(s) en attente de validation';
+      } else {
+        if (alerteRow) alerteRow.style.display = 'none';
+      }
     }
 
     // Trends (mois courant vs total - approximation)
