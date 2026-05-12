@@ -248,7 +248,7 @@ window.addEventListener("load", async function() {
         var emoji = a.espece && a.espece.toLowerCase() === "chat" ? "🐱" : "🐕";
         var age = a.age_annees ? a.age_annees + " an" + (a.age_annees > 1 ? "s" : "") : "";
         grid.insertAdjacentHTML("beforeend",
-          "<div onclick="window.location.href='coup-de-patte-fiche.html?id=" + a.id + "'" style='cursor:pointer;background:var(--paper);border-radius:16px;border:1.5px solid var(--border);padding:16px;transition:transform 0.2s;text-align:center' onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">" +
+          "<div onclick=\"window.location.href='coup-de-patte-fiche.html?id=" + a.id + "'\" style='cursor:pointer;background:var(--paper);border-radius:16px;border:1.5px solid var(--border);padding:16px;transition:transform 0.2s;text-align:center' onmouseover=\"this.style.transform='translateY(-3px)'\" onmouseout=\"this.style.transform=''\">" +
           "<div style='font-size:2.5rem;margin-bottom:8px'>" + emoji + "</div>" +
           "<div style='font-family:Fraunces,serif;font-weight:600;font-style:italic;color:var(--forest)'>" + a.nom + "</div>" +
           "<div style='font-size:0.75rem;color:var(--dust);margin-top:3px'>" + (a.race || a.espece) + (age ? " · " + age : "") + "</div>" +
