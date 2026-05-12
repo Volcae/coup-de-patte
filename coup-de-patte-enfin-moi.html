@@ -181,8 +181,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
     <h1 class="hero-title">Ils n'attendent<br>que <em>toi</em></h1>
     <p class="hero-sub">Ces animaux sont âgés, handicapés, ou présents en refuge depuis plus d'un an. Ils ne cochent peut-être pas toutes vos cases, mais ils ont quelque chose d'exceptionnel à offrir à la bonne personne.</p>
     <div class="hero-stats">
-      <div><span class="hero-stat-n">47</span><span class="hero-stat-l">Animaux "Enfin Moi ?"</span></div>
-      <div><span class="hero-stat-n">2,3 ans</span><span class="hero-stat-l">Durée moyenne en refuge</span></div>
+      <div><span class="hero-stat-n" id="statTotal">–</span><span class="hero-stat-l">Animaux "Enfin Moi ?"</span></div>
+      <div><span class="hero-stat-n" id="statDuree">–</span><span class="hero-stat-l">Durée moyenne en refuge</span></div>
       <div><span class="hero-stat-n">100%</span><span class="hero-stat-l">Méritent leur chance</span></div>
     </div>
   </div>
@@ -208,190 +208,17 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
     <span class="filter-chip" onclick="setSort(this,'attente')">⏰ Plus longue attente</span>
     <span class="filter-chip" onclick="setSort(this,'proximite')">📍 Au plus près de chez moi</span>
 
-    <span class="results-count" id="resultsCount">47 animaux</span>
+    <span class="results-count" id="resultsCount">– animaux</span>
   </div>
 </div>
 
 <!-- GRILLE -->
 <div class="grid-section">
   <div class="animals-grid" id="animalsGrid">
-
-    <!-- FEATURED : premier animal, plus grand, Enfin Moi avec le meilleur match -->
-    <div class="animal-card featured reveal" onclick="goToFiche()">
-      <div class="card-ribbon">✨ Enfin Moi ? · Meilleur match</div>
-      <div class="card-inner">
-        <div class="card-img" style="background:linear-gradient(160deg,#E8D5B0,#C9A87A);">
-          🐕
-          <div class="card-score" style="bottom:-20px;right:20px">
-            <span class="card-score-n score-appri">74%</span>
-            <span class="card-score-l score-appri">On s'apprivoise ?</span>
-          </div>
-          <div class="card-loc">📍 Lyon · 45 km</div>
-        </div>
-        <div class="card-body">
-          <div class="card-name">Django</div>
-          <div class="card-meta">Croisé · 7 ans · Mâle · Grand gabarit</div>
-          <div class="card-time">⏰ En refuge depuis 14 mois</div>
-          <div class="card-tags">
-            <span class="ctag ctag-age">🌿 Senior</span>
-            <span class="ctag ctag-handicap">🦽 3 pattes</span>
-            <span class="ctag">👧 Enfants ok</span>
-            <span class="ctag">🐱 Chats ok</span>
-          </div>
-          <p class="card-desc">Django a perdu une patte suite à un accident de voiture. Ça ne l'empêche pas de courir, de jouer, et d'aimer avec une intensité rare. Il cherche une famille qui voit ce qu'il est, pas ce qu'il lui manque.</p>
-          <button class="card-btn">Voir sa fiche →</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Carte 2 -->
-    <div class="animal-card reveal" style="transition-delay:0.05s" onclick="goToFiche()">
-      <div class="card-ribbon">✨ Enfin Moi ?</div>
-      <div class="card-inner">
-        <div class="card-img" style="background:linear-gradient(160deg,#D5D0C8,#A89E90);">
-          🐕
-          <div class="card-score">
-            <span class="card-score-n score-appri">68%</span>
-            <span class="card-score-l score-appri">On s'apprivoise ?</span>
-          </div>
-          <div class="card-loc">📍 Toulouse · 180 km</div>
-        </div>
-        <div class="card-body">
-          <div class="card-name">Brutus</div>
-          <div class="card-meta">Berger · 9 ans · Mâle · Grand gabarit</div>
-          <div class="card-time">⏰ En refuge depuis 2 ans</div>
-          <div class="card-tags">
-            <span class="ctag ctag-age">🌿 Senior</span>
-            <span class="ctag">💙 Affectueux</span>
-            <span class="ctag">🐱 Chats ok</span>
-          </div>
-          <p class="card-desc">Brutus attend depuis 2 ans. Il ne comprend pas pourquoi. Il pose sa tête sur les genoux des visiteurs et espère que cette fois, c'est pour lui.</p>
-          <button class="card-btn">Voir sa fiche →</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Carte 3 -->
-    <div class="animal-card reveal" style="transition-delay:0.10s" onclick="goToFiche()">
-      <div class="card-ribbon">✨ Enfin Moi ?</div>
-      <div class="card-inner">
-        <div class="card-img" style="background:linear-gradient(160deg,#E8DDD0,#C4B098);">
-          🐱
-          <div class="card-score">
-            <span class="card-score-n score-appri">71%</span>
-            <span class="card-score-l score-appri">On s'apprivoise ?</span>
-          </div>
-          <div class="card-loc">📍 Nantes · 350 km</div>
-        </div>
-        <div class="card-body">
-          <div class="card-name">Cannelle</div>
-          <div class="card-meta">Chatte · 10 ans · Femelle · Moyen gabarit</div>
-          <div class="card-time">⏰ En refuge depuis 18 mois</div>
-          <div class="card-tags">
-            <span class="ctag ctag-age">🌿 Senior</span>
-            <span class="ctag">🛋️ Calme</span>
-            <span class="ctag">☀️ Câline</span>
-          </div>
-          <p class="card-desc">Cannelle ronronne dès qu'on l'approche. Elle a 10 ans et tout le temps du monde à offrir à quelqu'un qui aime les matins calmes et les soirs au coin du feu.</p>
-          <button class="card-btn">Voir sa fiche →</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Carte 4 -->
-    <div class="animal-card reveal" style="transition-delay:0.15s" onclick="goToFiche()">
-      <div class="card-ribbon">✨ Enfin Moi ?</div>
-      <div class="card-inner">
-        <div class="card-img" style="background:linear-gradient(160deg,#DDE5DD,#9AB89A);">
-          🐶
-          <div class="card-score">
-            <span class="card-score-n score-belle">76%</span>
-            <span class="card-score-l score-belle">Belle rencontre</span>
-          </div>
-          <div class="card-loc">📍 Bordeaux · 220 km</div>
-        </div>
-        <div class="card-body">
-          <div class="card-name">Noisette</div>
-          <div class="card-meta">Croisée · 8 ans · Femelle · Moyen gabarit</div>
-          <div class="card-time">⏰ En refuge depuis 13 mois</div>
-          <div class="card-tags">
-            <span class="ctag ctag-age">🌿 Senior</span>
-            <span class="ctag">👧 Enfants ok</span>
-            <span class="ctag">🏃 Modérée</span>
-          </div>
-          <p class="card-desc">Noisette est arrivée après le décès de sa maîtresse. Elle garde encore ses habitudes, elle dort à la même heure et attend qu'on vienne s'asseoir à côté d'elle.</p>
-          <button class="card-btn">Voir sa fiche →</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Carte 5 -->
-    <div class="animal-card reveal" style="transition-delay:0.20s" onclick="goToFiche()">
-      <div class="card-ribbon">✨ Enfin Moi ?</div>
-      <div class="card-inner">
-        <div class="card-img" style="background:linear-gradient(160deg,#E0D0C8,#B8988A);">
-          🐈
-          <div class="card-score">
-            <span class="card-score-n score-appri">63%</span>
-            <span class="card-score-l score-appri">On s'apprivoise ?</span>
-          </div>
-          <div class="card-loc">📍 Marseille · 300 km</div>
-        </div>
-        <div class="card-body">
-          <div class="card-name">Perle</div>
-          <div class="card-meta">Chatte · 12 ans · Femelle · Petit gabarit</div>
-          <div class="card-time">⏰ En refuge depuis 22 mois</div>
-          <div class="card-tags">
-            <span class="ctag ctag-age">🌿 Senior</span>
-            <span class="ctag ctag-handicap">💊 Thyroïde</span>
-            <span class="ctag">🛋️ Calme</span>
-          </div>
-          <p class="card-desc">Perle a une hyperthyroïdie bien contrôlée, un comprimé par jour. En échange, elle offre une présence douce, discrète et fidèle que seules les vieilles chats savent donner.</p>
-          <button class="card-btn">Voir sa fiche →</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Carte 6 -->
-    <div class="animal-card reveal" style="transition-delay:0.25s" onclick="goToFiche()">
-      <div class="card-ribbon">✨ Enfin Moi ?</div>
-      <div class="card-inner">
-        <div class="card-img" style="background:linear-gradient(160deg,#C8DFC8,#8AB89A);">
-          🐕
-          <div class="card-score">
-            <span class="card-score-n score-belle">78%</span>
-            <span class="card-score-l score-belle">Belle rencontre</span>
-          </div>
-          <div class="card-loc">📍 Strasbourg · 280 km</div>
-        </div>
-        <div class="card-body">
-          <div class="card-name">Koda</div>
-          <div class="card-meta">Husky · 6 ans · Mâle · Grand gabarit</div>
-          <div class="card-time">⏰ En refuge depuis 16 mois</div>
-          <div class="card-tags">
-            <span class="ctag">🏃 Très actif</span>
-            <span class="ctag">💛 Besoin d'accompagnement</span>
-          </div>
-          <p class="card-desc">Koda a été abandonné deux fois. Il a besoin de temps pour faire confiance, mais quand il le fait, c'est pour toujours. Un profil pour quelqu'un de patient et de sportif.</p>
-          <button class="card-btn">Voir sa fiche →</button>
-        </div>
-      </div>
-    </div>
-
+    <div style="text-align:center;padding:40px;color:var(--dust);grid-column:1/-1">Chargement… 🐾</div>
   </div>
 
-  <!-- Pagination / charger plus -->
-  <div style="text-align:center;margin-top:40px;" class="reveal">
-    <button onclick="this.textContent='Chargement…'" style="background:transparent;border:1.5px solid var(--border);border-radius:50px;padding:12px 32px;font-family:'Nunito',sans-serif;font-size:0.88rem;font-weight:700;color:var(--dust);cursor:pointer;transition:all 0.2s" onmouseover="this.style.borderColor='var(--moss)';this.style.color='var(--forest)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--dust)'">
-      Voir 12 autres animaux →
-    </button>
-    <p style="font-size:0.75rem;color:var(--smoke);margin-top:12px">41 autres animaux vous attendent</p>
-  </div>
-
-</div>
-
-<!-- CTA BAS -->
-<section class="cta-section">
+  <section class="cta-section">
   <h2>Votre profil peut tout changer</h2>
   <p>Complétez votre profil pour que notre algorithme identifie les animaux "Enfin Moi ?" qui correspondent le mieux à votre mode de vie, même à 60%.</p>
   <a href="coup-de-patte-form.html" class="btn-primary"><span style="filter:brightness(0) invert(1)">🐾</span> Compléter mon profil</a>
@@ -426,14 +253,39 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 
   // ══ CHARGEMENT VRAIS ANIMAUX ENFIN MOI ══
   window.addEventListener('load', async function() {
+    if (!window.supabase) { console.error('Supabase SDK not loaded'); return; }
     var sb = getSupabase();
-    var { data: animaux } = await sb.from('Animal').select('*, refuge:Refuge(*)').eq('enfin_moi', true).eq('disponible', true);
-    if (!animaux || animaux.length === 0) return;
+    var animauxRes = await sb.from('Animal').select('*, refuge:Refuge(*)').eq('enfin_moi', true).eq('disponible', true);
+    var animaux = animauxRes.data || [];
 
-    var grid = document.querySelector('.em-grid') || document.querySelector('.animals-grid');
+    // Stats dynamiques
+    var statTotal = document.getElementById('statTotal');
+    if (statTotal) statTotal.textContent = animaux.length;
+
+    // Durée moyenne en refuge
+    var durees = animaux.filter(function(a) { return a.date_arrivee_refuge; }).map(function(a) {
+      return (new Date() - new Date(a.date_arrivee_refuge)) / (1000*60*60*24*30);
+    });
+    var statDuree = document.getElementById('statDuree');
+    if (statDuree) {
+      if (durees.length > 0) {
+        var moy = Math.round(durees.reduce(function(a,b){return a+b;},0) / durees.length);
+        statDuree.textContent = moy >= 12 ? (moy/12).toFixed(1) + ' ans' : moy + ' mois';
+      } else {
+        statDuree.textContent = '–';
+      }
+    }
+
+    var grid = document.getElementById('animalsGrid') || document.querySelector('.em-grid');
     if (!grid) return;
 
+    if (animaux.length === 0) {
+      grid.innerHTML = '<div style="text-align:center;padding:40px;color:var(--dust);grid-column:1/-1">Aucun animal en catégorie Enfin Moi ? pour le moment.</div>';
+      return;
+    }
+
     grid.innerHTML = '';
+    var rc = document.getElementById('resultsCount'); if (rc) rc.textContent = animaux.length + ' animal' + (animaux.length > 1 ? 'aux' : '');
     animaux.forEach(function(a) {
       var emoji = a.espece && a.espece.toLowerCase() === 'chat' ? '🐱' : '🐕';
       var age = a.age_annees ? a.age_annees + ' an' + (a.age_annees > 1 ? 's' : '') : '';
