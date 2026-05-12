@@ -141,7 +141,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 </nav>
 
 <div class="hero">
-  <span class="hero-eyebrow">4 218 refuges référencés en France</span>
+  <span class="hero-eyebrow" id="heroRefugesCount">Refuges inscrits sur Coup de Patte</span>
   <h1 class="hero-title">Tous les refuges<br>partenaires <em>près de vous</em></h1>
   <p class="hero-sub">Parcourez les refuges référencés sur Coup de Patte. Chaque fiche vous indique les animaux disponibles et leurs scores de compatibilité avec votre profil.</p>
 
@@ -152,135 +152,13 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
     <span class="filter-chip on" onclick="this.classList.toggle('on')">🐱 Chats</span>
     <span class="filter-chip" onclick="this.classList.toggle('on')">✨ Enfin Moi ?</span>
     <span class="filter-chip" onclick="this.classList.toggle('on')">📍 Moins de 50 km</span>
-    <span class="results-count">4 218 refuges</span>
+    <span class="results-count" id="refugesCount">Chargement…</span>
   </div>
 </div>
 
 <div class="content">
-  <div class="refuges-grid">
-
-    <!-- Carte featured (plus grande) -->
-    <div class="refuge-card featured" onclick="window.location.href='coup-de-patte-refuge.html'">
-      <span class="cdp-badge">✅ Partenaire CDP</span>
-      <div class="rc-banner" style="background:linear-gradient(160deg,var(--forest),var(--moss))">🏠</div>
-      <div class="rc-logo">🏠</div>
-      <div class="rc-body">
-        <div class="rc-name">SPA de Lyon, Fondation</div>
-        <div class="rc-city">📍 Lyon 9ème · 45 km &nbsp;·&nbsp; <span class="open-badge"><span class="open-dot dot-open"></span>Ouvert maintenant</span></div>
-        <div class="rc-tags">
-          <span class="rc-tag">🐶 Chiens</span>
-          <span class="rc-tag">🐱 Chats</span>
-          <span class="rc-tag rc-tag-gold">✨ 4 Enfin Moi ?</span>
-          <span class="rc-tag">Mar, Dim · 10h–18h</span>
-        </div>
-        <div class="rc-stats">
-          <div class="rc-stat"><span class="rc-stat-n">23</span><span class="rc-stat-l">Animaux dispo</span></div>
-          <div class="rc-stat"><span class="rc-stat-n">312</span><span class="rc-stat-l">Adoptions 2024</span></div>
-          <div class="rc-stat"><span class="rc-stat-n">87%</span><span class="rc-stat-l">Votre meilleur match</span></div>
-        </div>
-        <button class="rc-btn" onclick="window.location.href='coup-de-patte-refuge.html'">Voir la fiche et les animaux →</button>
-      </div>
-    </div>
-
-    <!-- Carte normale -->
-    <div class="refuge-card" onclick="window.location.href='coup-de-patte-refuge.html'">
-      <span class="cdp-badge">✅ Partenaire CDP</span>
-      <div class="rc-banner" style="background:linear-gradient(160deg,#3D6B5A,#5A9178)">🏡</div>
-      <div class="rc-logo">🏡</div>
-      <div class="rc-body">
-        <div class="rc-name">SPA de Paris</div>
-        <div class="rc-city">📍 Paris 12ème · 420 km &nbsp;·&nbsp; <span class="open-badge"><span class="open-dot dot-open"></span>Ouvert</span></div>
-        <div class="rc-tags">
-          <span class="rc-tag">🐶 Chiens</span>
-          <span class="rc-tag">🐱 Chats</span>
-          <span class="rc-tag rc-tag-gold">✨ 8 Enfin Moi ?</span>
-        </div>
-        <div class="rc-stats">
-          <div class="rc-stat"><span class="rc-stat-n">67</span><span class="rc-stat-l">Animaux dispo</span></div>
-          <div class="rc-stat"><span class="rc-stat-n">74%</span><span class="rc-stat-l">Meilleur match</span></div>
-        </div>
-        <button class="rc-btn">Voir la fiche →</button>
-      </div>
-    </div>
-
-    <!-- Carte normale -->
-    <div class="refuge-card" onclick="window.location.href='coup-de-patte-refuge.html'">
-      <div class="rc-banner" style="background:linear-gradient(160deg,#5A4A3A,#8A6A52)">🐾</div>
-      <div class="rc-logo">🐾</div>
-      <div class="rc-body">
-        <div class="rc-name">Refuge Les Griffes d'Or</div>
-        <div class="rc-city">📍 Montpellier · 280 km &nbsp;·&nbsp; <span class="open-badge"><span class="open-dot dot-closed"></span>Fermé</span></div>
-        <div class="rc-tags">
-          <span class="rc-tag">🐶 Chiens</span>
-          <span class="rc-tag rc-tag-gold">✨ 2 Enfin Moi ?</span>
-        </div>
-        <div class="rc-stats">
-          <div class="rc-stat"><span class="rc-stat-n">12</span><span class="rc-stat-l">Animaux dispo</span></div>
-          <div class="rc-stat"><span class="rc-stat-n">68%</span><span class="rc-stat-l">Meilleur match</span></div>
-        </div>
-        <button class="rc-btn">Voir la fiche →</button>
-      </div>
-    </div>
-
-    <!-- Carte normale -->
-    <div class="refuge-card" onclick="window.location.href='coup-de-patte-refuge.html'">
-      <span class="cdp-badge">✅ Partenaire CDP</span>
-      <div class="rc-banner" style="background:linear-gradient(160deg,#2A4A5A,#3A6A7A)">🏠</div>
-      <div class="rc-logo">🏠</div>
-      <div class="rc-body">
-        <div class="rc-name">SPA de Bordeaux</div>
-        <div class="rc-city">📍 Bordeaux · 540 km &nbsp;·&nbsp; <span class="open-badge"><span class="open-dot dot-open"></span>Ouvert</span></div>
-        <div class="rc-tags">
-          <span class="rc-tag">🐶 Chiens</span>
-          <span class="rc-tag">🐱 Chats</span>
-        </div>
-        <div class="rc-stats">
-          <div class="rc-stat"><span class="rc-stat-n">31</span><span class="rc-stat-l">Animaux dispo</span></div>
-          <div class="rc-stat"><span class="rc-stat-n">71%</span><span class="rc-stat-l">Meilleur match</span></div>
-        </div>
-        <button class="rc-btn">Voir la fiche →</button>
-      </div>
-    </div>
-
-    <!-- Carte normale -->
-    <div class="refuge-card" onclick="window.location.href='coup-de-patte-refuge.html'">
-      <div class="rc-banner" style="background:linear-gradient(160deg,#4A3A5A,#6A5A7A)">🏡</div>
-      <div class="rc-logo">🏡</div>
-      <div class="rc-body">
-        <div class="rc-name">Association Pattes Douces</div>
-        <div class="rc-city">📍 Rennes · 380 km &nbsp;·&nbsp; <span class="open-badge"><span class="open-dot dot-closed"></span>Fermé</span></div>
-        <div class="rc-tags">
-          <span class="rc-tag">🐱 Chats</span>
-          <span class="rc-tag rc-tag-gold">✨ 1 Enfin Moi ?</span>
-        </div>
-        <div class="rc-stats">
-          <div class="rc-stat"><span class="rc-stat-n">8</span><span class="rc-stat-l">Animaux dispo</span></div>
-          <div class="rc-stat"><span class="rc-stat-n">65%</span><span class="rc-stat-l">Meilleur match</span></div>
-        </div>
-        <button class="rc-btn">Voir la fiche →</button>
-      </div>
-    </div>
-
-    <!-- Carte normale -->
-    <div class="refuge-card" onclick="window.location.href='coup-de-patte-refuge.html'">
-      <span class="cdp-badge">✅ Partenaire CDP</span>
-      <div class="rc-banner" style="background:linear-gradient(160deg,#3A5A3A,#5A7A5A)">🐕</div>
-      <div class="rc-logo">🐕</div>
-      <div class="rc-body">
-        <div class="rc-name">SPA de Grenoble</div>
-        <div class="rc-city">📍 Grenoble · 80 km &nbsp;·&nbsp; <span class="open-badge"><span class="open-dot dot-open"></span>Ouvert</span></div>
-        <div class="rc-tags">
-          <span class="rc-tag">🐶 Chiens</span>
-          <span class="rc-tag">🐱 Chats</span>
-        </div>
-        <div class="rc-stats">
-          <div class="rc-stat"><span class="rc-stat-n">19</span><span class="rc-stat-l">Animaux dispo</span></div>
-          <div class="rc-stat"><span class="rc-stat-n">82%</span><span class="rc-stat-l">Meilleur match</span></div>
-        </div>
-        <button class="rc-btn">Voir la fiche →</button>
-      </div>
-    </div>
-
+  <div class="refuges-grid" id="refugesGrid">
+    <div style="text-align:center;padding:40px;color:var(--dust)">Chargement des refuges… 🐾</div>
   </div>
 
   <!-- Pagination -->
