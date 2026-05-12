@@ -87,6 +87,9 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 .vue-sub{font-size:0.78rem;color:var(--dust);margin-top:3px}
 .sort-btn{display:flex;align-items:center;gap:6px;padding:8px 16px;border:1.5px solid var(--border);border-radius:50px;background:transparent;cursor:pointer;font-size:0.78rem;font-weight:600;color:var(--dust);font-family:'Nunito',sans-serif;transition:all 0.2s}
 .sort-btn:hover{border-color:var(--moss);color:var(--forest)}
+.sort-option{padding:9px 14px;border-radius:10px;font-size:0.82rem;font-weight:600;color:var(--forest);cursor:pointer;transition:background 0.15s}
+.sort-option:hover{background:var(--mint-lt)}
+.sort-option.active{background:var(--forest);color:var(--ivory)}
 
 /* GRILLE MATCHS */
 .matches-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
@@ -229,9 +232,17 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
       <div class="vue-header">
         <div>
           <h2 class="vue-title">Vos matchs du jour</h2>
-          <p class="vue-sub">Triés par score de compatibilité · Basés sur votre profil</p>
+          <p class="vue-sub" id="sortLabel">Triés par score de compatibilité · Basés sur votre profil</p>
         </div>
-        <button class="sort-btn">↕ Trier</button>
+        <div style="position:relative">
+          <button class="sort-btn" onclick="toggleSortMenu(this)">↕ Trier</button>
+          <div id="sortMenu" style="display:none;position:absolute;right:0;top:44px;background:var(--paper);border:1.5px solid var(--border);border-radius:16px;padding:8px;box-shadow:0 8px 24px rgba(45,74,62,0.15);z-index:100;min-width:200px">
+            <div class="sort-option active" data-sort="score" onclick="applySort('score',this)">🎯 Score de compatibilité</div>
+            <div class="sort-option" data-sort="nom_asc" onclick="applySort('nom_asc',this)">🔤 Nom A → Z</div>
+            <div class="sort-option" data-sort="nom_desc" onclick="applySort('nom_desc',this)">🔤 Nom Z → A</div>
+            <div class="sort-option" data-sort="enfin" onclick="applySort('enfin',this)">✨ Enfin Moi ? en premier</div>
+          </div>
+        </div>
       </div>
 
       <div class="matches-grid" id="matches-grid">
@@ -303,6 +314,62 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
     select.style.color = colors[select.value] || 'var(--forest)';
   }
 
+
+  var currentSort = 'score';
+
+  function toggleSortMenu(btn) {
+    var menu = document.getElementById('sortMenu');
+    if (!menu) return;
+    menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+    // Close on outside click
+    setTimeout(function() {
+      document.addEventListener('click', function closeSortMenu(e) {
+        if (!e.target.closest('#sortMenu') && !e.target.closest('.sort-btn')) {
+          menu.style.display = 'none';
+          document.removeEventListener('click', closeSortMenu);
+        }
+      });
+    }, 50);
+  }
+
+  function applySort(sortType, el) {
+    currentSort = sortType;
+    document.querySelectorAll('.sort-option').forEach(function(o) { o.classList.remove('active'); });
+    if (el) el.classList.add('active');
+    document.getElementById('sortMenu').style.display = 'none';
+
+    var labels = {
+      'score': 'Triés par score de compatibilité',
+      'nom_asc': 'Triés par nom A → Z',
+      'nom_desc': 'Triés par nom Z → A',
+      'enfin': 'Enfin Moi ? en premier'
+    };
+    var labelEl = document.getElementById('sortLabel');
+    if (labelEl) labelEl.textContent = (labels[sortType] || '') + ' · Basés sur votre profil';
+
+    // Re-sort and re-render
+    var sorted = allMatchs.slice();
+    if (sortType === 'score') {
+      sorted.sort(function(a, b) { return b.score - a.score; });
+    } else if (sortType === 'nom_asc') {
+      sorted.sort(function(a, b) { return (a.animal && b.animal) ? a.animal.nom.localeCompare(b.animal.nom, 'fr') : 0; });
+    } else if (sortType === 'nom_desc') {
+      sorted.sort(function(a, b) { return (a.animal && b.animal) ? b.animal.nom.localeCompare(a.animal.nom, 'fr') : 0; });
+    } else if (sortType === 'enfin') {
+      sorted.sort(function(a, b) {
+        var ae = a.animal && a.animal.enfin_moi ? 1 : 0;
+        var be = b.animal && b.animal.enfin_moi ? 1 : 0;
+        return be - ae || b.score - a.score;
+      });
+    }
+
+    var grid = document.getElementById('matches-grid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    sorted.forEach(function(m) {
+      if (m.animal) grid.insertAdjacentHTML('beforeend', buildMatchCard(m.animal, m.score));
+    });
+  }
 
   function toggleProfileMenu() {
     var existing = document.getElementById('profileMenu');
@@ -429,7 +496,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
     if (!session) return;
 
     // Upsert dans Correspondre
-    var { data: existing } = await sb.from('Correspondre').select('id').eq('utilisateur', session.user.id).eq('animal', animalId).single();
+    var existingRes = await sb.from('Correspondre').select('id').eq('utilisateur', session.user.id).eq('animal', animalId);
+    var existing = existingRes.data && existingRes.data.length > 0 ? existingRes.data[0] : null;
     if (existing) {
       await sb.from('Correspondre').update({ aime: !isLiked }).eq('id', existing.id);
     } else {
