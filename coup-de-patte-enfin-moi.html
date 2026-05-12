@@ -438,15 +438,18 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
       var emoji = a.espece && a.espece.toLowerCase() === 'chat' ? '🐱' : '🐕';
       var age = a.age_annees ? a.age_annees + ' an' + (a.age_annees > 1 ? 's' : '') : '';
       var ville = a.refuge ? a.refuge.ville : '';
-      grid.insertAdjacentHTML('beforeend',
-        '<div class="em-card" onclick="window.location.href='coup-de-patte-fiche.html?id=' + a.id + ''">' +
+      var card = document.createElement('div');
+      card.className = 'em-card';
+      card.style.cursor = 'pointer';
+      card.onclick = (function(id){ return function(){ window.location.href='coup-de-patte-fiche.html?id='+id; }; })(a.id);
+      card.innerHTML =
         '<div class="em-img" style="background:linear-gradient(160deg,#E8D5B0,#C9A87A);font-size:3rem;display:flex;align-items:center;justify-content:center;height:140px">' + emoji + '</div>' +
         '<div class="em-body">' +
         '<div class="em-name">' + a.nom + '</div>' +
         '<div class="em-meta">' + (a.race || a.espece) + ' · ' + age + (ville ? ' · ' + ville : '') + '</div>' +
         '<div class="em-reason">' + (a.raison_enfin_moi || '✨ Animal en attente depuis longtemps') + '</div>' +
-        '</div></div>'
-      );
+        '</div>';
+      grid.appendChild(card);
     });
   });
 </script>

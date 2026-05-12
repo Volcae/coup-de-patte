@@ -501,7 +501,10 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
     if (existing) {
       await sb.from('Correspondre').update({ aime: !isLiked }).eq('id', existing.id);
     } else {
-      await sb.from('Correspondre').insert({ utilisateur: session.user.id, animal: animalId, aime: true, vu: true });
+      // Get the score from the card
+      var scoreEl = btn.closest('.match-card') && btn.closest('.match-card').querySelector('.mc-score-n');
+      var scoreVal = scoreEl ? parseInt(scoreEl.textContent) || 0 : 0;
+      await sb.from('Correspondre').insert({ utilisateur: session.user.id, animal: animalId, aime: true, vu: true, score_global: scoreVal });
     }
   }
 
