@@ -94,10 +94,18 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 /* Toast */
 .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--forest);color:var(--ivory);padding:12px 24px;border-radius:50px;font-size:0.82rem;font-weight:700;z-index:600;transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1);box-shadow:0 8px 24px rgba(45,74,62,0.3)}
 .toast.show{transform:translateX(-50%) translateY(0)}
+
+footer{background:var(--forest);color:var(--ivory);padding:40px 52px 28px;position:relative;z-index:1}
+.footer-logo{font-family:"Fraunces",serif;font-size:1.2rem;font-weight:600;display:flex;align-items:center;gap:10px;margin-bottom:20px;opacity:0.9}
+.footer-links{display:flex;gap:24px;flex-wrap:wrap;margin-bottom:16px}
+.footer-links a{text-decoration:none;color:rgba(244,241,232,0.5);font-size:0.82rem;transition:color 0.2s}
+.footer-links a:hover{color:rgba(244,241,232,0.9)}
+.footer-copy{font-size:0.72rem;color:rgba(244,241,232,0.3)}
 </style>
   <!-- Supabase SDK -->
   
-  <script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
     var _supabaseClient = null;
     function getSupabase() {
       if (!_supabaseClient) {
@@ -118,7 +126,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 <nav>
   <a href="index.html" class="logo"><div class="logo-bubble" style="animation:pawPulse 2.5s ease-in-out infinite;"><span style="animation:pawWiggle 2.5s ease-in-out infinite;display:inline-block;filter:brightness(0) invert(1);font-size:1.1rem">🐾</span></div>Coup de Patte</a>
   <ul class="nav-links">
-    <li><a href="coup-de-patte-landing.html#comment">Comment ça marche</a></li>
+    <li><a href="index.html#comment">Comment ça marche</a></li>
     <li><a href="coup-de-patte-refuges.html">Les refuges</a></li>
     <li><a href="coup-de-patte-enfin-moi.html">Enfin Moi ? ✨</a></li>
     <li><a href="coup-de-patte-contact.html" class="active">Contact</a></li>
@@ -252,5 +260,22 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
     });
   });
 </script>
+<footer>
+  <div class="footer-logo">
+    <div style="width:36px;height:36px;background:rgba(244,241,232,0.15);border:1.5px solid rgba(244,241,232,0.2);border-radius:50% 50% 50% 50%/60% 60% 40% 40%;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+      <span style="font-size:1rem;filter:brightness(0) invert(1)">🐾</span>
+    </div>
+    Coup de Patte
+  </div>
+  <div class="footer-links">
+    <a href="coup-de-patte-refuges.html">Les refuges</a>
+    <a href="coup-de-patte-enfin-moi.html">✨ Enfin Moi ?</a>
+    <a href="coup-de-patte-apropos.html">À propos</a>
+    <a href="coup-de-patte-contact.html">Contact</a>
+    <a href="coup-de-patte-cgu.html">CGU</a>
+    <a href="coup-de-patte-apropos.html#don" style="color:var(--gold);font-weight:700;opacity:1">💛 Faire un don</a>
+  </div>
+  <div class="footer-copy">© 2025 Coup de Patte · Projet indépendant</div>
+</footer>
 </body>
 </html>

@@ -102,6 +102,13 @@
   .confirm-btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--moss),var(--forest));color:var(--ivory);font-family:'Nunito',sans-serif;font-size:0.95rem;font-weight:700;padding:14px 32px;border-radius:50px;text-decoration:none;box-shadow:0 6px 20px rgba(74,124,89,0.3);transition:transform 0.2s,box-shadow 0.2s}
   .confirm-btn:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(74,124,89,0.4)}
   .hidden{display:none!important}
+
+footer{background:var(--forest);color:var(--ivory);padding:40px 52px 28px;position:relative;z-index:1}
+.footer-logo{font-family:"Fraunces",serif;font-size:1.2rem;font-weight:600;display:flex;align-items:center;gap:10px;margin-bottom:20px;opacity:0.9}
+.footer-links{display:flex;gap:24px;flex-wrap:wrap;margin-bottom:16px}
+.footer-links a{text-decoration:none;color:rgba(244,241,232,0.5);font-size:0.82rem;transition:color 0.2s}
+.footer-links a:hover{color:rgba(244,241,232,0.9)}
+.footer-copy{font-size:0.72rem;color:rgba(244,241,232,0.3)}
 </style>
 
   <!-- Supabase SDK -->
@@ -984,5 +991,22 @@ async function saveProfilToSupabase() {
 
 updateProgress();
 </script>
+<footer>
+  <div class="footer-logo">
+    <div style="width:36px;height:36px;background:rgba(244,241,232,0.15);border:1.5px solid rgba(244,241,232,0.2);border-radius:50% 50% 50% 50%/60% 60% 40% 40%;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+      <span style="font-size:1rem;filter:brightness(0) invert(1)">🐾</span>
+    </div>
+    Coup de Patte
+  </div>
+  <div class="footer-links">
+    <a href="coup-de-patte-refuges.html">Les refuges</a>
+    <a href="coup-de-patte-enfin-moi.html">✨ Enfin Moi ?</a>
+    <a href="coup-de-patte-apropos.html">À propos</a>
+    <a href="coup-de-patte-contact.html">Contact</a>
+    <a href="coup-de-patte-cgu.html">CGU</a>
+    <a href="coup-de-patte-apropos.html#don" style="color:var(--gold);font-weight:700;opacity:1">💛 Faire un don</a>
+  </div>
+  <div class="footer-copy">© 2025 Coup de Patte · Projet indépendant</div>
+</footer>
 </body>
 </html>

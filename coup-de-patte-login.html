@@ -166,6 +166,13 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 .pwd-bar.medium{background:var(--amber)}
 .pwd-bar.strong{background:var(--moss)}
 .pwd-strength-label{font-size:0.65rem;color:var(--smoke);margin-top:4px;display:block}
+
+footer{background:var(--forest);color:var(--ivory);padding:40px 52px 28px;position:relative;z-index:1}
+.footer-logo{font-family:"Fraunces",serif;font-size:1.2rem;font-weight:600;display:flex;align-items:center;gap:10px;margin-bottom:20px;opacity:0.9}
+.footer-links{display:flex;gap:24px;flex-wrap:wrap;margin-bottom:16px}
+.footer-links a{text-decoration:none;color:rgba(244,241,232,0.5);font-size:0.82rem;transition:color 0.2s}
+.footer-links a:hover{color:rgba(244,241,232,0.9)}
+.footer-copy{font-size:0.72rem;color:rgba(244,241,232,0.3)}
 </style>
   <!-- Supabase SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -193,11 +200,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
     <div class="logo-bubble" style="animation:pawPulse 2.5s ease-in-out infinite;"><span style="animation:pawWiggle 2.5s ease-in-out infinite;display:inline-block;filter:brightness(0) invert(1);font-size:1.1rem">🐾</span></div>
     Coup de Patte
   </a>
-  <div style="display:flex;align-items:center;gap:20px">
-    <a href="coup-de-patte-apropos.html" class="nav-back">À propos</a>
-    <a href="coup-de-patte-contact.html" class="nav-back">Contact</a>
-    <a href="index.html" class="nav-back">← Accueil</a>
-  </div>
+  <a href="index.html" class="nav-back">← Accueil</a>
 </nav>
     Coup de Patte
   </a>
@@ -707,14 +710,22 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
     }
   }
 </script>
-<footer style="text-align:center;padding:24px;position:relative;z-index:1">
-  <div style="display:flex;align-items:center;justify-content:center;gap:24px;flex-wrap:wrap">
-    <a href="coup-de-patte-apropos.html" style="font-size:0.78rem;color:var(--dust);text-decoration:none;font-weight:600;transition:color 0.2s" onmouseover="this.style.color='var(--forest)'" onmouseout="this.style.color='var(--dust)'">💛 À propos</a>
-    <a href="coup-de-patte-contact.html" style="font-size:0.78rem;color:var(--dust);text-decoration:none;font-weight:600;transition:color 0.2s" onmouseover="this.style.color='var(--forest)'" onmouseout="this.style.color='var(--dust)'">✉️ Contact</a>
-    <a href="coup-de-patte-cgu.html" style="font-size:0.78rem;color:var(--dust);text-decoration:none;font-weight:600;transition:color 0.2s" onmouseover="this.style.color='var(--forest)'" onmouseout="this.style.color='var(--dust)'">📋 CGU</a>
-    <a href="coup-de-patte-enfin-moi.html" style="font-size:0.78rem;color:var(--amber);text-decoration:none;font-weight:700;transition:opacity 0.2s" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">✨ Enfin Moi ?</a>
+<footer>
+  <div class="footer-logo">
+    <div style="width:36px;height:36px;background:rgba(244,241,232,0.15);border:1.5px solid rgba(244,241,232,0.2);border-radius:50% 50% 50% 50%/60% 60% 40% 40%;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+      <span style="font-size:1rem;filter:brightness(0) invert(1)">🐾</span>
+    </div>
+    Coup de Patte
   </div>
-  <p style="font-size:0.68rem;color:var(--smoke);margin-top:10px">© 2025 Coup de Patte · Fait avec 🐾 pour les animaux oubliés</p>
+  <div class="footer-links">
+    <a href="coup-de-patte-refuges.html">Les refuges</a>
+    <a href="coup-de-patte-enfin-moi.html">✨ Enfin Moi ?</a>
+    <a href="coup-de-patte-apropos.html">À propos</a>
+    <a href="coup-de-patte-contact.html">Contact</a>
+    <a href="coup-de-patte-cgu.html">CGU</a>
+    <a href="coup-de-patte-apropos.html#don" style="color:var(--gold);font-weight:700;opacity:1">💛 Faire un don</a>
+  </div>
+  <div class="footer-copy">© 2025 Coup de Patte · Projet indépendant</div>
 </footer>
 </body>
 </html>
