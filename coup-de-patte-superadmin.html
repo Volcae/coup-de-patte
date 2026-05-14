@@ -366,6 +366,63 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
       </div>
     </div>
 
+    <!-- ══════════ ANIMAUX ══════════ -->
+    <div class="section" id="section-animaux">
+      <div class="page-hdr">
+        <div><h1 class="page-title">Animaux</h1><p class="page-sub" id="subAnimaux">Chargement…</p></div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">
+        <div class="kpi"><span class="kpi-n" id="animauxTotal">–</span><span class="kpi-l">Total disponibles</span></div>
+        <div class="kpi"><span class="kpi-n" id="animauxEnfin">–</span><span class="kpi-l">✨ Enfin Moi ?</span></div>
+        <div class="kpi"><span class="kpi-n" id="animauxAdoptes">–</span><span class="kpi-l">Adoptés via CDP</span></div>
+        <div class="kpi"><span class="kpi-n" id="animauxIncomplets">–</span><span class="kpi-l">Fiches incomplètes</span></div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Animal</th><th>Refuge</th><th>Espèce</th><th>Statut</th><th>Enfin Moi ?</th></tr></thead>
+          <tbody id="tbody-animaux"><tr><td colspan="5" style="text-align:center;padding:20px;color:var(--dust)">Chargement…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══════════ ADOPTANTS ══════════ -->
+    <div class="section" id="section-adoptants">
+      <div class="page-hdr">
+        <div><h1 class="page-title">Adoptants</h1><p class="page-sub" id="subAdoptants">Chargement…</p></div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px">
+        <div class="kpi"><span class="kpi-n" id="adoptantsTotal">–</span><span class="kpi-l">Inscrits total</span></div>
+        <div class="kpi"><span class="kpi-n" id="adoptantsComplets">–</span><span class="kpi-l">Profils complétés</span></div>
+        <div class="kpi"><span class="kpi-n" id="adoptantsAdoptions">–</span><span class="kpi-l">Adoptions via CDP</span></div>
+      </div>
+      <p style="font-size:0.82rem;color:var(--dust);font-style:italic;text-align:center;padding:20px">Les données adoptants sont anonymisées conformément au RGPD.</p>
+    </div>
+
+    <!-- ══════════ SCRAPING ══════════ -->
+    <div class="section" id="section-scraping">
+      <div class="page-hdr">
+        <div><h1 class="page-title">Scraping IA</h1><p class="page-sub">Imports automatiques depuis les sites de refuges</p></div>
+      </div>
+      <div style="background:var(--paper);border-radius:20px;border:1.5px solid var(--border);padding:24px;box-shadow:var(--shadow)">
+        <p style="font-family:'Fraunces',serif;font-size:0.95rem;font-weight:600;font-style:italic;color:var(--forest);margin-bottom:12px">🤖 Scraping automatique</p>
+        <p style="font-size:0.82rem;color:var(--dust);line-height:1.6">Le scraping automatique des fiches animaux depuis les sites des refuges partenaires sera disponible dans une prochaine version de Coup de Patte.</p>
+        <p style="font-size:0.82rem;color:var(--dust);margin-top:12px;line-height:1.6">Pour l'instant, les refuges gèrent leurs fiches directement depuis leur espace admin.</p>
+      </div>
+    </div>
+
+    <!-- ══════════ SIGNALEMENTS ══════════ -->
+    <div class="section" id="section-signalements">
+      <div class="page-hdr">
+        <div><h1 class="page-title">Signalements</h1><p class="page-sub" id="subSignalements">Chargement…</p></div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Animal</th><th>Refuge</th><th>Signalements</th><th>Date</th><th>Actions</th></tr></thead>
+          <tbody id="tbody-signalements"><tr><td colspan="5" style="text-align:center;padding:20px;color:var(--dust)">Chargement…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
     <!-- ══════════ ALGORITHME ══════════ -->
     <div class="section" id="section-algorithme">
       <div class="page-hdr">
@@ -732,9 +789,10 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
         }); // end forEach
       } // end if refuges
 
+      var nbRefuges = refuges ? refuges.length : 0;
       el = document.getElementById('badgeRefuges'); if (el) el.textContent = nbRefuges;
       el = document.getElementById('subRefuges'); if (el) el.textContent = nbRefuges + ' refuge(s) inscrits';
-    }
+      el = document.getElementById('kpiRefuges'); if (el) el.textContent = nbRefuges;
 
     // Charger les animaux
     var { data: animaux } = await sb.from('Animal').select('id, enfin_moi').eq('disponible', true);
@@ -773,6 +831,57 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
       if (recent.length === 0) {
         feed.innerHTML = '<div style="text-align:center;padding:20px;color:var(--dust);font-size:0.8rem">Aucune activité récente</div>';
       }
+    }
+
+    // ══ ANIMAUX ══
+    var animauxRes = await sb.from('Animal').select('id, nom, espece, enfin_moi, statut, description, race, refuge:Refuge(nom)').order('nom');
+    var animauxAll = animauxRes.data || [];
+    var nbAnimaux = animauxAll.filter(function(a) { return !a.statut || a.statut === 'disponible'; }).length;
+    var nbEnfin2 = animauxAll.filter(function(a) { return a.enfin_moi; }).length;
+    var nbAdopt2 = animauxAll.filter(function(a) { return a.statut === 'adopte_cdp'; }).length;
+    var nbIncomplet2 = animauxAll.filter(function(a) { return !a.description || !a.race; }).length;
+    var set2 = function(id, v) { var e = document.getElementById(id); if(e) e.textContent = v; };
+    set2('animauxTotal', nbAnimaux); set2('animauxEnfin', nbEnfin2);
+    set2('animauxAdoptes', nbAdopt2); set2('animauxIncomplets', nbIncomplet2);
+    set2('subAnimaux', animauxAll.length + ' animaux au total');
+    var tAnimaux = document.getElementById('tbody-animaux');
+    if (tAnimaux) {
+      tAnimaux.innerHTML = '';
+      animauxAll.slice(0, 50).forEach(function(a) {
+        tAnimaux.insertAdjacentHTML('beforeend',
+          '<tr><td><strong>' + a.nom + '</strong></td>' +
+          '<td style="font-size:0.78rem;color:var(--dust)">' + (a.refuge ? a.refuge.nom : '–') + '</td>' +
+          '<td style="font-size:0.78rem">' + (a.espece || '–') + '</td>' +
+          '<td><span style="font-size:0.72rem;padding:2px 8px;border-radius:50px;background:' + (a.statut === 'adopte_cdp' ? 'var(--mint-lt);color:var(--moss)' : 'var(--ivory);color:var(--dust)') + '">' + (a.statut || 'disponible') + '</span></td>' +
+          '<td>' + (a.enfin_moi ? '✨' : '–') + '</td></tr>'
+        );
+      });
+    }
+
+    // ══ ADOPTANTS ══
+    set2('adoptantsTotal', profils ? profils.length : 0);
+    set2('adoptantsComplets', profils ? profils.length : 0);
+    set2('adoptantsAdoptions', adoptionsCDP ? adoptionsCDP.length : 0);
+    set2('subAdoptants', (profils ? profils.length : 0) + ' adoptants inscrits · données anonymisées');
+
+    // ══ SIGNALEMENTS ══
+    var signalRes = await sb.from('Signalisation').select('*, animal:Animal(nom, refuge:Refuge(nom))').order('created_at', { ascending: false });
+    var signaux = signalRes.data || [];
+    set2('subSignalements', signaux.length + ' signalement(s) actif(s)');
+    var tSignal = document.getElementById('tbody-signalements');
+    if (tSignal) {
+      tSignal.innerHTML = signaux.length === 0
+        ? '<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--dust)">Aucun signalement pour le moment.</td></tr>'
+        : '';
+      signaux.slice(0, 30).forEach(function(s) {
+        tSignal.insertAdjacentHTML('beforeend',
+          '<tr><td><strong>' + (s.animal ? s.animal.nom : '–') + '</strong></td>' +
+          '<td style="font-size:0.78rem;color:var(--dust)">' + (s.animal && s.animal.refuge ? s.animal.refuge.nom : '–') + '</td>' +
+          '<td style="font-size:0.78rem;font-weight:700;color:var(--rose)">' + (s.count || 1) + '/5</td>' +
+          '<td style="font-size:0.75rem;color:var(--dust)">' + (s.created_at ? new Date(s.created_at).toLocaleDateString('fr-FR') : '–') + '</td>' +
+          '<td><button class="row-btn row-btn-red" onclick="showToast(\'Signalement traité\')">✕ Ignorer</button></td></tr>'
+        );
+      });
     }
 
     // Déconnexion bouton nav
@@ -833,6 +942,8 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
     };
     setTrend('trendRefuges', refugesMois);
     setTrend('trendAdoptants', adoptantsMois);
+  });
+
   });
 
   function voirRefuge(btn) {
