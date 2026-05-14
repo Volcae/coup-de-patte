@@ -33,10 +33,10 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 .nav-logout:hover{opacity:1}
 
 /* LAYOUT */
-.app{display:flex;min-height:100vh;padding-top:72px;position:relative;z-index:1}
+.app{display:flex;min-height:100vh;padding-top:72px;position:relative;z-index:1;align-items:flex-start}
 
 /* SIDEBAR */
-.sidebar{width:256px;flex-shrink:0;border-right:1px solid var(--border);padding:24px 16px;display:flex;flex-direction:column;gap:4px;background:rgba(253,252,248,0.7);position:sticky;top:72px;height:calc(100vh - 72px);overflow-y:auto}
+.sidebar{width:256px;flex-shrink:0;border-right:1px solid var(--border);padding:24px 16px;display:flex;flex-direction:column;gap:4px;background:rgba(253,252,248,0.7);position:sticky;top:72px;height:calc(100vh - 72px);overflow-y:auto;align-self:flex-start}
 
 .sb-section{font-size:0.58rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--smoke);padding:14px 12px 6px;margin-top:6px}
 .sb-section:first-child{margin-top:0;padding-top:4px}
@@ -52,7 +52,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 .sb-badge-purple{background:rgba(139,92,246,0.12);color:var(--purple);border:1px solid rgba(139,92,246,0.2)}
 
 /* MAIN */
-.main{flex:1;padding:28px 32px;min-width:0}
+.main{flex:1;padding:28px 32px;min-width:0;overflow-y:auto}
 
 /* Page header */
 .page-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
@@ -68,12 +68,12 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 .btn-danger:hover{background:rgba(201,112,74,0.15)}
 
 /* Sections */
-.section{display:none;animation:fadeUp 0.3s ease both}
-.section.active{display:block}
+.section{display:none;animation:fadeUp 0.3s ease both;width:100%;min-height:0}
+.section.active{display:block;width:100%}
 @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
 /* ══ STATS GLOBALES ══ */
-.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;width:100%}
 .kpi{background:var(--paper);border-radius:18px;border:1.5px solid var(--border);padding:18px 20px;box-shadow:var(--shadow);transition:transform 0.2s}
 .kpi:hover{transform:translateY(-2px)}
 .kpi-n{font-family:'Fraunces',serif;font-size:2rem;font-weight:700;color:var(--moss);display:block;line-height:1;margin-bottom:4px}

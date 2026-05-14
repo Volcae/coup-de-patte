@@ -149,9 +149,9 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 .load-btn{background:transparent;border:1.5px solid var(--border);border-radius:50px;padding:11px 28px;font-family:'Nunito',sans-serif;font-size:0.85rem;font-weight:700;color:var(--dust);cursor:pointer;transition:all 0.2s}
 .load-btn:hover{border-color:var(--moss);color:var(--forest)}
 
-footer{background:var(--forest);color:var(--ivory);padding:40px 52px 28px;position:relative;z-index:1}
-.footer-logo{font-family:"Fraunces",serif;font-size:1.2rem;font-weight:600;display:flex;align-items:center;gap:10px;margin-bottom:20px;opacity:0.9}
-.footer-links{display:flex;gap:24px;flex-wrap:wrap;margin-bottom:16px}
+footer{background:var(--forest);color:var(--ivory);padding:40px 52px 28px;position:relative;z-index:1;text-align:center}
+.footer-logo{font-family:"Fraunces",serif;font-size:1.2rem;font-weight:600;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:20px;opacity:0.9}
+.footer-links{display:flex;gap:24px;flex-wrap:wrap;margin-bottom:16px;justify-content:center}
 .footer-links a{text-decoration:none;color:rgba(244,241,232,0.5);font-size:0.82rem;transition:color 0.2s}
 .footer-links a:hover{color:rgba(244,241,232,0.9)}
 .footer-copy{font-size:0.72rem;color:rgba(244,241,232,0.3)}
@@ -510,8 +510,16 @@ footer{background:var(--forest);color:var(--ivory);padding:40px 52px 28px;positi
       await sb.from('Correspondre').update({ aime: !isLiked }).eq('id', existing.id);
     } else {
       // Get the score from the card
-      var scoreEl = btn.closest('.match-card') && btn.closest('.match-card').querySelector('.mc-score-n');
-      var scoreVal = scoreEl ? parseInt(scoreEl.textContent) || 0 : 0;
+      // Find score from allMatchs
+      var scoreVal = 0;
+      if (window.allMatchs) {
+        var match = allMatchs.find(function(m) { return m.animal && m.animal.id === animalId; });
+        if (match) scoreVal = match.score || 0;
+      }
+      if (!scoreVal) {
+        var scoreEl = btn.closest('.match-card') ? btn.closest('.match-card').querySelector('.mc-score-n, .score-n') : null;
+        scoreVal = scoreEl ? parseInt(scoreEl.textContent) || 0 : 0;
+      }
       await sb.from('Correspondre').insert({ utilisateur: session.user.id, animal: animalId, aime: true, vu: true, score_global: scoreVal });
     }
   }
