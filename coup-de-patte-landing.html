@@ -1356,6 +1356,18 @@
       if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth' }); }
     });
   });
+
+  // Stats dynamiques depuis Supabase
+  window.addEventListener('load', async function() {
+    try {
+      var rRes = await getSupabase().from('Refuge').select('id', { count: 'exact', head: true });
+      var aRes = await getSupabase().from('Animal').select('id', { count: 'exact', head: true }).eq('disponible', true);
+      var elR = document.getElementById('heroStatRefuges');
+      var elA = document.getElementById('heroStatAnimaux');
+      if (elR && rRes.count !== null) elR.textContent = rRes.count;
+      if (elA && aRes.count !== null) elA.textContent = aRes.count;
+    } catch(e) {}
+  });
 </script>
 </body>
 </html>
