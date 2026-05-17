@@ -945,7 +945,6 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
     };
     setTrend('trendRefuges', refugesMois);
     setTrend('trendAdoptants', adoptantsMois);
-  });
 
   }); // end window.addEventListener load async
 
@@ -967,6 +966,8 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
     if (!error) { showToast('Refuge supprimé ✅'); window.location.reload(); }
     else showToast('Erreur : ' + error.message);
   }
+
+}); // close load async
 </script>
 </body>
 </html>
