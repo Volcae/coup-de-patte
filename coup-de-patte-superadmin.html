@@ -312,73 +312,13 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
         <div><h1 class="page-title">Refuges</h1><p class="page-sub" id="subRefuges">Chargement…</p></div>
         <button class="btn-primary" onclick="showToast('Ajout manuel refuge, fonctionnalité à venir')">+ Ajouter manuellement</button>
       </div>
-
-      <!-- Tous les refuges -->
-      <p style="font-family:'Fraunces',serif;font-size:0.95rem;font-weight:600;font-style:italic;color:var(--forest);margin-bottom:12px">Tous les refuges actifs</p>
       <div class="refuge-toolbar">
         <input class="search-input" type="text" placeholder="🔍 Rechercher un refuge…">
-        <select class="filter-select"><option>Tous les statuts</option><option>Actifs</option><option>Suspendus</option></select>
       </div>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Refuge</th><th>Email</th><th>Ville</th><th>Inscription</th><th>Actions</th></tr></thead>
-          <tbody>
-            <tr>
-              <td style="color:var(--dust);font-size:0.8rem">–</td>
-              <td style="color:var(--dust);font-size:0.8rem">–</td>
-              <td style="color:var(--dust);font-size:0.8rem">–</td>
-              <td style="color:var(--dust);font-size:0.8rem">–</td>
-              <td style="color:var(--dust);font-size:0.8rem">–</td>
-              <td style="color:var(--dust);font-size:0.8rem">–</td>
-              <td>
-                <span style="font-family:'Fraunces',serif;font-size:1.1rem;font-weight:700;color:var(--amber)">2</span>
-                <span style="font-size:0.7rem;color:var(--smoke)">/5</span>
-              </td>
-              <td>
-                <div style="display:flex;gap:4px;align-items:center">
-                  <div style="width:12px;height:12px;border-radius:3px;background:var(--amber)"></div>
-                  <div style="width:12px;height:12px;border-radius:3px;background:var(--amber)"></div>
-                  <div style="width:12px;height:12px;border-radius:3px;background:var(--border)"></div>
-                  <div style="width:12px;height:12px;border-radius:3px;background:var(--border)"></div>
-                  <div style="width:12px;height:12px;border-radius:3px;background:var(--border)"></div>
-                </div>
-              </td>
-              <td style="font-size:0.75rem;color:var(--dust)">Hier</td>
-              <td><div class="row-actions">
-                <button class="row-btn row-btn-red" onclick="suppressAnimal('signal-row-rex','Rex')">🗑️ Supprimer</button>
-                <button class="row-btn row-btn-green" onclick="clearSignals('signal-row-rex','Rex')">✅ Réinitialiser</button>
-              </div></td>
-            </tr>
-
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Exclusions scraping actives -->
-      <p style="font-family:'Fraunces',serif;font-size:0.95rem;font-weight:600;font-style:italic;color:var(--forest);margin-bottom:12px">🚫 Exclusions scraping actives <span style="font-size:0.75rem;font-family:'Nunito',sans-serif;color:var(--dust);font-style:normal;font-weight:600">(ignorés pendant 12 mois)</span></p>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Animal</th><th>Refuge</th><th>Supprimé le</th><th>Exclusion jusqu'au</th><th>Actions</th></tr></thead>
-          <tbody>
-            <tr>
-              <td><div style="font-family:'Fraunces',serif;font-size:0.88rem;font-weight:600;font-style:italic;color:var(--smoke)">🐕 Max</div><div style="font-size:0.68rem;color:var(--smoke)">Golden · 6 ans · Mâle</div></td>
-              <td style="font-size:0.78rem;color:var(--dust)">SPA de Grenoble</td>
-              <td style="font-size:0.75rem;color:var(--dust)">14 mars 2025</td>
-              <td style="font-size:0.75rem;color:var(--rose);font-weight:700">14 mars 2026</td>
-              <td><div class="row-actions">
-                <button class="row-btn row-btn-green" onclick="showToast('Exclusion levée pour Max ✅')">↩ Lever l'exclusion</button>
-              </div></td>
-            </tr>
-            <tr>
-              <td><div style="font-family:'Fraunces',serif;font-size:0.88rem;font-weight:600;font-style:italic;color:var(--smoke)">🐱 Lola</div><div style="font-size:0.68rem;color:var(--smoke)">Européenne · 3 ans · Femelle</div></td>
-              <td style="font-size:0.78rem;color:var(--dust)">SPA de Bordeaux</td>
-              <td style="font-size:0.75rem;color:var(--dust)">2 avril 2025</td>
-              <td style="font-size:0.75rem;color:var(--rose);font-weight:700">2 avril 2026</td>
-              <td><div class="row-actions">
-                <button class="row-btn row-btn-green" onclick="showToast('Exclusion levée pour Lola ✅')">↩ Lever l'exclusion</button>
-              </div></td>
-            </tr>
-          </tbody>
+          <thead><tr><th>Refuge</th><th>Ville</th><th>Inscription</th><th>Actions</th></tr></thead>
+          <tbody id="tbody-refuges"><tr><td colspan="4" style="text-align:center;padding:20px;color:var(--dust)">Chargement…</td></tr></tbody>
         </table>
       </div>
     </div>
