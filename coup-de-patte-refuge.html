@@ -99,6 +99,9 @@ function getSupabase(){
     <div class="left-col">
       <div class="info-card">
         <p class="card-title">📋 Informations générales</p>
+        <div id="refugeDescriptionBlock" style="display:none;margin-bottom:18px;padding:16px;background:var(--ivory);border-radius:14px;border:1.5px solid var(--border)">
+          <p style="font-size:0.85rem;line-height:1.7;color:var(--forest)" id="refugeDescription"></p>
+        </div>
         <div class="info-grid">
           <div class="info-item"><span class="info-item-label">Adresse</span><div class="info-item-value" id="refugeAdresse">–</div><div style="font-size:0.73rem;color:var(--dust);margin-top:2px" id="refugeVilleCP"></div></div>
           <div class="info-item"><span class="info-item-label">Téléphone</span><div class="info-item-value" id="refugeTel">–</div></div>
@@ -165,6 +168,14 @@ window.addEventListener("load", async function() {
   var set = function(id, val) { var e = document.getElementById(id); if(e) e.textContent = val || "–"; };
   set("refugeNomHero", refuge.nom);
   set("refugeNomMap", refuge.nom);
+
+  // Description
+  if (refuge.description) {
+    var descEl = document.getElementById("refugeDescription");
+    var descBlock = document.getElementById("refugeDescriptionBlock");
+    if (descEl) descEl.textContent = refuge.description;
+    if (descBlock) descBlock.style.display = "block";
+  }
 
   // Adresse
   var adresse = refuge.adresse || "";
