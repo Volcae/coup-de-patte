@@ -177,6 +177,40 @@ window.addEventListener("load", async function() {
     if (descBlock) descBlock.style.display = "block";
   }
 
+  // Types animaux accueillis
+  var badgesDiv = document.getElementById("typesAnimauxBadges");
+  if (badgesDiv && refuge.types_animaux) {
+    try {
+      var t = typeof refuge.types_animaux === "string" ? JSON.parse(refuge.types_animaux) : refuge.types_animaux;
+      var badges = [];
+      if (t.chiens) badges.push("🐶 Chiens");
+      if (t.chats) badges.push("🐱 Chats");
+      if (t.nac) badges.push("🐇 NAC");
+      if (badges.length > 0) {
+        badgesDiv.innerHTML = badges.map(function(b) {
+          return '<span style="background:rgba(244,241,232,0.15);backdrop-filter:blur(8px);border:1px solid rgba(244,241,232,0.2);border-radius:50px;padding:6px 14px;font-size:0.75rem;font-weight:700;color:var(--ivory)">' + b + "</span>";
+        }).join("");
+      }
+    } catch(e) {}
+  }
+  
+  // Also show in info card
+  if (refuge.types_animaux) {
+    try {
+      var t2 = typeof refuge.types_animaux === "string" ? JSON.parse(refuge.types_animaux) : refuge.types_animaux;
+      var typesStr = [];
+      if (t2.chiens) typesStr.push("🐶 Chiens");
+      if (t2.chats) typesStr.push("🐱 Chats");
+      if (t2.nac) typesStr.push("🐇 NAC");
+      if (typesStr.length > 0) {
+        var typesEl = document.getElementById("refugeTypesAnimaux");
+        if (typesEl) typesEl.textContent = typesStr.join(" · ");
+        var typesBlock = document.getElementById("refugeTypesBlock");
+        if (typesBlock) typesBlock.style.display = "block";
+      }
+    } catch(e) {}
+  }
+
   // Adresse
   var adresse = refuge.adresse || "";
   var ville = refuge.ville || "";
