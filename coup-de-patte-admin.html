@@ -650,6 +650,15 @@ window.addEventListener('load', async function() {
   document.getElementById('infoEmail').value   = refuge.email     || '';
   document.getElementById('infoSite').value    = (refuge.site_web||'').replace(/\[([^\]]+)\]\([^)]+\)/g,'$1').replace(/^https?:\/\//i,'');
   loadHoraires(refuge.horaires);
+  // Types animaux
+  if (refuge.types_animaux) {
+    try {
+      var t = typeof refuge.types_animaux === 'string' ? JSON.parse(refuge.types_animaux) : refuge.types_animaux;
+      var optC = document.getElementById('optChiens'); if(optC) optC.classList.toggle('on', !!t.chiens);
+      var optCh = document.getElementById('optChats'); if(optCh) optCh.classList.toggle('on', !!t.chats);
+      var optN = document.getElementById('optNAC'); if(optN) optN.classList.toggle('on', !!t.nac);
+    } catch(e) {}
+  }
   document.getElementById('infoDesc').value    = refuge.description || '';
 
   // Charger les animaux
@@ -1036,6 +1045,11 @@ async function saveRefugeInfos() {
     })(),
     description: document.getElementById('infoDesc').value.trim(),
     horaires: JSON.stringify(getHoraires()),
+    types_animaux: JSON.stringify({
+      chiens: document.getElementById('optChiens') ? document.getElementById('optChiens').classList.contains('on') : false,
+      chats: document.getElementById('optChats') ? document.getElementById('optChats').classList.contains('on') : false,
+      nac: document.getElementById('optNAC') ? document.getElementById('optNAC').classList.contains('on') : false
+    }),
   };
   var { error } = await sb.from('Refuge').update(payload).eq('id', currentRefuge.id);
   if (error) { showToast('Erreur : ' + error.message); return; }
