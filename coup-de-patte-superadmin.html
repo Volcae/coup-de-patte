@@ -33,10 +33,10 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 .nav-logout:hover{opacity:1}
 
 /* LAYOUT */
-.app{display:flex;min-height:100vh;padding-top:72px;position:relative;z-index:1;align-items:flex-start}
+.app{display:flex;min-height:100vh;padding-top:72px;position:relative;z-index:1;align-items:stretch}
 
 /* SIDEBAR */
-.sidebar{width:256px;flex-shrink:0;border-right:1px solid var(--border);padding:24px 16px;display:flex;flex-direction:column;gap:4px;background:rgba(253,252,248,0.7);position:sticky;top:72px;height:calc(100vh - 72px);overflow-y:auto;align-self:flex-start}
+.sidebar{width:256px;flex-shrink:0;border-right:1px solid var(--border);padding:24px 16px;display:flex;flex-direction:column;gap:4px;background:rgba(253,252,248,0.7);position:sticky;top:72px;height:calc(100vh - 72px);overflow-y:auto}
 
 .sb-section{font-size:0.58rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--smoke);padding:14px 12px 6px;margin-top:6px}
 .sb-section:first-child{margin-top:0;padding-top:4px}
@@ -52,7 +52,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 .sb-badge-purple{background:rgba(139,92,246,0.12);color:var(--purple);border:1px solid rgba(139,92,246,0.2)}
 
 /* MAIN */
-.main{flex:1;padding:28px 32px;min-width:0;overflow-y:auto}
+.main{flex:1;padding:28px 32px;min-width:0;min-height:0;overflow:visible}
 
 /* Page header */
 .page-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
@@ -408,11 +408,17 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
         <div><h1 class="page-title">Adoptants</h1><p class="page-sub" id="subAdoptants">Chargement…</p></div>
       </div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px">
-        <div class="kpi"><span class="kpi-n" id="adoptantsTotal">–</span><span class="kpi-l">Inscrits total</span></div>
-        <div class="kpi"><span class="kpi-n" id="adoptantsComplets">–</span><span class="kpi-l">Profils complétés</span></div>
+        <div class="kpi"><span class="kpi-n" id="adoptantsTotal">–</span><span class="kpi-l">Profils complétés</span></div>
+        <div class="kpi"><span class="kpi-n" id="adoptantsComplets">–</span><span class="kpi-l">Actifs (ont liké)</span></div>
         <div class="kpi"><span class="kpi-n" id="adoptantsAdoptions">–</span><span class="kpi-l">Adoptions via CDP</span></div>
       </div>
-      <p style="font-size:0.82rem;color:var(--dust);font-style:italic;text-align:center;padding:20px">Les données adoptants sont anonymisées conformément au RGPD.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>ID (anonymisé)</th><th>Animal souhaité</th><th>Logement</th><th>Date</th></tr></thead>
+          <tbody id="tbody-adoptants"><tr><td colspan="4" style="text-align:center;padding:20px;color:var(--dust)">Chargement…</td></tr></tbody>
+        </table>
+      </div>
+      <p style="font-size:0.75rem;color:var(--dust);font-style:italic;margin-top:12px;text-align:center">Données anonymisées conformément au RGPD — aucune donnée personnelle identifiable.</p>
     </div>
 
     <!-- ══════════ SCRAPING ══════════ -->
@@ -863,10 +869,38 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
     }
 
     // ══ ADOPTANTS ══
-    set2('adoptantsTotal', profils ? profils.length : 0);
-    set2('adoptantsComplets', profils ? profils.length : 0);
+    // Récupérer tous les profils adoptants
+    var profilsRes = await sb.from('ProfilAdoptant').select('*').order('created_at', { ascending: false });
+    var tousProfiles = profilsRes.data || [];
+    // Récupérer les correspondances pour compter les actifs
+    var corresRes = await sb.from('Correspondre').select('utilisateur');
+    var utilisateursActifs = corresRes.data ? [...new Set(corresRes.data.map(function(c) { return c.utilisateur; }))].length : 0;
+    
+    set2('adoptantsTotal', tousProfiles.length);
+    set2('adoptantsComplets', tousProfiles.length);
     set2('adoptantsAdoptions', adoptionsCDP ? adoptionsCDP.length : 0);
-    set2('subAdoptants', (profils ? profils.length : 0) + ' adoptants inscrits · données anonymisées');
+    set2('subAdoptants', tousProfiles.length + ' profil(s) adoptant · ' + utilisateursActifs + ' actif(s)');
+    
+    // Afficher la liste des profils
+    var tAdoptants = document.getElementById('tbody-adoptants');
+    if (tAdoptants && tousProfiles.length > 0) {
+      tAdoptants.innerHTML = '';
+      tousProfiles.forEach(function(p) {
+        var date = p.created_at ? new Date(p.created_at).toLocaleDateString('fr-FR') : '–';
+        var espece = p.animal_souhaite || '–';
+        var logement = p.type_logement || '–';
+        tAdoptants.insertAdjacentHTML('beforeend',
+          '<tr>' +
+          '<td style="font-size:0.78rem;color:var(--dust);font-family:monospace">' + (p.utilisateur ? p.utilisateur.substring(0,8) + '…' : '–') + '</td>' +
+          '<td style="font-size:0.78rem">' + espece + '</td>' +
+          '<td style="font-size:0.78rem">' + logement + '</td>' +
+          '<td style="font-size:0.75rem;color:var(--dust)">' + date + '</td>' +
+          '</tr>'
+        );
+      });
+    } else if (tAdoptants) {
+      tAdoptants.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--dust)">Aucun profil adoptant pour le moment.</td></tr>';
+    }
 
     // ══ SIGNALEMENTS ══
     var signalRes = await sb.from('Signalisation').select('*, animal:Animal(nom, refuge:Refuge(nom))').order('created_at', { ascending: false });
