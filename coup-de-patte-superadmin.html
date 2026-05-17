@@ -199,6 +199,23 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
       return _supabaseClient;
     }
   </script>
+
+<script>
+  function showSectionFn(id, el) {
+    document.querySelectorAll('.section').forEach(function(s) { s.classList.remove('active'); });
+    var target = document.getElementById('section-' + id);
+    if (target) target.classList.add('active');
+    document.querySelectorAll('.sb-item').forEach(function(i) { i.classList.remove('active'); });
+    if (el && el.classList) {
+      el.classList.add('active');
+    } else {
+      document.querySelectorAll('.sb-item').forEach(function(i) {
+        var oc = i.getAttribute('onclick') || '';
+        if (oc.indexOf("'" + id + "'") !== -1) i.classList.add('active');
+      });
+    }
+  }
+</script>
 </head>
 <body>
 
@@ -701,20 +718,6 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
   });
 
   // ══ CHARGEMENT DONNÉES SUPERADMIN ══
-  function showSectionFn(id, el) {
-    document.querySelectorAll('.section').forEach(function(s) { s.classList.remove('active'); });
-    var target = document.getElementById('section-' + id);
-    if (target) target.classList.add('active');
-    document.querySelectorAll('.sb-item').forEach(function(i) { i.classList.remove('active'); });
-    if (el && el.classList) {
-      el.classList.add('active');
-    } else {
-      document.querySelectorAll('.sb-item').forEach(function(i) {
-        var oc = i.getAttribute('onclick') || '';
-        if (oc.indexOf("'" + id + "'") !== -1) i.classList.add('active');
-      });
-    }
-  }
 
   window.addEventListener('load', async function() {
     // Vérification admin - connexion requise avec contact@coup-de-patte.fr
