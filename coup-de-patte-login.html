@@ -216,9 +216,9 @@ footer{background:var(--forest);color:var(--ivory);padding:40px 52px 28px;positi
       <h2 class="left-title">L'animal qui vous<br>correspond <em>vraiment</em></h2>
       <p class="left-sub">Complétez votre profil en 5 minutes et découvrez les animaux en refuge qui correspondent à votre mode de vie, avec un score de compatibilité.</p>
       <div class="left-stats">
-        <div><span class="ls-n">4 000+</span><span class="ls-l">Refuges référencés</span></div>
+        <div><span class="ls-n" id="loginStatRefuges">–</span><span class="ls-l">Refuges référencés</span></div>
         <div><span class="ls-n">100%</span><span class="ls-l">100% gratuit</span></div>
-        <div><span class="ls-n">47</span><span class="ls-l">Animaux Enfin Moi ?</span></div>
+        <div><span class="ls-n" id="loginStatEnfin">–</span><span class="ls-l">Animaux Enfin Moi ?</span></div>
       </div>
 
       <!-- Enfin Moi explanation -->
@@ -709,6 +709,19 @@ footer{background:var(--forest);color:var(--ivory);padding:40px 52px 28px;positi
       showToast('✅ Email envoyé ! Vérifiez votre boîte mail.');
     }
   }
+
+  // Stats dynamiques
+  window.addEventListener('load', async function() {
+    try {
+      var sb = getSupabase();
+      var rRes = await sb.from('Refuge').select('id', { count: 'exact', head: true });
+      var eRes = await sb.from('Animal').select('id', { count: 'exact', head: true }).eq('enfin_moi', true).eq('disponible', true);
+      var elR = document.getElementById('loginStatRefuges');
+      var elE = document.getElementById('loginStatEnfin');
+      if (elR && rRes.count !== null) elR.textContent = rRes.count;
+      if (elE && eRes.count !== null) elE.textContent = eRes.count;
+    } catch(e) {}
+  });
 </script>
 <footer>
   <div class="footer-logo">
