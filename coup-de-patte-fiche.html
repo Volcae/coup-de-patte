@@ -174,7 +174,8 @@ footer{background:var(--forest);color:var(--ivory);padding:40px 52px 28px;positi
       if (!session) { window.location.href = 'coup-de-patte-login.html'; return; }
 
       var params = new URLSearchParams(window.location.search);
-      var animalId = params.get('id');
+      window.animalId = params.get('id');
+      var animalId = window.animalId;
       if (!animalId) return;
 
       var sb = getSupabase();
@@ -639,6 +640,7 @@ footer{background:var(--forest);color:var(--ivory);padding:40px 52px 28px;positi
   }
 
   function signalerInfoIncorrecte() {
+    var animalId = window.animalId;
     var info = prompt('Quelle information vous semble incorrecte ?\n\nExemple : "La race est incorrecte" ou "L\'âge indiqué ne correspond pas"');
     if(info && info.trim()) {
       getSupabase().from('Signalisation').insert({
@@ -654,6 +656,7 @@ footer{background:var(--forest);color:var(--ivory);padding:40px 52px 28px;positi
   }
 
   function confirmerCompat(sujet, sens) {
+    var animalId = window.animalId;
     var label = sens === 'oui' ? 'compatible avec ' + sujet : 'pas compatible avec ' + sujet;
     if(confirm('Vous confirmez ce signalement ?\n\nVotre retour sera agrégé avec ceux des autres visiteurs pour enrichir la fiche.')) {
       getSupabase().from('Signalisation').insert({
@@ -668,6 +671,7 @@ footer{background:var(--forest);color:var(--ivory);padding:40px 52px 28px;positi
   }
 
   function signalerAdoption() {
+    var animalId = window.animalId;
     if(confirm('Vous confirmez avoir adopté cet animal via Coup de Patte ?\n\n⚠️ La fiche sera supprimée dès confirmation.\n\nCette action aidera à mesurer l\'impact réel de Coup de Patte.')) {
       var sb = getSupabase();
       sb.from('Animal').update({ statut: 'adopte_cdp', disponible: false }).eq('id', animalId).then(function(res) {
@@ -684,6 +688,7 @@ footer{background:var(--forest);color:var(--ivory);padding:40px 52px 28px;positi
   var currentUserId = null;
 
   async function signalerAbsence() {
+    var animalId = window.animalId;
     if(dejaSignale) {
       alert('Vous avez déjà signalé l\'absence de cet animal. Merci pour votre contribution !');
       return;
@@ -757,6 +762,7 @@ footer{background:var(--forest);color:var(--ivory);padding:40px 52px 28px;positi
 
   // Charger les signalements existants au démarrage
   async function chargerSignalements() {
+    var animalId = window.animalId;
     if(!animalId) return;
     var sb = getSupabase();
     
