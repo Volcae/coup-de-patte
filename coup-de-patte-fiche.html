@@ -772,7 +772,7 @@ footer{background:var(--forest);color:var(--ivory);padding:40px 52px 28px;positi
       currentUserId = sessRes.data.session.user.id;
     }
 
-    var { data: signaux } = await sb.from('Signalisation').select('id, type, utilisateur').eq('animal', animalId).eq('type_signalement', 'absence');
+    var { data: signaux } = await sb.from('Signalisation').select('id, type_signalement, utilisateur').eq('animal', animalId).eq('type_signalement', 'absence');
     if(!signaux || signaux.length === 0) return;
 
     var absenceCount = signaux.length;
