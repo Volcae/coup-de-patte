@@ -645,8 +645,8 @@ footer{background:var(--forest);color:var(--ivory);padding:40px 52px 28px;positi
     if(info && info.trim()) {
       getSupabase().from('Signalisation').insert({
         animal: animalId,
-        type: 'info_incorrecte',
-        message: info.trim(),
+        type_signalement: 'info_incorrecte',
+        commentaire: info.trim(),
         utilisateur: currentUserId || null
       }).then(function(res) {
         if(res.error) { alert('Erreur lors du signalement.'); return; }
@@ -661,8 +661,8 @@ footer{background:var(--forest);color:var(--ivory);padding:40px 52px 28px;positi
     if(confirm('Vous confirmez ce signalement ?\n\nVotre retour sera agrégé avec ceux des autres visiteurs pour enrichir la fiche.')) {
       getSupabase().from('Signalisation').insert({
         animal: animalId,
-        type: 'compatibilite',
-        message: label,
+        type_signalement: 'compatibilite',
+        commentaire: label,
         utilisateur: currentUserId || null
       }).then(function() {
         alert('💬 Merci pour votre retour ! Il sera pris en compte si d\'autres visiteurs confirment la même chose. 🐾');
@@ -676,7 +676,7 @@ footer{background:var(--forest);color:var(--ivory);padding:40px 52px 28px;positi
       var sb = getSupabase();
       sb.from('Animal').update({ statut: 'adopte_cdp', disponible: false }).eq('id', animalId).then(function(res) {
         if(res.error) { alert('Erreur : ' + res.error.message); return; }
-        sb.from('Signalisation').insert({ animal: animalId, type: 'adoption_cdp', utilisateur: currentUserId || null }).then(function() {
+        sb.from('Signalisation').insert({ animal: animalId, type_signalement: 'adoption_cdp', utilisateur: currentUserId || null }).then(function() {
           alert('🐾 Merci ! La fiche a été retirée et votre adoption transmise au refuge.\n\nElle sera comptabilisée dans les statistiques Coup de Patte.');
           setTimeout(function() { window.location.href = 'coup-de-patte-v3.html'; }, 1500);
         });
@@ -700,7 +700,7 @@ footer{background:var(--forest);color:var(--ivory);padding:40px 52px 28px;positi
     // Insérer le signalement
     var { error } = await sb.from('Signalisation').insert({
       animal: animalId,
-      type: 'absence',
+      type_signalement: 'absence',
       utilisateur: currentUserId || null
     });
     if(error) { alert('Erreur : ' + error.message); return; }
@@ -708,7 +708,7 @@ footer{background:var(--forest);color:var(--ivory);padding:40px 52px 28px;positi
     dejaSignale = true;
 
     // Compter les signalements d'absence pour cet animal
-    var { data: signaux } = await sb.from('Signalisation').select('id').eq('animal', animalId).eq('type', 'absence');
+    var { data: signaux } = await sb.from('Signalisation').select('id').eq('animal', animalId).eq('type_signalement', 'absence');
     var absenceCount = signaux ? signaux.length : 1;
 
     // Mettre à jour le compteur UI
@@ -772,7 +772,7 @@ footer{background:var(--forest);color:var(--ivory);padding:40px 52px 28px;positi
       currentUserId = sessRes.data.session.user.id;
     }
 
-    var { data: signaux } = await sb.from('Signalisation').select('id, type, utilisateur').eq('animal', animalId).eq('type', 'absence');
+    var { data: signaux } = await sb.from('Signalisation').select('id, type, utilisateur').eq('animal', animalId).eq('type_signalement', 'absence');
     if(!signaux || signaux.length === 0) return;
 
     var absenceCount = signaux.length;

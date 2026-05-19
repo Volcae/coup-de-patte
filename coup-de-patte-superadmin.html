@@ -790,7 +790,7 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
         row.innerHTML =
           '<td><strong>' + (s.animal ? s.animal.nom : '–') + '</strong></td>' +
           '<td style="font-size:0.78rem;color:var(--dust)">' + (s.animal && s.animal.refuge ? s.animal.refuge.nom : '–') + '</td>' +
-          '<td style="font-size:0.78rem;font-weight:700;color:var(--rose)">' + (s.count || 1) + '/5</td>' +
+          '<td style="font-size:0.78rem;font-weight:700;color:var(--rose)">' + (s.count_signal || 1) + '/5</td>' +
           '<td style="font-size:0.75rem;color:var(--dust)">' + (s.created_at ? new Date(s.created_at).toLocaleDateString('fr-FR') : '–') + '</td>' +
           '<td><button class="row-btn row-btn-red" onclick="showToast(&quot;Signalement trait&eacute;&quot;)">✕</button></td>';
         tSign.appendChild(row);
