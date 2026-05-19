@@ -582,6 +582,26 @@ function getSupabase() {
           <option value="Très difficilement">🔴 Très difficilement</option>
         </select>
       </div>
+      <div class="form-group form-full">
+        <label class="form-label">Photo de l'animal</label>
+        <div id="photoUploadZone" style="border:2px dashed var(--border);border-radius:14px;padding:20px;text-align:center;cursor:pointer;transition:all 0.2s;background:var(--ivory)" onclick="document.getElementById('fieldPhoto').click()" ondragover="event.preventDefault();this.style.borderColor='var(--moss)'" ondragleave="this.style.borderColor='var(--border)'" ondrop="handlePhotoDrop(event)">
+          <div id="photoPreview" style="display:none;margin-bottom:12px">
+            <img id="photoPreviewImg" style="max-height:140px;border-radius:10px;object-fit:cover;max-width:100%">
+          </div>
+          <div id="photoPlaceholder">
+            <div style="font-size:2rem;margin-bottom:6px">📷</div>
+            <p style="font-size:0.82rem;font-weight:600;color:var(--forest);margin:0 0 4px">Cliquer ou déposer une photo</p>
+            <p style="font-size:0.72rem;color:var(--dust);margin:0">JPG, PNG · Max 2 Mo</p>
+          </div>
+        </div>
+        <input type="file" id="fieldPhoto" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="previewPhoto(this)">
+        <div id="photoUploadProgress" style="display:none;margin-top:8px">
+          <div style="background:var(--mint-lt);border-radius:50px;height:6px;overflow:hidden">
+            <div id="photoProgressBar" style="height:100%;background:var(--moss);width:0%;transition:width 0.3s;border-radius:50px"></div>
+          </div>
+          <p style="font-size:0.72rem;color:var(--dust);margin:4px 0 0;text-align:center" id="photoProgressLabel">Upload en cours…</p>
+        </div>
+      </div>
     </div>
     <div class="modal-footer">
       <button class="btn-secondary" onclick="closeModal()">Annuler</button>
@@ -607,6 +627,74 @@ function getSupabase() {
 <div class="toast" id="toast"></div>
 
 <script>
+// ══ PHOTO UPLOAD ══
+  function previewPhoto(input) {
+    if (!input.files || !input.files[0]) return;
+    var file = input.files[0];
+    if (file.size > 2 * 1024 * 1024) {
+      showToast('Photo trop lourde · Max 2 Mo');
+      input.value = '';
+      return;
+    }
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      document.getElementById('photoPreviewImg').src = e.target.result;
+      document.getElementById('photoPreview').style.display = 'block';
+      document.getElementById('photoPlaceholder').style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function handlePhotoDrop(e) {
+    e.preventDefault();
+    document.getElementById('photoUploadZone').style.borderColor = 'var(--border)';
+    var files = e.dataTransfer.files;
+    if (files.length > 0) {
+      document.getElementById('fieldPhoto').files = files;
+      previewPhoto(document.getElementById('fieldPhoto'));
+    }
+  }
+
+  async function uploadPhoto(animalId) {
+    var input = document.getElementById('fieldPhoto');
+    if (!input || !input.files || !input.files[0]) return null;
+    var file = input.files[0];
+    var ext = file.name.split('.').pop().toLowerCase();
+    var path = 'animaux/' + animalId + '.' + ext;
+
+    // Show progress
+    document.getElementById('photoUploadProgress').style.display = 'block';
+    document.getElementById('photoProgressBar').style.width = '30%';
+
+    var sb = getSupabase();
+    var { error } = await sb.storage.from('animaux').upload(path, file, { upsert: true });
+
+    document.getElementById('photoProgressBar').style.width = '100%';
+
+    if (error) {
+      showToast('Erreur upload photo : ' + error.message);
+      document.getElementById('photoUploadProgress').style.display = 'none';
+      return null;
+    }
+
+    document.getElementById('photoProgressLabel').textContent = 'Photo uploadée ✅';
+    var { data } = sb.storage.from('animaux').getPublicUrl(path);
+    return data.publicUrl;
+  }
+
+  function resetPhotoField() {
+    var input = document.getElementById('fieldPhoto');
+    if (input) input.value = '';
+    var preview = document.getElementById('photoPreview');
+    if (preview) preview.style.display = 'none';
+    var placeholder = document.getElementById('photoPlaceholder');
+    if (placeholder) placeholder.style.display = 'block';
+    var progress = document.getElementById('photoUploadProgress');
+    if (progress) progress.style.display = 'none';
+    var bar = document.getElementById('photoProgressBar');
+    if (bar) bar.style.width = '0%';
+  }
+
 // ══ ÉTAT GLOBAL ══
 var currentRefuge = null;
 var allAnimals = [];
@@ -950,9 +1038,16 @@ function openEditModal(animalId) {
   document.getElementById('optChats2').classList.toggle('on', !!a.compat_chats);
   document.getElementById('optChiens2').classList.toggle('on', !!a.compat_chiens);
   document.getElementById('animalModal').classList.add('open');
+  // Afficher la photo existante
+  resetPhotoField();
+  if (a.photo_url) {
+    document.getElementById('photoPreviewImg').src = a.photo_url;
+    document.getElementById('photoPreview').style.display = 'block';
+    document.getElementById('photoPlaceholder').style.display = 'none';
+  }
 }
 
-function closeModal() { document.getElementById('animalModal').classList.remove('open'); }
+function closeModal() { document.getElementById('animalModal').classList.remove('open'); resetPhotoField(); }
 
 async function saveAnimal() {
   var nom = document.getElementById('fieldNom').value.trim();
@@ -994,9 +1089,23 @@ async function saveAnimal() {
   if (editingId) {
     var res = await sb.from('Animal').update(payload).eq('id', editingId);
     error = res.error;
+    if (!error) {
+      // Upload photo si une nouvelle a été sélectionnée
+      var photoUrl = await uploadPhoto(editingId);
+      if (photoUrl) {
+        await sb.from('Animal').update({ photo_url: photoUrl }).eq('id', editingId);
+      }
+    }
   } else {
-    var res = await sb.from('Animal').insert([payload]);
+    var res = await sb.from('Animal').insert([payload]).select('id').single();
     error = res.error;
+    if (!error && res.data) {
+      // Upload photo pour le nouvel animal
+      var photoUrl = await uploadPhoto(res.data.id);
+      if (photoUrl) {
+        await sb.from('Animal').update({ photo_url: photoUrl }).eq('id', res.data.id);
+      }
+    }
   }
 
   if (error) { showToast('Erreur : ' + error.message); return; }

@@ -419,6 +419,9 @@ footer{background:var(--forest);color:var(--ivory);padding:40px 52px 28px;positi
       var a = m.animal;
       if (!a) return;
       var emoji = a.espece && a.espece.toLowerCase() === 'chat' ? '🐱' : '🐕';
+    var photoHtml = a.photo_url
+      ? '<img src="' + a.photo_url + '" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:inherit" onerror="this.remove()">'
+      : '';
       var refuge = a.refuge || {};
       var score = m.score_global ? m.score_global + '% compatible' : '';
       var tel = refuge.telephone ? refuge.telephone.replace(/ /g,'') : '';
@@ -463,6 +466,9 @@ footer{background:var(--forest);color:var(--ivory);padding:40px 52px 28px;positi
       var a = m.animal;
       if (!a) return;
       var emoji = a.espece && a.espece.toLowerCase() === 'chat' ? '🐱' : '🐕';
+    var photoHtml = a.photo_url
+      ? '<img src="' + a.photo_url + '" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:inherit" onerror="this.remove()">'
+      : '';
       var age = a.age_annees ? a.age_annees + ' an' + (a.age_annees > 1 ? 's' : '') : '';
       var ville = a.refuge ? a.refuge.ville : '';
       grid.insertAdjacentHTML('beforeend',
