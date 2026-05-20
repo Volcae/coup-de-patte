@@ -488,46 +488,61 @@ footer{background:var(--forest);color:var(--ivory);padding:40px 52px 28px;positi
 
   async function retirerJaime(matchId, btn) {
     var sb = getSupabase();
+    var likedCard = btn.closest('.liked-card');
+
+    // Récupérer l'animalId depuis le onclick de la card
+    var animalId = null;
+    if (likedCard && likedCard.getAttribute('onclick')) {
+      var m = likedCard.getAttribute('onclick').match(/id=([a-f0-9-]{36})/);
+      if (m) animalId = m[1];
+    }
+
     var { error } = await sb.from('Correspondre').update({ aime: false }).eq('id', matchId);
-    if (!error) { btn.closest('.liked-card').remove(); }
+    if (error) return;
+
+    likedCard.remove();
+
+    // Remettre dans les matchs
+    if (animalId && window.allMatchs) {
+      var matchEntry = allMatchs.find(function(m) { return m.animal && m.animal.id === animalId; });
+      if (matchEntry) {
+        var grid = document.getElementById('matches-grid');
+        if (grid) {
+          grid.insertAdjacentHTML('afterbegin', renderMatchCard(matchEntry.animal, matchEntry.score));
+        }
+      }
+    }
   }
 
-  // Like button in match cards saves to Supabase
+  // Like button : sauvegarde + retire la card des matchs
   async function likeCard(btn) {
-    var isLiked = btn.classList.contains('liked');
-    btn.classList.toggle('liked');
-    btn.innerHTML = isLiked
-      ? '<span style="filter:brightness(0) invert(1)">🐾</span> J\'aime'
-      : '<span style="filter:brightness(0) invert(1)">🐾</span> Aimé !';
-
     var card = btn.closest('.match-card');
     if (!card) return;
-    var animalId = card.onclick && card.onclick.toString().match(/id=([a-f0-9-]+)/)?.[1];
+    var animalId = card.dataset.animalId;
     if (!animalId) return;
 
     var sb = getSupabase();
     var { data: { session } } = await sb.auth.getSession();
     if (!session) return;
 
-    // Upsert dans Correspondre
+    var scoreVal = 0;
+    if (window.allMatchs) {
+      var matchEntry = allMatchs.find(function(m) { return m.animal && m.animal.id === animalId; });
+      if (matchEntry) scoreVal = matchEntry.score || 0;
+    }
+
     var existingRes = await sb.from('Correspondre').select('id').eq('utilisateur', session.user.id).eq('animal', animalId);
     var existing = existingRes.data && existingRes.data.length > 0 ? existingRes.data[0] : null;
     if (existing) {
-      await sb.from('Correspondre').update({ aime: !isLiked }).eq('id', existing.id);
+      await sb.from('Correspondre').update({ aime: true }).eq('id', existing.id);
     } else {
-      // Get the score from the card
-      // Find score from allMatchs
-      var scoreVal = 0;
-      if (window.allMatchs) {
-        var match = allMatchs.find(function(m) { return m.animal && m.animal.id === animalId; });
-        if (match) scoreVal = match.score || 0;
-      }
-      if (!scoreVal) {
-        var scoreEl = btn.closest('.match-card') ? btn.closest('.match-card').querySelector('.mc-score-n, .score-n') : null;
-        scoreVal = scoreEl ? parseInt(scoreEl.textContent) || 0 : 0;
-      }
       await sb.from('Correspondre').insert({ utilisateur: session.user.id, animal: animalId, aime: true, vu: true, score_global: scoreVal });
     }
+
+    card.style.transition = 'opacity 0.3s, transform 0.3s';
+    card.style.opacity = '0';
+    card.style.transform = 'scale(0.9)';
+    setTimeout(function() { card.remove(); }, 300);
   }
 
   // Load J'aime when tab is clicked - patch the original
@@ -603,7 +618,11 @@ footer{background:var(--forest);color:var(--ivory);padding:40px 52px 28px;positi
     if (animal.compat_chats) tags += '<span class="mctag">🐱 Chats ok</span>';
     if (animal.compat_chiens) tags += '<span class="mctag">🐶 Chiens ok</span>';
     if (animal.enfin_moi) tags += '<span class="mctag mctag-gold">✨ Enfin Moi ?</span>';
-    return '<div class="match-card' + enfinClass + '" onclick="window.location.href=\'coup-de-patte-fiche.html?id=' + animal.id + '\'">' + enfin + '<div class="mc-inner"><div class="mc-img" style="background:linear-gradient(160deg,var(--mint),var(--sage));font-size:3rem;display:flex;align-items:center;justify-content:center;position:relative">' + emoji + '<div class="mc-score"><span class="mc-score-n" style="color:' + label.color + '">' + score + '%</span></div>' + (ville ? '<div class="mc-loc">📍 ' + ville + '</div>' : '') + '</div><div class="mc-body"><div class="mc-name">' + animal.nom + '</div><div class="mc-meta">' + (animal.race || animal.espece) + ' · ' + age + ' · ' + sexe + '</div><div style="font-size:0.7rem;font-weight:700;color:' + label.color + ';margin:4px 0">' + label.label + '</div><div class="mc-tags">' + tags + '</div><div class="mc-actions"><button class="mc-btn-like" onclick="event.stopPropagation();likeCard(this)"><span style="filter:brightness(0) invert(1)">🐾</span> J\'aime</button><button class="mc-btn-info" onclick="event.stopPropagation();window.location.href=\'coup-de-patte-fiche.html?id=' + animal.id + '\'">ℹ</button></div></div></div></div>';
+    var imgContent = animal.photo_url
+      ? '<img src="' + animal.photo_url + '" alt="' + animal.nom + '" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" onerror="this.style.display=\'none\'">' 
+      : '<span>' + emoji + '</span>';
+    var imgBg = animal.photo_url ? 'background:#e0d8cf' : 'background:linear-gradient(160deg,var(--mint),var(--sage))';
+    return '<div class="match-card' + enfinClass + '" data-animal-id="' + animal.id + '" onclick="window.location.href=\'coup-de-patte-fiche.html?id=' + animal.id + '\'">' + enfin + '<div class="mc-inner"><div class="mc-img" style="' + imgBg + ';overflow:hidden;font-size:3rem;display:flex;align-items:center;justify-content:center;position:relative">' + imgContent + '<div class="mc-score"><span class="mc-score-n" style="color:' + label.color + '">' + score + '%</span></div>' + (ville ? '<div class="mc-loc">📍 ' + ville + '</div>' : '') + '</div><div class="mc-body"><div class="mc-name">' + animal.nom + '</div><div class="mc-meta">' + (animal.race || animal.espece) + ' · ' + age + ' · ' + sexe + '</div><div style="font-size:0.7rem;font-weight:700;color:' + label.color + ';margin:4px 0">' + label.label + '</div><div class="mc-tags">' + tags + '</div><div class="mc-actions"><button class="mc-btn-like" onclick="event.stopPropagation();likeCard(this)"><span style="filter:brightness(0) invert(1)">🐾</span> J\'aime</button><button class="mc-btn-info" onclick="event.stopPropagation();window.location.href=\'coup-de-patte-fiche.html?id=' + animal.id + '\'">ℹ</button></div></div></div></div>';
   }
 
   function displayMatchs() {
