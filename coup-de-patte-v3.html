@@ -100,7 +100,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 .match-card.enfin{border-color:rgba(212,168,67,0.38);box-shadow:0 4px 18px rgba(212,168,67,0.12)}
 .match-card.new::after{content:'Nouveau';position:absolute;top:10px;right:10px;background:var(--moss);color:white;font-size:0.58rem;font-weight:700;padding:3px 8px;border-radius:50px;z-index:10;letter-spacing:0.5px}
 
-.mc-inner{border-radius:22px;overflow:visible}
+.mc-inner{border-radius:22px;overflow:visible;position:relative}
 .mc-img{height:160px;display:flex;align-items:center;justify-content:center;font-size:4rem;position:relative;overflow:hidden;border-radius:22px 22px 0 0}
 .mc-score{position:absolute;bottom:-18px;right:14px;background:var(--paper);border:1.5px solid var(--border);border-radius:12px;padding:7px 12px;text-align:center;z-index:20;box-shadow:0 4px 14px rgba(45,74,62,0.1)}
 .mc-score-n{font-family:'Fraunces',serif;font-size:1.25rem;font-weight:700;line-height:1;display:block}
@@ -121,11 +121,11 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 
 /* VUE J'AIME */
 .liked-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
-.liked-card{background:var(--paper);border-radius:18px;border:1.5px solid var(--border);overflow:hidden;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;position:relative}
+.liked-card{background:var(--paper);border-radius:18px;border:1.5px solid var(--border);overflow:visible;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;position:relative}
 .liked-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(45,74,62,0.1)}
-.liked-img{height:110px;display:flex;align-items:center;justify-content:center;font-size:2.8rem;position:relative;overflow:hidden}
-.liked-score{position:absolute;bottom:8px;right:8px;background:rgba(253,252,248,0.92);border:1.5px solid rgba(45,74,62,0.12);border-radius:8px;padding:4px 9px;font-family:'Fraunces',serif;font-size:0.95rem;font-weight:700;z-index:5;backdrop-filter:blur(8px)}
-.liked-body{padding:12px 14px 12px}
+.liked-img{height:110px;display:flex;align-items:center;justify-content:center;font-size:2.8rem;position:relative;overflow:hidden;border-radius:18px 18px 0 0}
+.liked-score{position:absolute;bottom:-16px;right:10px;background:var(--paper);border:1.5px solid var(--border);border-radius:8px;padding:4px 10px;font-family:'Fraunces',serif;font-size:0.95rem;font-weight:700;z-index:20;box-shadow:0 3px 10px rgba(45,74,62,0.1)}
+.liked-body{padding:22px 14px 12px}
 .liked-name{font-family:'Fraunces',serif;font-size:0.95rem;font-weight:700;font-style:italic;color:var(--forest);margin-bottom:2px}
 .liked-meta{font-size:0.68rem;color:var(--dust);margin-bottom:8px}
 .liked-remove{font-size:0.7rem;color:var(--smoke);cursor:pointer;transition:color 0.2s;background:none;border:none;font-family:'Nunito',sans-serif;padding:0}
@@ -623,7 +623,7 @@ footer{background:var(--forest);color:var(--ivory);padding:40px 52px 28px;positi
       ? '<img src="' + animal.photo_url + '" alt="' + animal.nom + '" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" onerror="this.style.display=\'none\'">' 
       : '<span>' + emoji + '</span>';
     var imgBg = animal.photo_url ? 'background:#e0d8cf' : 'background:linear-gradient(160deg,var(--mint),var(--sage))';
-    return '<div class="match-card' + enfinClass + '" data-animal-id="' + animal.id + '" onclick="window.location.href=\'coup-de-patte-fiche.html?id=' + animal.id + '\'">' + enfin + '<div class="mc-inner"><div class="mc-img" style="' + imgBg + ';overflow:hidden;font-size:3rem;display:flex;align-items:center;justify-content:center;position:relative">' + imgContent + '<div class="mc-score"><span class="mc-score-n" style="color:' + label.color + '">' + score + '%</span></div>' + (ville ? '<div class="mc-loc">📍 ' + ville + '</div>' : '') + '</div><div class="mc-body"><div class="mc-name">' + animal.nom + '</div><div class="mc-meta">' + (animal.race || animal.espece) + ' · ' + age + ' · ' + sexe + '</div><div style="font-size:0.7rem;font-weight:700;color:' + label.color + ';margin:4px 0">' + label.label + '</div><div class="mc-tags">' + tags + '</div><div class="mc-actions"><button class="mc-btn-like" onclick="event.stopPropagation();likeCard(this)"><span style="filter:brightness(0) invert(1)">🐾</span> J\'aime</button><button class="mc-btn-info" onclick="event.stopPropagation();window.location.href=\'coup-de-patte-fiche.html?id=' + animal.id + '\'">ℹ</button></div></div></div></div>';
+    return '<div class="match-card' + enfinClass + '" data-animal-id="' + animal.id + '" onclick="window.location.href=\'coup-de-patte-fiche.html?id=' + animal.id + '\'">' + enfin + '<div class="mc-inner"><div class="mc-img" style="' + imgBg + ';overflow:hidden;font-size:3rem;display:flex;align-items:center;justify-content:center;position:relative">' + imgContent + ' + (ville ? '<div class="mc-loc">📍 ' + ville + '</div>' : '') + '</div><div class="mc-score"><span class="mc-score-n" style="color:' + label.color + '">' + score + '%</span></div><div class="mc-body"><div class="mc-name">' + animal.nom + '</div><div class="mc-meta">' + (animal.race || animal.espece) + ' · ' + age + ' · ' + sexe + '</div><div style="font-size:0.7rem;font-weight:700;color:' + label.color + ';margin:4px 0">' + label.label + '</div><div class="mc-tags">' + tags + '</div><div class="mc-actions"><button class="mc-btn-like" onclick="event.stopPropagation();likeCard(this)"><span style="filter:brightness(0) invert(1)">🐾</span> J\'aime</button><button class="mc-btn-info" onclick="event.stopPropagation();window.location.href=\'coup-de-patte-fiche.html?id=' + animal.id + '\'">ℹ</button></div></div></div></div>';
   }
 
   function displayMatchs() {
