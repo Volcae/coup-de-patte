@@ -29,14 +29,16 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
   width:100%;height:400px;
   background:linear-gradient(160deg,var(--mint) 0%,var(--sage) 50%,var(--moss) 100%);
   display:flex;align-items:center;justify-content:center;
-  font-size:9rem;position:relative;overflow:hidden;
+  font-size:9rem;position:relative;overflow:visible;
 }
-/* Photo injectée par JS */
+/* Clip interne uniquement pour la photo — via pseudo wrapper */
+.hero-img-clip{position:absolute;inset:0;overflow:hidden;z-index:1}
+/* Photo injectée par JS dans hero-img-clip */
 .hero-img img.hero-photo{
   position:absolute;inset:0;width:100%;height:100%;
   object-fit:cover;object-position:center top;z-index:1;
 }
-/* Fondu bas pour lisibilité du texte */
+/* Fondu bas */
 .hero-img::before{
   content:'';position:absolute;bottom:0;left:0;right:0;height:150px;
   background:linear-gradient(to bottom,transparent,rgba(244,241,232,0.8));
@@ -51,22 +53,21 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 @keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(220%)}}
 #animalEmoji{position:relative;z-index:2}
 
-/* ─── CORRECTION 2 : score DANS l'image, plus de chevauchement ─── */
+/* ─── SCORE FLOTTANT entre la photo et le contenu ─── */
 .hero-score{
-  position:absolute;bottom:18px;right:52px;
-  background:rgba(253,252,248,0.9);
-  border:1.5px solid rgba(45,74,62,0.14);
-  border-radius:18px;padding:12px 20px;
-  box-shadow:0 4px 20px rgba(45,74,62,0.18);
-  text-align:center;z-index:10;
-  backdrop-filter:blur(12px);
+  position:absolute;bottom:-28px;right:52px;
+  background:var(--paper);
+  border:1.5px solid var(--border);
+  border-radius:20px;padding:14px 22px;
+  box-shadow:0 8px 28px rgba(45,74,62,0.15);
+  text-align:center;z-index:20;
 }
-.hero-score-n{font-family:'Fraunces',serif;font-size:2.2rem;font-weight:700;color:var(--moss);line-height:1;display:block;letter-spacing:-1px}
-.hero-score-l{font-size:0.62rem;font-weight:700;color:var(--moss);display:block;margin-top:3px;letter-spacing:0.3px}
+.hero-score-n{font-family:'Fraunces',serif;font-size:2.6rem;font-weight:700;color:var(--moss);line-height:1;display:block;letter-spacing:-1px}
+.hero-score-l{font-size:0.65rem;font-weight:700;color:var(--moss);display:block;margin-top:2px;letter-spacing:0.3px}
 .hero-loc{position:absolute;bottom:18px;left:52px;background:rgba(45,74,62,0.55);color:rgba(244,241,232,0.92);font-size:0.78rem;font-weight:600;padding:6px 14px;border-radius:50px;backdrop-filter:blur(8px);z-index:10}
 
 /* CONTENT */
-.content{max-width:1060px;margin:0 auto;padding:36px 52px 80px;position:relative;z-index:1}
+.content{max-width:1060px;margin:0 auto;padding:52px 52px 80px;position:relative;z-index:1}
 .animal-header{margin-bottom:28px}
 .animal-name{font-family:'Fraunces',serif;font-size:3rem;font-weight:700;font-style:italic;color:var(--forest);line-height:1;margin-bottom:8px}
 .animal-meta{font-size:0.88rem;color:var(--dust);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
@@ -211,13 +212,14 @@ window.addEventListener('load', async function() {
   var emoji = animal.espece && animal.espece.toLowerCase() === 'chat' ? '🐱' : '🐕';
   if (emojiEl) emojiEl.textContent = emoji;
 
-  if (animal.photo_url && heroImg) {
+  var heroClip = document.getElementById('heroImgClip');
+  if (animal.photo_url && heroClip) {
     var img = document.createElement('img');
     img.src = animal.photo_url;
     img.alt = animal.nom || '';
     img.className = 'hero-photo';
     img.onerror = function() { this.remove(); if (emojiEl) emojiEl.style.display = 'block'; };
-    heroImg.insertBefore(img, heroImg.firstChild);
+    heroClip.appendChild(img);
     heroImg.style.background = '#b8b0a6';
     if (emojiEl) emojiEl.style.display = 'none';
   }
@@ -434,9 +436,11 @@ window.addEventListener('load', async function() {
 </style>
 
 <div class="hero">
-  <!-- overflow:hidden → photo + badge score restent dans la zone -->
+  <!-- overflow:visible → le badge score peut flotter en dehors -->
   <div class="hero-img" id="heroImg">
-    <!-- Photo injectée ici par JS si photo_url existe -->
+    <!-- Zone clippée pour la photo uniquement (pas le badge) -->
+    <div class="hero-img-clip" id="heroImgClip"></div>
+    <!-- Emoji fallback -->
     <span id="animalEmoji" style="position:relative;z-index:2">🐕</span>
 
     <!-- Badge signalements -->

@@ -102,11 +102,11 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 
 .mc-inner{border-radius:22px;overflow:hidden}
 .mc-img{height:160px;display:flex;align-items:center;justify-content:center;font-size:4rem;position:relative}
-.mc-score{position:absolute;bottom:10px;right:10px;background:rgba(253,252,248,0.92);border:1.5px solid var(--border);border-radius:10px;padding:5px 10px;text-align:center;z-index:20;box-shadow:0 2px 8px rgba(45,74,62,0.12);backdrop-filter:blur(6px)}
-.mc-score-n{font-family:'Fraunces',serif;font-size:1.1rem;font-weight:700;line-height:1;display:block}
+.mc-score{position:absolute;bottom:-18px;right:14px;background:var(--paper);border:1.5px solid var(--border);border-radius:12px;padding:7px 12px;text-align:center;z-index:20;box-shadow:0 4px 14px rgba(45,74,62,0.1)}
+.mc-score-n{font-family:'Fraunces',serif;font-size:1.25rem;font-weight:700;line-height:1;display:block}
 .mc-ribbon{position:absolute;top:10px;left:-5px;background:linear-gradient(135deg,#F5C77E,var(--gold));color:var(--forest);font-size:0.58rem;font-weight:700;padding:3px 10px 3px 12px;border-radius:0 50px 50px 0;box-shadow:1px 1px 6px rgba(0,0,0,0.1);z-index:10}
 .mc-loc{position:absolute;bottom:10px;left:10px;background:rgba(45,74,62,0.5);color:rgba(244,241,232,0.9);font-size:0.65rem;font-weight:600;padding:3px 9px;border-radius:50px;backdrop-filter:blur(6px)}
-.mc-body{padding:14px 16px 14px}
+.mc-body{padding:26px 16px 14px}
 .mc-name{font-family:'Fraunces',serif;font-size:1.1rem;font-weight:700;font-style:italic;color:var(--forest);margin-bottom:2px}
 .mc-meta{font-size:0.7rem;color:var(--dust);margin-bottom:8px}
 .mc-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px}
@@ -123,9 +123,9 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 .liked-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
 .liked-card{background:var(--paper);border-radius:18px;border:1.5px solid var(--border);overflow:hidden;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;position:relative}
 .liked-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(45,74,62,0.1)}
-.liked-img{height:110px;display:flex;align-items:center;justify-content:center;font-size:2.8rem;position:relative}
-.liked-score{position:absolute;bottom:-14px;right:10px;background:var(--paper);border:1.5px solid var(--border);border-radius:10px;padding:5px 10px;font-family:'Fraunces',serif;font-size:1rem;font-weight:700;z-index:5;box-shadow:0 3px 10px rgba(45,74,62,0.1)}
-.liked-body{padding:20px 14px 12px}
+.liked-img{height:110px;display:flex;align-items:center;justify-content:center;font-size:2.8rem;position:relative;overflow:hidden}
+.liked-score{position:absolute;bottom:8px;right:8px;background:rgba(253,252,248,0.92);border:1.5px solid rgba(45,74,62,0.12);border-radius:8px;padding:4px 9px;font-family:'Fraunces',serif;font-size:0.95rem;font-weight:700;z-index:5;backdrop-filter:blur(8px)}
+.liked-body{padding:12px 14px 12px}
 .liked-name{font-family:'Fraunces',serif;font-size:0.95rem;font-weight:700;font-style:italic;color:var(--forest);margin-bottom:2px}
 .liked-meta{font-size:0.68rem;color:var(--dust);margin-bottom:8px}
 .liked-remove{font-size:0.7rem;color:var(--smoke);cursor:pointer;transition:color 0.2s;background:none;border:none;font-family:'Nunito',sans-serif;padding:0}
@@ -419,15 +419,15 @@ footer{background:var(--forest);color:var(--ivory);padding:40px 52px 28px;positi
       var a = m.animal;
       if (!a) return;
       var emoji = a.espece && a.espece.toLowerCase() === 'chat' ? '🐱' : '🐕';
-      var thumbHtml = a.photo_url
-        ? '<div class="ct-thumb" style="overflow:hidden;padding:0"><img src="' + a.photo_url + '" alt="' + a.nom + '" style="width:100%;height:100%;object-fit:cover" onerror="this.parentNode.innerHTML=\'' + emoji + '\'"></div>'
-        : '<div class="ct-thumb" style="background:linear-gradient(135deg,var(--mint),var(--sage));font-size:1.6rem;display:flex;align-items:center;justify-content:center">' + emoji + '</div>';
+    var photoHtml = a.photo_url
+      ? '<img src="' + a.photo_url + '" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:inherit" onerror="this.remove()">'
+      : '';
       var refuge = a.refuge || {};
       var score = m.score_global ? m.score_global + '% compatible' : '';
       var tel = refuge.telephone ? refuge.telephone.replace(/ /g,'') : '';
       list.insertAdjacentHTML('beforeend',
         '<div class="contact-card">' +
-        thumbHtml +
+        '<div class="ct-thumb" style="background:linear-gradient(135deg,var(--mint),var(--sage));font-size:1.6rem;display:flex;align-items:center;justify-content:center">' + emoji + '</div>' +
         '<div class="ct-info">' +
         '<div class="ct-name">' + a.nom + (refuge.nom ? ' · ' + refuge.nom : '') + '</div>' +
         '<div class="ct-refuge">📍 ' + (refuge.ville || '') + (score ? ' · ' + score : '') + (a.enfin_moi ? ' · ✨ Enfin Moi ?' : '') + '</div>' +
@@ -466,15 +466,14 @@ footer{background:var(--forest);color:var(--ivory);padding:40px 52px 28px;positi
       var a = m.animal;
       if (!a) return;
       var emoji = a.espece && a.espece.toLowerCase() === 'chat' ? '🐱' : '🐕';
-      var photoContent = a.photo_url
-        ? '<img src="' + a.photo_url + '" alt="' + a.nom + '" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0" onerror="this.style.display=\'none\'">'
-        : '<span>' + emoji + '</span>';
-      var imgBg = a.photo_url ? 'background:#e0d8cf' : 'background:linear-gradient(160deg,var(--mint),var(--sage))';
+    var photoHtml = a.photo_url
+      ? '<img src="' + a.photo_url + '" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:inherit" onerror="this.remove()">'
+      : '';
       var age = a.age_annees ? a.age_annees + ' an' + (a.age_annees > 1 ? 's' : '') : '';
       var ville = a.refuge ? a.refuge.ville : '';
       grid.insertAdjacentHTML('beforeend',
         '<div class="liked-card" onclick="window.location.href=\'coup-de-patte-fiche.html?id=' + a.id + '\'">' +
-        '<div class="liked-img" style="' + imgBg + ';font-size:2.8rem;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden">' + photoContent +
+        '<div class="liked-img" style="background:linear-gradient(160deg,var(--mint),var(--sage));font-size:2.8rem;display:flex;align-items:center;justify-content:center">' + emoji +
         '<div class="liked-score" style="color:var(--moss)">' + (m.score_global || 0) + '%</div></div>' +
         '<div class="liked-body"><div class="liked-name">' + a.nom + '</div>' +
         '<div class="liked-meta">' + (a.race || a.espece) + ' · ' + age + (ville ? ' · ' + ville : '') + '</div>' +
@@ -604,11 +603,7 @@ footer{background:var(--forest);color:var(--ivory);padding:40px 52px 28px;positi
     if (animal.compat_chats) tags += '<span class="mctag">🐱 Chats ok</span>';
     if (animal.compat_chiens) tags += '<span class="mctag">🐶 Chiens ok</span>';
     if (animal.enfin_moi) tags += '<span class="mctag mctag-gold">✨ Enfin Moi ?</span>';
-    var imgContent = animal.photo_url
-      ? '<img src="' + animal.photo_url + '" alt="' + animal.nom + '" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0" onerror="this.style.display=\'none\'">'
-      : '<span style="font-size:3rem">' + emoji + '</span>';
-    var imgBg = animal.photo_url ? 'background:#e0d8cf' : 'background:linear-gradient(160deg,var(--mint),var(--sage))';
-    return '<div class="match-card' + enfinClass + '" onclick="window.location.href=\'coup-de-patte-fiche.html?id=' + animal.id + '\'">' + enfin + '<div class="mc-inner"><div class="mc-img" style="' + imgBg + ';overflow:hidden;font-size:3rem;display:flex;align-items:center;justify-content:center;position:relative">' + imgContent + '<div class="mc-score"><span class="mc-score-n" style="color:' + label.color + '">' + score + '%</span></div>' + (ville ? '<div class="mc-loc">📍 ' + ville + '</div>' : '') + '</div><div class="mc-body"><div class="mc-name">' + animal.nom + '</div><div class="mc-meta">' + (animal.race || animal.espece) + ' · ' + age + ' · ' + sexe + '</div><div style="font-size:0.7rem;font-weight:700;color:' + label.color + ';margin:4px 0">' + label.label + '</div><div class="mc-tags">' + tags + '</div><div class="mc-actions"><button class="mc-btn-like" onclick="event.stopPropagation();likeCard(this)"><span style="filter:brightness(0) invert(1)">🐾</span> J\'aime</button><button class="mc-btn-info" onclick="event.stopPropagation();window.location.href=\'coup-de-patte-fiche.html?id=' + animal.id + '\'">ℹ</button></div></div></div></div>';
+    return '<div class="match-card' + enfinClass + '" onclick="window.location.href=\'coup-de-patte-fiche.html?id=' + animal.id + '\'">' + enfin + '<div class="mc-inner"><div class="mc-img" style="background:linear-gradient(160deg,var(--mint),var(--sage));font-size:3rem;display:flex;align-items:center;justify-content:center;position:relative">' + emoji + '<div class="mc-score"><span class="mc-score-n" style="color:' + label.color + '">' + score + '%</span></div>' + (ville ? '<div class="mc-loc">📍 ' + ville + '</div>' : '') + '</div><div class="mc-body"><div class="mc-name">' + animal.nom + '</div><div class="mc-meta">' + (animal.race || animal.espece) + ' · ' + age + ' · ' + sexe + '</div><div style="font-size:0.7rem;font-weight:700;color:' + label.color + ';margin:4px 0">' + label.label + '</div><div class="mc-tags">' + tags + '</div><div class="mc-actions"><button class="mc-btn-like" onclick="event.stopPropagation();likeCard(this)"><span style="filter:brightness(0) invert(1)">🐾</span> J\'aime</button><button class="mc-btn-info" onclick="event.stopPropagation();window.location.href=\'coup-de-patte-fiche.html?id=' + animal.id + '\'">ℹ</button></div></div></div></div>';
   }
 
   function displayMatchs() {
