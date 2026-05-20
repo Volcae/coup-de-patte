@@ -100,13 +100,13 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 .match-card.enfin{border-color:rgba(212,168,67,0.38);box-shadow:0 4px 18px rgba(212,168,67,0.12)}
 .match-card.new::after{content:'Nouveau';position:absolute;top:10px;right:10px;background:var(--moss);color:white;font-size:0.58rem;font-weight:700;padding:3px 8px;border-radius:50px;z-index:10;letter-spacing:0.5px}
 
-.mc-inner{border-radius:22px;overflow:visible;position:relative}
-.mc-img{height:160px;display:flex;align-items:center;justify-content:center;font-size:4rem;position:relative;overflow:hidden;border-radius:22px 22px 0 0}
-.mc-score{position:absolute;bottom:-18px;right:14px;background:var(--paper);border:1.5px solid var(--border);border-radius:12px;padding:7px 12px;text-align:center;z-index:20;box-shadow:0 4px 14px rgba(45,74,62,0.1)}
-.mc-score-n{font-family:'Fraunces',serif;font-size:1.25rem;font-weight:700;line-height:1;display:block}
+.mc-inner{border-radius:22px;overflow:hidden}
+.mc-img{height:160px;display:flex;align-items:center;justify-content:center;font-size:4rem;position:relative;overflow:hidden}
+.mc-score{display:flex;justify-content:flex-end;padding:0 14px;margin-top:-20px;position:relative;z-index:10;pointer-events:none}
+.mc-score-n{font-family:'Fraunces',serif;font-size:1.1rem;font-weight:700;line-height:1;display:inline-block;background:var(--paper);border:1.5px solid var(--border);border-radius:10px;padding:5px 11px;box-shadow:0 3px 10px rgba(45,74,62,0.12)}
 .mc-ribbon{position:absolute;top:10px;left:-5px;background:linear-gradient(135deg,#F5C77E,var(--gold));color:var(--forest);font-size:0.58rem;font-weight:700;padding:3px 10px 3px 12px;border-radius:0 50px 50px 0;box-shadow:1px 1px 6px rgba(0,0,0,0.1);z-index:10}
 .mc-loc{position:absolute;bottom:10px;left:10px;background:rgba(45,74,62,0.5);color:rgba(244,241,232,0.9);font-size:0.65rem;font-weight:600;padding:3px 9px;border-radius:50px;backdrop-filter:blur(6px)}
-.mc-body{padding:26px 16px 14px}
+.mc-body{padding:8px 16px 14px}
 .mc-name{font-family:'Fraunces',serif;font-size:1.1rem;font-weight:700;font-style:italic;color:var(--forest);margin-bottom:2px}
 .mc-meta{font-size:0.7rem;color:var(--dust);margin-bottom:8px}
 .mc-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px}
@@ -121,11 +121,11 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 
 /* VUE J'AIME */
 .liked-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
-.liked-card{background:var(--paper);border-radius:18px;border:1.5px solid var(--border);overflow:visible;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;position:relative}
+.liked-card{background:var(--paper);border-radius:18px;border:1.5px solid var(--border);overflow:hidden;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s}
 .liked-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(45,74,62,0.1)}
-.liked-img{height:110px;display:flex;align-items:center;justify-content:center;font-size:2.8rem;position:relative;overflow:hidden;border-radius:18px 18px 0 0}
-.liked-score{position:absolute;bottom:-16px;right:10px;background:var(--paper);border:1.5px solid var(--border);border-radius:8px;padding:4px 10px;font-family:'Fraunces',serif;font-size:0.95rem;font-weight:700;z-index:20;box-shadow:0 3px 10px rgba(45,74,62,0.1)}
-.liked-body{padding:22px 14px 12px}
+.liked-img{height:110px;display:flex;align-items:center;justify-content:center;font-size:2.8rem;position:relative;overflow:hidden}
+.liked-score{display:flex;justify-content:flex-end;padding:0 10px;margin-top:-18px;position:relative;z-index:10;pointer-events:none}
+.liked-body{padding:6px 14px 12px}
 .liked-name{font-family:'Fraunces',serif;font-size:0.95rem;font-weight:700;font-style:italic;color:var(--forest);margin-bottom:2px}
 .liked-meta{font-size:0.68rem;color:var(--dust);margin-bottom:8px}
 .liked-remove{font-size:0.7rem;color:var(--smoke);cursor:pointer;transition:color 0.2s;background:none;border:none;font-family:'Nunito',sans-serif;padding:0}
@@ -475,7 +475,7 @@ footer{background:var(--forest);color:var(--ivory);padding:40px 52px 28px;positi
         '<div class="liked-card" onclick="window.location.href=\'coup-de-patte-fiche.html?id=' + a.id + '\'">' +
         '<div class="liked-img" style="' + (a.photo_url ? 'background:#e0d8cf' : 'background:linear-gradient(160deg,var(--mint),var(--sage))') + '">' +
         (a.photo_url ? '<img src="' + a.photo_url + '" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" onerror="this.style.display=\'none\'">' : '<span>' + emoji + '</span>') +
-        '<div class="liked-score" style="color:var(--moss)">' + (m.score_global || 0) + '%</div></div>' +
+        '<div class="liked-score"><span style="font-family:Fraunces,serif;font-size:0.9rem;font-weight:700;color:var(--moss);background:var(--paper);border:1.5px solid var(--border);border-radius:8px;padding:4px 10px;box-shadow:0 3px 10px rgba(45,74,62,0.1)">' + (m.score_global || 0) + '%</span></div></div>' +
         '<div class="liked-body"><div class="liked-name">' + a.nom + '</div>' +
         '<div class="liked-meta">' + (a.race || a.espece) + ' · ' + age + (ville ? ' · ' + ville : '') + '</div>' +
         '<button class="liked-remove" onclick="event.stopPropagation();retirerJaime(\'' + m.id + '\',this)">✕ Retirer</button></div></div>'
