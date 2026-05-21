@@ -504,14 +504,13 @@ footer{background:var(--forest);color:var(--ivory);padding:40px 52px 28px;positi
 
     likedCard.remove();
 
-    // Remettre dans les matchs
+    // Remettre dans les matchs seulement si pas déjà présent dans la grille
     if (animalId && window.allMatchs) {
+      var grid = document.getElementById('matches-grid');
+      if (grid && grid.querySelector('[data-animal-id="' + animalId + '"]')) return; // déjà présent
       var matchEntry = allMatchs.find(function(m) { return m.animal && m.animal.id === animalId; });
-      if (matchEntry) {
-        var grid = document.getElementById('matches-grid');
-        if (grid) {
-          grid.insertAdjacentHTML('afterbegin', renderMatchCard(matchEntry.animal, matchEntry.score));
-        }
+      if (matchEntry && grid) {
+        grid.insertAdjacentHTML('afterbegin', renderMatchCard(matchEntry.animal, matchEntry.score));
       }
     }
   }
@@ -655,10 +654,15 @@ footer{background:var(--forest);color:var(--ivory);padding:40px 52px 28px;positi
       // Continue pour charger le profil sidebar quand même
       animaux = [];
     }
+    // Exclure les animaux déjà likés
+    var { data: dejaAimes } = await sb.from('Correspondre').select('animal').eq('utilisateur', userId).eq('aime', true);
+    var aimeIds = new Set((dejaAimes || []).map(function(r) { return r.animal; }));
+
     allMatchs = animaux.map(function(animal) {
       var result = profil ? calculerScore(profil, animal) : { global: 0 };
       return { animal: animal, score: result.global };
-    }).sort(function(a, b) { return b.score - a.score; });
+    }).filter(function(m) { return !aimeIds.has(m.animal.id); })
+      .sort(function(a, b) { return b.score - a.score; });
     var { data: authUser } = await sb.auth.getUser();
     var meta = authUser && authUser.user ? authUser.user.user_metadata || {} : {};
     var prenom = meta.prenom || meta.first_name || meta.name || (authUser.user ? authUser.user.email.split('@')[0] : '');
