@@ -233,31 +233,57 @@ footer{background:var(--forest);color:var(--ivory);padding:40px 52px 28px;positi
     toastTimer = setTimeout(() => t.classList.remove('show'), 3500);
   }
 
-  window.addEventListener('load', function() {
-    var form = document.querySelector('form, .contact-form');
-    if (form) {
-      form.addEventListener('submit', async function(e) {
-        e.preventDefault();
-        var nom = document.querySelector('input[placeholder*="Prénom"], input[name="nom"], #contactNom');
-        var email = document.querySelector('input[type="email"], input[placeholder*="email"], #contactEmail');
-        var message = document.querySelector('textarea, #contactMessage');
-        if (!nom || !email || !message) return;
-        if (!nom.value || !email.value || !message.value) {
-          alert('Veuillez remplir tous les champs');
-          return;
-        }
-        // Envoi via Supabase - stockage dans une table ou email
-        alert('Message envoyé ! Nous vous répondrons sous 48h. 🐾');
-        form.reset();
-      });
+  async function sendMessage() {
+    var nom = document.getElementById('contactNom') || document.querySelector('input[placeholder*="Prénom"], input[placeholder*="Nom"]');
+    var email = document.getElementById('contactEmail') || document.querySelector('input[type="email"]');
+    var message = document.getElementById('contactMessage') || document.querySelector('textarea');
+    var sujet = document.querySelector('.subject-btn.on');
+
+    if (!nom || !email || !message) { showToast('Champs introuvables'); return; }
+    if (!nom.value.trim() || !email.value.trim() || !message.value.trim()) {
+      showToast('Veuillez remplir tous les champs');
+      return;
     }
-    // Also handle onclick buttons
-    document.querySelectorAll('button[type="submit"], .submit-btn, .send-btn').forEach(function(btn) {
-      btn.addEventListener('click', function(e) {
-        e.preventDefault();
-        alert('Message envoyé ! Nous vous répondrons sous 48h. 🐾');
-      });
+
+    var btn = document.querySelector('.submit-btn');
+    if (btn) { btn.disabled = true; btn.innerHTML = '<span>⏳</span> Envoi en cours…'; }
+
+    var sb = getSupabase();
+    var { error } = await sb.from('Contact').insert({
+      nom: nom.value.trim(),
+      email: email.value.trim(),
+      sujet: sujet ? sujet.textContent.trim() : 'Autre',
+      message: message.value.trim()
     });
+
+    if (error) {
+      showToast('Erreur lors de l\'envoi. Écrivez-nous directement à contact@coup-de-patte.fr');
+      if (btn) { btn.disabled = false; btn.innerHTML = '<span style="filter:brightness(0) invert(1)">🐾</span> Envoyer mon message'; }
+      return;
+    }
+
+    // Afficher confirmation
+    var formContent = document.getElementById('formContent');
+    if (formContent) {
+      formContent.innerHTML =
+        '<div style="text-align:center;padding:40px 20px">' +
+        '<div style="font-size:3rem;margin-bottom:16px">🐾</div>' +
+        '<h3 style="font-family:Fraunces,serif;font-size:1.5rem;font-style:italic;color:var(--forest);margin-bottom:10px">Message envoyé !</h3>' +
+        '<p style="font-size:0.88rem;color:var(--dust);line-height:1.7;margin-bottom:24px">Merci ' + nom.value.trim() + ' ! Nous vous répondrons sous 48h à <strong>' + email.value.trim() + '</strong>.</p>' +
+        '<a href="index.html" style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--moss),var(--forest));color:var(--ivory);padding:12px 28px;border-radius:50px;text-decoration:none;font-weight:700;font-size:0.88rem">← Retour à l\'accueil</a>' +
+        '</div>';
+    }
+  }
+
+  window.addEventListener('load', function() {
+    // Remplacer les anciens handlers
+    document.querySelectorAll('.submit-btn').forEach(function(btn) {
+      btn.onclick = function(e) { e.preventDefault(); e.stopPropagation(); sendMessage(); };
+    });
+    var form = document.querySelector('form');
+    if (form) {
+      form.addEventListener('submit', function(e) { e.preventDefault(); sendMessage(); });
+    }
   });
 </script>
 <footer>
