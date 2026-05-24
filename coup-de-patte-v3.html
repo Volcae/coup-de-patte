@@ -674,6 +674,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         if (profil.animaux_foyer && profil.animaux_foyer.includes('chat') && animal.compat_chats === false) return false;
         if (profil.animaux_foyer && profil.animaux_foyer.includes('chien') && animal.compat_chiens === false) return false;
         if (profil.enfants_foyer && profil.enfants_foyer.includes('moins13') && animal.compat_enfants_moins13 === false) return false;
+        // Escaliers
+        if (animal.besoin_plain_pied === true) {
+          var aEscaliers = profil.etage_ascenseur === 'non';
+          var aMarches = profil.q12b === 'oui';
+          if (aEscaliers || aMarches) return false;
+        }
         return true;
       })
       .map(function(animal) {
