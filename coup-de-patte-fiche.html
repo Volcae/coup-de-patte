@@ -267,6 +267,39 @@ footer{background:var(--forest);color:var(--ivory);padding:40px 52px 28px;positi
       var histEl = document.getElementById('ficheHistoire');
       if (histEl) histEl.textContent = animal.histoire || '';
 
+      // Compatibilités dynamiques
+      var oui = '<span class="compat-yes">✅ Oui</span>';
+      var non = '<span class="compat-no">❌ Non</span>';
+      var nr  = '<span style="color:var(--smoke);font-size:0.78rem">– Non renseigné</span>';
+      var setCompat = function(id, val) { var e = document.getElementById(id); if (e) e.outerHTML = val === true ? oui : val === false ? non : nr; };
+      setCompat('compatEnfants', animal.compat_enfants_moins13);
+      setCompat('compatAdos', animal.compat_ados_plus13);
+      setCompat('compatChiens', animal.compat_chiens);
+      setCompat('compatChats', animal.compat_chats);
+
+      // Mobilité
+      var mobEl = document.getElementById('ficheMobilite');
+      if (mobEl) {
+        if (animal.besoin_plain_pied === true) {
+          mobEl.className = 'health-value compat-no';
+          mobEl.textContent = '⚠️ Nécessite un logement de plain-pied';
+        } else if (animal.besoin_plain_pied === false) {
+          mobEl.className = 'health-value health-ok';
+          mobEl.textContent = '✅ Aucun problème avec les escaliers';
+        } else {
+          mobEl.className = 'health-value';
+          mobEl.textContent = '– Non renseigné';
+        }
+      }
+
+      // Besoins médicaux
+      var medEl = document.getElementById('ficheMedical');
+      if (medEl) {
+        if (animal.besoins_medicaux === 'lourds') { medEl.className = 'health-value compat-no'; medEl.textContent = '🩺 Suivi médical lourd'; }
+        else if (animal.besoins_medicaux === 'legers') { medEl.className = 'health-value compat-caution'; medEl.textContent = '💊 Suivi médical léger'; }
+        else { medEl.className = 'health-value health-ok'; medEl.textContent = '✅ Aucun suivi particulier'; }
+      }
+
       // Réactivité aux inconnus et vie en refuge
       var valReact = document.getElementById('valReactivite');
       if (valReact) valReact.textContent = animal.reactivite_inconnus || '–';
@@ -507,10 +540,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     <p style="font-family:'Fraunces',serif;font-size:1rem;font-weight:600;font-style:italic;color:var(--forest);margin-bottom:13px;">Compatibilités</p>
     <div class="compat-grid">
-      <div class="compat-item"><span class="compat-icon">👶</span><span class="compat-label">Enfants moins de 13 ans</span><span class="compat-no">❌ Non</span></div>
-      <div class="compat-item"><span class="compat-icon">🧑</span><span class="compat-label">Ados 13 ans et plus</span><span class="compat-yes">✅ Oui</span></div>
-      <div class="compat-item"><span class="compat-icon">🐶</span><span class="compat-label">Chiens</span><span class="compat-no">❌ Non</span></div>
-      <div class="compat-item"><span class="compat-icon">🐱</span><span class="compat-label">Chats</span><span class="compat-yes">✅ Oui</span></div>
+      <div class="compat-item"><span class="compat-icon">👶</span><span class="compat-label">Enfants moins de 13 ans</span><span id="compatEnfants" class="compat-no">–</span></div>
+      <div class="compat-item"><span class="compat-icon">🧑</span><span class="compat-label">Ados 13 ans et plus</span><span id="compatAdos" class="compat-yes">–</span></div>
+      <div class="compat-item"><span class="compat-icon">🐶</span><span class="compat-label">Chiens</span><span id="compatChiens" class="compat-no">–</span></div>
+      <div class="compat-item"><span class="compat-icon">🐱</span><span class="compat-label">Chats</span><span id="compatChats" class="compat-yes">–</span></div>
     </div>
 
     <div class="history-box">
@@ -526,8 +559,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="health-item"><div class="health-icon">✂️</div><div><span class="health-label">Stérilisation</span><span class="health-value health-ok">✅ Stérilisé</span></div></div>
       <div class="health-item"><div class="health-icon">🔖</div><div><span class="health-label">Identification</span><span class="health-value health-ok">✅ Pucé</span></div></div>
       <div class="health-item"><div class="health-icon">🦠</div><div><span class="health-label">Antiparasitaire</span><span class="health-value health-ok">✅ À jour</span></div></div>
-      <div class="health-item"><div class="health-icon">🩺</div><div><span class="health-label">Besoins médicaux</span><span class="health-value">Aucun suivi particulier</span></div></div>
-      <div class="health-item"><div class="health-icon">🏃</div><div><span class="health-label">Mobilité</span><span class="health-value health-ok">✅ Aucun problème</span></div></div>
+      <div class="health-item"><div class="health-icon">🩺</div><div><span class="health-label">Besoins médicaux</span><span class="health-value" id="ficheMedical">Aucun suivi particulier</span></div></div>
+      <div class="health-item"><div class="health-icon">🏃</div><div><span class="health-label">Mobilité</span><span class="health-value" id="ficheMobilite">–</span></div></div>
     </div>
     <div class="alert-box" id="ficheAlertBox" style="display:none"></div>
   </div>
