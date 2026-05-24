@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-K9MPBSTV');</script>
+<!-- End Google Tag Manager -->
 <meta charset="UTF-8">
 <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2">
 <link rel="icon" type="image/x-icon" href="favicon.ico?v=2">
@@ -18,57 +25,31 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:16px 52px;background:rgba(244,241,232,0.93);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
 .logo{font-family:'Fraunces',serif;font-size:1.4rem;font-weight:600;color:var(--forest);display:flex;align-items:center;gap:9px;text-decoration:none}
 .logo-bubble{width:40px;height:40px;background:var(--forest);border-radius:50% 50% 50% 50%/60% 60% 40% 40%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(45,74,62,0.32)}
+.logo-bubble span{filter:brightness(0) invert(1);font-size:0.95rem}
 .nav-back{display:flex;align-items:center;gap:6px;font-size:0.83rem;font-weight:600;color:var(--dust);text-decoration:none;opacity:0.7;transition:opacity 0.2s}
 .nav-back:hover{opacity:1}
+.nav-like-btn{width:40px;height:40px;border-radius:50%;background:var(--paper);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.1rem;cursor:pointer;transition:all 0.2s cubic-bezier(0.34,1.56,0.64,1);box-shadow:0 2px 8px rgba(45,74,62,0.08)}
+.nav-like-btn:hover{transform:scale(1.12)}
+.nav-like-btn.liked{background:var(--rose);border-color:var(--rose)}
 
 /* HERO */
-.hero{padding-top:76px;position:relative;z-index:1}
-
-/* ─── CORRECTION 1 : hero-img avec overflow:hidden pour contenir photo + badge ─── */
-.hero-img{
-  width:100%;height:400px;
-  background:linear-gradient(160deg,var(--mint) 0%,var(--sage) 50%,var(--moss) 100%);
-  display:flex;align-items:center;justify-content:center;
-  font-size:9rem;position:relative;overflow:visible;
-}
-/* Clip interne uniquement pour la photo — via pseudo wrapper */
-.hero-img-clip{position:absolute;inset:0;overflow:hidden;z-index:1}
-/* Photo injectée par JS dans hero-img-clip */
-.hero-img img.hero-photo{
-  position:absolute;inset:0;width:100%;height:100%;
-  object-fit:cover;object-position:center top;z-index:1;
-}
-/* Fondu bas */
-.hero-img::before{
-  content:'';position:absolute;bottom:0;left:0;right:0;height:150px;
-  background:linear-gradient(to bottom,transparent,rgba(244,241,232,0.8));
-  z-index:3;pointer-events:none;
-}
-/* Shimmer */
-.hero-img::after{
-  content:'';position:absolute;inset:0;
-  background:linear-gradient(108deg,transparent 38%,rgba(255,255,255,0.06) 50%,transparent 62%);
-  animation:shimmer 6s ease-in-out infinite;pointer-events:none;z-index:2;
-}
+.hero{padding-top:76px;position:relative;z-index:1;overflow:visible}
+.hero-img{width:100%;height:400px;background:linear-gradient(160deg,var(--mint) 0%,var(--sage) 50%,var(--moss) 100%);display:flex;align-items:center;justify-content:center;font-size:9rem;position:relative;overflow:visible}
+/* clip du fond uniquement via pseudo-element */
+.hero-img::after{content:'';position:absolute;inset:0;background:linear-gradient(108deg,transparent 38%,rgba(255,255,255,0.07) 50%,transparent 62%);animation:shimmer 6s ease-in-out infinite;pointer-events:none}
 @keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(220%)}}
-#animalEmoji{position:relative;z-index:2}
-
-/* ─── SCORE FLOTTANT entre la photo et le contenu ─── */
-.hero-score{
-  position:absolute;bottom:-28px;right:52px;
-  background:var(--paper);
-  border:1.5px solid var(--border);
-  border-radius:20px;padding:14px 22px;
-  box-shadow:0 8px 28px rgba(45,74,62,0.15);
-  text-align:center;z-index:20;
-}
+.hero-img::before{content:'';position:absolute;bottom:0;left:0;right:0;height:100px;background:linear-gradient(to bottom,transparent,var(--ivory));z-index:2;pointer-events:none}
+/* wrapper pour clipper le fond sans toucher au badge */
+.hero-img-clip{position:absolute;inset:0;overflow:hidden;border-radius:0}
+.hero-score{position:absolute;bottom:-26px;right:52px;background:var(--paper);border:1.5px solid var(--border);border-radius:20px;padding:14px 22px;box-shadow:0 8px 28px rgba(45,74,62,0.15);text-align:center;z-index:20}
 .hero-score-n{font-family:'Fraunces',serif;font-size:2.6rem;font-weight:700;color:var(--moss);line-height:1;display:block;letter-spacing:-1px}
 .hero-score-l{font-size:0.65rem;font-weight:700;color:var(--moss);display:block;margin-top:2px;letter-spacing:0.3px}
 .hero-loc{position:absolute;bottom:18px;left:52px;background:rgba(45,74,62,0.55);color:rgba(244,241,232,0.92);font-size:0.78rem;font-weight:600;padding:6px 14px;border-radius:50px;backdrop-filter:blur(8px);z-index:10}
 
 /* CONTENT */
 .content{max-width:1060px;margin:0 auto;padding:52px 52px 80px;position:relative;z-index:1}
-.animal-header{margin-bottom:28px}
+
+.animal-header{margin-bottom:28px;padding-right:200px}
 .animal-name{font-family:'Fraunces',serif;font-size:3rem;font-weight:700;font-style:italic;color:var(--forest);line-height:1;margin-bottom:8px}
 .animal-meta{font-size:0.88rem;color:var(--dust);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .meta-dot{opacity:0.3}
@@ -77,7 +58,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 
 /* TABS */
 .tabs-wrap{border-bottom:1px solid var(--border);margin-bottom:36px;display:flex;gap:0}
-.tab{padding:14px 24px;font-size:0.85rem;font-weight:700;color:var(--dust);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.2s;white-space:nowrap}
+.tab{padding:14px 24px;font-size:0.85rem;font-weight:700;color:var(--dust);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.2s;white-space:nowrap;display:flex;align-items:center;gap:7px}
 .tab:hover{color:var(--forest)}
 .tab.active{color:var(--forest);border-bottom-color:var(--moss)}
 .tab-panel{display:none;animation:fadeUp 0.3s ease both}
@@ -91,22 +72,22 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 .pres-quote{font-family:'Fraunces',serif;font-size:1rem;font-style:italic;font-weight:300;line-height:1.78;color:var(--bark);border-left:2px solid var(--mint);padding-left:16px;margin-bottom:24px}
 .info-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);font-size:0.82rem}
 .info-row:last-child{border-bottom:none}
-.info-label{color:var(--dust);font-weight:500}
+.info-label{color:var(--dust);font-weight:500;display:flex;align-items:center;gap:7px}
 .info-value{font-weight:700;color:var(--forest)}
 .refuge-card{background:var(--forest);border-radius:22px;padding:26px 28px;color:var(--ivory);grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:20px}
 .refuge-info h3{font-family:'Fraunces',serif;font-size:1.1rem;font-weight:600;font-style:italic;margin-bottom:4px}
 .refuge-info p{font-size:0.78rem;opacity:0.6;margin-top:3px}
-.refuge-btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--sage),var(--moss));color:white;font-family:'Nunito',sans-serif;font-size:0.88rem;font-weight:700;padding:12px 24px;border-radius:50px;text-decoration:none;white-space:nowrap;border:none;cursor:pointer;box-shadow:0 4px 14px rgba(74,124,89,0.35);transition:transform 0.2s,box-shadow 0.2s}
+.refuge-btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--sage),var(--moss));color:white;font-family:'Nunito',sans-serif;font-size:0.88rem;font-weight:700;padding:12px 24px;border-radius:50px;text-decoration:none;white-space:nowrap;border:none;cursor:pointer;box-shadow:0 4px 14px rgba(74,124,89,0.35);transition:transform 0.2s cubic-bezier(0.34,1.56,0.64,1),box-shadow 0.2s}
 .refuge-btn:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(74,124,89,0.45)}
 
-/* CRITÈRES COMPATIBILITÉ */
+/* CRITÈRES */
 .crit-row{display:flex;align-items:center;padding:11px 0;border-bottom:1px solid var(--border);gap:12px}
 .crit-row:last-child{border-bottom:none}
 .crit-icon{font-size:1.05rem;width:26px;flex-shrink:0}
 .crit-name{font-size:0.83rem;font-weight:600;color:var(--forest);flex:1}
 .crit-bar-wrap{display:flex;align-items:center;gap:10px;width:180px;flex-shrink:0}
 .crit-bar{flex:1;height:5px;background:var(--mint-lt);border-radius:50px;overflow:hidden}
-.crit-fill{height:100%;border-radius:50px;transition:width 0.6s ease}
+.crit-fill{height:100%;border-radius:50px}
 .cf-green{background:linear-gradient(90deg,var(--sage),var(--moss))}
 .cf-amber{background:linear-gradient(90deg,#F0D080,var(--amber))}
 .cf-blue{background:linear-gradient(90deg,#89B4F7,var(--blue))}
@@ -115,7 +96,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 .score-total-label{font-size:0.8rem;font-weight:600;color:rgba(244,241,232,0.75)}
 .score-total-badge{background:rgba(255,255,255,0.15);color:var(--ivory);font-size:0.67rem;font-weight:700;padding:3px 10px;border-radius:50px;margin-top:4px;display:inline-block}
 .score-total-num{font-family:'Fraunces',serif;font-size:2.6rem;font-weight:700;color:var(--ivory);letter-spacing:-1px}
-.alert-box{border-left:3px solid var(--gold);border-radius:0 14px 14px 0;padding:12px 16px;font-size:0.8rem;font-style:italic;font-family:'Fraunces',serif;line-height:1.65;color:var(--bark);margin-top:14px;background:rgba(212,168,67,0.08)}
+.alert-box{background:rgba(212,168,67,0.1);border-left:3px solid var(--gold);border-radius:0 14px 14px 0;padding:12px 16px;font-size:0.8rem;font-style:italic;font-family:'Fraunces',serif;line-height:1.65;color:var(--bark);margin-top:14px}
 
 /* CARACTÈRE */
 .carac-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-bottom:24px}
@@ -141,18 +122,20 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 .health-label{font-size:0.66rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--smoke);display:block;margin-bottom:3px}
 .health-value{font-weight:700;font-size:0.86rem;color:var(--forest)}
 .health-ok{color:var(--moss)}
+.health-sub{font-size:0.73rem;color:var(--dust);margin-top:2px;display:block}
 
 /* CONTACT */
 .contact-hero{background:var(--forest);border-radius:28px;padding:38px;color:var(--ivory);margin-bottom:22px;position:relative;overflow:hidden}
 .contact-hero::before{content:'🐾';position:absolute;right:-20px;top:-20px;font-size:11rem;opacity:0.05;line-height:1}
 .contact-hero h3{font-family:'Fraunces',serif;font-size:1.55rem;font-weight:600;font-style:italic;margin-bottom:8px}
 .contact-hero p{font-size:0.84rem;opacity:0.65;line-height:1.6;max-width:460px;margin-bottom:24px}
-.contact-btn{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,#F5C77E,var(--gold));color:var(--forest);font-family:'Nunito',sans-serif;font-size:0.95rem;font-weight:700;padding:14px 30px;border-radius:50px;text-decoration:none;border:none;cursor:pointer;box-shadow:0 6px 20px rgba(212,168,67,0.3);transition:transform 0.2s,box-shadow 0.2s}
+.contact-btn{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,#F5C77E,var(--gold));color:var(--forest);font-family:'Nunito',sans-serif;font-size:0.95rem;font-weight:700;padding:14px 30px;border-radius:50px;text-decoration:none;border:none;cursor:pointer;box-shadow:0 6px 20px rgba(212,168,67,0.3);transition:transform 0.2s cubic-bezier(0.34,1.56,0.64,1),box-shadow 0.2s}
 .contact-btn:hover{transform:translateY(-3px);box-shadow:0 10px 28px rgba(212,168,67,0.45)}
 .contact-infos{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
 .contact-info-card{background:var(--paper);border-radius:18px;border:1.5px solid var(--border);padding:20px}
-.contact-info-label{font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--smoke);display:block;margin-bottom:6px;font-size:0.64rem}
+.contact-info-label{font-size:0.64px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--smoke);display:block;margin-bottom:6px;font-size:0.64rem}
 .contact-info-value{font-weight:700;font-size:0.88rem;color:var(--forest)}
+.contact-info-sub{font-size:0.74rem;color:var(--dust);margin-top:3px}
 
 /* SUGGESTIONS */
 .suggestions{margin-top:56px;padding-top:44px;border-top:1px solid var(--border)}
@@ -162,12 +145,14 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 .sug-card{background:var(--paper);border-radius:22px;border:1.5px solid var(--border);overflow:hidden;cursor:pointer;transition:transform 0.22s cubic-bezier(0.34,1.56,0.64,1),box-shadow 0.2s;position:relative}
 .sug-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(45,74,62,0.12)}
 .sug-card.enfin{border-color:rgba(212,168,67,0.4);box-shadow:0 4px 20px rgba(212,168,67,0.14)}
-.sug-img{height:140px;display:flex;align-items:center;justify-content:center;font-size:3.5rem;position:relative;overflow:hidden}
+.sug-img{height:140px;display:flex;align-items:center;justify-content:center;font-size:3.5rem;position:relative}
+.sug-score{position:absolute;bottom:-16px;right:14px;background:var(--paper);border:1.5px solid var(--border);border-radius:12px;padding:6px 12px;font-family:'Fraunces',serif;font-size:1.1rem;font-weight:700;z-index:5}
 .sug-ribbon{position:absolute;top:10px;left:-6px;background:linear-gradient(135deg,#F5C77E,var(--gold));color:var(--forest);font-size:0.62rem;font-weight:700;padding:4px 12px 4px 14px;border-radius:0 50px 50px 0;box-shadow:2px 2px 8px rgba(0,0,0,0.1);z-index:6}
-.sug-body{padding:18px 18px 18px}
+.sug-body{padding:26px 18px 18px}
 .sug-name{font-family:'Fraunces',serif;font-size:1.12rem;font-weight:600;font-style:italic;color:var(--forest);margin-bottom:3px}
 .sug-meta{font-size:0.72rem;color:var(--dust)}
 .sug-time{display:inline-block;background:rgba(212,168,67,0.12);color:var(--amber);font-size:0.64rem;font-weight:700;padding:2px 8px;border-radius:50px;border:1px solid rgba(196,154,26,0.2);margin-top:6px}
+.sug-msg{font-size:0.74rem;color:var(--dust);margin-top:7px;font-style:italic;font-family:'Fraunces',serif;line-height:1.5}
 
 footer{background:var(--forest);color:var(--ivory);padding:40px 52px 28px;position:relative;z-index:1;text-align:center}
 .footer-logo{font-family:"Fraunces",serif;font-size:1.2rem;font-weight:600;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:20px;opacity:0.9}
@@ -176,285 +161,268 @@ footer{background:var(--forest);color:var(--ivory);padding:40px 52px 28px;positi
 .footer-links a:hover{color:rgba(244,241,232,0.9)}
 .footer-copy{font-size:0.72rem;color:rgba(244,241,232,0.3)}
 </style>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-var _supabaseClient = null;
-function getSupabase() {
-  if (!_supabaseClient) {
-    _supabaseClient = window.supabase.createClient(
-      'https://mbqsaaxaglcemdxmfvkc.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1icXNhYXhhZ2xjZW1keG1mdmtjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MjAwMTQsImV4cCI6MjA5MzQ5NjAxNH0.lGK0LL5h-4N4DqMVy2Q_SKJgnzuy7BPQJEtSsc8plfk'
-    );
-  }
-  return _supabaseClient;
-}
-</script>
-
-<script>
-window.addEventListener('load', async function() {
-  var sb = getSupabase();
-  var { data: { session } } = await sb.auth.getSession();
-  if (!session) { window.location.href = 'coup-de-patte-login.html'; return; }
-
-  var params = new URLSearchParams(window.location.search);
-  window.animalId = params.get('id');
-  if (!window.animalId) return;
-
-  var { data: animal } = await sb.from('Animal').select('*, refuge:Refuge(*)').eq('id', window.animalId).single();
-  if (!animal) return;
-
-  document.title = (animal.nom || 'Animal') + ' · Coup de Patte';
-
-  // ─── PHOTO HERO ───
-  var heroImg = document.getElementById('heroImg');
-  var emojiEl = document.getElementById('animalEmoji');
-  var emoji = animal.espece && animal.espece.toLowerCase() === 'chat' ? '🐱' : '🐕';
-  if (emojiEl) emojiEl.textContent = emoji;
-
-  var heroClip = document.getElementById('heroImgClip');
-  if (animal.photo_url && heroClip) {
-    var img = document.createElement('img');
-    img.src = animal.photo_url;
-    img.alt = animal.nom || '';
-    img.className = 'hero-photo';
-    img.onerror = function() { this.remove(); if (emojiEl) emojiEl.style.display = 'block'; };
-    heroClip.appendChild(img);
-    heroImg.style.background = '#b8b0a6';
-    if (emojiEl) emojiEl.style.display = 'none';
-  }
-
-  // Localisation
-  var locEl = document.getElementById('animalLoc');
-  if (locEl && animal.refuge) locEl.textContent = '📍 ' + animal.refuge.nom + (animal.refuge.ville ? ' · ' + animal.refuge.ville : '');
-
-  // Nom & meta
-  var el;
-  el = document.getElementById('animalNom'); if (el) el.textContent = animal.nom || '';
-  el = document.getElementById('metaRace'); if (el) el.textContent = animal.race || animal.espece || '–';
-  el = document.getElementById('metaAge'); if (el) el.textContent = animal.age_annees ? animal.age_annees + ' an' + (animal.age_annees > 1 ? 's' : '') : '–';
-  el = document.getElementById('metaSexe'); if (el) el.textContent = animal.sexe === 'male' ? 'Mâle' : animal.sexe === 'femelle' ? 'Femelle' : '–';
-  el = document.getElementById('metaGabarit'); if (el) el.textContent = animal.gabarit || '–';
-
-  // Tags
-  var tagsEl = document.getElementById('animalTags');
-  if (tagsEl) {
-    var tags = [];
-    if (animal.energie === 'eleve') tags.push('🏃 Actif');
-    else if (animal.energie === 'faible') tags.push('🛋️ Calme');
-    if (animal.compat_enfants_moins13) tags.push('👧 Enfants ok');
-    if (animal.compat_chats) tags.push('🐱 Chats ok');
-    if (animal.compat_chiens) tags.push('🐶 Chiens ok');
-    if (animal.sterilisation) tags.push('✂️ Stérilisé(e)');
-    if (animal.vaccination) tags.push('💉 Vacciné(e)');
-    if (animal.identification) tags.push('🔖 Identifié(e)');
-    if (animal.enfin_moi) tags.push('✨ Enfin Moi ?');
-    tagsEl.innerHTML = tags.map(function(t) { return '<span class="tag">' + t + '</span>'; }).join('');
-  }
-
-  // Présentation infos
-  el = document.getElementById('ficheRace'); if (el) el.textContent = animal.race || animal.espece || '–';
-  el = document.getElementById('ficheAge'); if (el) el.textContent = animal.age_annees ? animal.age_annees + ' an' + (animal.age_annees > 1 ? 's' : '') : '–';
-  el = document.getElementById('ficheSexe'); if (el) el.textContent = animal.sexe === 'male' ? 'Mâle' : animal.sexe === 'femelle' ? 'Femelle' : '–';
-  el = document.getElementById('ficheGabarit'); if (el) el.textContent = animal.gabarit || '–';
-  el = document.getElementById('ficheRefugeNom'); if (el) el.textContent = animal.refuge ? animal.refuge.nom : '–';
-  el = document.getElementById('ficheRefugeAdresse'); if (el && animal.refuge) el.textContent = (animal.refuge.adresse || '') + (animal.refuge.ville ? ', ' + animal.refuge.ville : '') + (animal.refuge.code_postal ? ' ' + animal.refuge.code_postal : '');
-
-  // Description & histoire
-  el = document.getElementById('ficheDescription'); if (el) el.textContent = animal.description || 'Aucune description disponible.';
-  el = document.getElementById('ficheHistoire'); if (el) el.textContent = animal.histoire || 'Aucune histoire renseignée.';
-
-  // Caractère
-  el = document.getElementById('valReactivite'); if (el) el.textContent = animal.reactivite_inconnus || '–';
-  el = document.getElementById('valVieRefuge'); if (el) el.textContent = animal.vie_en_refuge || '–';
-  el = document.getElementById('valEnergie'); if (el) el.textContent = animal.energie === 'eleve' ? 'Actif' : animal.energie === 'faible' ? 'Calme' : 'Modéré';
-  el = document.getElementById('valExperience'); if (el) el.textContent = animal.experience_requise === 'experimente' ? 'Expérimenté requis' : animal.experience_requise === 'intermediaire' ? 'Intermédiaire' : 'Débutant ok';
-  el = document.getElementById('valGabaritCarac'); if (el) el.textContent = animal.gabarit || '–';
-
-  // Alert vie en refuge
-  if (animal.vie_en_refuge && animal.vie_en_refuge.toLowerCase().includes('moyenn')) {
-    ['alertVieRefuge', 'alertVieRefuge2'].forEach(function(id) {
-      var alertEl = document.getElementById(id);
-      if (alertEl) { alertEl.textContent = '🏡 Cet animal supporte moyennement la vie en refuge — cela ne reflète pas son comportement dans un foyer stable.'; alertEl.style.display = 'block'; }
-    });
-  }
-
-  // Compatibilités dynamiques
-  var compatItems = document.getElementById('compatItems');
-  if (compatItems) {
-    compatItems.innerHTML =
-      '<div class="compat-item"><span class="compat-icon">👶</span><span class="compat-label">Enfants &lt;13 ans</span><span class="' + (animal.compat_enfants_moins13 ? 'compat-yes">✅ Oui' : 'compat-no">❌ Non') + '</span></div>' +
-      '<div class="compat-item"><span class="compat-icon">🧑</span><span class="compat-label">Ados 13+</span><span class="compat-yes">✅ Oui</span></div>' +
-      '<div class="compat-item"><span class="compat-icon">🐶</span><span class="compat-label">Chiens</span><span class="' + (animal.compat_chiens ? 'compat-yes">✅ Oui' : 'compat-no">❌ Non') + '</span></div>' +
-      '<div class="compat-item"><span class="compat-icon">🐱</span><span class="compat-label">Chats</span><span class="' + (animal.compat_chats ? 'compat-yes">✅ Oui' : 'compat-no">❌ Non') + '</span></div>';
-  }
-
-  // Santé
-  el = document.getElementById('ficheBesoins'); if (el) el.textContent = animal.besoins_medicaux || 'Aucun suivi particulier';
-  var alertBox = document.getElementById('ficheAlertBox');
-  if (alertBox && animal.besoins_medicaux) { alertBox.textContent = '🩺 ' + animal.besoins_medicaux; alertBox.style.display = 'block'; }
-
-  // Refuge dans onglet contact
-  el = document.getElementById('ficheContactRefugeNom'); if (el) el.textContent = animal.refuge ? animal.refuge.nom : '–';
-  el = document.getElementById('ficheContactRefugeNom2'); if (el) el.textContent = animal.refuge ? animal.refuge.nom : '–';
-  el = document.getElementById('ficheRefugeAdresse2'); if (el && animal.refuge) el.textContent = (animal.refuge.adresse || '') + (animal.refuge.ville ? ', ' + animal.refuge.ville : '');
-  var callBtn = document.getElementById('ficheCallBtn');
-  if (callBtn && animal.refuge && animal.refuge.telephone) {
-    callBtn.href = 'tel:' + animal.refuge.telephone.replace(/ /g, '');
-    callBtn.textContent = '📞 Appeler ' + animal.refuge.nom;
-  }
-  var refugeBtnPres = document.getElementById('refugeBtnPres');
-  if (refugeBtnPres && animal.refuge && animal.refuge.telephone) {
-    refugeBtnPres.href = 'tel:' + animal.refuge.telephone.replace(/ /g, '');
-  }
-  var lienRefuge = document.getElementById('ficheLienRefuge');
-  if (lienRefuge && animal.refuge) lienRefuge.href = 'coup-de-patte-refuge.html?id=' + animal.refuge.id;
-
-  // ─── SCORE COMPATIBILITÉ ───
-  var profilResult = await sb.from('ProfilAdoptant').select('*').eq('utilisateur', session.user.id);
-  var profil = profilResult.data && profilResult.data.length > 0 ? profilResult.data[0] : null;
-
-  if (profil) {
-    var scores = {};
-    // Logement
-    var g = (animal.gabarit || '').toLowerCase();
-    var logement = (profil.type_logement || '').toLowerCase();
-    scores.logement = logement === 'maison' ? 100 : (logement === 'appartement' || logement === 'appart') ? (g === 'petit' ? 100 : g === 'moyen' ? 65 : 20) : 60;
-    // Foyer
-    var foyer = 100;
-    if (profil.enfants_foyer && profil.enfants_foyer.includes('moins13') && !animal.compat_enfants_moins13) foyer -= 50;
-    if (profil.animaux_foyer && profil.animaux_foyer.includes('chien') && !animal.compat_chiens) foyer -= 50;
-    if (profil.animaux_foyer && profil.animaux_foyer.includes('chat') && !animal.compat_chats) foyer -= 50;
-    scores.foyer = Math.max(0, foyer);
-    // Disponibilité
-    var h = typeof profil.heures_seul === 'number' ? profil.heures_seul : 3;
-    scores.disponibilite = h <= 2 ? 100 : h <= 4 ? 75 : h <= 6 ? 50 : 25;
-    // Expérience
-    var req = animal.experience_requise || 'debutant';
-    var exp = profil.experience_animale || 'jamais';
-    scores.experience = req === 'debutant' ? 100 : (req === 'intermediaire' && exp !== 'jamais') ? 100 : (req === 'experimente' && exp === 'adulte') ? 100 : 40;
-    // Mode de vie
-    var mode = profil.temps_dedie || 'modere';
-    var energie = animal.energie || 'moyen';
-    scores.mode_vie = ((mode === 'actif' || mode === 'sportif') && energie === 'eleve') || (mode === 'modere' && energie === 'moyen') || (mode === 'sedentaire' && energie === 'faible') ? 100 : 50;
-
-    var score = Math.min(100, Math.round(scores.logement*0.30 + scores.foyer*0.25 + scores.disponibilite*0.20 + scores.experience*0.15 + scores.mode_vie*0.10));
-    var colors = { 85: 'var(--moss)', 70: 'var(--blue)', 55: 'var(--amber)', 0: 'var(--rose)' };
-    var labels = { 85: 'Coup de Patte idéal', 70: 'Belle rencontre', 55: "On s'apprivoise ?", 0: 'Faible compatibilité' };
-    var threshold = score >= 85 ? 85 : score >= 70 ? 70 : score >= 55 ? 55 : 0;
-    var color = colors[threshold];
-
-    // Badge hero
-    el = document.getElementById('animalScore'); if (el) { el.textContent = score + '%'; el.style.color = color; }
-    el = document.getElementById('animalScoreLabel'); if (el) { el.textContent = labels[threshold]; el.style.color = color; }
-
-    // Barres détail
-    var barData = [
-      { id: 'critLogement', val: scores.logement },
-      { id: 'critFoyer', val: scores.foyer },
-      { id: 'critDispo', val: scores.disponibilite },
-      { id: 'critExp', val: scores.experience },
-      { id: 'critMode', val: scores.mode_vie }
-    ];
-    barData.forEach(function(d) {
-      var row = document.getElementById(d.id);
-      if (!row) return;
-      var fill = row.querySelector('.crit-fill');
-      var val = row.querySelector('.crit-val');
-      var c = d.val >= 70 ? 'cf-green' : d.val >= 50 ? 'cf-blue' : 'cf-amber';
-      var cv = d.val >= 70 ? 'var(--moss)' : d.val >= 50 ? 'var(--blue)' : 'var(--amber)';
-      if (fill) { fill.style.width = d.val + '%'; fill.className = 'crit-fill ' + c; }
-      if (val) { val.textContent = d.val + '%'; val.style.color = cv; }
-    });
-
-    el = document.getElementById('scoreTotalNum'); if (el) el.textContent = score + '%';
-    var badgeEl = document.querySelector('.score-total-badge'); if (badgeEl) badgeEl.textContent = labels[threshold];
-
-    // Alert solitude
-    if (h >= 6) {
-      var alertSol = document.getElementById('alertSolitude');
-      if (alertSol) { alertSol.textContent = '💡 Vous laissez votre animal plus de 6h par jour. Prévoir une solution de garde.'; alertSol.style.display = 'block'; }
+  <!-- Supabase SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    var _supabaseClient = null;
+    function getSupabase() {
+      if (!_supabaseClient) {
+        _supabaseClient = window.supabase.createClient(
+          'https://mbqsaaxaglcemdxmfvkc.supabase.co',
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1icXNhYXhhZ2xjZW1keG1mdmtjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MjAwMTQsImV4cCI6MjA5MzQ5NjAxNH0.lGK0LL5h-4N4DqMVy2Q_SKJgnzuy7BPQJEtSsc8plfk'
+        );
+      }
+      return _supabaseClient;
     }
-  } else {
-    // Pas de profil : masquer le badge score
-    var heroScore = document.querySelector('.hero-score');
-    if (heroScore) heroScore.style.display = 'none';
-  }
+  </script>
+  <script>
+    window.addEventListener('load', async function() {
+      var { data: { session } } = await getSupabase().auth.getSession();
+      if (!session) { window.location.href = 'coup-de-patte-login.html'; return; }
 
-  // ─── SUGGESTIONS ───
-  var { data: suggestions } = await sb.from('Animal')
-    .select('id, nom, espece, race, age_annees, sexe, enfin_moi, date_arrivee_refuge, photo_url, refuge:Refuge(ville)')
-    .eq('disponible', true)
-    .neq('id', window.animalId)
-    .limit(3);
+      var params = new URLSearchParams(window.location.search);
+      window.animalId = params.get('id');
+      var animalId = window.animalId;
+      if (!animalId) return;
 
-  var grid = document.getElementById('suggestionsGrid');
-  if (grid && suggestions && suggestions.length > 0) {
-    grid.innerHTML = '';
-    suggestions.sort(function(a, b) { return (b.enfin_moi ? 1 : 0) - (a.enfin_moi ? 1 : 0); });
-    suggestions.forEach(function(s) {
-      var em = s.espece && s.espece.toLowerCase() === 'chat' ? '🐱' : '🐕';
-      var age = s.age_annees ? s.age_annees + ' an' + (s.age_annees > 1 ? 's' : '') : '';
-      var ville = s.refuge ? s.refuge.ville : '';
-      var mois = s.date_arrivee_refuge ? Math.round((new Date() - new Date(s.date_arrivee_refuge)) / (1000*60*60*24*30)) : 0;
-      var imgBg = s.photo_url ? 'background:#b8b0a6' : 'background:linear-gradient(160deg,var(--mint),var(--sage))';
-      var imgContent = s.photo_url
-        ? '<img src="' + s.photo_url + '" alt="' + s.nom + '" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" onerror="this.style.display=\'none\'">'
-        : em;
-      grid.insertAdjacentHTML('beforeend',
-        '<div class="sug-card' + (s.enfin_moi ? ' enfin' : '') + '" onclick="window.location.href=\'coup-de-patte-fiche.html?id=' + s.id + '\'">' +
-        (s.enfin_moi ? '<div class="sug-ribbon">✨ Enfin Moi ?</div>' : '') +
-        '<div class="sug-img" style="' + imgBg + '">' + imgContent + '</div>' +
-        '<div class="sug-body"><div class="sug-name">' + s.nom + '</div>' +
-        '<div class="sug-meta">' + (s.race || s.espece) + ' · ' + age + (ville ? ' · ' + ville : '') + '</div>' +
-        (mois > 0 ? '<span class="sug-time">En refuge depuis ' + mois + ' mois</span>' : '') +
-        '</div></div>'
-      );
+      var sb = getSupabase();
+      var { data: animal } = await sb.from('Animal').select('*, refuge:Refuge(*)').eq('id', animalId).single();
+      if (!animal) return;
+
+      // Titre page
+      document.title = (animal.nom || 'Animal') + ' · Coup de Patte';
+
+      // Emoji espèce
+      var emoji = animal.espece && animal.espece.toLowerCase() === 'chat' ? '🐱' : '🐕';
+      var emojiEl = document.getElementById('animalEmoji');
+      if (emojiEl) emojiEl.textContent = emoji;
+
+      // Localisation
+      var locEl = document.getElementById('animalLoc');
+      if (locEl && animal.refuge) locEl.textContent = '📍 ' + animal.refuge.nom + (animal.refuge.ville ? ' · ' + animal.refuge.ville : '');
+
+      // Nom
+      var nomEl = document.getElementById('animalNom');
+      if (nomEl) nomEl.textContent = animal.nom || '';
+
+      // Meta (race, âge, sexe)
+      var metaEl = document.querySelector('.hero-meta, .animal-meta');
+      if (metaEl) {
+        var age = animal.age_annees ? animal.age_annees + ' an' + (animal.age_annees > 1 ? 's' : '') : '';
+        var sexe = animal.sexe === 'male' ? 'Mâle' : animal.sexe === 'femelle' ? 'Femelle' : '';
+        metaEl.textContent = (animal.race || animal.espece || '') + (age ? ' · ' + age : '') + (sexe ? ' · ' + sexe : '');
+      }
+
+
+      // Mise à jour barre meta en haut
+      el = document.getElementById('metaRace'); if (el) el.textContent = animal.race || animal.espece || '–';
+      el = document.getElementById('metaAge'); if (el) el.textContent = animal.age_annees ? animal.age_annees + ' an' + (animal.age_annees > 1 ? 's' : '') : '–';
+      el = document.getElementById('metaSexe'); if (el) el.textContent = animal.sexe === 'male' ? 'Mâle' : animal.sexe === 'femelle' ? 'Femelle' : '–';
+      el = document.getElementById('metaGabarit'); if (el) el.textContent = (animal.gabarit || '') + (animal.poids_kg ? ' · ~' + animal.poids_kg + ' kg' : '');
+      
+      // Tags dynamiques
+      var tagsEl = document.getElementById('animalTags');
+      if (tagsEl) {
+        var tags = [];
+        if (animal.energie === 'eleve') tags.push('🏃 Actif');
+        else if (animal.energie === 'faible') tags.push('🛋️ Calme');
+        if (animal.compat_enfants_moins13) tags.push('👧 Enfants ok');
+        if (animal.compat_ados_plus13) tags.push('🧑 Ados ok');
+        if (animal.compat_chats) tags.push('🐱 Chats ok');
+        if (animal.compat_chiens) tags.push('🐶 Chiens ok');
+        if (animal.sterilisation) tags.push('✂️ Stérilisé(e)');
+        if (animal.vaccination) tags.push('💉 Vacciné(e)');
+        if (animal.identification) tags.push('🔖 Identifié(e)');
+        if (animal.enfin_moi) tags.push('✨ Enfin Moi ?');
+        tagsEl.innerHTML = tags.map(function(t) { return '<span class="tag">' + t + '</span>'; }).join('');
+      }
+
+      // Lien vers refuge
+      if (animal.refuge) {
+        var refugeLinks = document.querySelectorAll('[href*="coup-de-patte-refuge"]');
+        refugeLinks.forEach(function(link) {
+          link.href = 'coup-de-patte-refuge.html?id=' + animal.refuge.id;
+        });
+        // Bouton contact refuge
+        var contactBtn = document.querySelector('.contact-refuge-btn, [onclick*="refuge"]');
+        if (contactBtn && animal.refuge.telephone) {
+          contactBtn.onclick = function() { window.location.href = 'tel:' + animal.refuge.telephone.replace(/ /g,''); };
+        }
+      }
+
+      // Mise à jour des IDs supplémentaires
+      el = document.getElementById('ficheRace'); if (el) el.textContent = animal.race || animal.espece || '–';
+      el = document.getElementById('ficheAge'); if (el) el.textContent = animal.age_annees ? animal.age_annees + ' ans' : '–';
+      el = document.getElementById('ficheSexe'); if (el) el.textContent = animal.sexe === 'male' ? 'Mâle' : animal.sexe === 'femelle' ? 'Femelle' : '–';
+      el = document.getElementById('ficheGabarit'); if (el) el.textContent = animal.gabarit || '–';
+      el = document.getElementById('fichePelage'); if (el) el.textContent = animal.pelage || '–';
+      el = document.getElementById('ficheRefugeNom'); if (el) el.textContent = animal.refuge ? animal.refuge.nom : '–';
+      el = document.getElementById('ficheRefugeAdresse'); if (el && animal.refuge) el.textContent = '📍 ' + (animal.refuge.adresse || '') + (animal.refuge.ville ? ' · ' + animal.refuge.ville : '') + (animal.refuge.code_postal ? ' · ' + animal.refuge.code_postal : '');
+
+      // Description principale
+      var descEl = document.getElementById('ficheDescription');
+      if (descEl) descEl.textContent = animal.description || 'Aucune description disponible.';
+      
+      // Histoire
+      var histEl = document.getElementById('ficheHistoire');
+      if (histEl) histEl.textContent = animal.histoire || '';
+
+      // Réactivité aux inconnus et vie en refuge
+      var valReact = document.getElementById('valReactivite');
+      if (valReact) valReact.textContent = animal.reactivite_inconnus || '–';
+      var valVie = document.getElementById('valVieRefuge');
+      if (valVie) valVie.textContent = animal.vie_en_refuge || '–';
+
+      // Alert vie en refuge
+      if (animal.vie_en_refuge && animal.vie_en_refuge.toLowerCase().includes('moyenn')) {
+        ['alertVieRefuge', 'alertVieRefuge2'].forEach(function(id) {
+          var el = document.getElementById(id);
+          if (el) { el.textContent = '🏡 Cet animal supporte moyennement bien la vie en refuge. Cela ne reflète pas forcément son comportement dans un foyer stable.'; el.style.display = 'block'; }
+        });
+      }
+
+      // Alert solitude
+      if (profil && profil.heures_seul >= 6) {
+        var alertSol = document.getElementById('alertSolitude');
+        if (alertSol) { alertSol.textContent = '💡 Cet animal supporte difficilement les longues absences. Prévoir une solution de garde.'; alertSol.style.display = 'block'; }
+      }
+
+      // Infos dans le tableau
+      document.querySelectorAll('.info-row').forEach(function(row) {
+        var label = row.querySelector('.info-label');
+        var value = row.querySelector('.info-value');
+        if (!label || !value) return;
+        var txt = label.textContent;
+        if (txt.includes('Race') && animal.race) value.textContent = animal.race;
+        if (txt.includes('Âge') && animal.age_annees) value.textContent = animal.age_annees + ' ans';
+        if (txt.includes('Sexe') && animal.sexe) value.textContent = animal.sexe === 'male' ? 'Mâle' : 'Femelle';
+        if (txt.includes('Gabarit') && animal.gabarit) value.textContent = animal.gabarit;
+        if (txt.includes('Pelage') && animal.pelage) value.textContent = animal.pelage;
+        if (txt.includes('Refuge') && animal.refuge) value.textContent = animal.refuge.nom;
+      });
+
+      // Badge Enfin Moi ?
+      if (animal.enfin_moi) {
+        var badge = document.querySelector('.enfin-badge, .am-ribbon');
+        if (badge) badge.style.display = 'flex';
+      }
+
+      // Calcul vrai score
+      var profilResult = await sb.from('ProfilAdoptant').select('*').eq('utilisateur', session.user.id);
+      var profil = profilResult.data && profilResult.data.length > 0 ? profilResult.data[0] : null;
+      if (profil) {
+        var scores = { logement: 50, foyer: 100, disponibilite: 50, experience: 100, mode_vie: 50 };
+        var g = (animal.gabarit || '').toLowerCase();
+        var logement = (profil.type_logement || '').toLowerCase();
+        if (logement === 'maison') {
+          scores.logement = 100;
+        } else if (logement === 'appartement' || logement === 'appart') {
+          scores.logement = (g === 'petit' || g === 'small') ? 100 : (g === 'moyen' || g === 'medium') ? 65 : 20;
+        } else {
+          scores.logement = 60;
+        }
+        var foyer = 100;
+        if (profil.enfants_foyer && profil.enfants_foyer.includes('moins13') && !animal.compat_enfants_moins13) foyer -= 50;
+        if (profil.animaux_foyer && profil.animaux_foyer.includes('chien') && !animal.compat_chiens) foyer -= 50;
+        if (profil.animaux_foyer && profil.animaux_foyer.includes('chat') && !animal.compat_chats) foyer -= 50;
+        scores.foyer = Math.max(0, foyer);
+        var h = typeof profil.heures_seul === 'number' ? profil.heures_seul : 3;
+        scores.disponibilite = h <= 2 ? 100 : h <= 4 ? 75 : h <= 6 ? 50 : 25;
+        var req = animal.experience_requise || 'debutant';
+        var exp = profil.experience_animale || 'jamais';
+        scores.experience = req === 'debutant' ? 100 : (req === 'intermediaire' && exp !== 'jamais') ? 100 : (req === 'experimente' && exp === 'adulte') ? 100 : 40;
+        var mode = profil.temps_dedie || 'modere';
+        var energie = animal.energie || 'moyen';
+        scores.mode_vie = ((mode === 'actif' || mode === 'sportif') && energie === 'eleve') || (mode === 'modere' && energie === 'moyen') || (mode === 'sedentaire' && energie === 'faible') ? 100 : 50;
+        var score = Math.min(100, Math.round(scores.logement*0.30 + scores.foyer*0.25 + scores.disponibilite*0.20 + scores.experience*0.15 + scores.mode_vie*0.10));
+
+        var scoreEl = document.getElementById('animalScore');
+        var labelEl = document.getElementById('animalScoreLabel');
+        var colors = { 85: 'var(--moss)', 70: 'var(--blue)', 55: 'var(--amber)', 0: 'var(--rose)' };
+        var labels = { 85: 'Coup de Patte idéal', 70: 'Belle rencontre', 55: "On s'apprivoise ?", 0: 'Faible compatibilité' };
+        var threshold = score >= 85 ? 85 : score >= 70 ? 70 : score >= 55 ? 55 : 0;
+        if (scoreEl) { scoreEl.textContent = score + '%'; scoreEl.style.color = colors[threshold]; }
+        if (labelEl) { labelEl.textContent = labels[threshold]; labelEl.style.color = colors[threshold]; }
+
+        // Score global dans la section compatibilité
+        var scoreTotalEl = document.querySelector('.score-total-num');
+        if (scoreTotalEl) scoreTotalEl.textContent = score + '%';
+      }
+
+
+      // Contact refuge section
+      if (animal.refuge) {
+        var el2 = document.getElementById('ficheContactRefugeNom'); 
+        if (el2) el2.textContent = animal.refuge.nom || '';
+        var el3 = document.getElementById('ficheRefugeAdresse2');
+        if (el3) el3.textContent = (animal.refuge.adresse || '') + (animal.refuge.ville ? ' · ' + animal.refuge.ville : '');
+        var callBtn = document.getElementById('ficheCallBtn');
+        if (callBtn && animal.refuge.telephone) {
+          callBtn.href = 'tel:' + animal.refuge.telephone.replace(/ /g,'');
+          callBtn.textContent = '📞 Appeler ' + animal.refuge.nom;
+        }
+      }
+      // Suggestions dynamiques - autres animaux disponibles
+      var { data: suggestions } = await sb.from('Animal')
+        .select('id, nom, espece, race, age_annees, sexe, enfin_moi, date_arrivee_refuge, refuge:Refuge(ville)')
+        .eq('disponible', true)
+        .neq('id', animalId)
+        .limit(3);
+      
+      var grid = document.getElementById('suggestionsGrid');
+      if (grid && suggestions && suggestions.length > 0) {
+        grid.innerHTML = '';
+        // Sort: enfin_moi first
+        suggestions.sort(function(a, b) { return (b.enfin_moi ? 1 : 0) - (a.enfin_moi ? 1 : 0); });
+        suggestions.forEach(function(s) {
+          var emoji = s.espece && s.espece.toLowerCase() === 'chat' ? '🐱' : '🐕';
+          var age = s.age_annees ? s.age_annees + ' an' + (s.age_annees > 1 ? 's' : '') : '';
+          var ville = s.refuge ? s.refuge.ville : '';
+          var mois = s.date_arrivee_refuge ? Math.round((new Date() - new Date(s.date_arrivee_refuge)) / (1000*60*60*24*30)) : 0;
+          grid.insertAdjacentHTML('beforeend',
+            '<div class="sug-card' + (s.enfin_moi ? ' enfin' : '') + '" onclick="window.location.href=\'coup-de-patte-fiche.html?id=' + s.id + '\'" style="cursor:pointer">' +
+            (s.enfin_moi ? '<div class="sug-ribbon">✨ Enfin Moi ?</div>' : '') +
+            '<div class="sug-img" style="background:linear-gradient(160deg,var(--mint),var(--sage));font-size:2.5rem;display:flex;align-items:center;justify-content:center">' + emoji + '</div>' +
+            '<div class="sug-body">' +
+            '<div class="sug-name">' + s.nom + '</div>' +
+            '<div class="sug-meta">' + (s.race || s.espece) + ' · ' + age + (ville ? ' · ' + ville : '') + '</div>' +
+            (mois > 0 ? '<span class="sug-time">En refuge depuis ' + mois + ' mois</span>' : '') +
+            '</div></div>'
+          );
+        });
+      } else if (grid) {
+        grid.innerHTML = '<div style="text-align:center;padding:20px;color:var(--dust);font-size:0.85rem;grid-column:1/-1">Pas d\'autres animaux disponibles pour l\'instant.</div>';
+      }
+
+      // Lien refuge dans onglet contact
+      var refugeLinkEl = document.querySelector('#tab-contact a[href*="refuge"]');
+      if (refugeLinkEl && animal.refuge) {
+        refugeLinkEl.href = 'coup-de-patte-refuge.html?id=' + animal.refuge.id;
+      }
     });
-  } else if (grid) {
-    grid.innerHTML = '<div style="text-align:center;padding:20px;color:var(--dust);font-size:0.85rem;grid-column:1/-1">Pas d\'autres animaux disponibles pour l\'instant.</div>';
-  }
-});
-</script>
+  </script>
 </head>
 <body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K9MPBSTV"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
 
 <nav>
-  <a href="index.html" class="logo">
-    <div class="logo-bubble" style="animation:pawPulse 2.5s ease-in-out infinite">
-      <span style="animation:pawWiggle 2.5s ease-in-out infinite;display:inline-block;filter:brightness(0) invert(1);font-size:1.1rem">🐾</span>
-    </div>
-    Coup de Patte
-  </a>
+  <a href="index.html" class="logo"><div class="logo-bubble" style="animation:pawPulse 2.5s ease-in-out infinite;"><span style="animation:pawWiggle 2.5s ease-in-out infinite;display:inline-block;filter:brightness(0) invert(1);font-size:1.1rem">🐾</span></div>Coup de Patte</a>
   <div></div>
   <a href="coup-de-patte-v3.html" class="nav-back">← Retour aux matchs</a>
 </nav>
 
-<style>
-@keyframes pawPulse{0%,100%{box-shadow:0 4px 12px rgba(45,74,62,0.3)}50%{box-shadow:0 6px 20px rgba(45,74,62,0.45)}}
-@keyframes pawWiggle{0%,100%{transform:rotate(0deg)}20%{transform:rotate(-12deg)}40%{transform:rotate(10deg)}60%{transform:rotate(-6deg)}80%{transform:rotate(4deg)}}
-</style>
-
 <div class="hero">
-  <!-- overflow:visible → le badge score peut flotter en dehors -->
-  <div class="hero-img" id="heroImg">
-    <!-- Zone clippée pour la photo uniquement (pas le badge) -->
-    <div class="hero-img-clip" id="heroImgClip"></div>
-    <!-- Emoji fallback -->
-    <span id="animalEmoji" style="position:relative;z-index:2">🐕</span>
-
-    <!-- Badge signalements -->
-    <div id="badge-absence" style="display:none;position:absolute;top:14px;left:14px;z-index:30;background:rgba(201,112,74,0.92);color:white;font-size:0.68rem;font-weight:700;padding:5px 12px;border-radius:50px;box-shadow:0 2px 8px rgba(0,0,0,0.2)">
-      🚩 <span id="badge-count">1</span> signalement
-    </div>
-
-    <!-- Score : DANS l'image, plus de chevauchement -->
-    <div class="hero-score">
-      <span class="hero-score-n" id="animalScore">–</span>
-      <span class="hero-score-l" id="animalScoreLabel">Compatibilité</span>
-    </div>
-
+  <div class="hero-img" id="heroImg"><span id="animalEmoji" style="position:relative;z-index:5">🐕</span>
+    <!-- Badge signalement -->
+    <div id="badge-absence" style="display:none;position:absolute;top:14px;left:14px;z-index:30;background:rgba(201,112,74,0.92);color:white;font-size:0.68rem;font-weight:700;padding:5px 12px;border-radius:50px;box-shadow:0 2px 8px rgba(0,0,0,0.2)">🚩 <span id="badge-count">1</span> signalement</div>
     <div class="hero-loc" id="animalLoc">📍 Chargement…</div>
+  </div>
+  <div class="hero-score" style="position:absolute;bottom:-26px;right:52px;background:var(--paper);border:1.5px solid var(--border);border-radius:20px;padding:14px 22px;box-shadow:0 8px 28px rgba(45,74,62,0.15);text-align:center;z-index:20;">
+    <span class="hero-score-n" id="animalScore">87%</span>
+    <span class="hero-score-l" id="animalScoreLabel">Coup de Patte idéal</span>
   </div>
 </div>
 
@@ -462,47 +430,52 @@ window.addEventListener('load', async function() {
 
   <div class="animal-header">
     <h1 class="animal-name" id="animalNom">–</h1>
-    <div class="animal-meta">
+    <div class="animal-meta" id="animalMetaBar">
       <span id="metaRace">–</span><span class="meta-dot">·</span>
       <span id="metaAge">–</span><span class="meta-dot">·</span>
       <span id="metaSexe">–</span><span class="meta-dot">·</span>
       <span id="metaGabarit">–</span>
     </div>
-    <div class="animal-tags" id="animalTags"></div>
+    <div class="animal-tags" id="animalTags">
+    </div>
+      <span class="tag">📅 En refuge depuis 8 mois</span>
+    </div>
   </div>
 
   <div class="tabs-wrap">
     <div class="tab active" onclick="showTab('presentation',this)">📋 Présentation</div>
     <div class="tab" onclick="showTab('caractere',this)">🐾 Caractère</div>
     <div class="tab" onclick="showTab('sante',this)">💊 Santé</div>
-    <div class="tab" onclick="showTab('contact',this)">📞 Contact &amp; Refuge</div>
+    <div class="tab" onclick="showTab('contact',this)">📞 Contact & Refuge</div>
     <div class="tab" onclick="showTab('communaute',this)">🚩 Signalements</div>
   </div>
 
   <!-- ══ PRÉSENTATION ══ -->
   <div class="tab-panel active" id="tab-presentation">
-    <p class="pres-quote" id="ficheDescription">Chargement…</p>
+    <p class="pres-quote" id="ficheDescription">Chargement de la description…</p>
+
     <div class="pres-grid">
       <div class="pres-card">
         <p class="pres-card-title">📋 Informations générales</p>
         <div class="info-row"><span class="info-label">🐕 Race</span><span class="info-value" id="ficheRace">–</span></div>
         <div class="info-row"><span class="info-label">🎂 Âge</span><span class="info-value" id="ficheAge">–</span></div>
-        <div class="info-row"><span class="info-label">♂♀ Sexe</span><span class="info-value" id="ficheSexe">–</span></div>
+        <div class="info-row"><span class="info-label">⚖️ Poids</span><span class="info-value">~28 kg</span></div>
         <div class="info-row"><span class="info-label">📏 Gabarit</span><span class="info-value" id="ficheGabarit">–</span></div>
+        <div class="info-row"><span class="info-label">🌿 Pelage</span><span class="info-value">Mi-long</span></div>
+        <div class="info-row"><span class="info-label">🏠 En refuge depuis</span><span class="info-value">8 mois</span></div>
         <div class="info-row"><span class="info-label">📍 Refuge</span><span class="info-value" id="ficheRefugeNom">–</span></div>
-        <div class="info-row"><span class="info-label">🏠 Adresse</span><span class="info-value" id="ficheRefugeAdresse">–</span></div>
-        <div class="alert-box" id="alertVieRefuge" style="display:none"></div>
+        <div class="alert-box" id="alertVieRefuge" style="border-color:var(--amber);background:rgba(212,168,67,0.08);margin-top:14px;display:none"></div>
       </div>
 
       <div class="pres-card">
         <p class="pres-card-title">🧮 Votre compatibilité</p>
-        <div class="crit-row" id="critLogement"><span class="crit-icon">🏠</span><span class="crit-name">Logement</span><div class="crit-bar-wrap"><div class="crit-bar"><div class="crit-fill cf-green" style="width:0%"></div></div><span class="crit-val">–</span></div></div>
-        <div class="crit-row" id="critFoyer"><span class="crit-icon">👨‍👩‍👧</span><span class="crit-name">Foyer</span><div class="crit-bar-wrap"><div class="crit-bar"><div class="crit-fill cf-green" style="width:0%"></div></div><span class="crit-val">–</span></div></div>
-        <div class="crit-row" id="critDispo"><span class="crit-icon">⏰</span><span class="crit-name">Disponibilité</span><div class="crit-bar-wrap"><div class="crit-bar"><div class="crit-fill cf-amber" style="width:0%"></div></div><span class="crit-val">–</span></div></div>
-        <div class="crit-row" id="critExp"><span class="crit-icon">🎓</span><span class="crit-name">Expérience</span><div class="crit-bar-wrap"><div class="crit-bar"><div class="crit-fill cf-green" style="width:0%"></div></div><span class="crit-val">–</span></div></div>
-        <div class="crit-row" id="critMode"><span class="crit-icon">🏃</span><span class="crit-name">Mode de vie</span><div class="crit-bar-wrap"><div class="crit-bar"><div class="crit-fill cf-blue" style="width:0%"></div></div><span class="crit-val">–</span></div></div>
+        <div class="crit-row"><span class="crit-icon">🏠</span><span class="crit-name">Logement</span><div class="crit-bar-wrap"><div class="crit-bar"><div class="crit-fill cf-green" style="width:80%"></div></div><span class="crit-val" style="color:var(--moss)">80%</span></div></div>
+        <div class="crit-row"><span class="crit-icon">👨‍👩‍👧</span><span class="crit-name">Foyer</span><div class="crit-bar-wrap"><div class="crit-bar"><div class="crit-fill cf-green" style="width:100%"></div></div><span class="crit-val" style="color:var(--moss)">100%</span></div></div>
+        <div class="crit-row"><span class="crit-icon">⏰</span><span class="crit-name">Disponibilité</span><div class="crit-bar-wrap"><div class="crit-bar"><div class="crit-fill cf-amber" style="width:50%"></div></div><span class="crit-val" style="color:var(--amber)">50%</span></div></div>
+        <div class="crit-row"><span class="crit-icon">🎓</span><span class="crit-name">Expérience</span><div class="crit-bar-wrap"><div class="crit-bar"><div class="crit-fill cf-green" style="width:93%"></div></div><span class="crit-val" style="color:var(--moss)">93%</span></div></div>
+        <div class="crit-row"><span class="crit-icon">🏃</span><span class="crit-name">Mode de vie</span><div class="crit-bar-wrap"><div class="crit-bar"><div class="crit-fill cf-blue" style="width:75%"></div></div><span class="crit-val" style="color:var(--blue)">75%</span></div></div>
         <div class="score-total">
-          <div><span class="score-total-label">Compatibilité globale</span><span class="score-total-badge">–</span></div>
+          <div><span class="score-total-label">Compatibilité globale</span><span class="score-total-badge">Coup de Patte idéal 🟢</span></div>
           <span class="score-total-num" id="scoreTotalNum">–</span>
         </div>
         <div class="alert-box" id="alertSolitude" style="display:none"></div>
@@ -511,9 +484,10 @@ window.addEventListener('load', async function() {
       <div class="refuge-card">
         <div class="refuge-info">
           <h3 id="ficheContactRefugeNom">–</h3>
-          <p id="ficheRefugeAdresse2">–</p>
+          <p id="ficheRefugeAdresse"></p>
+          <p>🕐 Mar, Dim · 10h à 18h · Fermé le lundi</p>
         </div>
-        <a href="#" class="refuge-btn" id="refugeBtnPres">📞 Contacter le refuge</a>
+        <a href="tel:0472000000" class="refuge-btn">📞 Contacter le refuge</a>
       </div>
     </div>
   </div>
@@ -521,27 +495,27 @@ window.addEventListener('load', async function() {
   <!-- ══ CARACTÈRE ══ -->
   <div class="tab-panel" id="tab-caractere">
     <div class="carac-grid">
-      <div class="carac-item"><span class="carac-icon">⚡</span><span class="carac-label">Niveau d'énergie</span><span class="carac-value" id="valEnergie">–</span></div>
+      <div class="carac-item"><span class="carac-icon">⚡</span><span class="carac-label">Niveau d'énergie</span><span class="carac-value">Actif</span></div>
       <div class="carac-item"><span class="carac-icon">🤝</span><span class="carac-label">Lien avec l'humain</span><span class="carac-value">Affectueux</span></div>
-      <div class="carac-item"><span class="carac-icon">👀</span><span class="carac-label">Réactivité aux inconnus</span><span class="carac-value" id="valReactivite">–</span></div>
-      <div class="carac-item"><span class="carac-icon">🏡</span><span class="carac-label">Vie en refuge</span><span class="carac-value" id="valVieRefuge">–</span></div>
-      <div class="carac-item"><span class="carac-icon">🎓</span><span class="carac-label">Niveau requis</span><span class="carac-value" id="valExperience">–</span></div>
-      <div class="carac-item"><span class="carac-icon">📏</span><span class="carac-label">Gabarit</span><span class="carac-value" id="valGabaritCarac">–</span></div>
+      <div class="carac-item" id="caracReactivite"><span class="carac-icon">👀</span><span class="carac-label">Réactivité aux inconnus</span><span class="carac-value" id="valReactivite">–</span></div>
+      <div class="carac-item"><span class="carac-icon">🏠</span><span class="carac-label">Solitude</span><span class="carac-value">Moyennement bien</span></div>
+      <div class="carac-item"><span class="carac-icon">🎓</span><span class="carac-label">Niveau requis</span><span class="carac-value">Intermédiaire</span></div>
+      <div class="carac-item" id="caracVieRefuge"><span class="carac-icon">🏡</span><span class="carac-label">Vie en refuge</span><span class="carac-value" id="valVieRefuge">–</span></div>
     </div>
 
-    <div class="alert-box" id="alertVieRefuge2" style="display:none;margin-bottom:20px"></div>
+    <div class="alert-box" id="alertVieRefuge2" style="border-color:var(--amber);background:rgba(212,168,67,0.08);margin-bottom:20px;display:none"></div>
 
-    <p style="font-family:'Fraunces',serif;font-size:1rem;font-weight:600;font-style:italic;color:var(--forest);margin-bottom:13px">Compatibilités</p>
-    <div class="compat-grid" id="compatItems">
-      <div class="compat-item"><span class="compat-icon">👶</span><span class="compat-label">Enfants &lt;13 ans</span><span class="compat-caution">⏳</span></div>
-      <div class="compat-item"><span class="compat-icon">🧑</span><span class="compat-label">Ados 13+</span><span class="compat-caution">⏳</span></div>
-      <div class="compat-item"><span class="compat-icon">🐶</span><span class="compat-label">Chiens</span><span class="compat-caution">⏳</span></div>
-      <div class="compat-item"><span class="compat-icon">🐱</span><span class="compat-label">Chats</span><span class="compat-caution">⏳</span></div>
+    <p style="font-family:'Fraunces',serif;font-size:1rem;font-weight:600;font-style:italic;color:var(--forest);margin-bottom:13px;">Compatibilités</p>
+    <div class="compat-grid">
+      <div class="compat-item"><span class="compat-icon">👶</span><span class="compat-label">Enfants moins de 13 ans</span><span class="compat-no">❌ Non</span></div>
+      <div class="compat-item"><span class="compat-icon">🧑</span><span class="compat-label">Ados 13 ans et plus</span><span class="compat-yes">✅ Oui</span></div>
+      <div class="compat-item"><span class="compat-icon">🐶</span><span class="compat-label">Chiens</span><span class="compat-no">❌ Non</span></div>
+      <div class="compat-item"><span class="compat-icon">🐱</span><span class="compat-label">Chats</span><span class="compat-yes">✅ Oui</span></div>
     </div>
 
     <div class="history-box">
-      <p style="font-family:'Fraunces',serif;font-size:0.88rem;font-weight:600;font-style:normal;color:var(--forest);margin-bottom:10px;padding:0;border:none">Son histoire</p>
-      <p id="ficheHistoire">–</p>
+      <p style="font-family:'Fraunces',serif;font-size:0.88rem;font-weight:600;font-style:normal;color:var(--forest);margin-bottom:10px;padding:0;border:none;">Son histoire</p>
+      <p id="ficheHistoire"></p>
     </div>
   </div>
 
@@ -549,10 +523,10 @@ window.addEventListener('load', async function() {
   <div class="tab-panel" id="tab-sante">
     <div class="health-grid">
       <div class="health-item"><div class="health-icon">💉</div><div><span class="health-label">Vaccination</span><span class="health-value health-ok">✅ À jour</span></div></div>
-      <div class="health-item"><div class="health-icon">✂️</div><div><span class="health-label">Stérilisation</span><span class="health-value health-ok">✅ Stérilisé(e)</span></div></div>
-      <div class="health-item"><div class="health-icon">🔖</div><div><span class="health-label">Identification</span><span class="health-value health-ok">✅ Pucé(e)</span></div></div>
+      <div class="health-item"><div class="health-icon">✂️</div><div><span class="health-label">Stérilisation</span><span class="health-value health-ok">✅ Stérilisé</span></div></div>
+      <div class="health-item"><div class="health-icon">🔖</div><div><span class="health-label">Identification</span><span class="health-value health-ok">✅ Pucé</span></div></div>
       <div class="health-item"><div class="health-icon">🦠</div><div><span class="health-label">Antiparasitaire</span><span class="health-value health-ok">✅ À jour</span></div></div>
-      <div class="health-item"><div class="health-icon">🩺</div><div><span class="health-label">Besoins médicaux</span><span class="health-value" id="ficheBesoins">–</span></div></div>
+      <div class="health-item"><div class="health-icon">🩺</div><div><span class="health-label">Besoins médicaux</span><span class="health-value">Aucun suivi particulier</span></div></div>
       <div class="health-item"><div class="health-icon">🏃</div><div><span class="health-label">Mobilité</span><span class="health-value health-ok">✅ Aucun problème</span></div></div>
     </div>
     <div class="alert-box" id="ficheAlertBox" style="display:none"></div>
@@ -561,157 +535,295 @@ window.addEventListener('load', async function() {
   <!-- ══ CONTACT ══ -->
   <div class="tab-panel" id="tab-contact">
     <div class="contact-hero">
-      <h3>Vous souhaitez rencontrer cet animal ?</h3>
-      <p>Appelez directement le refuge pour convenir d'un rendez-vous. Ils vous accompagneront dans toutes les démarches d'adoption.</p>
+      <h3 id="ficheContactTitre">Vous souhaitez rencontrer cet animal ?</h3>
+      <p>Appelez directement le refuge pour convenir d'un rendez-vous.a dans toutes les démarches d'adoption.</p>
       <a href="#" class="contact-btn" id="ficheCallBtn">📞 Appeler le refuge</a>
     </div>
     <div class="contact-infos">
-      <div class="contact-info-card">
-        <span class="contact-info-label">Refuge</span>
-        <div class="contact-info-value" id="ficheContactRefugeNom2">–</div>
-      </div>
-      <div class="contact-info-card">
-        <span class="contact-info-label">Adresse</span>
-        <div class="contact-info-value" id="ficheRefugeAdresse3">–</div>
-      </div>
-      <div class="contact-info-card">
-        <span class="contact-info-label">Page refuge</span>
-        <div class="contact-info-value"><a href="#" id="ficheLienRefuge" style="color:var(--moss);font-weight:700;text-decoration:none">Voir la fiche →</a></div>
-      </div>
+      <div class="contact-info-card"><span class="contact-info-label">Adresse</span><div class="contact-info-value" id="ficheRefugeAdresse2">–</div></div></div>
+      <div class="contact-info-card"><span class="contact-info-label">Horaires</span><div class="contact-info-value" id="ficheHoraires">–</div></div>
+      
     </div>
+
+    <!-- Signalement communautaire -->
+    
   </div>
 
   <!-- ══ COMMUNAUTÉ ══ -->
   <div class="tab-panel" id="tab-communaute">
     <p style="font-family:'Fraunces',serif;font-size:1rem;font-weight:600;font-style:italic;color:var(--forest);margin-bottom:6px">🤝 Vous connaissez cet animal ?</p>
-    <p style="font-size:0.78rem;color:var(--dust);line-height:1.6;margin-bottom:24px">Vos retours aident la communauté à garder les informations à jour et à améliorer les adoptions futures.</p>
+    <p style="font-size:0.78rem;color:var(--dust);line-height:1.6;margin-bottom:24px">Vos retours aident la communauté à garder les informations à jour et à améliorer les adoptions futures. Merci pour votre contribution.</p>
 
+    <!-- Adoption CDP -->
     <div style="background:rgba(74,124,89,0.05);border:1.5px solid rgba(74,124,89,0.2);border-radius:18px;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:14px">
       <div>
         <p style="font-family:'Fraunces',serif;font-size:0.92rem;font-weight:600;font-style:italic;color:var(--forest);margin-bottom:4px">🐾 Vous avez adopté cet animal via Coup de Patte ?</p>
         <p style="font-size:0.75rem;color:var(--dust);line-height:1.5;max-width:480px">Signalez-le nous ! La fiche sera retirée et votre adoption comptabilisée dans nos statistiques.</p>
       </div>
-      <button onclick="signalerAdoption()" style="flex-shrink:0;padding:10px 20px;background:transparent;border:1.5px solid rgba(74,124,89,0.35);border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.8rem;font-weight:700;color:var(--moss);cursor:pointer;white-space:nowrap" onmouseover="this.style.background='rgba(74,124,89,0.08)'" onmouseout="this.style.background='transparent'">🐾 Confirmer mon adoption</button>
+      <button onclick="signalerAdoption()" style="flex-shrink:0;padding:10px 20px;background:transparent;border:1.5px solid rgba(74,124,89,0.35);border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.8rem;font-weight:700;color:var(--moss);cursor:pointer;transition:all 0.2s;white-space:nowrap" onmouseover="this.style.background='rgba(74,124,89,0.08)'" onmouseout="this.style.background='transparent'">🐾 Confirmer mon adoption</button>
     </div>
 
+    <!-- Info incorrecte -->
     <div style="background:rgba(91,141,239,0.05);border:1.5px solid rgba(91,141,239,0.18);border-radius:18px;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:14px">
       <div>
         <p style="font-family:'Fraunces',serif;font-size:0.92rem;font-weight:600;font-style:italic;color:var(--forest);margin-bottom:4px">✏️ Une information vous semble incorrecte ?</p>
-        <p style="font-size:0.75rem;color:var(--dust);line-height:1.5;max-width:480px">Race mal identifiée, âge erroné, photo incorrecte... Signalez-le pour que la fiche soit corrigée.</p>
+        <p style="font-size:0.75rem;color:var(--dust);line-height:1.5;max-width:480px">Race mal identifiée, âge erroné, photo qui ne correspond pas... Signalez-le pour que la fiche soit corrigée.</p>
       </div>
-      <button onclick="signalerInfoIncorrecte()" style="flex-shrink:0;padding:10px 20px;background:transparent;border:1.5px solid rgba(91,141,239,0.35);border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.8rem;font-weight:700;color:var(--blue);cursor:pointer;white-space:nowrap" onmouseover="this.style.background='rgba(91,141,239,0.08)'" onmouseout="this.style.background='transparent'">✏️ Signaler</button>
+      <button onclick="signalerInfoIncorrecte()" style="flex-shrink:0;padding:10px 20px;background:transparent;border:1.5px solid rgba(91,141,239,0.35);border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.8rem;font-weight:700;color:var(--blue);cursor:pointer;transition:all 0.2s;white-space:nowrap" onmouseover="this.style.background='rgba(91,141,239,0.08)'" onmouseout="this.style.background='transparent'">✏️ Signaler</button>
     </div>
 
-    <div id="alerte-absence" style="display:none;background:rgba(212,168,67,0.1);border:1.5px solid rgba(196,154,26,0.3);border-radius:14px;padding:14px 18px;margin-bottom:16px">
+    <!-- Bandeau alerte signalements (visible à partir de 3) -->
+    <div id="alerte-absence" style="display:none;background:rgba(212,168,67,0.1);border:1.5px solid rgba(196,154,26,0.3);border-radius:14px;padding:14px 18px;margin-bottom:16px;display:none">
       <p style="font-size:0.82rem;font-weight:700;color:var(--amber);margin-bottom:4px">⚠️ Plusieurs personnes signalent que cet animal n'est peut-être plus disponible</p>
-      <p style="font-size:0.75rem;color:var(--dust);line-height:1.5">Vérifiez auprès du refuge avant de vous déplacer.</p>
+      <p style="font-size:0.75rem;color:var(--dust);line-height:1.5">Vérifiez auprès du refuge avant de vous déplacer. Si l'animal a bien été adopté, vous pouvez le confirmer ci-dessous.</p>
     </div>
 
-    <div style="background:rgba(201,112,74,0.05);border:1.5px solid rgba(201,112,74,0.15);border-radius:18px;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px">
+    <!-- Absence -->
+    <div style="background:rgba(201,112,74,0.05);border:1.5px solid rgba(201,112,74,0.15);border-radius:18px;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:14px">
       <div>
         <p style="font-family:'Fraunces',serif;font-size:0.92rem;font-weight:600;font-style:italic;color:var(--bark);margin-bottom:4px">🚩 Cet animal n'est plus au refuge ?</p>
-        <p style="font-size:0.75rem;color:var(--dust);line-height:1.5;max-width:480px">Au bout de 5 signalements, la fiche est automatiquement retirée.</p>
+        <p style="font-size:0.75rem;color:var(--dust);line-height:1.5;max-width:480px">Les sites des refuges ne sont pas toujours à jour. Au bout de 5 signalements, la fiche sera automatiquement retirée.</p>
         <p id="compteur-absence" style="font-size:0.72rem;font-weight:700;color:var(--smoke);margin-top:8px">0 signalement pour l'instant</p>
       </div>
-      <button id="btn-absence" onclick="signalerAbsence()" style="flex-shrink:0;padding:10px 20px;background:transparent;border:1.5px solid rgba(201,112,74,0.35);border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.8rem;font-weight:700;color:var(--rose);cursor:pointer;white-space:nowrap" onmouseover="this.style.background='rgba(201,112,74,0.08)'" onmouseout="this.style.background='transparent'">🚩 Signaler l'absence</button>
+      <button id="btn-absence" onclick="signalerAbsence()" style="flex-shrink:0;padding:10px 20px;background:transparent;border:1.5px solid rgba(201,112,74,0.35);border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.8rem;font-weight:700;color:var(--rose);cursor:pointer;transition:all 0.2s;white-space:nowrap" onmouseover="this.style.background='rgba(201,112,74,0.08)'" onmouseout="this.style.background='transparent'">🚩 Signaler l'absence</button>
+    </div>
+
+    <!-- Confirmer / infirmer compatibilité -->
+    <div style="background:rgba(91,141,239,0.04);border:1.5px solid rgba(91,141,239,0.15);border-radius:18px;padding:20px 24px;margin-bottom:14px">
+      <p style="font-family:'Fraunces',serif;font-size:0.92rem;font-weight:600;font-style:italic;color:var(--forest);margin-bottom:4px">💬 Vous avez visité ou connu cet animal ?</p>
+      <p style="font-size:0.75rem;color:var(--dust);line-height:1.5;margin-bottom:18px">Confirmez ou infirmez ses compatibilités pour aider les futurs adoptants. Vos retours sont agrégés avec ceux des autres visiteurs.</p>
+
+      <div style="display:flex;flex-direction:column;gap:12px">
+
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;background:var(--ivory);border-radius:12px;border:1.5px solid var(--border)">
+          <span style="font-size:0.82rem;font-weight:600;color:var(--forest)">👶 Enfants moins de 13 ans</span>
+          <div style="display:flex;gap:6px">
+            <button onclick="confirmerCompat('enfants de moins de 13 ans','oui')" style="padding:6px 14px;border-radius:50px;border:1.5px solid rgba(74,124,89,0.3);background:transparent;font-family:'Nunito',sans-serif;font-size:0.72rem;font-weight:700;color:var(--moss);cursor:pointer;transition:all 0.2s" onmouseover="this.style.background='rgba(74,124,89,0.08)'" onmouseout="this.style.background='transparent'">✅ Compatible</button>
+            <button onclick="confirmerCompat('enfants de moins de 13 ans','non')" style="padding:6px 14px;border-radius:50px;border:1.5px solid rgba(201,112,74,0.3);background:transparent;font-family:'Nunito',sans-serif;font-size:0.72rem;font-weight:700;color:var(--rose);cursor:pointer;transition:all 0.2s" onmouseover="this.style.background='rgba(201,112,74,0.08)'" onmouseout="this.style.background='transparent'">❌ Pas compatible</button>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;background:var(--ivory);border-radius:12px;border:1.5px solid var(--border)">
+          <span style="font-size:0.82rem;font-weight:600;color:var(--forest)">🧑 Ados 13 ans et plus</span>
+          <div style="display:flex;gap:6px">
+            <button onclick="confirmerCompat('ados de 13 ans et plus','oui')" style="padding:6px 14px;border-radius:50px;border:1.5px solid rgba(74,124,89,0.3);background:transparent;font-family:'Nunito',sans-serif;font-size:0.72rem;font-weight:700;color:var(--moss);cursor:pointer;transition:all 0.2s" onmouseover="this.style.background='rgba(74,124,89,0.08)'" onmouseout="this.style.background='transparent'">✅ Compatible</button>
+            <button onclick="confirmerCompat('ados de 13 ans et plus','non')" style="padding:6px 14px;border-radius:50px;border:1.5px solid rgba(201,112,74,0.3);background:transparent;font-family:'Nunito',sans-serif;font-size:0.72rem;font-weight:700;color:var(--rose);cursor:pointer;transition:all 0.2s" onmouseover="this.style.background='rgba(201,112,74,0.08)'" onmouseout="this.style.background='transparent'">❌ Pas compatible</button>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;background:var(--ivory);border-radius:12px;border:1.5px solid var(--border)">
+          <span style="font-size:0.82rem;font-weight:600;color:var(--forest)">🐶 Chiens</span>
+          <div style="display:flex;gap:6px">
+            <button onclick="confirmerCompat('les chiens','oui')" style="padding:6px 14px;border-radius:50px;border:1.5px solid rgba(74,124,89,0.3);background:transparent;font-family:'Nunito',sans-serif;font-size:0.72rem;font-weight:700;color:var(--moss);cursor:pointer;transition:all 0.2s" onmouseover="this.style.background='rgba(74,124,89,0.08)'" onmouseout="this.style.background='transparent'">✅ Compatible</button>
+            <button onclick="confirmerCompat('les chiens','non')" style="padding:6px 14px;border-radius:50px;border:1.5px solid rgba(201,112,74,0.3);background:transparent;font-family:'Nunito',sans-serif;font-size:0.72rem;font-weight:700;color:var(--rose);cursor:pointer;transition:all 0.2s" onmouseover="this.style.background='rgba(201,112,74,0.08)'" onmouseout="this.style.background='transparent'">❌ Pas compatible</button>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;background:var(--ivory);border-radius:12px;border:1.5px solid var(--border)">
+          <span style="font-size:0.82rem;font-weight:600;color:var(--forest)">🐱 Chats</span>
+          <div style="display:flex;gap:6px">
+            <button onclick="confirmerCompat('les chats','oui')" style="padding:6px 14px;border-radius:50px;border:1.5px solid rgba(74,124,89,0.3);background:transparent;font-family:'Nunito',sans-serif;font-size:0.72rem;font-weight:700;color:var(--moss);cursor:pointer;transition:all 0.2s" onmouseover="this.style.background='rgba(74,124,89,0.08)'" onmouseout="this.style.background='transparent'">✅ Compatible</button>
+            <button onclick="confirmerCompat('les chats','non')" style="padding:6px 14px;border-radius:50px;border:1.5px solid rgba(201,112,74,0.3);background:transparent;font-family:'Nunito',sans-serif;font-size:0.72rem;font-weight:700;color:var(--rose);cursor:pointer;transition:all 0.2s" onmouseover="this.style.background='rgba(201,112,74,0.08)'" onmouseout="this.style.background='transparent'">❌ Pas compatible</button>
+          </div>
+        </div>
+
+      </div>
     </div>
   </div>
 
   <!-- ─── SUGGESTIONS ─── -->
   <div class="suggestions">
     <h2 class="suggestions-title">D'autres animaux pour vous</h2>
-    <p class="suggestions-sub">En commençant par celui qui attend depuis le plus longtemps.</p>
+    <p class="suggestions-sub">En commençant par celui qui attend depuis le plus longtemps, il mérite qu'on le regarde.</p>
     <div class="suggestions-grid" id="suggestionsGrid">
-      <div style="text-align:center;padding:20px;color:var(--dust);font-size:0.85rem">Chargement…</div>
+      <div style="text-align:center;padding:20px;color:var(--dust);font-size:0.85rem">Chargement des suggestions…</div>
     </div>
   </div>
 
 </div>
 
 <script>
-function showTab(id, el) {
-  document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
-  document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
-  el.classList.add('active');
-  document.getElementById('tab-' + id).classList.add('active');
-}
-
-function signalerInfoIncorrecte() {
-  var info = prompt('Quelle information vous semble incorrecte ?\n\nExemple : "La race est incorrecte" ou "L\'âge indiqué ne correspond pas"');
-  if (info && info.trim()) {
-    getSupabase().from('Signalisation').insert({
-      animal: window.animalId, type_signalement: 'info_incorrecte',
-      commentaire: info.trim(), utilisateur: currentUserId || null
-    }).then(function(res) {
-      if (res.error) { alert('Erreur lors du signalement.'); return; }
-      alert('✏️ Merci ! Votre signalement a été transmis pour vérification.');
-    });
+  function showTab(id, el) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('tab-' + id).classList.add('active');
   }
-}
 
-function signalerAdoption() {
-  if (confirm('Vous confirmez avoir adopté cet animal via Coup de Patte ?\n\n⚠️ La fiche sera supprimée dès confirmation.')) {
-    var sb = getSupabase();
-    sb.from('Animal').update({ statut: 'adopte_cdp', disponible: false }).eq('id', window.animalId).then(function(res) {
-      if (res.error) { alert('Erreur : ' + res.error.message); return; }
-      sb.from('Signalisation').insert({ animal: window.animalId, type_signalement: 'adoption_cdp', utilisateur: currentUserId || null }).then(function() {
-        alert('🐾 Merci ! La fiche a été retirée. Adoption comptabilisée dans les stats Coup de Patte.');
-        setTimeout(function() { window.location.href = 'coup-de-patte-v3.html'; }, 1500);
+  function signalerInfoIncorrecte() {
+    var animalId = window.animalId;
+    var info = prompt('Quelle information vous semble incorrecte ?\n\nExemple : "La race est incorrecte" ou "L\'âge indiqué ne correspond pas"');
+    if(info && info.trim()) {
+      getSupabase().from('Signalisation').insert({
+        animal: animalId,
+        type_signalement: 'info_incorrecte',
+        commentaire: info.trim(),
+        utilisateur: currentUserId || null
+      }).then(function(res) {
+        if(res.error) { alert('Erreur lors du signalement.'); return; }
+        alert('✏️ Merci ! Votre signalement a été transmis au refuge et à l\'équipe Coup de Patte pour vérification.');
       });
+    }
+  }
+
+  function confirmerCompat(sujet, sens) {
+    var animalId = window.animalId;
+    var label = sens === 'oui' ? 'compatible avec ' + sujet : 'pas compatible avec ' + sujet;
+    if(confirm('Vous confirmez ce signalement ?\n\nVotre retour sera agrégé avec ceux des autres visiteurs pour enrichir la fiche.')) {
+      getSupabase().from('Signalisation').insert({
+        animal: animalId,
+        type_signalement: 'compatibilite',
+        commentaire: label,
+        utilisateur: currentUserId || null
+      }).then(function() {
+        alert('💬 Merci pour votre retour ! Il sera pris en compte si d\'autres visiteurs confirment la même chose. 🐾');
+      });
+    }
+  }
+
+  function signalerAdoption() {
+    var animalId = window.animalId;
+    if(confirm('Vous confirmez avoir adopté cet animal via Coup de Patte ?\n\n⚠️ La fiche sera supprimée dès confirmation.\n\nCette action aidera à mesurer l\'impact réel de Coup de Patte.')) {
+      var sb = getSupabase();
+      sb.from('Animal').update({ statut: 'adopte_cdp', disponible: false }).eq('id', animalId).then(function(res) {
+        if(res.error) { alert('Erreur : ' + res.error.message); return; }
+        sb.from('Signalisation').insert({ animal: animalId, type_signalement: 'adoption_cdp', utilisateur: currentUserId || null }).then(function() {
+          alert('🐾 Merci ! La fiche a été retirée et votre adoption transmise au refuge.\n\nElle sera comptabilisée dans les statistiques Coup de Patte.');
+          setTimeout(function() { window.location.href = 'coup-de-patte-v3.html'; }, 1500);
+        });
+      });
+    }
+  }
+
+  var dejaSignale = false;
+  var currentUserId = null;
+
+  async function signalerAbsence() {
+    var animalId = window.animalId;
+    if(dejaSignale) {
+      alert('Vous avez déjà signalé l\'absence de cet animal. Merci pour votre contribution !');
+      return;
+    }
+    if(!confirm('Confirmer le signalement ?\n\nVous indiquez que cet animal ne semble plus être disponible. Au bout de 5 signalements, la fiche sera automatiquement retirée.')) return;
+
+    var sb = getSupabase();
+
+    // Insérer le signalement
+    var { error } = await sb.from('Signalisation').insert({
+      animal: animalId,
+      type_signalement: 'absence',
+      utilisateur: currentUserId || null
     });
-  }
-}
+    if(error) { alert('Erreur : ' + error.message); return; }
 
-var dejaSignale = false;
-var currentUserId = null;
-
-async function signalerAbsence() {
-  if (dejaSignale) { alert('Vous avez déjà signalé l\'absence de cet animal. Merci !'); return; }
-  if (!confirm('Confirmer le signalement ?\n\nAu bout de 5 signalements, la fiche sera automatiquement retirée.')) return;
-  var sb = getSupabase();
-  var { error } = await sb.from('Signalisation').insert({ animal: window.animalId, type_signalement: 'absence', utilisateur: currentUserId || null });
-  if (error) { alert('Erreur : ' + error.message); return; }
-  dejaSignale = true;
-  var { data: signaux } = await sb.from('Signalisation').select('id').eq('animal', window.animalId).eq('type_signalement', 'absence');
-  var absenceCount = signaux ? signaux.length : 1;
-  var compteur = document.getElementById('compteur-absence');
-  if (compteur) { compteur.textContent = absenceCount + ' signalement' + (absenceCount > 1 ? 's' : '') + ' sur 5'; compteur.style.color = 'var(--rose)'; }
-  var badge = document.getElementById('badge-absence');
-  if (badge) { badge.style.display = 'flex'; badge.style.alignItems = 'center'; badge.style.gap = '4px'; var bc = document.getElementById('badge-count'); if (bc) bc.textContent = absenceCount; }
-  var btn = document.getElementById('btn-absence');
-  if (btn) { btn.textContent = '✅ Signalement enregistré'; btn.style.borderColor = 'rgba(74,124,89,0.3)'; btn.style.color = 'var(--moss)'; btn.style.cursor = 'default'; }
-  var alerte = document.getElementById('alerte-absence');
-  if (alerte && absenceCount >= 3) alerte.style.display = 'block';
-  if (absenceCount >= 5) {
-    await getSupabase().from('Animal').update({ disponible: false }).eq('id', window.animalId);
-    setTimeout(function() { alert('🗑️ La fiche a été automatiquement retirée (5 signalements atteints).'); }, 400);
-  }
-}
-
-async function chargerSignalements() {
-  if (!window.animalId) return;
-  var sb = getSupabase();
-  var sessRes = await sb.auth.getSession();
-  if (sessRes.data && sessRes.data.session) currentUserId = sessRes.data.session.user.id;
-  var { data: signaux } = await sb.from('Signalisation').select('id, type_signalement, utilisateur').eq('animal', window.animalId).eq('type_signalement', 'absence');
-  if (!signaux || signaux.length === 0) return;
-  var absenceCount = signaux.length;
-  if (currentUserId && signaux.some(function(s) { return s.utilisateur === currentUserId; })) {
     dejaSignale = true;
+
+    // Compter les signalements d'absence pour cet animal
+    var { data: signaux } = await sb.from('Signalisation').select('id').eq('animal', animalId).eq('type_signalement', 'absence');
+    var absenceCount = signaux ? signaux.length : 1;
+
+    // Mettre à jour le compteur UI
+    var label = absenceCount < 5
+      ? absenceCount + ' signalement' + (absenceCount > 1 ? 's' : '') + ' sur 5'
+      : '5 signalements sur 5 · fiche en cours de suppression';
+    var compteur = document.getElementById('compteur-absence');
+    if(compteur) { compteur.textContent = label; compteur.style.color = 'var(--rose)'; }
+
+    // Badge
+    var badge = document.getElementById('badge-absence');
+    if(badge) {
+      badge.style.display = 'flex';
+      badge.style.alignItems = 'center';
+      badge.style.gap = '4px';
+      var badgeCount = document.getElementById('badge-count');
+      if(badgeCount) badgeCount.textContent = absenceCount;
+    }
+
+    // Bouton
     var btn = document.getElementById('btn-absence');
-    if (btn) { btn.textContent = '✅ Déjà signalé'; btn.style.color = 'var(--moss)'; btn.style.cursor = 'default'; }
+    if(btn) { btn.textContent = '✅ Signalement enregistré'; btn.style.borderColor = 'rgba(74,124,89,0.3)'; btn.style.color = 'var(--moss)'; btn.style.cursor = 'default'; }
+
+    // Bandeau alerte
+    var alerte = document.getElementById('alerte-absence');
+    if(alerte && absenceCount >= 3 && absenceCount < 5) {
+      alerte.style.display = 'block';
+      alerte.querySelector('p').textContent = '⚠️ ' + absenceCount + ' personnes signalent que cet animal n\'est peut-être plus disponible';
+    }
+
+    // À 5 : retirer la fiche automatiquement
+    if(absenceCount >= 5) {
+      await sb.from('Animal').update({ disponible: false }).eq('id', animalId);
+      if(alerte) {
+        alerte.style.display = 'block';
+        alerte.style.background = 'rgba(201,112,74,0.1)';
+        alerte.style.borderColor = 'rgba(201,112,74,0.4)';
+        alerte.querySelector('p').textContent = '🗑️ 5 signalements atteints — cette fiche est automatiquement retirée.';
+      }
+      setTimeout(function() {
+        alert('🗑️ La fiche a été automatiquement retirée de Coup de Patte.\n\nLe refuge a été notifié.\n\nCet animal sera exclu du scraping automatique pendant 12 mois.');
+      }, 400);
+    }
   }
-  var compteur = document.getElementById('compteur-absence');
-  if (compteur) { compteur.textContent = absenceCount + ' signalement' + (absenceCount > 1 ? 's' : '') + ' sur 5'; if (absenceCount >= 3) compteur.style.color = 'var(--rose)'; }
-  var badge = document.getElementById('badge-absence');
-  if (badge && absenceCount > 0) { badge.style.display = 'flex'; badge.style.alignItems = 'center'; badge.style.gap = '4px'; var bc = document.getElementById('badge-count'); if (bc) bc.textContent = absenceCount; }
-  var alerte = document.getElementById('alerte-absence');
-  if (alerte && absenceCount >= 3) alerte.style.display = 'block';
-}
 
-window.addEventListener('load', function() { setTimeout(chargerSignalements, 800); });
+  function toggleLike() {
+    var btn = document.getElementById('likeBtn');
+    btn.classList.toggle('liked');
+    btn.textContent = btn.classList.contains('liked') ? '❤️' : '🐾';
+  }
+
+  // Charger les signalements existants au démarrage
+  async function chargerSignalements() {
+    var animalId = window.animalId;
+    if(!animalId) return;
+    var sb = getSupabase();
+    
+    // Session courante
+    var sessRes = await sb.auth.getSession();
+    if(sessRes.data && sessRes.data.session) {
+      currentUserId = sessRes.data.session.user.id;
+    }
+
+    var { data: signaux } = await sb.from('Signalisation').select('id, type_signalement, utilisateur').eq('animal', animalId).eq('type_signalement', 'absence');
+    if(!signaux || signaux.length === 0) return;
+
+    var absenceCount = signaux.length;
+
+    // Vérifier si l'utilisateur a déjà signalé
+    if(currentUserId && signaux.some(function(s) { return s.utilisateur === currentUserId; })) {
+      dejaSignale = true;
+      var btn = document.getElementById('btn-absence');
+      if(btn) { btn.textContent = '✅ Déjà signalé'; btn.style.color = 'var(--moss)'; btn.style.cursor = 'default'; }
+    }
+
+    // Mettre à jour compteur
+    var compteur = document.getElementById('compteur-absence');
+    if(compteur) {
+      compteur.textContent = absenceCount + ' signalement' + (absenceCount > 1 ? 's' : '') + ' sur 5';
+      if(absenceCount >= 3) compteur.style.color = 'var(--rose)';
+    }
+
+    // Badge
+    var badge = document.getElementById('badge-absence');
+    if(badge && absenceCount > 0) {
+      badge.style.display = 'flex';
+      badge.style.alignItems = 'center';
+      badge.style.gap = '4px';
+      var badgeCount = document.getElementById('badge-count');
+      if(badgeCount) badgeCount.textContent = absenceCount;
+    }
+
+    // Bandeau alerte
+    var alerte = document.getElementById('alerte-absence');
+    if(alerte && absenceCount >= 3) {
+      alerte.style.display = 'block';
+    }
+  }
+
+  // Appel au chargement de la page (après que animalId soit défini)
+  window.addEventListener('load', function() {
+    setTimeout(chargerSignalements, 1000);
+  });
 </script>
-
 <footer>
   <div class="footer-logo">
     <div style="width:36px;height:36px;background:rgba(244,241,232,0.15);border:1.5px solid rgba(244,241,232,0.2);border-radius:50% 50% 50% 50%/60% 60% 40% 40%;display:flex;align-items:center;justify-content:center;flex-shrink:0">
