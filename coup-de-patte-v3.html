@@ -667,10 +667,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     var { data: dejaAimes } = await sb.from('Correspondre').select('animal').eq('utilisateur', userId).eq('aime', true);
     var aimeIds = new Set((dejaAimes || []).map(function(r) { return r.animal; }));
 
-    allMatchs = animaux.map(function(animal) {
-      var result = profil ? calculerScore(profil, animal) : { global: 0 };
-      return { animal: animal, score: result.global };
-    }).filter(function(m) { return !aimeIds.has(m.animal.id); })
+    allMatchs = animaux
+      .filter(function(animal) {
+        if (!profil) return true;
+        // Incompatibilités bloquantes
+        if (profil.animaux_foyer && profil.animaux_foyer.includes('chat') && animal.compat_chats === false) return false;
+        if (profil.animaux_foyer && profil.animaux_foyer.includes('chien') && animal.compat_chiens === false) return false;
+        if (profil.enfants_foyer && profil.enfants_foyer.includes('moins13') && animal.compat_enfants_moins13 === false) return false;
+        return true;
+      })
+      .map(function(animal) {
+        var result = profil ? calculerScore(profil, animal) : { global: 0 };
+        return { animal: animal, score: result.global };
+      }).filter(function(m) { return !aimeIds.has(m.animal.id); })
       .sort(function(a, b) { return b.score - a.score; });
     var { data: authUser } = await sb.auth.getUser();
     var meta = authUser && authUser.user ? authUser.user.user_metadata || {} : {};
