@@ -645,7 +645,7 @@ footer{background:var(--forest);color:var(--ivory);padding:40px 52px 28px;positi
     var profil = profilResult.data && profilResult.data.length > 0 ? profilResult.data[0] : null;
     // Filtre espèce selon profil adoptant
     var animauxQuery = sb.from('Animal').select('*, refuge:Refuge(*)').eq('disponible', true);
-    if (profil && profil.animal_souhaite && profil.animal_souhaite !== 'indifferent') {
+    if (profil && profil.animal_souhaite && profil.animal_souhaite !== 'indifferent' && profil.animal_souhaite !== 'les-deux') {
       animauxQuery = animauxQuery.eq('espece', profil.animal_souhaite);
     }
     var { data: animaux } = await animauxQuery;
