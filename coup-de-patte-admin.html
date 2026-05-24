@@ -593,8 +593,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <option value="Très difficilement">🔴 Très difficilement</option>
         </select>
       </div>
-      <div class="form-group form-full">
-        <label class="form-label">Photo de l'animal</label>
+      <div class="form-group">
+        <label class="form-label">Nécessite un logement de plain-pied</label>
+        <select class="form-select" id="fieldPlainPied">
+          <option value="">– Non renseigné</option>
+          <option value="true">✅ Oui — ne peut pas monter d'escaliers</option>
+          <option value="false">🪜 Non — les escaliers ne posent pas de problème</option>
+        </select>
+      </div>
         <div id="photoUploadZone" style="border:2px dashed var(--border);border-radius:14px;padding:20px;text-align:center;cursor:pointer;transition:all 0.2s;background:var(--ivory)" onclick="document.getElementById('fieldPhoto').click()" ondragover="event.preventDefault();this.style.borderColor='var(--moss)'" ondragleave="this.style.borderColor='var(--border)'" ondrop="handlePhotoDrop(event)">
           <div id="photoPreview" style="display:none;margin-bottom:12px">
             <img id="photoPreviewImg" style="max-height:140px;border-radius:10px;object-fit:cover;max-width:100%">
@@ -1016,7 +1022,7 @@ function openModal() {
   var fh = document.getElementById('fieldHistoire'); if(fh) fh.value = '';
   var fr = document.getElementById('fieldReactivite'); if(fr) fr.value = '';
   var fv = document.getElementById('fieldVieRefuge'); if(fv) fv.value = '';
-  document.getElementById('fieldCroise').checked = false;
+  var fp = document.getElementById('fieldPlainPied'); if(fp) fp.value = '';
   selectedRacesAdmin = [];
   document.getElementById('racesSelectedBadges').style.display = 'none';
   document.getElementById('racesSelectedBadges').innerHTML = '';
@@ -1048,7 +1054,10 @@ function openEditModal(animalId) {
   document.getElementById('optEnfants').classList.toggle('on', !!a.compat_enfants_moins13);
   document.getElementById('optChats2').classList.toggle('on', !!a.compat_chats);
   document.getElementById('optChiens2').classList.toggle('on', !!a.compat_chiens);
-  document.getElementById('animalModal').classList.add('open');
+  var fpEdit = document.getElementById('fieldPlainPied');
+  if (fpEdit) fpEdit.value = a.besoin_plain_pied === true ? 'true' : a.besoin_plain_pied === false ? 'false' : '';
+  var fvEdit = document.getElementById('fieldVieRefuge');
+  if (fvEdit) fvEdit.value = a.vie_en_refuge || '';
   // Afficher la photo existante
   resetPhotoField();
   if (a.photo_url) {
@@ -1092,7 +1101,8 @@ async function saveAnimal() {
     refuge: currentRefuge.id,
     histoire: (document.getElementById('fieldHistoire') ? document.getElementById('fieldHistoire').value.trim() : null) || null,
     reactivite_inconnus: (document.getElementById('fieldReactivite') ? document.getElementById('fieldReactivite').value : null) || null,
-    vie_en_refuge: (document.getElementById('fieldVieRefuge') ? document.getElementById('fieldVieRefuge').value : null) || null
+    vie_en_refuge: (document.getElementById('fieldVieRefuge') ? document.getElementById('fieldVieRefuge').value : null) || null,
+    besoin_plain_pied: (document.getElementById('fieldPlainPied') && document.getElementById('fieldPlainPied').value !== '') ? document.getElementById('fieldPlainPied').value === 'true' : null
   };
 
   var sb = getSupabase();
