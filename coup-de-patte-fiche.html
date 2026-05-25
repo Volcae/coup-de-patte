@@ -334,16 +334,12 @@ window.addEventListener('load', async function() {
   el = document.getElementById('ficheContactRefugeNom2'); if (el) el.textContent = animal.refuge ? animal.refuge.nom : '–';
   el = document.getElementById('ficheRefugeAdresse2'); if (el && animal.refuge) el.textContent = (animal.refuge.adresse || '') + (animal.refuge.ville ? ', ' + animal.refuge.ville : '');
   var callBtn = document.getElementById('ficheCallBtn');
-  if (callBtn && animal.refuge && animal.refuge.telephone) {
-    callBtn.href = 'tel:' + animal.refuge.telephone.replace(/ /g, '');
-    callBtn.textContent = '📞 Appeler ' + animal.refuge.nom;
-  }
+  if (callBtn) { callBtn.removeAttribute('href'); callBtn.onclick = contacterRefuge; callBtn.textContent = '🏠 Contacter le refuge'; }
   var refugeBtnPres = document.getElementById('refugeBtnPres');
-  if (refugeBtnPres && animal.refuge && animal.refuge.telephone) {
-    refugeBtnPres.href = 'tel:' + animal.refuge.telephone.replace(/ /g, '');
-  }
+  if (refugeBtnPres) { refugeBtnPres.removeAttribute('href'); refugeBtnPres.onclick = contacterRefuge; refugeBtnPres.textContent = '🏠 Contacter le refuge'; }
   var lienRefuge = document.getElementById('ficheLienRefuge');
   if (lienRefuge && animal.refuge) lienRefuge.href = 'coup-de-patte-refuge.html?id=' + animal.refuge.id;
+  if (animal.refuge) window.refugeId = animal.refuge.id;
 
   // ─── SCORE COMPATIBILITÉ ───
   var profilResult = await sb.from('ProfilAdoptant').select('*').eq('utilisateur', session.user.id);
@@ -565,7 +561,7 @@ window.addEventListener('load', async function() {
           <h3 id="ficheContactRefugeNom">–</h3>
           <p id="ficheRefugeAdresse2">–</p>
         </div>
-        <a href="#" class="refuge-btn" id="refugeBtnPres">📞 Contacter le refuge</a>
+        <button class="refuge-btn" id="refugeBtnPres" onclick="contacterRefuge()">🏠 Contacter le refuge</button>
       </div>
     </div>
   </div>
@@ -615,7 +611,7 @@ window.addEventListener('load', async function() {
     <div class="contact-hero">
       <h3>Vous souhaitez rencontrer cet animal ?</h3>
       <p>Appelez directement le refuge pour convenir d'un rendez-vous. Ils vous accompagneront dans toutes les démarches d'adoption.</p>
-      <a href="#" class="contact-btn" id="ficheCallBtn">📞 Appeler le refuge</a>
+      <button class="contact-btn" id="ficheCallBtn" onclick="contacterRefuge()">🏠 Contacter le refuge</button>
     </div>
     <div class="contact-infos">
       <div class="contact-info-card">
@@ -681,6 +677,20 @@ window.addEventListener('load', async function() {
 </div>
 
 <script>
+async function contacterRefuge() {
+  var sb = getSupabase();
+  var { data: { session } } = await sb.auth.getSession();
+  if (session && window.animalId) {
+    var existing = await sb.from('Correspondre').select('id').eq('utilisateur', session.user.id).eq('animal', window.animalId);
+    if (existing.data && existing.data.length > 0) {
+      await sb.from('Correspondre').update({ contacte: true }).eq('id', existing.data[0].id);
+    } else {
+      await sb.from('Correspondre').insert({ utilisateur: session.user.id, animal: window.animalId, contacte: true, vu: true });
+    }
+  }
+  if (window.refugeId) window.location.href = 'coup-de-patte-refuge.html?id=' + window.refugeId;
+}
+
 function showTab(id, el) {
   document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
   document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
