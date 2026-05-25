@@ -652,7 +652,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <p class="confirm-sub" id="confirmSub"></p>
     <div class="confirm-actions">
       <button class="confirm-yes" id="confirmYesBtn">Confirmer</button>
-      <button class="confirm-no" onclick="closeConfirm()">Annuler</button>
+      <button class="confirm-no" id="confirmNo" onclick="closeConfirm()">Annuler</button>
     </div>
   </div>
 </div>
@@ -1193,8 +1193,29 @@ async function saveAnimal() {
   if (error) { showToast('Erreur : ' + error.message); return; }
   closeModal();
   showToast(editingId ? nom + ' mis(e) à jour ✅' : nom + ' ajouté(e) sur Coup de Patte ✅');
-  if (enfinMoi && !editingId) showToast('✨ ' + nom + ' placé(e) automatiquement en Enfin Moi ?');
+
+  // Popup Enfin Moi ? si statut nouvellement activé
+  var etaitEnfinMoi = editingId ? ((allAnimals.find(function(x) { return x.id === editingId; }) || {}).enfin_moi || false) : false;
+  if (enfinMoi && !etaitEnfinMoi) {
+    setTimeout(function() { showEnfinMoiPopup(nom); }, 400);
+  }
+
   await loadAnimals();
+}
+
+function showEnfinMoiPopup(nom) {
+  document.getElementById('confirmEmoji').textContent = '✨';
+  document.getElementById('confirmTitle').textContent = nom + ' rejoint "Enfin Moi ?"';
+  document.getElementById('confirmSub').textContent =
+    'Cette catégorie est réservée aux animaux qui attendent depuis longtemps, aux seniors et à ceux qui ont des besoins particuliers. ' +
+    'Grâce à ce statut, ' + nom + ' bénéficiera d\'une visibilité renforcée sur Coup de Patte et sera mis(e) en avant auprès des adoptants les plus adaptés à son profil.\n\n' +
+    'Merci de lui donner cette chance. 🐾';
+  var yesBtn = document.getElementById('confirmYesBtn');
+  yesBtn.textContent = 'Super, merci !';
+  yesBtn.style.background = 'linear-gradient(135deg, var(--sage), var(--moss))';
+  yesBtn.onclick = function() { closeConfirm(); };
+  document.getElementById('confirmNo').style.display = 'none';
+  document.getElementById('confirmPopup').classList.add('open');
 }
 
 function confirmDelete(id, nom) {
@@ -1216,7 +1237,11 @@ async function deleteAnimal(id, nom, silent) {
   await loadAnimals();
 }
 
-function closeConfirm() { document.getElementById('confirmPopup').classList.remove('open'); }
+function closeConfirm() {
+  document.getElementById('confirmPopup').classList.remove('open');
+  var no = document.getElementById('confirmNo');
+  if (no) no.style.display = '';
+}
 
 // ══ INFOS REFUGE ══
 async function saveRefugeInfos() {
