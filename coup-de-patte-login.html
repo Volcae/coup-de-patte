@@ -663,16 +663,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   // ── Redirection refuge avec détection onboarding ──
   async function redirectRefuge(userId) {
-    var dest = 'coup-de-patte-admin.html';
     if (userId) {
-      var { data: refuge } = await getSupabase()
+      var { data } = await getSupabase()
         .from('Refuge')
         .select('nom')
         .eq('utilisateur', userId);
-      var aDejaRempli = refuge && refuge.length > 0 && refuge[0].nom && refuge[0].nom.trim() !== '';
-      if (!aDejaRempli) dest = 'coup-de-patte-admin.html?onboarding=true';
+      var refugeComplet = data && data.length > 0 && data[0].nom && data[0].nom.trim() !== '';
+      if (!refugeComplet) {
+        window.location.href = 'coup-de-patte-admin.html?onboarding=true';
+      } else {
+        window.location.href = 'coup-de-patte-admin.html';
+      }
+    } else {
+      window.location.href = 'coup-de-patte-admin.html';
     }
-    window.location.href = dest;
   }
 
   // ── Toast ──
