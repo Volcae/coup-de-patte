@@ -918,7 +918,7 @@ function renderTable(tbodyId, animals, mode) {
       if (a.espece === 'chat' && a.age_annees >= 10) raisons.push('<span style="font-size:0.72rem;font-weight:700;color:var(--amber)">🌿 Senior (' + a.age_annees + ' ans)</span>');
       if (a.besoins_medicaux === 'lourds') raisons.push('<span style="font-size:0.72rem;font-weight:700;color:var(--amber)">💊 Besoins médicaux</span>');
       return '<tr id="row-' + a.id + '">'
-        + '<td><div style="display:flex;align-items:center;gap:12px"><div class="animal-row-thumb" style="background:linear-gradient(135deg,var(--mint),var(--sage))">' + emoji + '</div><div><div class="animal-row-name"><a href=\"coup-de-patte-fiche.html?id=' + a.id + '\" target=\"_blank\" style=\"color:var(--forest);font-weight:700;text-decoration:none;font-family:Fraunces,serif;font-style:italic\">' + a.nom + ' ↗</a></div><div class="animal-row-meta">' + (a.race || a.espece) + ' · ' + age + ' · ' + sexe + '</div></div></div></td>'
+        + '<td><div style="display:flex;align-items:center;gap:12px"><div class="animal-row-thumb" style="background:linear-gradient(135deg,var(--mint),var(--sage))">' + emoji + '</div><div><div class="animal-row-name"><a href=\"coup-de-patte-fiche.html?id=' + a.id + '\" style=\"color:var(--forest);font-weight:700;text-decoration:none;font-family:Fraunces,serif;font-style:italic\">' + a.nom + ' ↗</a></div><div class="animal-row-meta">' + (a.race || a.espece) + ' · ' + age + ' · ' + sexe + '</div></div></div></td>'
         + '<td><div style="display:flex;flex-direction:column;gap:4px">' + raisons.join('') + '</div></td>'
         + '<td>' + statusBtn + '</td>'
         + '<td style="font-size:0.82rem;color:var(--rose);font-weight:700">' + duree + '</td>'
@@ -927,7 +927,7 @@ function renderTable(tbodyId, animals, mode) {
     }
     if (mode === 'adoptes') {
       return '<tr id="row-' + a.id + '">'
-        + '<td><div style="display:flex;align-items:center;gap:12px"><div class="animal-row-thumb" style="background:linear-gradient(135deg,var(--mint),var(--sage))">' + emoji + '</div><div><div class="animal-row-name"><a href=\"coup-de-patte-fiche.html?id=' + a.id + '\" target=\"_blank\" style=\"color:var(--forest);font-weight:700;text-decoration:none;font-family:Fraunces,serif;font-style:italic\">' + a.nom + ' ↗</a></div><div class="animal-row-meta">' + (a.race || a.espece) + ' · ' + age + '</div></div></div></td>'
+        + '<td><div style="display:flex;align-items:center;gap:12px"><div class="animal-row-thumb" style="background:linear-gradient(135deg,var(--mint),var(--sage))">' + emoji + '</div><div><div class="animal-row-name"><a href=\"coup-de-patte-fiche.html?id=' + a.id + '\" style=\"color:var(--forest);font-weight:700;text-decoration:none;font-family:Fraunces,serif;font-style:italic\">' + a.nom + ' ↗</a></div><div class="animal-row-meta">' + (a.race || a.espece) + ' · ' + age + '</div></div></div></td>'
         + '<td><span class="status-badge sb-adopte">✅ ' + (a.statut === 'adopte_cdp' ? 'Via Coup de Patte' : 'Adopté') + '</span></td>'
         + '<td style="font-size:0.82rem;color:var(--dust)">' + (a.updated_at ? new Date(a.updated_at).toLocaleDateString('fr-FR') : '–') + '</td>'
         + '<td><div style="display:flex;gap:6px"><button class="row-btn" onclick="reactiverAnimal(\'' + a.id + '\',\'' + a.nom + '\')">↩ Remettre disponible</button><button class="row-btn row-btn-danger" onclick="confirmDelete(\'' + a.id + '\',\'' + a.nom + '\')">🗑</button></div></td>'
@@ -935,7 +935,7 @@ function renderTable(tbodyId, animals, mode) {
     }
     if (mode === 'reserves') {
       return '<tr id="row-' + a.id + '">'
-        + '<td><div style="display:flex;align-items:center;gap:12px"><div class="animal-row-thumb" style="background:linear-gradient(135deg,var(--mint),var(--sage))">' + emoji + '</div><div><div class="animal-row-name"><a href=\"coup-de-patte-fiche.html?id=' + a.id + '\" target=\"_blank\" style=\"color:var(--forest);font-weight:700;text-decoration:none;font-family:Fraunces,serif;font-style:italic\">' + a.nom + ' ↗</a></div><div class="animal-row-meta">' + (a.race || a.espece) + ' · ' + age + '</div></div></div></td>'
+        + '<td><div style="display:flex;align-items:center;gap:12px"><div class="animal-row-thumb" style="background:linear-gradient(135deg,var(--mint),var(--sage))">' + emoji + '</div><div><div class="animal-row-name"><a href=\"coup-de-patte-fiche.html?id=' + a.id + '\" style=\"color:var(--forest);font-weight:700;text-decoration:none;font-family:Fraunces,serif;font-style:italic\">' + a.nom + ' ↗</a></div><div class="animal-row-meta">' + (a.race || a.espece) + ' · ' + age + '</div></div></div></td>'
         + '<td><span style="font-size:0.72rem;font-weight:700;color:var(--amber)">🤞 Réservé</span></td>'
         + '<td style="font-size:0.82rem;color:var(--dust)">' + (a.updated_at ? new Date(a.updated_at).toLocaleDateString('fr-FR') : '–') + '</td>'
         + '<td><div style="display:flex;gap:6px"><button class="row-btn" onclick="reactiverAnimal(\'' + a.id + '\',\'' + a.nom + '\')">↩ Remettre disponible</button><button class="row-btn row-btn-danger" onclick="confirmDelete(\'' + a.id + '\',\'' + a.nom + '\')">🗑</button></div></td>'
@@ -950,7 +950,7 @@ function renderTable(tbodyId, animals, mode) {
     }
     // mode dispo
     return '<tr id="row-' + a.id + '">'
-      + '<td><div style="display:flex;align-items:center;gap:12px"><div class="animal-row-thumb" style="background:linear-gradient(135deg,var(--mint),var(--sage))">' + emoji + '</div><div><div class="animal-row-name"><a href=\"coup-de-patte-fiche.html?id=' + a.id + '\" target=\"_blank\" style=\"color:var(--forest);font-weight:700;text-decoration:none;font-family:Fraunces,serif;font-style:italic\">' + a.nom + ' ↗</a></div><div class="animal-row-meta">' + (a.race || a.espece) + ' · ' + age + ' · ' + sexe + '</div></div></div></td>'
+      + '<td><div style="display:flex;align-items:center;gap:12px"><div class="animal-row-thumb" style="background:linear-gradient(135deg,var(--mint),var(--sage))">' + emoji + '</div><div><div class="animal-row-name"><a href=\"coup-de-patte-fiche.html?id=' + a.id + '\" style=\"color:var(--forest);font-weight:700;text-decoration:none;font-family:Fraunces,serif;font-style:italic\">' + a.nom + ' ↗</a></div><div class="animal-row-meta">' + (a.race || a.espece) + ' · ' + age + ' · ' + sexe + '</div></div></div></td>'
       + '<td>' + statusBtn + '</td>'
       + '<td style="font-size:0.82rem;color:var(--dust)">' + duree + '</td>'
       + '<td><div style="display:flex;gap:6px"><button class="row-btn" onclick="openEditModal(\'' + a.id + '\')">✏️ Modifier</button><button class="row-btn row-btn-danger" onclick="confirmDelete(\'' + a.id + '\',\'' + a.nom + '\')">🗑</button></div></td>'
@@ -1079,8 +1079,9 @@ function openModal() {
 }
 
 function openEditModal(animalId) {
+  console.log('[openEditModal] appelée avec id:', animalId);
   var a = allAnimals.find(x => x.id === animalId);
-  if (!a) return;
+  if (!a) { console.warn('[openEditModal] animal non trouvé dans allAnimals'); return; }
   editingId = animalId;
   document.getElementById('modalTitle').textContent = 'Modifier ' + a.nom;
   document.getElementById('modalSub').textContent = 'Modifiez les informations de ' + a.nom + '.';
@@ -1121,6 +1122,8 @@ function openEditModal(animalId) {
     document.getElementById('photoPreview').style.display = 'block';
     document.getElementById('photoPlaceholder').style.display = 'none';
   }
+  console.log('[openEditModal] ouverture de la modale');
+  document.getElementById('animalModal').classList.add('open');
 }
 
 function closeModal() { document.getElementById('animalModal').classList.remove('open'); resetPhotoField(); }
