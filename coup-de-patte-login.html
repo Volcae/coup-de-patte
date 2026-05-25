@@ -666,9 +666,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     if (userId) {
       var { data } = await getSupabase()
         .from('Refuge')
-        .select('nom')
+        .select('adresse')
         .eq('utilisateur', userId);
-      var refugeComplet = data && data.length > 0 && data[0].nom && data[0].nom.trim() !== '';
+      var refugeComplet = data && data.length > 0 && data[0].adresse && data[0].adresse.trim() !== '';
       if (!refugeComplet) {
         window.location.href = 'coup-de-patte-admin.html?onboarding=true';
       } else {
