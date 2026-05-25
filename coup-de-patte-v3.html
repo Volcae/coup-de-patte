@@ -326,6 +326,34 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   }
 
   function updateStatus(select) {
+    if (select.value === 'retirer') {
+      var matchId = select.dataset.matchId;
+      if (!matchId) return;
+      getSupabase().from('Correspondre').update({ contacte: false }).eq('id', matchId).then(function(res) {
+        if (res.error) { showToast('Erreur lors du retrait.'); return; }
+        var card = select.closest('.contact-card');
+        if (card) {
+          card.style.transition = 'opacity 0.3s, transform 0.3s';
+          card.style.opacity = '0';
+          card.style.transform = 'scale(0.95)';
+          setTimeout(function() {
+            card.remove();
+            // Mettre à jour les compteurs
+            var statEl = document.getElementById('statContacts');
+            var navEl = document.getElementById('navContactsCount');
+            var nb = Math.max(0, parseInt(statEl ? statEl.textContent : 0) - 1);
+            if (statEl) statEl.textContent = nb;
+            if (navEl) navEl.textContent = nb;
+            // Message vide si plus rien
+            var list = document.getElementById('contactsList');
+            if (list && list.querySelectorAll('.contact-card').length === 0) {
+              list.innerHTML = '<div style="text-align:center;padding:40px;color:var(--dust)">Vous n\'avez pas encore contacté de refuge. Likez des animaux et contactez leur refuge depuis leur fiche ! 🐾</div>';
+            }
+          }, 300);
+        }
+      });
+      return;
+    }
     var colors = {'a-contacter':'var(--dust)','en-attente':'var(--amber)','rdv':'var(--moss)'};
     select.style.borderColor = colors[select.value] || 'var(--border)';
     select.style.color = colors[select.value] || 'var(--forest)';
@@ -440,10 +468,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         '<div class="ct-info">' +
         '<div class="ct-name">' + a.nom + (refuge.nom ? ' · ' + refuge.nom : '') + '</div>' +
         '<div class="ct-refuge">📍 ' + (refuge.ville || '') + (score ? ' · ' + score : '') + (a.enfin_moi ? ' · ✨ Enfin Moi ?' : '') + '</div>' +
-        '<select class="status-select" onchange="updateStatus(this)">' +
+        '<select class="status-select" data-match-id="' + m.id + '" onchange="updateStatus(this)">' +
         '<option value="a-contacter">📋 À contacter</option>' +
         '<option value="en-attente">⏳ En attente de réponse</option>' +
         '<option value="rdv">✅ Répondu, RDV proposé</option>' +
+        '<option value="retirer">🗑️ Retirer ce contact</option>' +
         '</select></div>' +
         '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0">' +
         (tel ? '<button class="ct-btn" onclick="window.location.href=\'tel:' + tel + '\'">📞 Appeler</button>' : '<button class="ct-btn" disabled>📞 Appeler</button>') +
