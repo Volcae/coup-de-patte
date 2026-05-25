@@ -1218,10 +1218,10 @@ async function saveAnimal() {
     reactivite_inconnus: (document.getElementById('fieldReactivite') ? document.getElementById('fieldReactivite').value : null) || null,
     vie_en_refuge: (document.getElementById('fieldVieRefuge') ? document.getElementById('fieldVieRefuge').value : null) || null,
     besoin_plain_pied: (document.getElementById('fieldPlainPied') && document.getElementById('fieldPlainPied').value !== '') ? document.getElementById('fieldPlainPied').value === 'true' : null,
-    vaccination: document.getElementById('fieldVaccination') ? document.getElementById('fieldVaccination').value : null,
-    sterilisation: document.getElementById('fieldSterilisation') ? document.getElementById('fieldSterilisation').value : null,
-    identification: document.getElementById('fieldIdentification') ? document.getElementById('fieldIdentification').value : null,
-    antiparasitaire: document.getElementById('fieldAntiparasitaire') ? document.getElementById('fieldAntiparasitaire').value : null
+    vaccination: document.getElementById('fieldVaccination') ? (document.getElementById('fieldVaccination').value || null) : null,
+    sterilisation: document.getElementById('fieldSterilisation') ? (document.getElementById('fieldSterilisation').value || null) : null,
+    identification: document.getElementById('fieldIdentification') ? (document.getElementById('fieldIdentification').value || null) : null,
+    antiparasitaire: document.getElementById('fieldAntiparasitaire') ? (document.getElementById('fieldAntiparasitaire').value || null) : null
   };
 
   var sb = getSupabase();
@@ -1238,14 +1238,14 @@ async function saveAnimal() {
       }
     }
   } else {
-    var res = await sb.from('Animal').insert([payload]).select('id').single();
+    var res = await sb.from('Animal').insert([payload]).select('id');
     error = res.error;
-    if (!error && res.data) {
+    if (!error && res.data && res.data.length > 0) {
       // Upload photo pour le nouvel animal
-      var photoUrl = await uploadPhoto(res.data.id);
+      var photoUrl = await uploadPhoto(res.data[0].id);
       if (photoUrl) {
         var pos = (window._photoCropX || 50) + '% ' + (window._photoCropY || 50) + '%';
-        await sb.from('Animal').update({ photo_url: photoUrl, photo_position: pos }).eq('id', res.data.id);
+        await sb.from('Animal').update({ photo_url: photoUrl, photo_position: pos }).eq('id', res.data[0].id);
       }
     }
   }
