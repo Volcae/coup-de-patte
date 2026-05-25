@@ -1382,17 +1382,26 @@ async function saveRefugeInfos() {
 
   // Géocodage de l'adresse via Nominatim pour mettre à jour lat/lng
   var adresseGeo = [payload.adresse, payload.ville, 'France'].filter(Boolean).join(', ');
+  var refugeIdPourGeo = currentRefuge.id;
+  console.log('[Geocodage] Adresse :', adresseGeo, '| Refuge id :', refugeIdPourGeo);
   fetch('https://nominatim.openstreetmap.org/search?q=' + encodeURIComponent(adresseGeo) + '&format=json&limit=1')
     .then(function(r) { return r.json(); })
     .then(function(data) {
+      console.log('[Geocodage] Résultat Nominatim :', data);
       if (data && data.length > 0) {
+        console.log('[Geocodage] Sauvegarde lat:', data[0].lat, 'lng:', data[0].lon);
         getSupabase().from('Refuge').update({
           lat: parseFloat(data[0].lat),
           lng: parseFloat(data[0].lon)
-        }).eq('id', currentRefuge.id);
+        }).eq('id', refugeIdPourGeo).then(function(res) {
+          console.log('[Geocodage] Update Supabase :', res);
+          if (res.error) console.error('[Geocodage] Erreur :', res.error.message);
+        });
+      } else {
+        console.warn('[Geocodage] Aucun résultat pour cette adresse');
       }
     })
-    .catch(function() {});
+    .catch(function(err) { console.error('[Geocodage] Erreur fetch :', err); });
 }
 
 // ══ NAVIGATION ══
