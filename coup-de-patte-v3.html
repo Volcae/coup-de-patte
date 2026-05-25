@@ -772,8 +772,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     // Compter les J'aime
     var { data: jaimeData } = await sb.from('Correspondre').select('id').eq('utilisateur', userId).eq('aime', true);
     var nbJaime = jaimeData ? jaimeData.length : 0;
+    window._nbJaime = nbJaime;
     el = document.getElementById('statJaime'); if (el) el.textContent = nbJaime;
     el = document.getElementById('navJaimeCount'); if (el) el.textContent = nbJaime;
+
+    // Compter les Contacts
+    var { data: contactsData } = await sb.from('Correspondre').select('id').eq('utilisateur', userId).eq('contacte', true);
+    var nbContacts = contactsData ? contactsData.length : 0;
+    el = document.getElementById('statContacts'); if (el) el.textContent = nbContacts;
+    el = document.getElementById('navContactsCount'); if (el) el.textContent = nbContacts;
   });
 </script>
 <footer>
