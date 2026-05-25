@@ -316,9 +316,13 @@ window.addEventListener('load', async function() {
 
   // Bouton retour dynamique : adoptant → matchs, refuge → history.back()
   var btnRetour = document.getElementById('btnRetour');
-  if (btnRetour && profil) {
-    btnRetour.onclick = function() { window.location.href = 'coup-de-patte-v3.html'; };
-    btnRetour.textContent = '← Retour aux matchs';
+  if (btnRetour) {
+    if (profil) {
+      btnRetour.textContent = '← Retour aux matchs';
+      btnRetour.addEventListener('click', function() { window.location.href = 'coup-de-patte-v3.html'; });
+    } else {
+      btnRetour.addEventListener('click', function() { history.back(); });
+    }
   }
 
   if (profil) {
@@ -434,7 +438,7 @@ window.addEventListener('load', async function() {
     Coup de Patte
   </a>
   <div></div>
-  <button id="btnRetour" onclick="history.back()" class="nav-back" style="background:none;border:none;cursor:pointer;font-family:'Nunito',sans-serif">← Retour</button>
+  <button id="btnRetour" class="nav-back" style="background:none;border:none;cursor:pointer;font-family:'Nunito',sans-serif">← Retour</button>
 </nav>
 
 <style>
