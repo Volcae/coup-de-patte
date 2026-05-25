@@ -294,6 +294,25 @@ window.addEventListener('load', async function() {
   // Santé
   el = document.getElementById('ficheBesoins'); if (el) el.textContent = animal.besoins_medicaux || 'Aucun suivi particulier';
 
+  // Mobilité
+  var mobiliteLabels = {"plain_pied": "🪜 Nécessite plain-pied", "marche": "🦽 Difficultés à marcher", "ampute": "🦿 Membre(s) amputé(s)", "arthrose": "🦴 Arthrose", "vision": "👁️ Déficit visuel", "audition": "👂 Déficit auditif"};
+  el = document.getElementById('ficheMobilite');
+  if (el) {
+    if (animal.mobilite && animal.mobilite.trim() !== '') {
+      var mParts = animal.mobilite.split(',').filter(function(v) { return v !== 'aucun'; });
+      if (mParts.length > 0) {
+        el.innerHTML = mParts.map(function(v) {
+          return '<span style="display:inline-block;margin:2px 4px 2px 0;font-size:0.82rem">' + (mobiliteLabels[v] || v) + '</span>';
+        }).join('');
+        el.className = 'health-value health-warn';
+      } else {
+        el.textContent = '✅ Aucune difficulté connue'; el.className = 'health-value health-ok';
+      }
+    } else {
+      el.textContent = '✅ Aucune difficulté connue'; el.className = 'health-value health-ok';
+    }
+  }
+
   // Santé dynamique
   var vaccLabels = { a_jour: '✅ À jour', non: '❌ Non vacciné(e)', inconnu: '– Inconnu' };
   var sterLabels = { oui: '✅ Stérilisé(e)', non: '❌ Non stérilisé(e)', inconnu: '– Inconnu' };
@@ -586,7 +605,7 @@ window.addEventListener('load', async function() {
       <div class="health-item"><div class="health-icon">🔖</div><div><span class="health-label">Identification</span><span class="health-value" id="ficheIdentification">–</span></div></div>
       <div class="health-item"><div class="health-icon">🦠</div><div><span class="health-label">Antiparasitaire</span><span class="health-value" id="ficheAntiparasitaire">–</span></div></div>
       <div class="health-item"><div class="health-icon">🩺</div><div><span class="health-label">Besoins médicaux</span><span class="health-value" id="ficheBesoins">–</span></div></div>
-      <div class="health-item"><div class="health-icon">🏃</div><div><span class="health-label">Mobilité</span><span class="health-value health-ok">✅ Aucun problème</span></div></div>
+      <div class="health-item"><div class="health-icon">🏃</div><div><span class="health-label">Mobilité</span><span class="health-value" id="ficheMobilite">–</span></div></div>
     </div>
     <div class="alert-box" id="ficheAlertBox" style="display:none"></div>
   </div>

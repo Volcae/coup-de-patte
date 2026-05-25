@@ -593,13 +593,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <option value="Très difficilement">🔴 Très difficilement</option>
         </select>
       </div>
-      <div class="form-group">
-        <label class="form-label">Nécessite un logement de plain-pied</label>
-        <select class="form-select" id="fieldPlainPied">
-          <option value="">– Non renseigné</option>
-          <option value="true">✅ Oui — ne peut pas monter d'escaliers</option>
-          <option value="false">🪜 Non — les escaliers ne posent pas de problème</option>
-        </select>
+      <div class="form-group form-full">
+        <label class="form-label">Mobilité & besoins physiques</label>
+        <p style="font-size:0.72rem;color:var(--dust);margin-bottom:10px">Sélection multiple possible</p>
+        <div id="fieldMobilite" style="display:flex;flex-wrap:wrap;gap:8px">
+          <button type="button" data-val="aucun" onclick="toggleMobilite(this)" style="padding:7px 14px;border-radius:50px;border:1.5px solid var(--border);background:var(--ivory);font-family:'Nunito',sans-serif;font-size:0.78rem;font-weight:600;color:var(--dust);cursor:pointer;transition:all 0.18s">✅ Aucune difficulté</button>
+          <button type="button" data-val="plain_pied" onclick="toggleMobilite(this)" style="padding:7px 14px;border-radius:50px;border:1.5px solid var(--border);background:var(--ivory);font-family:'Nunito',sans-serif;font-size:0.78rem;font-weight:600;color:var(--dust);cursor:pointer;transition:all 0.18s">🪜 Nécessite plain-pied</button>
+          <button type="button" data-val="marche" onclick="toggleMobilite(this)" style="padding:7px 14px;border-radius:50px;border:1.5px solid var(--border);background:var(--ivory);font-family:'Nunito',sans-serif;font-size:0.78rem;font-weight:600;color:var(--dust);cursor:pointer;transition:all 0.18s">🦽 Difficultés à marcher</button>
+          <button type="button" data-val="ampute" onclick="toggleMobilite(this)" style="padding:7px 14px;border-radius:50px;border:1.5px solid var(--border);background:var(--ivory);font-family:'Nunito',sans-serif;font-size:0.78rem;font-weight:600;color:var(--dust);cursor:pointer;transition:all 0.18s">🦿 Membre(s) amputé(s)</button>
+          <button type="button" data-val="arthrose" onclick="toggleMobilite(this)" style="padding:7px 14px;border-radius:50px;border:1.5px solid var(--border);background:var(--ivory);font-family:'Nunito',sans-serif;font-size:0.78rem;font-weight:600;color:var(--dust);cursor:pointer;transition:all 0.18s">🦴 Arthrose</button>
+          <button type="button" data-val="vision" onclick="toggleMobilite(this)" style="padding:7px 14px;border-radius:50px;border:1.5px solid var(--border);background:var(--ivory);font-family:'Nunito',sans-serif;font-size:0.78rem;font-weight:600;color:var(--dust);cursor:pointer;transition:all 0.18s">👁️ Déficit visuel</button>
+          <button type="button" data-val="audition" onclick="toggleMobilite(this)" style="padding:7px 14px;border-radius:50px;border:1.5px solid var(--border);background:var(--ivory);font-family:'Nunito',sans-serif;font-size:0.78rem;font-weight:600;color:var(--dust);cursor:pointer;transition:all 0.18s">👂 Déficit auditif</button>
+        </div>
       </div>
       <div class="form-group form-full">
         <p style="font-size:0.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--smoke);margin-bottom:10px">💊 Santé</p>
@@ -1110,7 +1115,9 @@ function openModal() {
   var fSter2 = document.getElementById('fieldSterilisation'); if(fSter2) fSter2.value = 'inconnu';
   var fIdent2 = document.getElementById('fieldIdentification'); if(fIdent2) fIdent2.value = 'inconnu';
   var fAnti2 = document.getElementById('fieldAntiparasitaire'); if(fAnti2) fAnti2.value = 'inconnu';
-  var fp = document.getElementById('fieldPlainPied'); if(fp) fp.value = '';
+  document.querySelectorAll('#fieldMobilite button').forEach(function(btn) {
+    btn.classList.remove('on'); btn.style.background='var(--ivory)'; btn.style.borderColor='var(--border)'; btn.style.color='var(--dust)';
+  });
   selectedRacesAdmin = [];
   document.getElementById('racesSelectedBadges').style.display = 'none';
   document.getElementById('racesSelectedBadges').innerHTML = '';
@@ -1143,8 +1150,27 @@ function openEditModal(animalId) {
   document.getElementById('optEnfants').classList.toggle('on', !!a.compat_enfants_moins13);
   document.getElementById('optChats2').classList.toggle('on', !!a.compat_chats);
   document.getElementById('optChiens2').classList.toggle('on', !!a.compat_chiens);
-  var fpEdit = document.getElementById('fieldPlainPied');
-  if (fpEdit) fpEdit.value = a.besoin_plain_pied === true ? 'true' : a.besoin_plain_pied === false ? 'false' : '';
+  // Pré-remplir mobilite
+  document.querySelectorAll('#fieldMobilite button').forEach(function(btn) {
+    btn.classList.remove('on');
+    btn.style.background = 'var(--ivory)';
+    btn.style.borderColor = 'var(--border)';
+    btn.style.color = 'var(--dust)';
+  });
+  if (a.mobilite) {
+    var mVals = a.mobilite.split(',');
+    document.querySelectorAll('#fieldMobilite button').forEach(function(btn) {
+      if (mVals.includes(btn.dataset.val)) {
+        btn.classList.add('on');
+        btn.style.background = 'var(--forest)';
+        btn.style.borderColor = 'var(--forest)';
+        btn.style.color = 'var(--ivory)';
+      }
+    });
+  } else {
+    var aucunBtn = document.querySelector('#fieldMobilite button[data-val="aucun"]');
+    if (aucunBtn) { aucunBtn.classList.add('on'); aucunBtn.style.background='var(--forest)'; aucunBtn.style.borderColor='var(--forest)'; aucunBtn.style.color='var(--ivory)'; }
+  }
   var fvEdit = document.getElementById('fieldVieRefuge');
   if (fvEdit) fvEdit.value = a.vie_en_refuge || '';
   var fVacc = document.getElementById('fieldVaccination'); if (fVacc) fVacc.value = a.vaccination || 'inconnu';
@@ -1217,7 +1243,7 @@ async function saveAnimal() {
     histoire: (document.getElementById('fieldHistoire') ? document.getElementById('fieldHistoire').value.trim() : null) || null,
     reactivite_inconnus: (document.getElementById('fieldReactivite') ? document.getElementById('fieldReactivite').value : null) || null,
     vie_en_refuge: (document.getElementById('fieldVieRefuge') ? document.getElementById('fieldVieRefuge').value : null) || null,
-    besoin_plain_pied: (document.getElementById('fieldPlainPied') && document.getElementById('fieldPlainPied').value !== '') ? document.getElementById('fieldPlainPied').value === 'true' : null,
+    mobilite: (function() { var btns = document.querySelectorAll('#fieldMobilite button.on'); var vals = Array.from(btns).map(function(b){return b.dataset.val;}).filter(function(v){return v !== 'aucun';}); return vals.length > 0 ? vals.join(',') : null; })(),
     vaccination: document.getElementById('fieldVaccination') ? (document.getElementById('fieldVaccination').value || null) : null,
     sterilisation: document.getElementById('fieldSterilisation') ? (document.getElementById('fieldSterilisation').value || null) : null,
     identification: document.getElementById('fieldIdentification') ? (document.getElementById('fieldIdentification').value || null) : null,
@@ -1276,6 +1302,26 @@ function showEnfinMoiPopup(nom) {
   yesBtn.onclick = function() { closeConfirm(); };
   document.getElementById('confirmNo').style.display = 'none';
   document.getElementById('confirmPopup').classList.add('open');
+}
+
+function toggleMobilite(btn) {
+  var val = btn.dataset.val;
+  if (val === 'aucun') {
+    // Aucun désélectionne tout le reste
+    document.querySelectorAll('#fieldMobilite button').forEach(function(b) {
+      b.classList.remove('on'); b.style.background='var(--ivory)'; b.style.borderColor='var(--border)'; b.style.color='var(--dust)';
+    });
+    btn.classList.add('on'); btn.style.background='var(--forest)'; btn.style.borderColor='var(--forest)'; btn.style.color='var(--ivory)';
+  } else {
+    // Désélectionner 'aucun'
+    var aucunBtn = document.querySelector('#fieldMobilite button[data-val="aucun"]');
+    if (aucunBtn) { aucunBtn.classList.remove('on'); aucunBtn.style.background='var(--ivory)'; aucunBtn.style.borderColor='var(--border)'; aucunBtn.style.color='var(--dust)'; }
+    btn.classList.toggle('on');
+    var isOn = btn.classList.contains('on');
+    btn.style.background = isOn ? 'var(--forest)' : 'var(--ivory)';
+    btn.style.borderColor = isOn ? 'var(--forest)' : 'var(--border)';
+    btn.style.color = isOn ? 'var(--ivory)' : 'var(--dust)';
+  }
 }
 
 function confirmDelete(id, nom) {
