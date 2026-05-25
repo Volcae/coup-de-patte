@@ -774,7 +774,8 @@ window.addEventListener('load', async function() {
   // Onboarding : premier accès → ouvrir l'onglet Infos refuge
   var urlParams = new URLSearchParams(window.location.search);
   if (urlParams.get('onboarding') === 'true') {
-    showSection('infos');
+    var infosItem = document.querySelector('.sidebar-item[onclick*="infos"]');
+    showMain('infos', infosItem);
   }
 });
 
