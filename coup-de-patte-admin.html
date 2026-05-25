@@ -605,12 +605,27 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <label class="form-label">Photo de l'animal</label>
         <div id="photoUploadZone" style="border:2px dashed var(--border);border-radius:14px;padding:20px;text-align:center;cursor:pointer;transition:all 0.2s;background:var(--ivory)" onclick="document.getElementById('fieldPhoto').click()" ondragover="event.preventDefault();this.style.borderColor='var(--moss)'" ondragleave="this.style.borderColor='var(--border)'" ondrop="handlePhotoDrop(event)">
           <div id="photoPreview" style="display:none;margin-bottom:12px">
-            <img id="photoPreviewImg" style="max-height:140px;border-radius:10px;object-fit:cover;max-width:100%">
+            <div style="position:relative;width:100%;height:240px;border-radius:10px;overflow:hidden;background:#e0d8cf">
+              <img id="photoPreviewImg" style="width:100%;height:100%;object-fit:cover;object-position:50% 50%;display:block">
+            </div>
+            <div onclick="event.stopPropagation()" style="margin-top:12px;background:var(--paper);border:1.5px solid var(--border);border-radius:10px;padding:12px 16px;text-align:left">
+              <p style="font-size:0.72rem;font-weight:700;color:var(--dust);margin:0 0 10px;text-transform:uppercase;letter-spacing:0.5px">🎯 Cadrage de la photo</p>
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+                <span style="font-size:0.72rem;color:var(--dust);width:24px">↔</span>
+                <input type="range" id="cropX" min="0" max="100" value="50" oninput="updateCrop()" onclick="event.stopPropagation()" style="flex:1;accent-color:var(--moss)">
+                <span style="font-size:0.72rem;color:var(--dust);width:28px;text-align:right" id="cropXVal">50%</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px">
+                <span style="font-size:0.72rem;color:var(--dust);width:24px">↕</span>
+                <input type="range" id="cropY" min="0" max="100" value="50" oninput="updateCrop()" onclick="event.stopPropagation()" style="flex:1;accent-color:var(--moss)">
+                <span style="font-size:0.72rem;color:var(--dust);width:28px;text-align:right" id="cropYVal">50%</span>
+              </div>
+            </div>
           </div>
           <div id="photoPlaceholder">
             <div style="font-size:2rem;margin-bottom:6px">📷</div>
             <p style="font-size:0.82rem;font-weight:600;color:var(--forest);margin:0 0 4px">Cliquer ou déposer une photo</p>
-            <p style="font-size:0.72rem;color:var(--dust);margin:0">JPG, PNG · Max 2 Mo</p>
+            <p style="font-size:0.72rem;color:var(--dust);margin:0">JPG, PNG · Max 5 Mo</p>
           </div>
         </div>
         <input type="file" id="fieldPhoto" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="previewPhoto(this)">
@@ -650,8 +665,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   function previewPhoto(input) {
     if (!input.files || !input.files[0]) return;
     var file = input.files[0];
-    if (file.size > 2 * 1024 * 1024) {
-      showToast('Photo trop lourde · Max 2 Mo');
+    if (file.size > 5 * 1024 * 1024) {
+      showToast('Photo trop lourde · Max 5 Mo');
       input.value = '';
       return;
     }
@@ -662,6 +677,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       document.getElementById('photoPlaceholder').style.display = 'none';
     };
     reader.readAsDataURL(file);
+  }
+
+  function updateCrop() {
+    var x = document.getElementById('cropX').value;
+    var y = document.getElementById('cropY').value;
+    var img = document.getElementById('photoPreviewImg');
+    if (img) img.style.objectPosition = x + '% ' + y + '%';
+    var xVal = document.getElementById('cropXVal');
+    var yVal = document.getElementById('cropYVal');
+    if (xVal) xVal.textContent = x + '%';
+    if (yVal) yVal.textContent = y + '%';
+    // Sauvegarder pour l'upload
+    window._photoCropX = x;
+    window._photoCropY = y;
   }
 
   function handlePhotoDrop(e) {
@@ -712,6 +741,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     if (progress) progress.style.display = 'none';
     var bar = document.getElementById('photoProgressBar');
     if (bar) bar.style.width = '0%';
+    // Reset sliders
+    var cx = document.getElementById('cropX'); if (cx) cx.value = 50;
+    var cy = document.getElementById('cropY'); if (cy) cy.value = 50;
+    var cxv = document.getElementById('cropXVal'); if (cxv) cxv.textContent = '50%';
+    var cyv = document.getElementById('cropYVal'); if (cyv) cyv.textContent = '50%';
+    var img = document.getElementById('photoPreviewImg'); if (img) img.style.objectPosition = '50% 50%';
+    window._photoCropX = 50; window._photoCropY = 50;
   }
 
 // ══ ÉTAT GLOBAL ══
@@ -1070,7 +1106,18 @@ function openEditModal(animalId) {
   // Afficher la photo existante
   resetPhotoField();
   if (a.photo_url) {
-    document.getElementById('photoPreviewImg').src = a.photo_url;
+    var img = document.getElementById('photoPreviewImg');
+    img.src = a.photo_url;
+    // Restaurer le cadrage sauvegardé
+    var savedPos = a.photo_position || '50% 50%';
+    img.style.objectPosition = savedPos;
+    var parts = savedPos.split(' ');
+    var cx = document.getElementById('cropX'); if (cx) cx.value = parseInt(parts[0]) || 50;
+    var cy = document.getElementById('cropY'); if (cy) cy.value = parseInt(parts[1]) || 50;
+    var cxv = document.getElementById('cropXVal'); if (cxv) cxv.textContent = (parseInt(parts[0]) || 50) + '%';
+    var cyv = document.getElementById('cropYVal'); if (cyv) cyv.textContent = (parseInt(parts[1]) || 50) + '%';
+    window._photoCropX = parseInt(parts[0]) || 50;
+    window._photoCropY = parseInt(parts[1]) || 50;
     document.getElementById('photoPreview').style.display = 'block';
     document.getElementById('photoPlaceholder').style.display = 'none';
   }
@@ -1123,7 +1170,8 @@ async function saveAnimal() {
       // Upload photo si une nouvelle a été sélectionnée
       var photoUrl = await uploadPhoto(editingId);
       if (photoUrl) {
-        await sb.from('Animal').update({ photo_url: photoUrl }).eq('id', editingId);
+        var pos = (window._photoCropX || 50) + '% ' + (window._photoCropY || 50) + '%';
+        await sb.from('Animal').update({ photo_url: photoUrl, photo_position: pos }).eq('id', editingId);
       }
     }
   } else {
@@ -1133,7 +1181,8 @@ async function saveAnimal() {
       // Upload photo pour le nouvel animal
       var photoUrl = await uploadPhoto(res.data.id);
       if (photoUrl) {
-        await sb.from('Animal').update({ photo_url: photoUrl }).eq('id', res.data.id);
+        var pos = (window._photoCropX || 50) + '% ' + (window._photoCropY || 50) + '%';
+        await sb.from('Animal').update({ photo_url: photoUrl, photo_position: pos }).eq('id', res.data.id);
       }
     }
   }

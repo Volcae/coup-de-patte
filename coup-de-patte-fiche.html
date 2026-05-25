@@ -36,7 +36,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 /* Photo injectée par JS dans hero-img-clip */
 .hero-img img.hero-photo{
   position:absolute;inset:0;width:100%;height:100%;
-  object-fit:cover;object-position:center top;z-index:1;
+  object-fit:cover;object-position:center center;z-index:1;
 }
 /* Fondu bas */
 .hero-img::before{
@@ -218,6 +218,7 @@ window.addEventListener('load', async function() {
     img.src = animal.photo_url;
     img.alt = animal.nom || '';
     img.className = 'hero-photo';
+    img.style.objectPosition = animal.photo_position || 'center center';
     img.onerror = function() { this.remove(); if (emojiEl) emojiEl.style.display = 'block'; };
     heroClip.appendChild(img);
     heroImg.style.background = '#b8b0a6';
@@ -314,14 +315,20 @@ window.addEventListener('load', async function() {
   var profilResult = await sb.from('ProfilAdoptant').select('*').eq('utilisateur', session.user.id);
   var profil = profilResult.data && profilResult.data.length > 0 ? profilResult.data[0] : null;
 
-  // Bouton retour dynamique : adoptant → matchs, refuge → history.back()
+  // Bouton retour dynamique : adoptant → matchs, refuge → history.back() ou admin
   var btnRetour = document.getElementById('btnRetour');
   if (btnRetour) {
     if (profil) {
       btnRetour.textContent = '← Retour aux matchs';
-      btnRetour.addEventListener('click', function() { window.location.href = 'coup-de-patte-v3.html'; });
+      btnRetour.onclick = function() { window.location.href = 'coup-de-patte-v3.html'; };
     } else {
-      btnRetour.addEventListener('click', function() { history.back(); });
+      btnRetour.onclick = function() {
+        if (document.referrer && document.referrer !== window.location.href) {
+          history.back();
+        } else {
+          window.location.href = 'coup-de-patte-admin.html';
+        }
+      };
     }
   }
 
