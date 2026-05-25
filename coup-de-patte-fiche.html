@@ -250,6 +250,7 @@ window.addEventListener('load', async function() {
     if (animal.vaccination) tags.push('💉 Vacciné(e)');
     if (animal.identification) tags.push('🔖 Identifié(e)');
     if (animal.enfin_moi) tags.push('✨ Enfin Moi ?');
+    if (animal.vie_en_refuge === 'Difficilement' || animal.vie_en_refuge === 'Très difficilement') tags.push('😟 Mal à l\'aise en refuge');
     tagsEl.innerHTML = tags.map(function(t) { return '<span class="tag">' + t + '</span>'; }).join('');
   }
 

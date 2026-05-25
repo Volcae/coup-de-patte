@@ -312,12 +312,29 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       card.className = 'em-card';
       card.style.cursor = 'pointer';
       card.onclick = (function(id){ return function(){ window.location.href='coup-de-patte-fiche.html?id='+id; }; })(a.id);
+      // Calcul des raisons
+      var raisons = [];
+      if (a.date_arrivee_refuge) {
+        var moisR = (new Date() - new Date(a.date_arrivee_refuge)) / (1000*60*60*24*30);
+        if (moisR >= 12) raisons.push('📅 +1 an en refuge');
+      }
+      var especeL = (a.espece || '').toLowerCase();
+      if (especeL === 'chien' && a.age_annees >= 8) raisons.push('🌿 Senior (' + a.age_annees + ' ans)');
+      if (especeL === 'chat' && a.age_annees >= 10) raisons.push('🌿 Senior (' + a.age_annees + ' ans)');
+      if (a.besoins_medicaux === 'lourds') raisons.push('💛 Besoins médicaux lourds');
+      if (a.vie_en_refuge === 'Difficilement' || a.vie_en_refuge === 'Très difficilement') raisons.push('😟 Mal à l\'aise en refuge');
+      if (raisons.length === 0) raisons.push('✨ Animal en attente depuis longtemps');
+      var raisonHtml = raisons.map(function(r) { return '<span style="display:inline-block;background:rgba(212,168,67,0.12);color:var(--amber);font-size:0.68rem;font-weight:700;padding:2px 8px;border-radius:50px;border:1px solid rgba(196,154,26,0.2);margin:2px 2px 0 0">' + r + '</span>'; }).join('');
+      var imgBg = a.photo_url ? 'background:#e0d8cf' : 'background:linear-gradient(160deg,#E8D5B0,#C9A87A)';
+      var imgContent = a.photo_url
+        ? '<img src="' + a.photo_url + '" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:' + (a.photo_position || 'center center') + '" onerror="this.style.display=\'none\'">'
+        : emoji;
       card.innerHTML =
-        '<div class="em-img" style="background:linear-gradient(160deg,#E8D5B0,#C9A87A);font-size:3rem;display:flex;align-items:center;justify-content:center;height:140px">' + emoji + '</div>' +
+        '<div class="em-img" style="' + imgBg + ';font-size:3rem;display:flex;align-items:center;justify-content:center;height:140px;position:relative;overflow:hidden">' + imgContent + '</div>' +
         '<div class="em-body">' +
         '<div class="em-name">' + a.nom + '</div>' +
         '<div class="em-meta">' + (a.race || a.espece) + ' · ' + age + (ville ? ' · ' + ville : '') + '</div>' +
-        '<div class="em-reason">' + (a.raison_enfin_moi || '✨ Animal en attente depuis longtemps') + '</div>' +
+        '<div class="em-reason" style="margin-top:6px">' + raisonHtml + '</div>' +
         '</div>';
       grid.appendChild(card);
     });

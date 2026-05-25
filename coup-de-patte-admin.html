@@ -917,6 +917,7 @@ function renderTable(tbodyId, animals, mode) {
       if (a.espece === 'chien' && a.age_annees >= 8) raisons.push('<span style="font-size:0.72rem;font-weight:700;color:var(--amber)">🌿 Senior (' + a.age_annees + ' ans)</span>');
       if (a.espece === 'chat' && a.age_annees >= 10) raisons.push('<span style="font-size:0.72rem;font-weight:700;color:var(--amber)">🌿 Senior (' + a.age_annees + ' ans)</span>');
       if (a.besoins_medicaux === 'lourds') raisons.push('<span style="font-size:0.72rem;font-weight:700;color:var(--amber)">💊 Besoins médicaux</span>');
+      if (a.vie_en_refuge === 'Difficilement' || a.vie_en_refuge === 'Très difficilement') raisons.push('<span style="font-size:0.72rem;font-weight:700;color:var(--rose)">😟 Mal à l\'aise en refuge</span>');
       return '<tr id="row-' + a.id + '">'
         + '<td><div style="display:flex;align-items:center;gap:12px"><div class="animal-row-thumb" style="background:linear-gradient(135deg,var(--mint),var(--sage))">' + emoji + '</div><div><div class="animal-row-name"><a href=\"coup-de-patte-fiche.html?id=' + a.id + '\" style=\"color:var(--forest);font-weight:700;text-decoration:none;font-family:Fraunces,serif;font-style:italic\">' + a.nom + ' ↗</a></div><div class="animal-row-meta">' + (a.race || a.espece) + ' · ' + age + ' · ' + sexe + '</div></div></div></td>'
         + '<td><div style="display:flex;flex-direction:column;gap:4px">' + raisons.join('') + '</div></td>'
