@@ -469,9 +469,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     
     var grid = document.querySelector('.liked-grid');
     // Mettre à jour le sous-titre dans tous les cas
-    var subJaime = document.getElementById('subJaime');
-    var nb = matchs ? matchs.length : 0;
-    if (subJaime) subJaime.textContent = nb + ' animal' + (nb > 1 ? 'aux likés' : ' liké');
+    window._nbJaime = matchs ? matchs.length : 0;
+    updateSubJaime();
     if (!grid || !matchs || matchs.length === 0) return;
     
     grid.innerHTML = '';
@@ -517,6 +516,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     if (error) return;
 
     likedCard.remove();
+    window._nbJaime = Math.max(0, (window._nbJaime || 1) - 1);
+    updateSubJaime();
 
     // Remettre dans les matchs seulement si pas déjà présent dans la grille
     if (animalId && window.allMatchs) {
@@ -527,6 +528,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         grid.insertAdjacentHTML('afterbegin', renderMatchCard(matchEntry.animal, matchEntry.score));
       }
     }
+  }
+
+  function updateSubJaime() {
+    var nb = window._nbJaime || 0;
+    var subJaime = document.getElementById('subJaime');
+    if (subJaime) subJaime.textContent = nb + ' animal' + (nb > 1 ? 'aux likés' : ' liké');
+    var statJaime = document.getElementById('statJaime');
+    if (statJaime) statJaime.textContent = nb;
   }
 
   // Like button : sauvegarde + retire la card des matchs
@@ -558,14 +567,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     card.style.opacity = '0';
     card.style.transform = 'scale(0.9)';
     setTimeout(function() { card.remove(); }, 300);
-    // Mettre à jour le sous-titre J'aime
-    var statCount = document.getElementById('statJaime');
-    var subJaime = document.getElementById('subJaime');
-    if (subJaime) {
-      var nb = parseInt(statCount ? statCount.textContent : 0) || 0;
-      nb = nb + 1;
-      subJaime.textContent = nb + ' animal' + (nb > 1 ? 'aux likés' : ' liké');
-    }
+    window._nbJaime = (window._nbJaime || 0) + 1;
+    updateSubJaime();
   }
 
   // Load J'aime when tab is clicked - patch the original
