@@ -1135,10 +1135,19 @@ async function saveAnimal() {
   var age = parseInt(document.getElementById('fieldAge').value) || null;
   var dateArrivee = document.getElementById('fieldDate').value || null;
   var besoins = document.getElementById('fieldMedical').value;
-  // Calcul auto enfin_moi
-  var mois = dateArrivee ? moisEnRefuge(dateArrivee) : 0;
-  var isSenior = (espece === 'chien' && age >= 8) || (espece === 'chat' && age >= 10);
-  var enfinMoi = mois >= 12 || isSenior || besoins === 'lourds';
+  var vieRefuge = document.getElementById('fieldVieRefuge') ? document.getElementById('fieldVieRefuge').value : null;
+
+  // Calcul automatique enfin_moi
+  var enfinMoi = false;
+  var especeLower = espece.toLowerCase();
+  if (especeLower === 'chien' && age >= 8) enfinMoi = true;
+  if (especeLower === 'chat' && age >= 10) enfinMoi = true;
+  if (dateArrivee) {
+    var moisRefuge = (new Date() - new Date(dateArrivee)) / (1000 * 60 * 60 * 24 * 30);
+    if (moisRefuge >= 12) enfinMoi = true;
+  }
+  if (besoins === 'lourds') enfinMoi = true;
+  if (vieRefuge === 'Difficilement' || vieRefuge === 'Très difficilement') enfinMoi = true;
 
   var payload = {
     nom: nom,
