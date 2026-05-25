@@ -1379,6 +1379,20 @@ async function saveRefugeInfos() {
   document.getElementById('navRefugeName').textContent = payload.nom;
   document.getElementById('dashTitle').textContent = 'Bonjour, ' + payload.nom + ' 👋';
   showToast('Informations sauvegardées ✅');
+
+  // Géocodage de l'adresse via Nominatim pour mettre à jour lat/lng
+  var adresseGeo = [payload.adresse, payload.ville, 'France'].filter(Boolean).join(', ');
+  fetch('https://nominatim.openstreetmap.org/search?q=' + encodeURIComponent(adresseGeo) + '&format=json&limit=1')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data && data.length > 0) {
+        getSupabase().from('Refuge').update({
+          lat: parseFloat(data[0].lat),
+          lng: parseFloat(data[0].lon)
+        }).eq('id', currentRefuge.id);
+      }
+    })
+    .catch(function() {});
 }
 
 // ══ NAVIGATION ══

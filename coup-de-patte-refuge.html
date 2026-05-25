@@ -162,7 +162,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <div class="map-address"><strong id="refugeNomMap">–</strong><span id="refugeAdresseMap">–</span></div>
           <div class="map-actions">
             <a href="#" target="_blank" class="map-btn map-btn-secondary" id="btnMaps">🗺 Maps</a>
-            <a href="#" target="_blank" class="map-btn map-btn-primary" id="btnItineraire">🧭 Itinéraire</a>
+            <span id="distanceRefuge" style="font-size:0.8rem;font-weight:700;color:var(--moss);padding:8px 14px;background:var(--mint-lt);border:1.5px solid rgba(74,124,89,0.2);border-radius:50px;white-space:nowrap">📍 Distance…</span>
           </div>
         </div>
       </div>
@@ -170,6 +170,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </div>
 <script>
+function calculerDistance(lat1, lon1, lat2, lon2) {
+  var R = 6371;
+  var dLat = (lat2 - lat1) * Math.PI / 180;
+  var dLon = (lon2 - lon1) * Math.PI / 180;
+  var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLon/2) * Math.sin(dLon/2);
+  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  return Math.round(R * c);
+}
+
 window.addEventListener("load", async function() {
   var params = new URLSearchParams(window.location.search);
   var refugeId = params.get("id");
@@ -261,7 +272,22 @@ window.addEventListener("load", async function() {
   // Maps
   var adresseMap = encodeURIComponent((adresse || refuge.nom || "") + " " + ville);
   var btnM = document.getElementById("btnMaps"); if (btnM) btnM.href = "https://maps.google.com/?q=" + adresseMap;
-  var btnI = document.getElementById("btnItineraire"); if (btnI) btnI.href = "https://maps.google.com/dir/?api=1&destination=" + adresseMap;
+  // Distance depuis la position de l'utilisateur
+  var distEl = document.getElementById('distanceRefuge');
+  if (distEl && refuge.lat && refuge.lng) {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function(pos) {
+        var dist = calculerDistance(pos.coords.latitude, pos.coords.longitude, refuge.lat, refuge.lng);
+        distEl.textContent = '📍 À ' + dist + ' km de vous';
+      }, function() {
+        distEl.textContent = '📍 Position non disponible';
+      });
+    } else {
+      distEl.textContent = '📍 Géolocalisation non supportée';
+    }
+  } else if (distEl) {
+    distEl.textContent = '';
+  }
 
   // Horaires
   if (refuge.horaires) {
