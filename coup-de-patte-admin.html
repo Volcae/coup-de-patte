@@ -770,6 +770,12 @@ window.addEventListener('load', async function() {
 
   // Charger les animaux
   await loadAnimals();
+
+  // Onboarding : premier accès → ouvrir l'onglet Infos refuge
+  var urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('onboarding') === 'true') {
+    showSection('infos');
+  }
 });
 
 // ══ CHARGEMENT ANIMAUX ══

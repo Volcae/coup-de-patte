@@ -577,7 +577,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     });
     if (error) { showToast('❌ Email ou mot de passe incorrect'); return; }
     showToast('Connexion réussie ! Redirection vers votre espace… 🏡');
-    setTimeout(() => window.location.href = 'coup-de-patte-admin.html', 1500);
+    setTimeout(() => redirectRefuge(data.user.id), 1500);
   }
 
   async function handleRegister() {
@@ -658,7 +658,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
 
     showToast('Refuge créé ! Bienvenue sur Coup de Patte 🏡');
-    setTimeout(() => window.location.href = 'coup-de-patte-admin.html', 1500);
+    setTimeout(() => redirectRefuge(userId), 1500);
+  }
+
+  // ── Redirection refuge avec détection onboarding ──
+  async function redirectRefuge(userId) {
+    var dest = 'coup-de-patte-admin.html';
+    if (userId) {
+      var { data: refuge } = await getSupabase()
+        .from('Refuge')
+        .select('nom')
+        .eq('utilisateur', userId);
+      var aDejaRempli = refuge && refuge.length > 0 && refuge[0].nom && refuge[0].nom.trim() !== '';
+      if (!aDejaRempli) dest = 'coup-de-patte-admin.html?onboarding=true';
+    }
+    window.location.href = dest;
   }
 
   // ── Toast ──
@@ -687,7 +701,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         options: { data: { prenom, nom, role, est_adoptant: role === 'adoptant', est_refuge: role === 'refuge', est_admin: false } }
       });
       if (error) { alert('Erreur : ' + error.message); return; }
-      window.location.href = role === 'adoptant' ? 'coup-de-patte-form.html' : 'coup-de-patte-admin.html';
+      if (role === 'adoptant') {
+        window.location.href = 'coup-de-patte-form.html';
+      } else {
+        await redirectRefuge(data.user.id);
+      }
     }
   
 
