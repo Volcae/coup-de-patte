@@ -468,6 +468,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       .eq('aime', true);
     
     var grid = document.querySelector('.liked-grid');
+    // Mettre à jour le sous-titre dans tous les cas
+    var subJaime = document.getElementById('subJaime');
+    var nb = matchs ? matchs.length : 0;
+    if (subJaime) subJaime.textContent = nb + ' animal' + (nb > 1 ? 'aux likés' : ' liké');
     if (!grid || !matchs || matchs.length === 0) return;
     
     grid.innerHTML = '';
@@ -495,8 +499,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     // Update count
     var jaimeCount = document.querySelector('.nav-tab span');
     if (jaimeCount) jaimeCount.textContent = matchs.length;
-    var subJaime = document.getElementById('subJaime');
-    if (subJaime) subJaime.textContent = (matchs ? matchs.length : 0) + ' animal' + (matchs && matchs.length > 1 ? 'aux likés' : ' liké');
+
   }
 
   async function retirerJaime(matchId, btn) {
