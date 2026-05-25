@@ -602,6 +602,44 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </select>
       </div>
       <div class="form-group form-full">
+        <p style="font-size:0.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--smoke);margin-bottom:10px">💊 Santé</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div>
+            <label class="form-label" style="margin-bottom:4px;display:block">Vaccination</label>
+            <select class="form-select" id="fieldVaccination" style="width:100%">
+              <option value="inconnu">– Inconnu</option>
+              <option value="a_jour">✅ À jour</option>
+              <option value="non">❌ Non vacciné(e)</option>
+            </select>
+          </div>
+          <div>
+            <label class="form-label" style="margin-bottom:4px;display:block">Stérilisation</label>
+            <select class="form-select" id="fieldSterilisation" style="width:100%">
+              <option value="inconnu">– Inconnu</option>
+              <option value="oui">✅ Stérilisé(e)</option>
+              <option value="non">❌ Non stérilisé(e)</option>
+            </select>
+          </div>
+          <div>
+            <label class="form-label" style="margin-bottom:4px;display:block">Identification</label>
+            <select class="form-select" id="fieldIdentification" style="width:100%">
+              <option value="inconnu">– Inconnu</option>
+              <option value="puce">✅ Pucé(e)</option>
+              <option value="tatouage">✅ Tatoué(e)</option>
+              <option value="non">❌ Non identifié(e)</option>
+            </select>
+          </div>
+          <div>
+            <label class="form-label" style="margin-bottom:4px;display:block">Antiparasitaire</label>
+            <select class="form-select" id="fieldAntiparasitaire" style="width:100%">
+              <option value="inconnu">– Inconnu</option>
+              <option value="a_jour">✅ À jour</option>
+              <option value="non">❌ Non traité(e)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="form-group form-full">
         <label class="form-label">Photo de l'animal</label>
         <div id="photoUploadZone" style="border:2px dashed var(--border);border-radius:14px;padding:20px;text-align:center;cursor:pointer;transition:all 0.2s;background:var(--ivory)" onclick="document.getElementById('fieldPhoto').click()" ondragover="event.preventDefault();this.style.borderColor='var(--moss)'" ondragleave="this.style.borderColor='var(--border)'" ondrop="handlePhotoDrop(event)">
           <div id="photoPreview" style="display:none;margin-bottom:12px">
@@ -1068,6 +1106,10 @@ function openModal() {
   var fh = document.getElementById('fieldHistoire'); if(fh) fh.value = '';
   var fr = document.getElementById('fieldReactivite'); if(fr) fr.value = '';
   var fv = document.getElementById('fieldVieRefuge'); if(fv) fv.value = '';
+  var fVacc2 = document.getElementById('fieldVaccination'); if(fVacc2) fVacc2.value = 'inconnu';
+  var fSter2 = document.getElementById('fieldSterilisation'); if(fSter2) fSter2.value = 'inconnu';
+  var fIdent2 = document.getElementById('fieldIdentification'); if(fIdent2) fIdent2.value = 'inconnu';
+  var fAnti2 = document.getElementById('fieldAntiparasitaire'); if(fAnti2) fAnti2.value = 'inconnu';
   var fp = document.getElementById('fieldPlainPied'); if(fp) fp.value = '';
   selectedRacesAdmin = [];
   document.getElementById('racesSelectedBadges').style.display = 'none';
@@ -1105,6 +1147,10 @@ function openEditModal(animalId) {
   if (fpEdit) fpEdit.value = a.besoin_plain_pied === true ? 'true' : a.besoin_plain_pied === false ? 'false' : '';
   var fvEdit = document.getElementById('fieldVieRefuge');
   if (fvEdit) fvEdit.value = a.vie_en_refuge || '';
+  var fVacc = document.getElementById('fieldVaccination'); if (fVacc) fVacc.value = a.vaccination || 'inconnu';
+  var fSter = document.getElementById('fieldSterilisation'); if (fSter) fSter.value = a.sterilisation || 'inconnu';
+  var fIdent = document.getElementById('fieldIdentification'); if (fIdent) fIdent.value = a.identification || 'inconnu';
+  var fAnti = document.getElementById('fieldAntiparasitaire'); if (fAnti) fAnti.value = a.antiparasitaire || 'inconnu';
   // Afficher la photo existante
   resetPhotoField();
   if (a.photo_url) {
@@ -1171,7 +1217,11 @@ async function saveAnimal() {
     histoire: (document.getElementById('fieldHistoire') ? document.getElementById('fieldHistoire').value.trim() : null) || null,
     reactivite_inconnus: (document.getElementById('fieldReactivite') ? document.getElementById('fieldReactivite').value : null) || null,
     vie_en_refuge: (document.getElementById('fieldVieRefuge') ? document.getElementById('fieldVieRefuge').value : null) || null,
-    besoin_plain_pied: (document.getElementById('fieldPlainPied') && document.getElementById('fieldPlainPied').value !== '') ? document.getElementById('fieldPlainPied').value === 'true' : null
+    besoin_plain_pied: (document.getElementById('fieldPlainPied') && document.getElementById('fieldPlainPied').value !== '') ? document.getElementById('fieldPlainPied').value === 'true' : null,
+    vaccination: document.getElementById('fieldVaccination') ? document.getElementById('fieldVaccination').value : null,
+    sterilisation: document.getElementById('fieldSterilisation') ? document.getElementById('fieldSterilisation').value : null,
+    identification: document.getElementById('fieldIdentification') ? document.getElementById('fieldIdentification').value : null,
+    antiparasitaire: document.getElementById('fieldAntiparasitaire') ? document.getElementById('fieldAntiparasitaire').value : null
   };
 
   var sb = getSupabase();
@@ -1423,6 +1473,10 @@ function toggleCroise(cb) {
   var fh = document.getElementById('fieldHistoire'); if(fh) fh.value = '';
   var fr = document.getElementById('fieldReactivite'); if(fr) fr.value = '';
   var fv = document.getElementById('fieldVieRefuge'); if(fv) fv.value = '';
+  var fVacc2 = document.getElementById('fieldVaccination'); if(fVacc2) fVacc2.value = 'inconnu';
+  var fSter2 = document.getElementById('fieldSterilisation'); if(fSter2) fSter2.value = 'inconnu';
+  var fIdent2 = document.getElementById('fieldIdentification'); if(fIdent2) fIdent2.value = 'inconnu';
+  var fAnti2 = document.getElementById('fieldAntiparasitaire'); if(fAnti2) fAnti2.value = 'inconnu';
     document.getElementById('fieldRace').placeholder = 'Tapez pour chercher ou saisissez librement…';
   }
 }
@@ -1496,6 +1550,10 @@ function selectRaceAdmin(race) {
   var fh = document.getElementById('fieldHistoire'); if(fh) fh.value = '';
   var fr = document.getElementById('fieldReactivite'); if(fr) fr.value = '';
   var fv = document.getElementById('fieldVieRefuge'); if(fv) fv.value = '';
+  var fVacc2 = document.getElementById('fieldVaccination'); if(fVacc2) fVacc2.value = 'inconnu';
+  var fSter2 = document.getElementById('fieldSterilisation'); if(fSter2) fSter2.value = 'inconnu';
+  var fIdent2 = document.getElementById('fieldIdentification'); if(fIdent2) fIdent2.value = 'inconnu';
+  var fAnti2 = document.getElementById('fieldAntiparasitaire'); if(fAnti2) fAnti2.value = 'inconnu';
   } else {
     document.getElementById('fieldRace').value = race;
   }

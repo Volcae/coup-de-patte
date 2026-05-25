@@ -293,6 +293,20 @@ window.addEventListener('load', async function() {
 
   // Santé
   el = document.getElementById('ficheBesoins'); if (el) el.textContent = animal.besoins_medicaux || 'Aucun suivi particulier';
+
+  // Santé dynamique
+  var vaccLabels = { a_jour: '✅ À jour', non: '❌ Non vacciné(e)', inconnu: '– Inconnu' };
+  var sterLabels = { oui: '✅ Stérilisé(e)', non: '❌ Non stérilisé(e)', inconnu: '– Inconnu' };
+  var identLabels = { puce: '✅ Pucé(e)', tatouage: '✅ Tatoué(e)', non: '❌ Non identifié(e)', inconnu: '– Inconnu' };
+  var antiLabels = { a_jour: '✅ À jour', non: '❌ Non traité(e)', inconnu: '– Inconnu' };
+  var vaccCls = animal.vaccination === 'a_jour' ? 'health-ok' : animal.vaccination === 'non' ? 'health-warn' : '';
+  var sterCls = animal.sterilisation === 'oui' ? 'health-ok' : animal.sterilisation === 'non' ? 'health-warn' : '';
+  var identCls = (animal.identification === 'puce' || animal.identification === 'tatouage') ? 'health-ok' : animal.identification === 'non' ? 'health-warn' : '';
+  var antiCls = animal.antiparasitaire === 'a_jour' ? 'health-ok' : animal.antiparasitaire === 'non' ? 'health-warn' : '';
+  el = document.getElementById('ficheVaccination'); if (el) { el.textContent = vaccLabels[animal.vaccination] || '– Inconnu'; el.className = 'health-value ' + vaccCls; }
+  el = document.getElementById('ficheSterilisation'); if (el) { el.textContent = sterLabels[animal.sterilisation] || '– Inconnu'; el.className = 'health-value ' + sterCls; }
+  el = document.getElementById('ficheIdentification'); if (el) { el.textContent = identLabels[animal.identification] || '– Inconnu'; el.className = 'health-value ' + identCls; }
+  el = document.getElementById('ficheAntiparasitaire'); if (el) { el.textContent = antiLabels[animal.antiparasitaire] || '– Inconnu'; el.className = 'health-value ' + antiCls; }
   var alertBox = document.getElementById('ficheAlertBox');
   if (alertBox && animal.besoins_medicaux) { alertBox.textContent = '🩺 ' + animal.besoins_medicaux; alertBox.style.display = 'block'; }
 
@@ -567,10 +581,10 @@ window.addEventListener('load', async function() {
   <!-- ══ SANTÉ ══ -->
   <div class="tab-panel" id="tab-sante">
     <div class="health-grid">
-      <div class="health-item"><div class="health-icon">💉</div><div><span class="health-label">Vaccination</span><span class="health-value health-ok">✅ À jour</span></div></div>
-      <div class="health-item"><div class="health-icon">✂️</div><div><span class="health-label">Stérilisation</span><span class="health-value health-ok">✅ Stérilisé(e)</span></div></div>
-      <div class="health-item"><div class="health-icon">🔖</div><div><span class="health-label">Identification</span><span class="health-value health-ok">✅ Pucé(e)</span></div></div>
-      <div class="health-item"><div class="health-icon">🦠</div><div><span class="health-label">Antiparasitaire</span><span class="health-value health-ok">✅ À jour</span></div></div>
+      <div class="health-item"><div class="health-icon">💉</div><div><span class="health-label">Vaccination</span><span class="health-value" id="ficheVaccination">–</span></div></div>
+      <div class="health-item"><div class="health-icon">✂️</div><div><span class="health-label">Stérilisation</span><span class="health-value" id="ficheSterilisation">–</span></div></div>
+      <div class="health-item"><div class="health-icon">🔖</div><div><span class="health-label">Identification</span><span class="health-value" id="ficheIdentification">–</span></div></div>
+      <div class="health-item"><div class="health-icon">🦠</div><div><span class="health-label">Antiparasitaire</span><span class="health-value" id="ficheAntiparasitaire">–</span></div></div>
       <div class="health-item"><div class="health-icon">🩺</div><div><span class="health-label">Besoins médicaux</span><span class="health-value" id="ficheBesoins">–</span></div></div>
       <div class="health-item"><div class="health-icon">🏃</div><div><span class="health-label">Mobilité</span><span class="health-value health-ok">✅ Aucun problème</span></div></div>
     </div>
