@@ -319,10 +319,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   }
 
 
-  function signalerAdoptionV3(animalId, name) {
-    if(confirm('Vous confirmez avoir adopté ' + name + ' via Coup de Patte ?\n\n⚠️ La fiche sera marquée comme adoptée.')) {
-      alert('🐾 Merci ! Cette adoption sera comptabilisée dans les statistiques Coup de Patte.');
-    }
+  async function signalerAdoptionV3(animalId, animalNom, refugeId) {
+    if (!confirm('Félicitations ! Confirmez-vous l\'adoption de ' + animalNom + ' via Coup de Patte ?\n\nLa fiche sera marquée comme adoptée et le refuge sera notifié pour valider le retrait.')) return;
+    var sb = getSupabase();
+    var { data: { session } } = await sb.auth.getSession();
+    if (!session) return;
+    // Marquer comme contacté dans Correspondre
+    await sb.from('Correspondre').update({ contacte: true }).eq('utilisateur', session.user.id).eq('animal', animalId);
+    // Mettre le statut en attente de validation
+    var { error } = await sb.from('Animal').update({ statut: 'adoption_en_attente' }).eq('id', animalId);
+    if (error) { alert('Erreur : ' + error.message); return; }
+    alert('🐾 Merci ! Le refuge a été notifié et doit valider le retrait de la fiche. En attendant, l\'animal reste visible sur Coup de Patte.');
   }
 
   function updateStatus(select) {
@@ -440,7 +447,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     var { data: { session } } = await sb.auth.getSession();
     if (!session) return;
     var { data: matchs } = await sb.from('Correspondre')
-      .select('*, animal:Animal(*, refuge:Refuge(nom,ville,telephone))')
+      .select('*, animal:Animal(id, nom, espece, race, age_annees, sexe, enfin_moi, photo_url, statut, refuge:Refuge(id, nom, ville, telephone, email))')
       .eq('utilisateur', session.user.id)
       .eq('contacte', true);
 
@@ -456,27 +463,27 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       var a = m.animal;
       if (!a) return;
       var emoji = a.espece && a.espece.toLowerCase() === 'chat' ? '🐱' : '🐕';
-    var photoHtml = a.photo_url
-      ? '<img src="' + a.photo_url + '" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:inherit" onerror="this.remove()">'
-      : '';
       var refuge = a.refuge || {};
       var score = m.score_global ? m.score_global + '% compatible' : '';
-      var tel = refuge.telephone ? refuge.telephone.replace(/ /g,'') : '';
+      var refugeId = a.refuge ? a.refuge.id : '';
+      var nomSafe = (a.nom || '').replace(/'/g, '');
       list.insertAdjacentHTML('beforeend',
         '<div class="contact-card">' +
         '<div class="ct-thumb" style="background:linear-gradient(135deg,var(--mint),var(--sage));font-size:1.6rem;display:flex;align-items:center;justify-content:center">' + emoji + '</div>' +
         '<div class="ct-info">' +
-        '<div class="ct-name">' + a.nom + (refuge.nom ? ' · ' + refuge.nom : '') + '</div>' +
+        '<div class="ct-name"><a href="coup-de-patte-fiche.html?id=' + a.id + '" style="color:var(--forest);text-decoration:none;font-weight:700;font-family:Fraunces,serif;font-style:italic">' + a.nom + ' ↗</a> · ' + (refuge.nom || '–') + '</div>' +
         '<div class="ct-refuge">📍 ' + (refuge.ville || '') + (score ? ' · ' + score : '') + (a.enfin_moi ? ' · ✨ Enfin Moi ?' : '') + '</div>' +
-        '<select class="status-select" data-match-id="' + m.id + '" onchange="updateStatus(this)">' +
+        (refuge.telephone ? '<div style="font-size:0.78rem;color:var(--forest);font-weight:600;margin-top:4px">📞 ' + refuge.telephone + '</div>' : '') +
+        (refuge.email ? '<div style="font-size:0.78rem;color:var(--dust);margin-top:2px">✉️ ' + refuge.email + '</div>' : '') +
+        '<select class="status-select" data-match-id="' + m.id + '" onchange="updateStatus(this)" style="margin-top:8px">' +
         '<option value="a-contacter">📋 À contacter</option>' +
         '<option value="en-attente">⏳ En attente de réponse</option>' +
         '<option value="rdv">✅ Répondu, RDV proposé</option>' +
         '<option value="retirer">🗑️ Retirer ce contact</option>' +
         '</select></div>' +
         '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0">' +
-        (tel ? '<button class="ct-btn" onclick="window.location.href=\'tel:' + tel + '\'">📞 Appeler</button>' : '<button class="ct-btn" disabled>📞 Appeler</button>') +
-        '<button onclick="signalerAdoptionV3(\'' + a.id + '\',\'' + a.nom + '\')" style="padding:5px 12px;background:transparent;border:1.5px solid rgba(74,124,89,0.3);border-radius:50px;font-family:Nunito,sans-serif;font-size:0.68rem;font-weight:700;color:var(--moss);cursor:pointer;white-space:nowrap">🐾 Adopté via CDP</button>' +
+        '<button onclick="window.location.href=\'coup-de-patte-refuge.html?id=' + refugeId + '\'" style="padding:5px 12px;background:transparent;border:1.5px solid var(--border);border-radius:50px;font-family:Nunito,sans-serif;font-size:0.68rem;font-weight:700;color:var(--dust);cursor:pointer">🏠 Voir le refuge</button>' +
+        '<button onclick="signalerAdoptionV3(\'' + a.id + '\',\'' + nomSafe + '\',\'' + refugeId + '\')" style="padding:5px 12px;background:transparent;border:1.5px solid rgba(74,124,89,0.3);border-radius:50px;font-family:Nunito,sans-serif;font-size:0.68rem;font-weight:700;color:var(--moss);cursor:pointer;white-space:nowrap">🐾 Adopté via CDP</button>' +
         '</div></div>'
       );
       // Update status select
