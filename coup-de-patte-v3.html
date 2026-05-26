@@ -320,16 +320,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 
   async function signalerAdoptionV3(animalId, animalNom, refugeId) {
-    if (!confirm('Félicitations ! Confirmez-vous l\'adoption de ' + animalNom + ' via Coup de Patte ?\n\nLa fiche sera marquée comme adoptée et le refuge sera notifié pour valider le retrait.')) return;
+    if (!confirm('Félicitations ! Confirmez-vous l\'adoption de ' + animalNom + ' via Coup de Patte ?\n\nLe refuge sera notifié pour valider le retrait de la fiche.')) return;
     var sb = getSupabase();
     var { data: { session } } = await sb.auth.getSession();
     if (!session) return;
-    // Marquer comme contacté dans Correspondre
-    await sb.from('Correspondre').update({ contacte: true }).eq('utilisateur', session.user.id).eq('animal', animalId);
-    // Mettre le statut en attente de validation
-    var { error } = await sb.from('Animal').update({ statut: 'adoption_en_attente' }).eq('id', animalId);
+    var { error } = await sb.from('Signalisation').insert({
+      animal: animalId,
+      utilisateur: session.user.id,
+      type_signalement: 'adoption_cdp',
+      commentaire: 'Adoption confirmée par l\'adoptant'
+    });
     if (error) { alert('Erreur : ' + error.message); return; }
-    alert('🐾 Merci ! Le refuge a été notifié et doit valider le retrait de la fiche. En attendant, l\'animal reste visible sur Coup de Patte.');
+    alert('🐾 Merci ! Le refuge a été notifié et doit valider le retrait de la fiche.');
   }
 
   function updateStatus(select) {
