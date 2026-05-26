@@ -856,6 +856,15 @@ window.addEventListener('load', async function() {
     var infosItem = document.querySelector('.sidebar-item[onclick*="infos"]');
     showMain('infos', infosItem);
   }
+
+  // Adoption à confirmer via lien email
+  var adoptionId = urlParams.get('adoption');
+  if (adoptionId) {
+    var animal = allAnimals.find(function(a) { return a.id === adoptionId; });
+    if (animal) {
+      ouvrirAdoptionModal(animal);
+    }
+  }
 });
 
 // ══ CHARGEMENT ANIMAUX ══
@@ -1343,6 +1352,52 @@ async function deleteAnimal(id, nom, silent) {
   await loadAnimals();
 }
 
+function ouvrirAdoptionModal(animal) {
+  var modal = document.getElementById('adoptionModal');
+  var title = document.getElementById('adoptionModalTitle');
+  var sub = document.getElementById('adoptionModalSub');
+  var btnSupp = document.getElementById('adoptionBtnSupprimer');
+  var btnCons = document.getElementById('adoptionBtnConserver');
+  if (!modal) return;
+  if (title) title.textContent = animal.nom + ' — Adoption signalée';
+  if (sub) sub.textContent = 'Un adoptant a confirmé avoir adopté ' + animal.nom + ' via Coup de Patte. Que souhaitez-vous faire ?';
+  if (btnSupp) btnSupp.onclick = function() { confirmerAdoption(animal.id, animal.nom, 'supprimer'); };
+  if (btnCons) btnCons.onclick = function() { confirmerAdoption(animal.id, animal.nom, 'conserver'); };
+  modal.style.display = 'flex';
+}
+
+function fermerAdoptionModal() {
+  var modal = document.getElementById('adoptionModal');
+  if (modal) modal.style.display = 'none';
+  // Nettoyer le paramètre URL sans recharger
+  var url = new URL(window.location.href);
+  url.searchParams.delete('adoption');
+  window.history.replaceState({}, '', url.toString());
+}
+
+async function confirmerAdoption(animalId, animalNom, action) {
+  var sb = getSupabase();
+  if (action === 'supprimer') {
+    var { error } = await sb.from('Animal').update({ disponible: false, statut: 'adopte_cdp' }).eq('id', animalId);
+    if (error) { showToast('Erreur : ' + error.message); return; }
+  } else {
+    var retraitDate = new Date();
+    retraitDate.setDate(retraitDate.getDate() + 30);
+    var { error } = await sb.from('Animal').update({
+      statut: 'adopte_cdp',
+      disponible: true,
+      retrait_auto_date: retraitDate.toISOString()
+    }).eq('id', animalId);
+    if (error) { showToast('Erreur : ' + error.message); return; }
+  }
+  fermerAdoptionModal();
+  showToast(action === 'supprimer'
+    ? animalNom + ' retiré(e) de Coup de Patte ✅'
+    : animalNom + ' conservé(e) 30 jours ⏳'
+  );
+  await loadAnimals();
+}
+
 function closeConfirm() {
   document.getElementById('confirmPopup').classList.remove('open');
   var no = document.getElementById('confirmNo');
@@ -1653,5 +1708,20 @@ document.addEventListener('click', function(e) {
   </div>
   <div class="footer-copy">© 2025 Coup de Patte · Projet indépendant</div>
 </footer>
+
+<!-- Modale adoption à confirmer -->
+<div id="adoptionModal" style="display:none;position:fixed;inset:0;background:rgba(45,74,62,0.5);z-index:500;display:flex;align-items:center;justify-content:center;padding:24px">
+  <div style="background:var(--paper);border-radius:28px;padding:40px;max-width:480px;width:100%;box-shadow:0 20px 60px rgba(45,74,62,0.25);text-align:center">
+    <div style="font-size:2.5rem;margin-bottom:12px">🐾</div>
+    <h2 style="font-family:'Fraunces',serif;font-size:1.4rem;color:var(--forest);margin:0 0 10px" id="adoptionModalTitle">Adoption à confirmer</h2>
+    <p style="color:var(--dust);font-size:0.85rem;line-height:1.6;margin:0 0 28px" id="adoptionModalSub"></p>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <button id="adoptionBtnSupprimer" style="padding:13px 24px;background:var(--moss);color:var(--ivory);border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer;transition:transform 0.2s" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">✅ Confirmer et retirer la fiche</button>
+      <button id="adoptionBtnConserver" style="padding:13px 24px;background:transparent;border:2px solid var(--amber);color:var(--amber);border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer;transition:transform 0.2s" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">⏳ Confirmer et conserver 30 jours</button>
+      <button onclick="fermerAdoptionModal()" style="padding:10px 24px;background:transparent;border:none;color:var(--smoke);font-family:'Nunito',sans-serif;font-size:0.82rem;font-weight:600;cursor:pointer">Ignorer — la fiche restera visible</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
