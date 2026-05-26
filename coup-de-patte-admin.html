@@ -1402,11 +1402,11 @@ function ouvrirAdoptionModalEnFile(animaux) {
 
     if (btnSupp) btnSupp.onclick = async function() {
       await confirmerAdoption(animal.id, animal.nom, 'supprimer');
-      if (file.length > 0) { setTimeout(afficherSuivant, 400); } else { fermerAdoptionModal(); }
+      if (file.length > 0) setTimeout(afficherSuivant, 400);
     };
     if (btnCons) btnCons.onclick = async function() {
       await confirmerAdoption(animal.id, animal.nom, 'conserver');
-      if (file.length > 0) { setTimeout(afficherSuivant, 400); } else { fermerAdoptionModal(); }
+      if (file.length > 0) setTimeout(afficherSuivant, 400);
     };
 
     // Bouton ignorer
@@ -1451,8 +1451,7 @@ async function confirmerAdoption(animalId, animalNom, action) {
     .eq('animal', animalId)
     .eq('type_signalement', 'adoption_cdp');
 
-  // Réinitialiser sessionStorage pour permettre d'autres signalements futurs
-  sessionStorage.removeItem('adoptionPopupMontre');
+  fermerAdoptionModal();
 
   showToast(action === 'supprimer'
     ? animalNom + ' retiré(e) de Coup de Patte ✅'
