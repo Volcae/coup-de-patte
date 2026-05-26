@@ -155,6 +155,16 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 .load-btn{background:transparent;border:1.5px solid var(--border);border-radius:50px;padding:11px 28px;font-family:'Nunito',sans-serif;font-size:0.85rem;font-weight:700;color:var(--dust);cursor:pointer;transition:all 0.2s}
 .load-btn:hover{border-color:var(--moss);color:var(--forest)}
 
+.adoption-popup{position:fixed;inset:0;background:rgba(45,74,62,0.45);backdrop-filter:blur(8px);z-index:700;display:none;align-items:center;justify-content:center;padding:24px}
+.adoption-popup.open{display:flex}
+.adoption-box{background:var(--paper);border-radius:28px;padding:40px 36px;max-width:440px;width:100%;border:1.5px solid var(--border);box-shadow:0 20px 56px rgba(45,74,62,0.18);text-align:center;animation:fadeUp 0.3s ease both}
+.adoption-emoji{font-size:2.8rem;display:block;margin-bottom:12px}
+.adoption-title{font-family:'Fraunces',serif;font-size:1.3rem;font-weight:700;font-style:italic;color:var(--forest);margin:0 0 10px}
+.adoption-sub{font-size:0.84rem;color:var(--dust);line-height:1.65;margin:0 0 28px;padding:0 8px}
+.adoption-actions{display:flex;flex-direction:column;gap:10px}
+.adoption-btn-yes{padding:12px 24px;background:var(--moss);color:var(--ivory);border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer;transition:opacity 0.2s}
+.adoption-btn-yes:hover{opacity:0.85}
+.adoption-btn-no{padding:10px 24px;background:transparent;color:var(--dust);border:none;font-family:'Nunito',sans-serif;font-size:0.82rem;font-weight:600;cursor:pointer}
 footer{background:var(--forest);color:var(--ivory);padding:40px 52px 28px;position:relative;z-index:1;text-align:center}
 .footer-logo{font-family:"Fraunces",serif;font-size:1.2rem;font-weight:600;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:20px;opacity:0.9}
 .footer-links{display:flex;gap:24px;flex-wrap:wrap;margin-bottom:16px;justify-content:center}
@@ -319,19 +329,33 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   }
 
 
-  async function signalerAdoptionV3(animalId, animalNom, refugeId) {
-    if (!confirm('Félicitations ! Confirmez-vous l\'adoption de ' + animalNom + ' via Coup de Patte ?\n\nLe refuge sera notifié pour valider le retrait de la fiche.')) return;
-    var sb = getSupabase();
-    var { data: { session } } = await sb.auth.getSession();
-    if (!session) return;
-    var { error } = await sb.from('Signalisation').insert({
-      animal: animalId,
-      utilisateur: session.user.id,
-      type_signalement: 'adoption_cdp',
-      commentaire: 'Adoption confirmée par l\'adoptant'
-    });
-    if (error) { alert('Erreur : ' + error.message); return; }
-    alert('🐾 Merci ! Le refuge a été notifié et doit valider le retrait de la fiche.');
+  function signalerAdoptionV3(animalId, animalNom, refugeId) {
+    var popup = document.getElementById('adoptionPopupV3');
+    var sub = document.getElementById('adoptionSubV3');
+    var btn = document.getElementById('adoptionBtnOuiV3');
+    if (!popup) return;
+    if (sub) sub.textContent = 'Vous confirmez avoir adopté ' + animalNom + ' via Coup de Patte ? Le refuge sera notifié pour valider le retrait de la fiche.';
+    if (btn) btn.onclick = async function() {
+      var sb = getSupabase();
+      var { data: { session } } = await sb.auth.getSession();
+      if (!session) return;
+      var { error } = await sb.from('Signalisation').insert({
+        animal: animalId,
+        utilisateur: session.user.id,
+        type_signalement: 'adoption_cdp',
+        commentaire: 'Adoption confirmée par l\'adoptant',
+        traite: false
+      });
+      if (error) { alert('Erreur : ' + error.message); return; }
+      // Afficher confirmation
+      var box = document.getElementById('adoptionBoxV3');
+      if (box) box.innerHTML =
+        '<span class="adoption-emoji">✅</span>' +
+        '<div class="adoption-title">Merci !</div>' +
+        '<p class="adoption-sub">Le refuge a été notifié et décidera du retrait de la fiche. En attendant, l\'animal reste visible.</p>';
+      setTimeout(function() { popup.classList.remove('open'); }, 2500);
+    };
+    popup.classList.add('open');
   }
 
   function updateStatus(select) {
@@ -838,5 +862,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
   <div class="footer-copy">© 2025 Coup de Patte · Projet indépendant</div>
 </footer>
+<!-- Modale confirmation adoption V3 -->
+<div class="adoption-popup" id="adoptionPopupV3">
+  <div class="adoption-box" id="adoptionBoxV3">
+    <span class="adoption-emoji">🐾</span>
+    <div class="adoption-title" id="adoptionTitleV3">Confirmer votre adoption</div>
+    <p class="adoption-sub" id="adoptionSubV3"></p>
+    <div class="adoption-actions" id="adoptionActionsV3">
+      <button class="adoption-btn-yes" id="adoptionBtnOuiV3">🐾 Oui, confirmer mon adoption</button>
+      <button class="adoption-btn-no" onclick="document.getElementById('adoptionPopupV3').classList.remove('open')">Annuler</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>

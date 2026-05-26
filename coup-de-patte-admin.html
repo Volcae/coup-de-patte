@@ -859,6 +859,14 @@ window.addEventListener('load', async function() {
 
   // Adoptions à confirmer : lien email + signalements en attente
   var adoptionId = urlParams.get('adoption');
+
+  // Nettoyer l'URL immédiatement pour éviter que le popup réapparaisse au rechargement
+  if (adoptionId) {
+    var cleanUrl = new URL(window.location.href);
+    cleanUrl.searchParams.delete('adoption');
+    window.history.replaceState({}, '', cleanUrl.toString());
+  }
+
   var { data: signaux } = await sb.from('Signalisation')
     .select('animal')
     .eq('type_signalement', 'adoption_cdp')
@@ -1434,7 +1442,12 @@ async function confirmerAdoption(animalId, animalNom, action) {
     }).eq('id', animalId);
     if (error) { showToast('Erreur : ' + error.message); return; }
   }
-  fermerAdoptionModal();
+  // Marquer tous les signalements de cet animal comme traités
+  await sb.from('Signalisation')
+    .update({ traite: true })
+    .eq('animal', animalId)
+    .eq('type_signalement', 'adoption_cdp');
+
   showToast(action === 'supprimer'
     ? animalNom + ' retiré(e) de Coup de Patte ✅'
     : animalNom + ' conservé(e) 30 jours ⏳'
