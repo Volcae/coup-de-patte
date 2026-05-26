@@ -707,7 +707,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     var profilResult = await sb.from('ProfilAdoptant').select('*').eq('utilisateur', userId);
     var profil = profilResult.data && profilResult.data.length > 0 ? profilResult.data[0] : null;
     // Filtre espèce selon profil adoptant
-    var animauxQuery = sb.from('Animal').select('*, refuge:Refuge(*)').eq('disponible', true);
+    var animauxQuery = sb.from('Animal').select('*, refuge:Refuge(*)').eq('disponible', true).or('retrait_auto_date.is.null,retrait_auto_date.gt.' + new Date().toISOString());
     if (profil && profil.animal_souhaite && profil.animal_souhaite !== 'indifferent' && profil.animal_souhaite !== 'les-deux') {
       animauxQuery = animauxQuery.eq('espece', profil.animal_souhaite);
     }
@@ -804,7 +804,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     if (pill) pill.innerHTML = '👤 ' + displayName;
 
     // Compter les Enfin Moi
-    var { data: enfinAnimaux } = await sb.from('Animal').select('id').eq('enfin_moi', true).eq('disponible', true);
+    var { data: enfinAnimaux } = await sb.from('Animal').select('id').eq('enfin_moi', true).eq('disponible', true).or('retrait_auto_date.is.null,retrait_auto_date.gt.' + new Date().toISOString());
     el = document.getElementById('navEnfinCount'); if (el) el.textContent = enfinAnimaux ? enfinAnimaux.length : '0';
 
     // Compter les J'aime
