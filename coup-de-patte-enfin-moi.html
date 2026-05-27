@@ -238,7 +238,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <section class="cta-section">
   <h2>Votre profil peut tout changer</h2>
   <p>Complétez votre profil pour que notre algorithme identifie les animaux "Enfin Moi ?" qui correspondent le mieux à votre mode de vie, même à 60%.</p>
-  <a href="coup-de-patte-form.html" class="btn-primary"><span style="filter:brightness(0) invert(1)">🐾</span> Compléter mon profil</a>
+  <a href="#" id="btnCompleterProfil" class="btn-primary" onclick="goCompleterProfil(event)"><span style="filter:brightness(0) invert(1)">🐾</span> Compléter mon profil</a>
 </section>
 
 <script>
@@ -345,6 +345,24 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   }
 
   function goToFiche() { window.location.href = 'coup-de-patte-fiche.html'; }
+
+  async function goCompleterProfil(e) {
+    e.preventDefault();
+    var sb = getSupabase();
+    var { data: { session } } = await sb.auth.getSession();
+    if (!session) {
+      window.location.href = 'coup-de-patte-login.html';
+      return;
+    }
+    // Vérifier si c'est un compte adoptant
+    var { data: profil } = await sb.from('ProfilAdoptant').select('id').eq('utilisateur', session.user.id);
+    if (profil && profil.length > 0) {
+      window.location.href = 'coup-de-patte-form.html';
+    } else {
+      // Refuge ou nouveau compte sans profil adoptant
+      window.location.href = 'coup-de-patte-login.html';
+    }
+  }
 
   window.addEventListener('load', async function() {
     if (!window.supabase) return;
