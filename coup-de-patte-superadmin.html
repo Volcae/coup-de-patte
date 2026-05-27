@@ -262,6 +262,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     <span class="sb-section">Communication</span>
     <a class="sb-item" onclick="showSectionFn('communication',this)"><span class="sb-icon">📣</span>Kit communication</a>
+
+    <span class="sb-section">Système</span>
+    <a class="sb-item" onclick="showSectionFn('maintenance',this)"><span class="sb-icon">🔧</span>Maintenance<span class="sb-badge sb-badge-red" id="badgeMaintenance">–</span></a>
   </aside>
 
   <!-- MAIN -->
@@ -627,6 +630,61 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </a>
       </div>
 
+    <!-- ══════════ MAINTENANCE ══════════ -->
+    <div class="section" id="section-maintenance">
+      <div class="page-hdr">
+        <div><h1 class="page-title">🔧 Maintenance</h1><p class="page-sub">Surveillance et nettoyage de la base de données</p></div>
+      </div>
+
+      <!-- Bloc 1 : Animaux à retrait automatique dépassé -->
+      <div class="dash-card" style="margin-bottom:20px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+          <p style="font-family:'Fraunces',serif;font-size:0.95rem;font-weight:700;color:var(--forest);margin:0">📅 Animaux retrait automatique dépassé</p>
+          <span id="badgeRetraitAuto" style="font-size:0.72rem;font-weight:700;padding:3px 10px;border-radius:50px;background:var(--mint-lt);color:var(--moss)">Chargement…</span>
+        </div>
+        <p style="font-size:0.78rem;color:var(--dust);margin-bottom:14px">Animaux avec <code>retrait_auto_date</code> dépassée mais encore disponibles.</p>
+        <div id="tableRetraitAuto"><p style="font-size:0.82rem;color:var(--dust);text-align:center;padding:16px">Chargement…</p></div>
+      </div>
+
+      <!-- Bloc 2 : Signalements non traités -->
+      <div class="dash-card" style="margin-bottom:20px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+          <p style="font-family:'Fraunces',serif;font-size:0.95rem;font-weight:700;color:var(--forest);margin:0">🚩 Signalements non traités</p>
+          <span id="badgeSignauxNonTraites" style="font-size:0.72rem;font-weight:700;padding:3px 10px;border-radius:50px;background:var(--mint-lt);color:var(--moss)">Chargement…</span>
+        </div>
+        <div id="tableSignauxNonTraites"><p style="font-size:0.82rem;color:var(--dust);text-align:center;padding:16px">Chargement…</p></div>
+      </div>
+
+      <!-- Bloc 3 : Adoptions en attente -->
+      <div class="dash-card" style="margin-bottom:20px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+          <p style="font-family:'Fraunces',serif;font-size:0.95rem;font-weight:700;color:var(--forest);margin:0">🐾 Adoptions en attente de validation</p>
+          <span id="badgeAdoptionsAttente" style="font-size:0.72rem;font-weight:700;padding:3px 10px;border-radius:50px;background:var(--mint-lt);color:var(--moss)">Chargement…</span>
+        </div>
+        <div id="tableAdoptionsAttente"><p style="font-size:0.82rem;color:var(--dust);text-align:center;padding:16px">Chargement…</p></div>
+      </div>
+
+      <!-- Bloc 4 : Refuges sans animaux -->
+      <div class="dash-card" style="margin-bottom:20px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+          <p style="font-family:'Fraunces',serif;font-size:0.95rem;font-weight:700;color:var(--forest);margin:0">🏡 Refuges sans animaux</p>
+          <span id="badgeRefugesSansAnimaux" style="font-size:0.72rem;font-weight:700;padding:3px 10px;border-radius:50px;background:var(--mint-lt);color:var(--moss)">Chargement…</span>
+        </div>
+        <p style="font-size:0.78rem;color:var(--dust);margin-bottom:14px">Refuges inscrits sans aucune fiche animal.</p>
+        <div id="tableRefugesSansAnimaux"><p style="font-size:0.82rem;color:var(--dust);text-align:center;padding:16px">Chargement…</p></div>
+      </div>
+
+      <!-- Bloc 5 : Nettoyage -->
+      <div class="dash-card">
+        <p style="font-family:'Fraunces',serif;font-size:0.95rem;font-weight:700;color:var(--forest);margin:0 0 10px">🗑️ Nettoyage de la base</p>
+        <p style="font-size:0.78rem;color:var(--dust);margin-bottom:16px">Supprime définitivement les animaux marqués indisponibles depuis plus de 6 mois.</p>
+        <div style="display:flex;align-items:center;gap:12px">
+          <button onclick="nettoyerBase()" style="padding:10px 20px;background:var(--rose);color:white;border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer">🗑️ Supprimer les animaux indisponibles &gt; 6 mois</button>
+          <span id="nettoyageResult" style="font-size:0.78rem;color:var(--dust)"></span>
+        </div>
+      </div>
+    </div>
+
   </main>
 </div>
 
@@ -653,6 +711,47 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   }
 
   var toastTimer;
+  // ═══ FONCTIONS MAINTENANCE ═══
+  async function retirerAnimalMaint(id, btn) {
+    btn.disabled = true; btn.textContent = '…';
+    var { error } = await getSupabase().from('Animal').update({ disponible: false, retrait_auto_date: null }).eq('id', id);
+    if (error) { showToast('Erreur : ' + error.message); btn.disabled = false; btn.textContent = 'Retirer'; return; }
+    btn.closest('div').remove(); showToast('Animal retiré ✅');
+  }
+
+  async function traiterSignalMaint(id, btn) {
+    btn.disabled = true; btn.textContent = '…';
+    var { error } = await getSupabase().from('Signalisation').update({ traite: true }).eq('id', id);
+    if (error) { showToast('Erreur : ' + error.message); btn.disabled = false; return; }
+    btn.closest('div').remove(); showToast('Signalement traité ✅');
+  }
+
+  async function confirmerAdoptionMaint(id, btn) {
+    btn.disabled = true; btn.textContent = '…';
+    var { error } = await getSupabase().from('Animal').update({ disponible: false, statut: 'adopte_cdp' }).eq('id', id);
+    if (error) { showToast('Erreur : ' + error.message); btn.disabled = false; return; }
+    btn.closest('div').remove(); showToast('Fiche retirée ✅');
+  }
+
+  async function ignorerAdoptionMaint(id, btn) {
+    var { error } = await getSupabase().from('Animal').update({ statut: 'disponible' }).eq('id', id);
+    if (error) { showToast('Erreur : ' + error.message); return; }
+    btn.closest('div').remove(); showToast('Adoption ignorée');
+  }
+
+  async function nettoyerBase() {
+    var sixMoisAgo = new Date(Date.now() - 6*30*24*60*60*1000).toISOString();
+    var { data: toDelete } = await getSupabase().from('Animal').select('id, nom').eq('disponible', false).lt('created_at', sixMoisAgo);
+    if (!toDelete || toDelete.length === 0) { showToast('Aucun animal à supprimer'); return; }
+    if (!confirm('Supprimer définitivement ' + toDelete.length + ' animal(s) indisponible(s) depuis plus de 6 mois ?\n\nCette action est irréversible.')) return;
+    var ids = toDelete.map(function(a) { return a.id; });
+    var { error } = await getSupabase().from('Animal').delete().in('id', ids);
+    if (error) { showToast('Erreur : ' + error.message); return; }
+    var el = document.getElementById('nettoyageResult');
+    if (el) el.textContent = toDelete.length + ' animal(s) supprimé(s) ✅';
+    showToast(toDelete.length + ' animal(s) supprimé(s) ✅');
+  }
+
   function showToast(msg) {
     var t = document.getElementById('toast');
     if (!t) return;
@@ -955,6 +1054,82 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     };
     setTrend('trendRefuges', refMoisRes.data);
     setTrend('trendAdoptants', profMoisRes.data);
+
+
+    // ═══ MAINTENANCE ═══
+    var now = new Date().toISOString();
+    var sixMoisAgo = new Date(Date.now() - 6*30*24*60*60*1000).toISOString();
+
+    // Bloc 1 : retrait_auto_date dépassée
+    var retraitRes = await sb.from('Animal').select('id, nom, retrait_auto_date, refuge:Refuge(nom)').eq('disponible', true).not('retrait_auto_date', 'is', null).lt('retrait_auto_date', now);
+    var retraitData = retraitRes.data || [];
+    var bRA = document.getElementById('badgeRetraitAuto');
+    if (bRA) { bRA.textContent = retraitData.length + ' à traiter'; bRA.style.background = retraitData.length > 0 ? 'rgba(201,112,74,0.15)' : 'var(--mint-lt)'; bRA.style.color = retraitData.length > 0 ? 'var(--rose)' : 'var(--moss)'; }
+    var tRA = document.getElementById('tableRetraitAuto');
+    if (tRA) {
+      if (retraitData.length === 0) { tRA.innerHTML = '<p style="color:var(--moss);font-size:0.82rem;text-align:center;padding:12px">✅ Aucun animal à traiter</p>'; }
+      else {
+        tRA.innerHTML = retraitData.map(function(a) {
+          var r = a.refuge || {};
+          var date = a.retrait_auto_date ? new Date(a.retrait_auto_date).toLocaleDateString('fr-FR') : '–';
+          return '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)"><div><strong style="font-size:0.85rem">' + a.nom + '</strong><span style="font-size:0.72rem;color:var(--dust);margin-left:8px">' + (r.nom||'') + ' · Retrait prévu le ' + date + '</span></div><button onclick="retirerAnimalMaint(\'' + a.id + '\',this)" style="padding:5px 14px;background:var(--rose);color:white;border:none;border-radius:50px;font-size:0.72rem;font-weight:700;cursor:pointer">Retirer</button></div>';
+        }).join('');
+      }
+    }
+
+    // Bloc 2 : signalements non traités (hors adoption_cdp déjà géré)
+    var sigNTRes = await sb.from('Signalisation').select('id, type_signalement, commentaire, created_at, animal:Animal(nom)').eq('traite', false);
+    var sigNTData = sigNTRes.data || [];
+    var bSNT = document.getElementById('badgeSignauxNonTraites');
+    if (bSNT) { bSNT.textContent = sigNTData.length + ' non traité(s)'; bSNT.style.background = sigNTData.length > 0 ? 'rgba(201,112,74,0.15)' : 'var(--mint-lt)'; bSNT.style.color = sigNTData.length > 0 ? 'var(--rose)' : 'var(--moss)'; }
+    var tSNT = document.getElementById('tableSignauxNonTraites');
+    if (tSNT) {
+      if (sigNTData.length === 0) { tSNT.innerHTML = '<p style="color:var(--moss);font-size:0.82rem;text-align:center;padding:12px">✅ Aucun signalement en attente</p>'; }
+      else {
+        tSNT.innerHTML = sigNTData.map(function(s) {
+          var a = s.animal || {};
+          var date = s.created_at ? new Date(s.created_at).toLocaleDateString('fr-FR') : '–';
+          return '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)"><div><strong style="font-size:0.85rem">' + (a.nom||'–') + '</strong><span style="font-size:0.72rem;color:var(--dust);margin-left:8px">' + s.type_signalement + ' · ' + date + '</span>' + (s.commentaire ? '<br><span style="font-size:0.72rem;color:var(--dust);font-style:italic">' + s.commentaire + '</span>' : '') + '</div><button onclick="traiterSignalMaint(\'' + s.id + '\',this)" style="padding:5px 14px;background:var(--moss);color:white;border:none;border-radius:50px;font-size:0.72rem;font-weight:700;cursor:pointer">✓ Traité</button></div>';
+        }).join('');
+      }
+    }
+
+    // Bloc 3 : adoptions en attente
+    var adoptAttenteRes = await sb.from('Animal').select('id, nom, refuge:Refuge(nom)').eq('statut', 'adoption_en_attente');
+    var adoptAttenteData = adoptAttenteRes.data || [];
+    var bAA = document.getElementById('badgeAdoptionsAttente');
+    if (bAA) { bAA.textContent = adoptAttenteData.length + ' en attente'; bAA.style.background = adoptAttenteData.length > 0 ? 'rgba(196,154,26,0.15)' : 'var(--mint-lt)'; bAA.style.color = adoptAttenteData.length > 0 ? 'var(--amber)' : 'var(--moss)'; }
+    var tAA = document.getElementById('tableAdoptionsAttente');
+    if (tAA) {
+      if (adoptAttenteData.length === 0) { tAA.innerHTML = '<p style="color:var(--moss);font-size:0.82rem;text-align:center;padding:12px">✅ Aucune adoption en attente</p>'; }
+      else {
+        tAA.innerHTML = adoptAttenteData.map(function(a) {
+          var r = a.refuge || {};
+          return '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)"><div><strong style="font-size:0.85rem">' + a.nom + '</strong><span style="font-size:0.72rem;color:var(--dust);margin-left:8px">' + (r.nom||'') + '</span></div><div style="display:flex;gap:8px"><button onclick="confirmerAdoptionMaint(\'' + a.id + '\',this)" style="padding:5px 14px;background:var(--moss);color:white;border:none;border-radius:50px;font-size:0.72rem;font-weight:700;cursor:pointer">✅ Confirmer retrait</button><button onclick="ignorerAdoptionMaint(\'' + a.id + '\',this)" style="padding:5px 14px;background:transparent;border:1.5px solid var(--border);border-radius:50px;font-size:0.72rem;font-weight:700;color:var(--dust);cursor:pointer">Ignorer</button></div></div>';
+        }).join('');
+      }
+    }
+
+    // Bloc 4 : refuges sans animaux
+    var allAnimauxRefugeIds = new Set((animaux||[]).map(function(a) { return a.refuge; }));
+    var refugesSansAnimaux = refuges.filter(function(r) { return !allAnimauxRefugeIds.has(r.id); });
+    var bRSA = document.getElementById('badgeRefugesSansAnimaux');
+    if (bRSA) { bRSA.textContent = refugesSansAnimaux.length + ' refuge(s)'; bRSA.style.background = refugesSansAnimaux.length > 0 ? 'rgba(91,141,239,0.12)' : 'var(--mint-lt)'; bRSA.style.color = refugesSansAnimaux.length > 0 ? 'var(--blue)' : 'var(--moss)'; }
+    var tRSA = document.getElementById('tableRefugesSansAnimaux');
+    if (tRSA) {
+      if (refugesSansAnimaux.length === 0) { tRSA.innerHTML = '<p style="color:var(--moss);font-size:0.82rem;text-align:center;padding:12px">✅ Tous les refuges ont des animaux</p>'; }
+      else {
+        tRSA.innerHTML = refugesSansAnimaux.map(function(r) {
+          var date = r.created_at ? new Date(r.created_at).toLocaleDateString('fr-FR') : '–';
+          return '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)"><div><strong style="font-size:0.85rem">' + (r.nom||'–') + '</strong><span style="font-size:0.72rem;color:var(--dust);margin-left:8px">Inscrit le ' + date + '</span></div></div>';
+        }).join('');
+      }
+    }
+
+    // Badge sidebar maintenance
+    var totalMaint = retraitData.length + sigNTData.length + adoptAttenteData.length;
+    var bM = document.getElementById('badgeMaintenance');
+    if (bM) { bM.textContent = totalMaint > 0 ? totalMaint : '✓'; bM.style.background = totalMaint > 0 ? 'rgba(201,112,74,0.15)' : 'rgba(74,124,89,0.12)'; bM.style.color = totalMaint > 0 ? 'var(--rose)' : 'var(--moss)'; }
 
   }); // end load async
 </script>
