@@ -1427,12 +1427,10 @@ function fermerAdoptionModal() {
 }
 
 async function confirmerAdoption(animalId, animalNom, action) {
-  console.log('[confirmerAdoption] START', animalId, animalNom, action);
   var sb = getSupabase();
   if (action === 'supprimer') {
     var { error } = await sb.from('Animal').update({ disponible: false, statut: 'adopte_cdp' }).eq('id', animalId);
-    console.log('[confirmerAdoption] update Animal:', error);
-    if (error) { showToast('Erreur : ' + error.message); return; }
+      if (error) { showToast('Erreur : ' + error.message); return; }
   } else {
     var retraitDate = new Date();
     retraitDate.setDate(retraitDate.getDate() + 30);
@@ -1441,24 +1439,20 @@ async function confirmerAdoption(animalId, animalNom, action) {
       disponible: true,
       retrait_auto_date: retraitDate.toISOString()
     }).eq('id', animalId);
-    console.log('[confirmerAdoption] update Animal conserver:', error);
-    if (error) { showToast('Erreur : ' + error.message); return; }
+      if (error) { showToast('Erreur : ' + error.message); return; }
   }
   var { error: errSignal } = await sb.from('Signalisation')
     .update({ traite: true })
     .eq('animal', animalId)
     .eq('type_signalement', 'adoption_cdp');
-  console.log('[confirmerAdoption] update Signalisation:', errSignal);
 
   fermerAdoptionModal();
-  console.log('[confirmerAdoption] modal fermée');
 
   showToast(action === 'supprimer'
     ? animalNom + ' retiré(e) de Coup de Patte ✅'
     : animalNom + ' conservé(e) 30 jours ⏳'
   );
   await loadAnimals();
-  console.log('[confirmerAdoption] DONE');
 }
 
 function closeConfirm() {
