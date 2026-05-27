@@ -355,20 +355,68 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- ══════════ ADOPTANTS ══════════ -->
     <div class="section" id="section-adoptants">
       <div class="page-hdr">
-        <div><h1 class="page-title">Adoptants</h1><p class="page-sub" id="subAdoptants">Chargement…</p></div>
+        <div><h1 class="page-title">Tableau de bord Adoptants</h1><p class="page-sub" id="subAdoptants">Chargement…</p></div>
       </div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px">
+
+      <!-- Bloc 1 : Vue d'ensemble -->
+      <p style="font-family:'Fraunces',serif;font-size:1rem;font-weight:700;color:var(--forest);margin:0 0 12px">📊 Vue d'ensemble</p>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px">
         <div class="kpi"><span class="kpi-n" id="adoptantsTotal">–</span><span class="kpi-l">Profils complétés</span></div>
-        <div class="kpi"><span class="kpi-n" id="adoptantsComplets">–</span><span class="kpi-l">Actifs (ont liké)</span></div>
+        <div class="kpi"><span class="kpi-n" id="adoptantsNouveaux">–</span><span class="kpi-l">Nouveaux ce mois</span></div>
+        <div class="kpi"><span class="kpi-n" id="adoptantsActifs">–</span><span class="kpi-l">Actifs (ont liké)</span></div>
+        <div class="kpi"><span class="kpi-n" id="adoptantsTaux">–</span><span class="kpi-l">Taux complétion</span></div>
+      </div>
+
+      <!-- Bloc 2 : Préférences animaux -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px">
+        <div class="kpi" style="padding:20px">
+          <p style="font-family:'Fraunces',serif;font-size:0.9rem;font-weight:700;color:var(--forest);margin:0 0 14px">🐾 Préférences animaux</p>
+          <div style="margin-bottom:8px">
+            <div style="display:flex;justify-content:space-between;font-size:0.78rem;margin-bottom:4px"><span>🐕 Chiens</span><span id="pctChiens">–</span></div>
+            <div style="height:8px;background:var(--mint-lt);border-radius:50px;overflow:hidden"><div id="barChiens" style="height:100%;background:var(--moss);border-radius:50px;width:0%;transition:width 0.6s ease"></div></div>
+          </div>
+          <div style="margin-bottom:8px">
+            <div style="display:flex;justify-content:space-between;font-size:0.78rem;margin-bottom:4px"><span>🐱 Chats</span><span id="pctChats">–</span></div>
+            <div style="height:8px;background:var(--mint-lt);border-radius:50px;overflow:hidden"><div id="barChats" style="height:100%;background:var(--blue);border-radius:50px;width:0%;transition:width 0.6s ease"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:0.78rem;margin-bottom:4px"><span>🐾 Les deux</span><span id="pctLesdeux">–</span></div>
+            <div style="height:8px;background:var(--mint-lt);border-radius:50px;overflow:hidden"><div id="barLesdeux" style="height:100%;background:var(--amber);border-radius:50px;width:0%;transition:width 0.6s ease"></div></div>
+          </div>
+        </div>
+
+        <!-- Bloc 3 : Profils de vie -->
+        <div class="kpi" style="padding:20px">
+          <p style="font-family:'Fraunces',serif;font-size:0.9rem;font-weight:700;color:var(--forest);margin:0 0 14px">🏠 Profils de vie</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <div style="font-size:0.78rem"><span style="color:var(--dust)">Maison</span><br><strong id="pctMaison">–</strong></div>
+            <div style="font-size:0.78rem"><span style="color:var(--dust)">Appartement</span><br><strong id="pctAppart">–</strong></div>
+            <div style="font-size:0.78rem"><span style="color:var(--dust)">Avec jardin</span><br><strong id="pctJardin">–</strong></div>
+            <div style="font-size:0.78rem"><span style="color:var(--dust)">Heures seul (moy.)</span><br><strong id="moyHeures">–</strong></div>
+          </div>
+          <div style="margin-top:12px">
+            <p style="font-size:0.72rem;color:var(--dust);margin:0 0 6px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px">Expérience animale</p>
+            <div id="expChart" style="display:flex;flex-direction:column;gap:6px"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bloc 4 : Engagement -->
+      <p style="font-family:'Fraunces',serif;font-size:1rem;font-weight:700;color:var(--forest);margin:0 0 12px">💛 Engagement</p>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px">
+        <div class="kpi"><span class="kpi-n" id="totalJaime">–</span><span class="kpi-l">Total J'aime</span></div>
+        <div class="kpi"><span class="kpi-n" id="totalContacts">–</span><span class="kpi-l">Contacts effectués</span></div>
+        <div class="kpi"><span class="kpi-n" id="tauxConversion">–</span><span class="kpi-l">Taux like → contact</span></div>
         <div class="kpi"><span class="kpi-n" id="adoptantsAdoptions">–</span><span class="kpi-l">Adoptions via CDP</span></div>
       </div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>ID (anonymisé)</th><th>Animal souhaité</th><th>Logement</th><th>Date</th></tr></thead>
-          <tbody id="tbody-adoptants"><tr><td colspan="4" style="text-align:center;padding:20px;color:var(--dust)">Chargement…</td></tr></tbody>
-        </table>
+
+      <!-- Bloc 5 : Top matchs -->
+      <p style="font-family:'Fraunces',serif;font-size:1rem;font-weight:700;color:var(--forest);margin:0 0 12px">🏆 Top matchs</p>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
+        <div class="kpi"><span class="kpi-n" id="scoreMoyen">–</span><span class="kpi-l">Score moyen global</span></div>
+        <div class="kpi"><span class="kpi-n" id="nbMatchs85">–</span><span class="kpi-l">Matchs > 85%</span></div>
+        <div class="kpi" style="grid-column:span 1"><span class="kpi-n" style="font-size:1rem" id="animalPlusLike">–</span><span class="kpi-l">Animal le plus liké</span></div>
       </div>
-      <p style="font-size:0.75rem;color:var(--dust);font-style:italic;margin-top:12px;text-align:center">Données anonymisées conformément au RGPD — aucune donnée personnelle identifiable.</p>
     </div>
 
     <!-- ══════════ SCRAPING ══════════ -->
@@ -763,29 +811,96 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       });
     }
 
-    // Adoptants
+    // Adoptants — tableau de bord statistique
     var profRes = await sb.from('ProfilAdoptant').select('*').order('created_at', { ascending: false });
     var profils = profRes.data || [];
-    var corresRes = await sb.from('Correspondre').select('utilisateur');
-    var actifs = corresRes.data ? new Set(corresRes.data.map(function(c) { return c.utilisateur; })).size : 0;
-    set('kpiAdoptants', profils.length); set('badgeAdoptants', profils.length);
-    set('adoptantsTotal', profils.length); set('adoptantsComplets', actifs);
-    set('subAdoptants', profils.length + ' profil(s) · ' + actifs + ' actif(s)');
+
+    // Correspondre : J'aime et contacts
+    var corresJaimeRes = await sb.from('Correspondre').select('utilisateur, animal, score_global, aime, contacte').eq('aime', true);
+    var corresContactRes = await sb.from('Correspondre').select('utilisateur').eq('contacte', true);
+    var jaimeData = corresJaimeRes.data || [];
+    var contactData = corresContactRes.data || [];
+
+    // Vue d'ensemble
+    var nbProfils = profils.length;
+    var actifSet = new Set(jaimeData.map(function(c) { return c.utilisateur; }));
+    var nbActifs = actifSet.size;
+    var moisDebutAdopt = new Date(); moisDebutAdopt.setDate(1); moisDebutAdopt.setHours(0,0,0,0);
+    var nbNouveaux = profils.filter(function(p) { return p.created_at && new Date(p.created_at) >= moisDebutAdopt; }).length;
+    var totalUsers = nbProfils; // approximation taux complétion
+
+    set('kpiAdoptants', nbProfils); set('badgeAdoptants', nbProfils);
+    set('adoptantsTotal', nbProfils);
+    set('adoptantsNouveaux', nbNouveaux);
+    set('adoptantsActifs', nbActifs);
+    set('adoptantsTaux', nbProfils > 0 ? Math.round(nbActifs / nbProfils * 100) + '%' : '–');
+    set('subAdoptants', nbProfils + ' profil(s) · ' + nbActifs + ' actif(s) · ' + nbNouveaux + ' ce mois');
+
+    // Préférences animaux
+    var nbChiens = profils.filter(function(p) { return p.animal_souhaite === 'chien'; }).length;
+    var nbChats = profils.filter(function(p) { return p.animal_souhaite === 'chat'; }).length;
+    var nbLesdeux = profils.filter(function(p) { return p.animal_souhaite === 'les_deux' || p.animal_souhaite === 'indifferent'; }).length;
+    var totalPref = nbChiens + nbChats + nbLesdeux || 1;
+    var pChiens = Math.round(nbChiens / totalPref * 100);
+    var pChats = Math.round(nbChats / totalPref * 100);
+    var pLesdeux = Math.round(nbLesdeux / totalPref * 100);
+    set('pctChiens', pChiens + '%'); set('pctChats', pChats + '%'); set('pctLesdeux', pLesdeux + '%');
+    setTimeout(function() {
+      var bC = document.getElementById('barChiens'); if (bC) bC.style.width = pChiens + '%';
+      var bCh = document.getElementById('barChats'); if (bCh) bCh.style.width = pChats + '%';
+      var bL = document.getElementById('barLesdeux'); if (bL) bL.style.width = pLesdeux + '%';
+    }, 200);
+
+    // Profils de vie
+    var nbMaison = profils.filter(function(p) { return p.type_logement === 'maison'; }).length;
+    var nbAppart = profils.filter(function(p) { return p.type_logement === 'appartement'; }).length;
+    var nbJardin = profils.filter(function(p) { return p.jardin === true || p.jardin === 'oui'; }).length;
+    var totalLog = nbProfils || 1;
+    set('pctMaison', Math.round(nbMaison / totalLog * 100) + '%');
+    set('pctAppart', Math.round(nbAppart / totalLog * 100) + '%');
+    set('pctJardin', Math.round(nbJardin / totalLog * 100) + '%');
+    var heures = profils.map(function(p) { return typeof p.heures_seul === 'number' ? p.heures_seul : null; }).filter(function(h) { return h !== null; });
+    set('moyHeures', heures.length > 0 ? (heures.reduce(function(a,b){return a+b;},0) / heures.length).toFixed(1) + 'h' : '–');
+
+    // Expérience animale
+    var expLabels = { jamais: "Jamais eu d'animal", enfance: "Exp\u00e9rience en enfance", adulte: "Adulte avec animal" };
+    var expCount = {};
+    profils.forEach(function(p) { var k = p.experience_animale || 'jamais'; expCount[k] = (expCount[k] || 0) + 1; });
+    var expChart = document.getElementById('expChart');
+    if (expChart) {
+      expChart.innerHTML = '';
+      Object.keys(expLabels).forEach(function(k) {
+        var n = expCount[k] || 0;
+        var pct = nbProfils > 0 ? Math.round(n / nbProfils * 100) : 0;
+        expChart.innerHTML += '<div><div style="display:flex;justify-content:space-between;font-size:0.72rem;margin-bottom:3px"><span>' + expLabels[k] + '</span><span>' + pct + '%</span></div>' +
+          '<div style="height:6px;background:var(--mint-lt);border-radius:50px;overflow:hidden"><div style="height:100%;background:var(--sage);border-radius:50px;width:' + pct + '%"></div></div></div>';
+      });
+    }
+
+    // Engagement
+    var totalJaime = jaimeData.length;
+    var totalContacts = contactData.length;
+    var tauxConv = totalJaime > 0 ? Math.round(totalContacts / totalJaime * 100) + '%' : '0%';
     var adoptionsCDP = animaux.filter(function(a) { return a.statut === 'adopte_cdp'; });
+    set('totalJaime', totalJaime);
+    set('totalContacts', totalContacts);
+    set('tauxConversion', tauxConv);
     set('adoptantsAdoptions', adoptionsCDP.length);
     set('kpiAdoptions', adoptionsCDP.length);
-    var tAdopt = document.getElementById('tbody-adoptants');
-    if (tAdopt) {
-      tAdopt.innerHTML = profils.length === 0 ? '<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--dust)">Aucun profil adoptant.</td></tr>' : '';
-      profils.forEach(function(p) {
-        var row = document.createElement('tr');
-        row.innerHTML =
-          '<td style="font-size:0.78rem;color:var(--dust);font-family:monospace">' + (p.utilisateur ? p.utilisateur.substring(0, 8) + '…' : '–') + '</td>' +
-          '<td style="font-size:0.78rem">' + (p.animal_souhaite || '–') + '</td>' +
-          '<td style="font-size:0.78rem">' + (p.type_logement || '–') + '</td>' +
-          '<td style="font-size:0.75rem;color:var(--dust)">' + (p.created_at ? new Date(p.created_at).toLocaleDateString('fr-FR') : '–') + '</td>';
-        tAdopt.appendChild(row);
-      });
+
+    // Top matchs
+    var scores = jaimeData.map(function(c) { return c.score_global; }).filter(function(s) { return typeof s === 'number' && s > 0; });
+    var scoreMoy = scores.length > 0 ? Math.round(scores.reduce(function(a,b){return a+b;},0) / scores.length) + '%' : '–';
+    var nb85 = scores.filter(function(s) { return s >= 85; }).length;
+    set('scoreMoyen', scoreMoy);
+    set('nbMatchs85', nb85);
+    // Animal le plus liké
+    var animalCount = {};
+    jaimeData.forEach(function(c) { if (c.animal) animalCount[c.animal] = (animalCount[c.animal] || 0) + 1; });
+    var topAnimalId = Object.keys(animalCount).sort(function(a,b){ return animalCount[b]-animalCount[a]; })[0];
+    if (topAnimalId) {
+      var topAnimal = animaux.find(function(a) { return a.id === topAnimalId; });
+      set('animalPlusLike', topAnimal ? topAnimal.nom + ' (' + animalCount[topAnimalId] + ' likes)' : '–');
     }
 
     // Signalements
