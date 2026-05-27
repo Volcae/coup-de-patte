@@ -249,61 +249,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   }, { threshold: 0.08 });
   document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-  function toggleFilter(el) {
-    el.classList.toggle('on');
-    updateCount();
-  }
+  var allEnfinAnimaux = [];
+  var currentSort = 'attente';
 
-  function setSort(el, type) {
-    document.querySelectorAll('.filter-chip[onclick*="setSort"]').forEach(c => c.classList.remove('on'));
-    el.classList.add('on');
-  }
-
-  function updateCount() {
-    var active = document.querySelectorAll('.filter-chip.on').length;
-    var count = Math.max(10, active * 8);
-    document.getElementById('resultsCount').textContent = count + ' animaux';
-  }
-
-  function goToFiche() {
-    window.location.href = 'coup-de-patte-fiche.html';
-  }
-
-  // ══ CHARGEMENT VRAIS ANIMAUX ENFIN MOI ══
-  window.addEventListener('load', async function() {
-    if (!window.supabase) { console.error('Supabase SDK not loaded'); return; }
-    var sb = getSupabase();
-    var animauxRes = await sb.from('Animal').select('*, refuge:Refuge(*)').eq('enfin_moi', true).eq('disponible', true);
-    var animaux = animauxRes.data || [];
-
-    // Stats dynamiques
-    var statTotal = document.getElementById('statTotal');
-    if (statTotal) statTotal.textContent = animaux.length;
-
-    // Durée moyenne en refuge
-    var durees = animaux.filter(function(a) { return a.date_arrivee_refuge; }).map(function(a) {
-      return (new Date() - new Date(a.date_arrivee_refuge)) / (1000*60*60*24*30);
-    });
-    var statDuree = document.getElementById('statDuree');
-    if (statDuree) {
-      if (durees.length > 0) {
-        var moy = Math.round(durees.reduce(function(a,b){return a+b;},0) / durees.length);
-        statDuree.textContent = moy >= 12 ? (moy/12).toFixed(1) + ' ans' : moy + ' mois';
-      } else {
-        statDuree.textContent = '–';
-      }
-    }
-
+  function renderCards(animaux) {
     var grid = document.getElementById('animalsGrid') || document.querySelector('.em-grid');
     if (!grid) return;
-
     if (animaux.length === 0) {
-      grid.innerHTML = '<div style="text-align:center;padding:40px;color:var(--dust);grid-column:1/-1">Aucun animal en catégorie Enfin Moi ? pour le moment.</div>';
+      grid.innerHTML = '<div style="text-align:center;padding:40px;color:var(--dust);grid-column:1/-1">Aucun animal ne correspond à ces filtres.</div>';
+      var rc = document.getElementById('resultsCount'); if (rc) rc.textContent = '0 animal';
       return;
     }
-
     grid.innerHTML = '';
-    var rc = document.getElementById('resultsCount'); if (rc) rc.textContent = animaux.length + ' animal' + (animaux.length > 1 ? 'aux' : '');
+    var rc = document.getElementById('resultsCount');
+    if (rc) rc.textContent = animaux.length + ' animal' + (animaux.length > 1 ? 'aux' : '');
     animaux.forEach(function(a) {
       var emoji = a.espece && a.espece.toLowerCase() === 'chat' ? '🐱' : '🐕';
       var age = a.age_annees ? a.age_annees + ' an' + (a.age_annees > 1 ? 's' : '') : '';
@@ -312,7 +271,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       card.className = 'em-card';
       card.style.cursor = 'pointer';
       card.onclick = (function(id){ return function(){ window.location.href='coup-de-patte-fiche.html?id='+id; }; })(a.id);
-      // Calcul des raisons
       var raisons = [];
       if (a.date_arrivee_refuge) {
         var moisR = (new Date() - new Date(a.date_arrivee_refuge)) / (1000*60*60*24*30);
@@ -324,7 +282,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       if (a.besoins_medicaux === 'lourds') raisons.push('💛 Besoins médicaux lourds');
       if (a.vie_en_refuge === 'Difficilement' || a.vie_en_refuge === 'Très difficilement') raisons.push('😟 Mal à l\'aise en refuge');
       if (raisons.length === 0) raisons.push('✨ Animal en attente depuis longtemps');
-      var raisonHtml = raisons.map(function(r) { return '<span style="display:inline-block;background:rgba(212,168,67,0.12);color:var(--amber);font-size:0.68rem;font-weight:700;padding:2px 8px;border-radius:50px;border:1px solid rgba(196,154,26,0.2);margin:2px 2px 0 0">' + r + '</span>'; }).join('');
+      var raisonHtml = raisons.map(function(r) {
+        return '<span style="display:inline-block;background:rgba(212,168,67,0.12);color:var(--amber);font-size:0.68rem;font-weight:700;padding:2px 8px;border-radius:50px;border:1px solid rgba(196,154,26,0.2);margin:2px 2px 0 0">' + r + '</span>';
+      }).join('');
       var imgBg = a.photo_url ? 'background:#e0d8cf' : 'background:linear-gradient(160deg,#E8D5B0,#C9A87A)';
       var imgContent = a.photo_url
         ? '<img src="' + a.photo_url + '" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:' + (a.photo_position || 'center center') + '" onerror="this.style.display=\'none\'">'
@@ -338,6 +298,79 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         '</div>';
       grid.appendChild(card);
     });
+  }
+
+  function appliquerFiltres() {
+    var chips = document.querySelectorAll('.filter-chip');
+    var chiens = false, chats = false, anciennete = false, senior = false, besoins = false, malaise = false;
+    chips.forEach(function(c) {
+      if (!c.classList.contains('on')) return;
+      var t = c.textContent.trim();
+      if (t.includes('Chiens')) chiens = true;
+      if (t.includes('Chats')) chats = true;
+      if (t.includes('+1 an')) anciennete = true;
+      if (t.includes('Senior')) senior = true;
+      if (t.includes('Besoins')) besoins = true;
+      if (t.includes('Refuge')) malaise = true;
+    });
+
+    var result = allEnfinAnimaux.filter(function(a) {
+      var especeL = (a.espece || '').toLowerCase();
+      if (especeL === 'chien' && !chiens) return false;
+      if (especeL === 'chat' && !chats) return false;
+      if (!anciennete && !senior && !besoins && !malaise) return true;
+      var moisR = a.date_arrivee_refuge ? (new Date() - new Date(a.date_arrivee_refuge)) / (1000*60*60*24*30) : 0;
+      var isSenior = (especeL === 'chien' && a.age_annees >= 8) || (especeL === 'chat' && a.age_annees >= 10);
+      var isBesoins = a.besoins_medicaux === 'lourds';
+      var isMalaise = a.vie_en_refuge === 'Difficilement' || a.vie_en_refuge === 'Très difficilement';
+      return (anciennete && moisR >= 12) || (senior && isSenior) || (besoins && isBesoins) || (malaise && isMalaise);
+    });
+
+    result.sort(function(a, b) {
+      return new Date(a.date_arrivee_refuge || 0) - new Date(b.date_arrivee_refuge || 0);
+    });
+
+    renderCards(result);
+  }
+
+  function toggleFilter(el) {
+    el.classList.toggle('on');
+    appliquerFiltres();
+  }
+
+  function setSort(el, type) {
+    document.querySelectorAll('.filter-chip[onclick*="setSort"]').forEach(c => c.classList.remove('on'));
+    el.classList.add('on');
+    currentSort = type;
+    appliquerFiltres();
+  }
+
+  function goToFiche() { window.location.href = 'coup-de-patte-fiche.html'; }
+
+  window.addEventListener('load', async function() {
+    if (!window.supabase) return;
+    var sb = getSupabase();
+    var animauxRes = await sb.from('Animal').select('*, refuge:Refuge(*)').eq('enfin_moi', true).eq('disponible', true);
+    allEnfinAnimaux = animauxRes.data || [];
+
+    var statTotal = document.getElementById('statTotal');
+    if (statTotal) statTotal.textContent = allEnfinAnimaux.length;
+
+    var durees = allEnfinAnimaux.filter(function(a) { return a.date_arrivee_refuge; }).map(function(a) {
+      return (new Date() - new Date(a.date_arrivee_refuge)) / (1000*60*60*24*30);
+    });
+    var statDuree = document.getElementById('statDuree');
+    if (statDuree && durees.length > 0) {
+      var moy = Math.round(durees.reduce(function(a,b){return a+b;},0) / durees.length);
+      statDuree.textContent = moy >= 12 ? (moy/12).toFixed(1) + ' ans' : moy + ' mois';
+    }
+
+    if (allEnfinAnimaux.length === 0) {
+      var grid = document.getElementById('animalsGrid') || document.querySelector('.em-grid');
+      if (grid) grid.innerHTML = '<div style="text-align:center;padding:40px;color:var(--dust);grid-column:1/-1">Aucun animal en catégorie Enfin Moi ? pour le moment.</div>';
+      return;
+    }
+    appliquerFiltres();
   });
 </script>
 <footer>
