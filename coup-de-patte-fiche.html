@@ -342,6 +342,7 @@ window.addEventListener('load', async function() {
 
   // Onglet contact
   if (animal.refuge) {
+    window.refugeId = animal.refuge.id;
     var lienRefuge = document.getElementById('ficheLienRefuge');
     if (lienRefuge) lienRefuge.href = 'coup-de-patte-refuge.html?id=' + animal.refuge.id;
     var nomBtn = document.getElementById('ficheRefugeNomBtn');
