@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head> <!-- Google Tag Manager -->
+<head>
+<!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
@@ -8,6 +9,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 })(window,document,'script','dataLayer','GTM-K9MPBSTV');</script>
 <!-- End Google Tag Manager -->
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="favicon.svg?v=2">
+<link rel="icon" type="image/x-icon" href="favicon.ico?v=2">
+<link rel="alternate icon" href="favicon.svg?v=2">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Coup de Patte, L'adoption qui vous ressemble</title>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&family=Nunito:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -1002,12 +1006,24 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     transform: translateY(0);
   }
 </style>
-
-  <!-- Supabase SDK + Configuration Coup de Patte -->
+  <!-- Supabase SDK -->
+  
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase-config.js"></script>
+<script>
+    var _supabaseClient = null;
+    function getSupabase() {
+      if (!_supabaseClient) {
+        _supabaseClient = window.supabase.createClient(
+          'https://mbqsaaxaglcemdxmfvkc.supabase.co',
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1icXNhYXhhZ2xjZW1keG1mdmtjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MjAwMTQsImV4cCI6MjA5MzQ5NjAxNH0.lGK0LL5h-4N4DqMVy2Q_SKJgnzuy7BPQJEtSsc8plfk'
+        );
+      }
+      return _supabaseClient;
+    }
+  </script>
 </head>
-<body> <!-- Google Tag Manager (noscript) -->
+<body>
+<!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K9MPBSTV"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
@@ -1043,7 +1059,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </div>
       <div class="hero-stats">
         <div>
-          <span class="hero-stat-n">4 000+</span>
+          <span class="hero-stat-n" id="heroStatRefuges">–</span>
           <span class="hero-stat-l">Refuges référencés</span>
         </div>
         <div>
@@ -1051,8 +1067,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <span class="hero-stat-l">100% gratuit</span>
         </div>
         <div>
-          <span class="hero-stat-n">0</span>
-          <span class="hero-stat-l">Animaux oubliés de trop</span>
+          <span class="hero-stat-n" id="heroStatAnimaux">–</span>
+          <span class="hero-stat-l">Animaux en attente</span>
+        </div>
+        <div>
+          <span class="hero-stat-n" id="heroStatAdoptants">–</span>
+          <span class="hero-stat-l">Adoptants inscrits</span>
         </div>
       </div>
     </div>
@@ -1069,7 +1089,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           </div>
         </div>
         <div class="mock-body">
-          <div class="mock-name">Rex</div>
+          <div class="mock-name">Pixel</div>
           <div class="mock-meta">Berger croisé · 3 ans · Mâle</div>
           <div class="mock-tags">
             <span class="mock-tag">🏃 Actif</span>
@@ -1138,7 +1158,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div class="matching-inner">
 
     <div class="criteria-visual reveal">
-      <p class="crit-title">🧮 Score de compatibilité · Rex & Sophie</p>
+      <p class="crit-title">🧮 Score de compatibilité · Exemple</p>
       <div class="crit-row">
         <span class="crit-icon">🏠</span>
         <span class="crit-name">Logement</span>
@@ -1256,7 +1276,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="enfin-animal-card">
         <div class="enfin-thumb" style="background:rgba(200,230,192,0.15);">🐶</div>
         <div>
-          <span class="enfin-animal-name">Django</span>
+          <span class="enfin-animal-name">Caramel</span>
           <span class="enfin-animal-meta">Croisé · 7 ans · 3 pattes · Lyon</span>
           <span class="enfin-time">14 mois en refuge</span>
         </div>
@@ -1320,11 +1340,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     Coup de Patte
   </div>
   <div class="footer-links">
-    <a href="coup-de-patte-landing.html#comment">Comment ça marche</a>
+    <a href="index.html#comment">Comment ça marche</a>
     <a href="coup-de-patte-refuges.html">Les refuges</a>
     <a href="coup-de-patte-enfin-moi.html">Enfin Moi ?</a>
     <a href="coup-de-patte-apropos.html">À propos</a>
     <a href="coup-de-patte-contact.html">Contact</a>
+    <a href="coup-de-patte-cgu.html">CGU</a>
     <a href="coup-de-patte-apropos.html#don" style="color:var(--gold);font-weight:700;opacity:1">💛 Faire un don</a>
   </div>
   <div class="footer-copy">© 2025 Coup de Patte · Projet indépendant</div>
@@ -1349,6 +1370,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       var target = document.querySelector(a.getAttribute('href'));
       if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth' }); }
     });
+  });
+
+  // Stats dynamiques depuis Supabase
+  window.addEventListener('load', async function() {
+    try {
+      var sb = getSupabase();
+      var [rRes, aRes, pRes] = await Promise.all([
+        sb.from('Refuge').select('id', { count: 'exact', head: true }),
+        sb.from('Animal').select('id', { count: 'exact', head: true }).eq('disponible', true),
+        sb.from('ProfilAdoptant').select('id', { count: 'exact', head: true })
+      ]);
+      var el;
+      el = document.getElementById('heroStatRefuges'); if (el && rRes.count !== null) el.textContent = rRes.count;
+      el = document.getElementById('heroStatAnimaux'); if (el && aRes.count !== null) el.textContent = aRes.count;
+      el = document.getElementById('heroStatAdoptants'); if (el && pRes.count !== null) el.textContent = pRes.count;
+    } catch(e) {}
   });
 </script>
 </body>
