@@ -857,10 +857,8 @@ window.addEventListener('load', async function() {
     showMain('infos', infosItem);
   }
 
-  // Adoptions à confirmer : lien email + signalements en attente
-  // Ne montrer qu'une fois par session (pas à chaque rechargement)
+  // Adoptions à confirmer
   var adoptionId = urlParams.get('adoption');
-  var dejaMontre = sessionStorage.getItem('adoptionPopupMontre');
 
   // Nettoyer l'URL immédiatement
   if (adoptionId) {
@@ -869,28 +867,26 @@ window.addEventListener('load', async function() {
     window.history.replaceState({}, '', cleanUrl.toString());
   }
 
-  if (!dejaMontre || adoptionId) {
-    var { data: signaux } = await sb.from('Signalisation')
-      .select('animal')
-      .eq('type_signalement', 'adoption_cdp')
-      .eq('traite', false);
+  var { data: signaux } = await sb.from('Signalisation')
+    .select('animal')
+    .eq('type_signalement', 'adoption_cdp')
+    .eq('traite', false);
 
-    var adoptionIds = [];
-    if (adoptionId) adoptionIds.push(adoptionId);
-    if (signaux) {
-      signaux.forEach(function(s) {
-        if (!adoptionIds.includes(s.animal)) adoptionIds.push(s.animal);
-      });
-    }
+  var adoptionIds = [];
+  if (adoptionId) adoptionIds.push(adoptionId);
+  if (signaux) {
+    signaux.forEach(function(s) {
+      if (!adoptionIds.includes(s.animal)) adoptionIds.push(s.animal);
+    });
+  }
 
-    var animauxAConfirmer = adoptionIds
-      .map(function(id) { return allAnimals.find(function(a) { return a.id === id; }); })
-      .filter(Boolean);
+  // Ne garder que les animaux de CE refuge
+  var animauxAConfirmer = adoptionIds
+    .map(function(id) { return allAnimals.find(function(a) { return a.id === id; }); })
+    .filter(Boolean);
 
-    if (animauxAConfirmer.length > 0) {
-      sessionStorage.setItem('adoptionPopupMontre', '1');
-      ouvrirAdoptionModalEnFile(animauxAConfirmer);
-    }
+  if (animauxAConfirmer.length > 0) {
+    ouvrirAdoptionModalEnFile(animauxAConfirmer);
   }
 });
 
@@ -1431,9 +1427,11 @@ function fermerAdoptionModal() {
 }
 
 async function confirmerAdoption(animalId, animalNom, action) {
+  console.log('[confirmerAdoption] START', animalId, animalNom, action);
   var sb = getSupabase();
   if (action === 'supprimer') {
     var { error } = await sb.from('Animal').update({ disponible: false, statut: 'adopte_cdp' }).eq('id', animalId);
+    console.log('[confirmerAdoption] update Animal:', error);
     if (error) { showToast('Erreur : ' + error.message); return; }
   } else {
     var retraitDate = new Date();
@@ -1443,21 +1441,24 @@ async function confirmerAdoption(animalId, animalNom, action) {
       disponible: true,
       retrait_auto_date: retraitDate.toISOString()
     }).eq('id', animalId);
+    console.log('[confirmerAdoption] update Animal conserver:', error);
     if (error) { showToast('Erreur : ' + error.message); return; }
   }
-  // Marquer tous les signalements de cet animal comme traités
-  await sb.from('Signalisation')
+  var { error: errSignal } = await sb.from('Signalisation')
     .update({ traite: true })
     .eq('animal', animalId)
     .eq('type_signalement', 'adoption_cdp');
+  console.log('[confirmerAdoption] update Signalisation:', errSignal);
 
   fermerAdoptionModal();
+  console.log('[confirmerAdoption] modal fermée');
 
   showToast(action === 'supprimer'
     ? animalNom + ' retiré(e) de Coup de Patte ✅'
     : animalNom + ' conservé(e) 30 jours ⏳'
   );
   await loadAnimals();
+  console.log('[confirmerAdoption] DONE');
 }
 
 function closeConfirm() {
