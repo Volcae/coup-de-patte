@@ -222,10 +222,8 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
       });
     }
     if (id === 'maintenance') {
-      console.log('[Maintenance] clic, section:', document.getElementById('section-maintenance'), 'fn:', typeof chargerMaintenance);
       setTimeout(function() {
-        console.log('[Maintenance] setTimeout, fn:', typeof chargerMaintenance);
-        if (typeof chargerMaintenance === 'function') chargerMaintenance(null, null);
+          if (typeof chargerMaintenance === 'function') chargerMaintenance(null, null);
       }, 200);
     }
   }
@@ -1068,11 +1066,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   async function chargerMaintenance(sbParam, refugesParam) {
     var sb = sbParam || getSupabase();
     var now = new Date().toISOString();
-    console.log('[Maintenance] debut chargement, sb:', !!sb);
 
     // Bloc 1 : retrait_auto_date dépassée
     var retraitRes = await sb.from('Animal').select('id, nom, retrait_auto_date, refuge:Refuge(nom)').eq('disponible', true).not('retrait_auto_date', 'is', null).lt('retrait_auto_date', now);
-    console.log('[Maintenance] retraitRes:', retraitRes.data, retraitRes.error);
     var retraitData = retraitRes.data || [];
     var bRA = document.getElementById('badgeRetraitAuto');
     if (bRA) { bRA.textContent = retraitData.length + ' à traiter'; bRA.style.background = retraitData.length > 0 ? 'rgba(201,112,74,0.15)' : 'var(--mint-lt)'; bRA.style.color = retraitData.length > 0 ? 'var(--rose)' : 'var(--moss)'; }
