@@ -221,8 +221,10 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
         if (oc.indexOf("'" + id + "'") !== -1) i.classList.add('active');
       });
     }
-    if (id === 'maintenance' && typeof chargerMaintenance === 'function') {
-      chargerMaintenance(null, null);
+    if (id === 'maintenance') {
+      setTimeout(function() {
+        if (typeof chargerMaintenance === 'function') chargerMaintenance(null, null);
+      }, 50);
     }
   }
 </script>
@@ -1058,9 +1060,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     setTrend('trendRefuges', refMoisRes.data);
     setTrend('trendAdoptants', profMoisRes.data);
 
-
-    // Badge maintenance au chargement (compte rapide)
-    await chargerMaintenance(sb, refuges);
 
   }); // end load async
 
