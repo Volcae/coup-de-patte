@@ -222,9 +222,11 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
       });
     }
     if (id === 'maintenance') {
+      console.log('[Maintenance] clic, section:', document.getElementById('section-maintenance'), 'fn:', typeof chargerMaintenance);
       setTimeout(function() {
+        console.log('[Maintenance] setTimeout, fn:', typeof chargerMaintenance);
         if (typeof chargerMaintenance === 'function') chargerMaintenance(null, null);
-      }, 50);
+      }, 200);
     }
   }
 </script>
