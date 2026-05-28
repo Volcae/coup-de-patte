@@ -226,6 +226,11 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
           if (typeof chargerMaintenance === 'function') chargerMaintenance(null, null);
       }, 200);
     }
+    if (id === 'scraping') {
+      setTimeout(function() {
+        if (typeof chargerScrapingQueue === 'function') chargerScrapingQueue();
+      }, 200);
+    }
   }
 </script>
 </head>
@@ -430,12 +435,27 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- ══════════ SCRAPING ══════════ -->
     <div class="section" id="section-scraping">
       <div class="page-hdr">
-        <div><h1 class="page-title">Scraping IA</h1><p class="page-sub">Imports automatiques depuis les sites de refuges</p></div>
+        <div><h1 class="page-title">Scraping IA</h1><p class="page-sub">File d'attente de validation des animaux importés</p></div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:0.78rem;color:var(--dust);font-weight:600">Mode auto</span>
+          <label style="position:relative;display:inline-block;width:40px;height:22px;cursor:pointer">
+            <input type="checkbox" id="toggleModeAuto" style="opacity:0;width:0;height:0" onchange="toggleModeAutoFn(this)">
+            <span style="position:absolute;inset:0;background:var(--border);border-radius:50px;transition:0.3s" id="toggleSlider"></span>
+          </label>
+          <span id="modeAutoLabel" style="font-size:0.72rem;color:var(--dust)">Désactivé</span>
+        </div>
       </div>
-      <div style="background:var(--paper);border-radius:20px;border:1.5px solid var(--border);padding:24px;box-shadow:var(--shadow)">
-        <p style="font-family:'Fraunces',serif;font-size:0.95rem;font-weight:600;font-style:italic;color:var(--forest);margin-bottom:12px">🤖 Scraping automatique</p>
-        <p style="font-size:0.82rem;color:var(--dust);line-height:1.6">Le scraping automatique des fiches animaux depuis les sites des refuges partenaires sera disponible dans une prochaine version de Coup de Patte.</p>
-        <p style="font-size:0.82rem;color:var(--dust);margin-top:12px;line-height:1.6">Pour l'instant, les refuges gèrent leurs fiches directement depuis leur espace admin.</p>
+
+      <!-- Stats -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px">
+        <div class="kpi"><span class="kpi-n" id="scrapingEnAttente">–</span><span class="kpi-l">En attente</span></div>
+        <div class="kpi"><span class="kpi-n" id="scrapingValides">–</span><span class="kpi-l">Validés ce mois</span></div>
+        <div class="kpi"><span class="kpi-n" id="scrapingRefuses">–</span><span class="kpi-l">Refusés</span></div>
+      </div>
+
+      <!-- File d'attente -->
+      <div id="scrapingQueue">
+        <p style="text-align:center;padding:40px;color:var(--dust);font-size:0.85rem">Chargement…</p>
       </div>
     </div>
 
@@ -1062,6 +1082,139 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 
   }); // end load async
+
+  // ═══ SCRAPING IA ═══
+  var modeAutoActif = false;
+
+  function toggleModeAutoFn(checkbox) {
+    modeAutoActif = checkbox.checked;
+    var slider = document.getElementById('toggleSlider');
+    var label = document.getElementById('modeAutoLabel');
+    if (slider) slider.style.background = modeAutoActif ? 'var(--moss)' : 'var(--border)';
+    if (label) { label.textContent = modeAutoActif ? 'Activé' : 'Désactivé'; label.style.color = modeAutoActif ? 'var(--moss)' : 'var(--dust)'; }
+    showToast(modeAutoActif ? 'Mode auto activé — les prochains imports seront publiés automatiquement' : 'Mode auto désactivé');
+  }
+
+  async function chargerScrapingQueue() {
+    var sb = getSupabase();
+    var container = document.getElementById('scrapingQueue');
+    if (container) container.innerHTML = '<p style="text-align:center;padding:40px;color:var(--dust)">Chargement…</p>';
+
+    var [queueRes, validesRes, refusesRes] = await Promise.all([
+      sb.from('ScrapingQueue').select('*, refuge:Refuge(id, nom)').eq('statut', 'en_attente').order('created_at', { ascending: false }),
+      sb.from('ScrapingQueue').select('id', { count: 'exact', head: true }).eq('statut', 'valide').gte('created_at', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString()),
+      sb.from('ScrapingQueue').select('id', { count: 'exact', head: true }).eq('statut', 'refuse')
+    ]);
+
+    var items = queueRes.data || [];
+    var el;
+    el = document.getElementById('scrapingEnAttente'); if (el) el.textContent = items.length;
+    el = document.getElementById('scrapingValides'); if (el) el.textContent = validesRes.count || 0;
+    el = document.getElementById('scrapingRefuses'); if (el) el.textContent = refusesRes.count || 0;
+
+    if (!container) return;
+    if (items.length === 0) {
+      container.innerHTML = '<div class="dash-card" style="text-align:center;padding:40px"><p style="font-size:2rem;margin-bottom:12px">✅</p><p style="color:var(--moss);font-weight:700">File d\'attente vide</p><p style="font-size:0.82rem;color:var(--dust);margin-top:6px">Aucun animal en attente de validation</p></div>';
+      return;
+    }
+
+    container.innerHTML = '';
+    items.forEach(function(item) {
+      var refuge = Array.isArray(item.refuge) ? item.refuge[0] : item.refuge || {};
+      var d = {};
+      try { d = typeof item.donnees_extraites === 'string' ? JSON.parse(item.donnees_extraites) : (item.donnees_extraites || {}); } catch(e) {}
+
+      var photoHtml = item.photo_url
+        ? '<img src="' + item.photo_url + '" style="width:80px;height:80px;object-fit:cover;border-radius:14px;flex-shrink:0" onerror="this.style.display=\'none\'">'
+        : '<div style="width:80px;height:80px;background:linear-gradient(135deg,var(--mint),var(--sage));border-radius:14px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.8rem">' + (item.espece === 'chat' ? '🐱' : '🐕') + '</div>';
+
+      var tagsHtml = '';
+      if (d.energie) tagsHtml += '<span style="background:rgba(74,124,89,0.1);color:var(--moss);font-size:0.68rem;font-weight:700;padding:2px 8px;border-radius:50px">⚡ ' + d.energie + '</span> ';
+      if (d.experience_requise) tagsHtml += '<span style="background:rgba(91,141,239,0.1);color:var(--blue);font-size:0.68rem;font-weight:700;padding:2px 8px;border-radius:50px">🎓 ' + d.experience_requise + '</span> ';
+      if (d.compat_enfants_moins13 === true) tagsHtml += '<span style="background:rgba(196,154,26,0.1);color:var(--amber);font-size:0.68rem;font-weight:700;padding:2px 8px;border-radius:50px">👶 Enfants ok</span> ';
+      if (d.compat_chiens === true) tagsHtml += '<span style="background:rgba(74,124,89,0.1);color:var(--moss);font-size:0.68rem;font-weight:700;padding:2px 8px;border-radius:50px">🐕 Chiens ok</span> ';
+      if (d.compat_chats === true) tagsHtml += '<span style="background:rgba(74,124,89,0.1);color:var(--moss);font-size:0.68rem;font-weight:700;padding:2px 8px;border-radius:50px">🐱 Chats ok</span> ';
+
+      var card = document.createElement('div');
+      card.className = 'dash-card';
+      card.style.marginBottom = '16px';
+      card.dataset.itemId = item.id;
+      card.innerHTML =
+        '<div style="display:flex;gap:16px;align-items:flex-start">' +
+        photoHtml +
+        '<div style="flex:1;min-width:0">' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:8px">' +
+        '<div><strong style="font-family:Fraunces,serif;font-size:1.05rem;color:var(--forest)">' + (item.nom || 'Sans nom') + '</strong>' +
+        '<span style="font-size:0.78rem;color:var(--dust);margin-left:10px">' + [item.espece, item.race, item.age_annees ? item.age_annees + ' ans' : '', item.sexe].filter(Boolean).join(' · ') + '</span></div>' +
+        '<span style="font-size:0.72rem;color:var(--dust);background:var(--ivory);padding:3px 10px;border-radius:50px;border:1px solid var(--border)">🏡 ' + (refuge.nom || '–') + '</span>' +
+        '</div>' +
+        (tagsHtml ? '<div style="margin-bottom:8px">' + tagsHtml + '</div>' : '') +
+        (item.description ? '<p style="font-size:0.78rem;color:var(--dust);line-height:1.6;margin-bottom:12px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden">' + item.description + '</p>' : '') +
+        '<div style="display:flex;gap:8px;flex-wrap:wrap">' +
+        '<button onclick="validerScraping(\'' + item.id + '\')" style="padding:8px 18px;background:var(--moss);color:var(--ivory);border:none;border-radius:50px;font-family:Nunito,sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer">✅ Valider et publier</button>' +
+        '<button onclick="refuserScraping(\'' + item.id + '\')" style="padding:8px 18px;background:transparent;border:1.5px solid var(--rose);color:var(--rose);border-radius:50px;font-family:Nunito,sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer">❌ Refuser</button>' +
+        '</div></div></div>';
+      container.appendChild(card);
+    });
+  }
+
+  async function validerScraping(itemId) {
+    var sb = getSupabase();
+    var { data: items } = await sb.from('ScrapingQueue').select('*').eq('id', itemId);
+    if (!items || items.length === 0) { showToast('Élément introuvable'); return; }
+    var item = items[0];
+    var d = {};
+    try { d = typeof item.donnees_extraites === 'string' ? JSON.parse(item.donnees_extraites) : (item.donnees_extraites || {}); } catch(e) {}
+
+    // Calculer enfin_moi
+    var moisRef = item.date_arrivee_refuge ? (new Date() - new Date(item.date_arrivee_refuge)) / (1000*60*60*24*30) : 0;
+    var especeL = (item.espece || '').toLowerCase();
+    var enfinMoi = moisRef >= 12
+      || (especeL === 'chien' && item.age_annees >= 8)
+      || (especeL === 'chat' && item.age_annees >= 10)
+      || (d.besoins_medicaux === 'lourds')
+      || (d.vie_en_refuge === 'Difficilement' || d.vie_en_refuge === 'Très difficilement');
+
+    var payload = {
+      nom: item.nom, espece: item.espece, race: item.race,
+      age_annees: item.age_annees, sexe: item.sexe,
+      description: item.description, histoire: d.histoire || null,
+      photo_url: item.photo_url || null,
+      date_arrivee_refuge: item.date_arrivee_refuge || null,
+      refuge: item.refuge_id || (Array.isArray(item.refuge) ? item.refuge[0]?.id : item.refuge?.id) || null,
+      disponible: true, enfin_moi: enfinMoi, statut: 'disponible',
+      gabarit: d.gabarit || null, energie: d.energie || null,
+      experience_requise: d.experience_requise || null,
+      besoins_medicaux: d.besoins_medicaux || null,
+      compat_enfants_moins13: d.compat_enfants_moins13 ?? null,
+      compat_chats: d.compat_chats ?? null,
+      compat_chiens: d.compat_chiens ?? null,
+      reactivite_inconnus: d.reactivite_inconnus || null,
+      vie_en_refuge: d.vie_en_refuge || null
+    };
+
+    var { error: insertError } = await sb.from('Animal').insert([payload]);
+    if (insertError) { showToast('Erreur insertion : ' + insertError.message); return; }
+    await sb.from('ScrapingQueue').update({ statut: 'valide' }).eq('id', itemId);
+    var card = document.querySelector('[data-item-id="' + itemId + '"]');
+    if (card) { card.style.opacity = '0'; card.style.transform = 'scale(0.95)'; card.style.transition = 'all 0.3s'; setTimeout(function() { card.remove(); }, 300); }
+    showToast('✅ Animal publié sur Coup de Patte !');
+    var el = document.getElementById('scrapingEnAttente');
+    if (el) el.textContent = Math.max(0, parseInt(el.textContent) - 1);
+  }
+
+  async function refuserScraping(itemId) {
+    var raison = prompt('Raison du refus (optionnel) :') || '';
+    var sb = getSupabase();
+    var update = { statut: 'refuse' };
+    if (raison) update.commentaire = raison;
+    await sb.from('ScrapingQueue').update(update).eq('id', itemId);
+    var card = document.querySelector('[data-item-id="' + itemId + '"]');
+    if (card) { card.style.opacity = '0'; card.style.transition = 'opacity 0.3s'; setTimeout(function() { card.remove(); }, 300); }
+    showToast('Animal refusé');
+    var el = document.getElementById('scrapingEnAttente');
+    if (el) el.textContent = Math.max(0, parseInt(el.textContent) - 1);
+  }
 
   async function chargerMaintenance(sbParam, refugesParam) {
     var sb = sbParam || getSupabase();
