@@ -16,7 +16,7 @@ import os
 SUPABASE_URL = "https://mbqsaaxaglcemdxmfvkc.supabase.co"
 SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1icXNhYXhhZ2xjZW1keG1mdmtjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MjAwMTQsImV4cCI6MjA5MzQ5NjAxNH0.lGK0LL5h-4N4DqMVy2Q_SKJgnzuy7BPQJEtSsc8plfk"
 ANTHROPIC_KEY = "VOTRE_CLE_ANTHROPIC"  # Remplacer par votre clé API Anthropic
-REFUGE_ID = "A_REMPLACER"  # UUID du refuge dans Supabase
+REFUGE_ID = "6d191cc1-d38f-4a0a-afb5-9ca7086ff896"  # UUID du refuge dans Supabase
 
 SITE_URL = "https://www.spa-messigny.fr"
 ANIMAUX_URL = f"{SITE_URL}/adoption-animaux/"
