@@ -1196,7 +1196,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         'Accept': 'application/vnd.github+json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ ref: 'main', inputs: { refuge_id: refugeId } })
+      body: JSON.stringify({
+        ref: 'main',
+        inputs: {
+          refuge_nom: sel.options[sel.selectedIndex].textContent.replace(/ \(.*\)$/, ''),
+          refuge_email: '',
+          refuge_site: ''
+        }
+      })
     });
 
     if (res.status === 204) {
