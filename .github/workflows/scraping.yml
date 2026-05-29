@@ -3,15 +3,32 @@ name: Scraping IA — Coup de Patte
 on:
   workflow_dispatch:
     inputs:
-      refuge_id:
-        description: 'UUID du refuge à scraper'
+      refuge_nom:
+        description: 'Nom du refuge'
         required: true
+        type: string
+      refuge_email:
+        description: 'Email du refuge'
+        required: true
+        type: string
+      refuge_ville:
+        description: 'Ville du refuge'
+        required: false
+        type: string
+      refuge_site:
+        description: 'URL du site du refuge'
+        required: false
+        type: string
+        default: 'https://www.spa-messigny.fr'
+      refuge_tel:
+        description: 'Telephone du refuge'
+        required: false
         type: string
 
 jobs:
   scraping:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
 
     steps:
       - name: Checkout
@@ -27,8 +44,14 @@ jobs:
 
       - name: Run scraper
         env:
-          REFUGE_ID: ${{ github.event.inputs.refuge_id }}
+          REFUGE_NOM: ${{ github.event.inputs.refuge_nom }}
+          REFUGE_EMAIL: ${{ github.event.inputs.refuge_email }}
+          REFUGE_VILLE: ${{ github.event.inputs.refuge_ville }}
+          REFUGE_SITE: ${{ github.event.inputs.refuge_site }}
+          REFUGE_TEL: ${{ github.event.inputs.refuge_tel }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
         run: python scraper_spa_messigny.py
