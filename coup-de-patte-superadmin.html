@@ -487,6 +487,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
 
         <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+          <div style="display:flex;flex-direction:column;gap:8px;width:100%;max-width:420px;margin-bottom:12px">
+            <label style="font-size:0.72rem;font-weight:700;color:var(--dust);text-transform:uppercase;letter-spacing:0.5px">GitHub Token (workflow)</label>
+            <input type="password" id="githubTokenInput" placeholder="ghp_xxxxxxxxxxxx" style="padding:9px 14px;border:1.5px solid var(--border);border-radius:12px;font-family:'Nunito',sans-serif;font-size:0.82rem;background:var(--ivory);color:var(--forest)">
+            <p style="font-size:0.68rem;color:var(--dust);margin:0">Non stocké — saisi à chaque utilisation. Scope requis : <code>workflow</code></p>
+          </div>
           <button onclick="lancerScraping()" style="padding:11px 24px;background:var(--moss);color:var(--ivory);border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.88rem;font-weight:700;cursor:pointer">🤖 Lancer le scraping</button>
           <span id="scrapingStatus" style="font-size:0.78rem;color:var(--dust)"></span>
         </div>
@@ -1177,12 +1182,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     var sel = document.getElementById('scrapingRefugeSelect');
     var refugeId = sel ? sel.value : '';
     if (!refugeId) { showToast('Sélectionne un refuge avant de lancer le scraping'); return; }
+    var tokenInput = document.getElementById('githubTokenInput');
+    var GITHUB_TOKEN = tokenInput ? tokenInput.value.trim() : '';
+    if (!GITHUB_TOKEN) { showToast('Entre ton GitHub Token avant de lancer le scraping'); return; }
     var status = document.getElementById('scrapingStatus');
     if (status) { status.textContent = 'Déclenchement en cours…'; status.style.color = 'var(--amber)'; }
 
-    // Déclencher le workflow GitHub Actions via l'API GitHub
-    var GITHUB_TOKEN = ''; // À remplacer par un Personal Access Token en lecture seule (workflow:write)
-    var GITHUB_REPO = 'Volcae/coup-de-patte'; // À adapter
+    var GITHUB_REPO = 'Volcae/coup-de-patte';
     var res = await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/actions/workflows/scraping.yml/dispatches', {
       method: 'POST',
       headers: {
