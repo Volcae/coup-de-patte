@@ -229,6 +229,7 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
     if (id === 'scraping') {
       setTimeout(function() {
         if (typeof chargerScrapingQueue === 'function') chargerScrapingQueue();
+        if (typeof chargerRefugesPourScraping === 'function') chargerRefugesPourScraping();
       }, 200);
     }
   }
@@ -435,7 +436,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- ══════════ SCRAPING ══════════ -->
     <div class="section" id="section-scraping">
       <div class="page-hdr">
-        <div><h1 class="page-title">Scraping IA</h1><p class="page-sub">File d'attente de validation des animaux importés</p></div>
+        <div><h1 class="page-title">Scraping IA</h1><p class="page-sub">Imports automatiques et file d'attente de validation</p></div>
         <div style="display:flex;align-items:center;gap:10px">
           <span style="font-size:0.78rem;color:var(--dust);font-weight:600">Mode auto</span>
           <label style="position:relative;display:inline-block;width:40px;height:22px;cursor:pointer">
@@ -443,6 +444,51 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <span style="position:absolute;inset:0;background:var(--border);border-radius:50px;transition:0.3s" id="toggleSlider"></span>
           </label>
           <span id="modeAutoLabel" style="font-size:0.72rem;color:var(--dust)">Désactivé</span>
+        </div>
+      </div>
+
+      <!-- Lancer un scraping -->
+      <div class="dash-card" style="margin-bottom:24px">
+        <p style="font-family:'Fraunces',serif;font-size:0.95rem;font-weight:700;color:var(--forest);margin:0 0 16px">🤖 Lancer un scraping</p>
+
+        <div style="display:grid;grid-template-columns:1fr auto;gap:12px;align-items:end;margin-bottom:12px">
+          <div>
+            <label style="font-size:0.75rem;font-weight:700;color:var(--dust);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px">Refuge à scraper</label>
+            <select id="scrapingRefugeSelect" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:12px;font-family:'Nunito',sans-serif;font-size:0.85rem;background:var(--ivory);color:var(--forest)">
+              <option value="">Chargement des refuges…</option>
+            </select>
+          </div>
+          <button onclick="toggleNouveauRefuge()" style="padding:10px 16px;background:transparent;border:1.5px solid var(--border);border-radius:12px;font-family:'Nunito',sans-serif;font-size:0.8rem;font-weight:700;color:var(--dust);cursor:pointer;white-space:nowrap">+ Nouveau refuge</button>
+        </div>
+
+        <!-- Formulaire nouveau refuge (caché par défaut) -->
+        <div id="formNouveauRefuge" style="display:none;background:var(--ivory);border-radius:14px;padding:16px;margin-bottom:16px;border:1.5px solid var(--border)">
+          <p style="font-size:0.78rem;font-weight:700;color:var(--forest);margin:0 0 12px">Créer un nouveau refuge</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+            <div>
+              <label style="font-size:0.72rem;color:var(--dust);display:block;margin-bottom:4px">Nom du refuge *</label>
+              <input id="newRefugeNom" type="text" placeholder="SPA Messigny" style="width:100%;padding:8px 12px;border:1.5px solid var(--border);border-radius:10px;font-family:'Nunito',sans-serif;font-size:0.82rem;background:white;box-sizing:border-box">
+            </div>
+            <div>
+              <label style="font-size:0.72rem;color:var(--dust);display:block;margin-bottom:4px">Email</label>
+              <input id="newRefugeEmail" type="email" placeholder="contact@refuge.fr" style="width:100%;padding:8px 12px;border:1.5px solid var(--border);border-radius:10px;font-family:'Nunito',sans-serif;font-size:0.82rem;background:white;box-sizing:border-box">
+            </div>
+            <div>
+              <label style="font-size:0.72rem;color:var(--dust);display:block;margin-bottom:4px">Ville</label>
+              <input id="newRefugeVille" type="text" placeholder="Messigny-et-Vantoux" style="width:100%;padding:8px 12px;border:1.5px solid var(--border);border-radius:10px;font-family:'Nunito',sans-serif;font-size:0.82rem;background:white;box-sizing:border-box">
+            </div>
+            <div>
+              <label style="font-size:0.72rem;color:var(--dust);display:block;margin-bottom:4px">Site web</label>
+              <input id="newRefugeSite" type="url" placeholder="https://www.spa-messigny.fr" style="width:100%;padding:8px 12px;border:1.5px solid var(--border);border-radius:10px;font-family:'Nunito',sans-serif;font-size:0.82rem;background:white;box-sizing:border-box">
+            </div>
+          </div>
+          <button onclick="creerEtSelectionnerRefuge()" style="padding:8px 18px;background:var(--forest);color:var(--ivory);border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer">Créer le refuge</button>
+          <button onclick="toggleNouveauRefuge()" style="padding:8px 16px;background:transparent;border:none;font-family:'Nunito',sans-serif;font-size:0.78rem;color:var(--dust);cursor:pointer;margin-left:8px">Annuler</button>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+          <button onclick="lancerScraping()" style="padding:11px 24px;background:var(--moss);color:var(--ivory);border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.88rem;font-weight:700;cursor:pointer">🤖 Lancer le scraping</button>
+          <span id="scrapingStatus" style="font-size:0.78rem;color:var(--dust)"></span>
         </div>
       </div>
 
@@ -1085,6 +1131,79 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   // ═══ SCRAPING IA ═══
   var modeAutoActif = false;
+
+  // ═══ SCRAPING : FORMULAIRE REFUGE ═══
+  function toggleNouveauRefuge() {
+    var form = document.getElementById('formNouveauRefuge');
+    if (form) form.style.display = form.style.display === 'none' ? 'block' : 'none';
+  }
+
+  async function chargerRefugesPourScraping() {
+    var sb = getSupabase();
+    var { data: refs } = await sb.from('Refuge').select('id, nom, ville').order('nom');
+    var sel = document.getElementById('scrapingRefugeSelect');
+    if (!sel || !refs) return;
+    sel.innerHTML = '<option value="">— Choisir un refuge —</option>';
+    refs.forEach(function(r) {
+      var opt = document.createElement('option');
+      opt.value = r.id;
+      opt.textContent = r.nom + (r.ville ? ' (' + r.ville + ')' : '');
+      sel.appendChild(opt);
+    });
+  }
+
+  async function creerEtSelectionnerRefuge() {
+    var nom = document.getElementById('newRefugeNom').value.trim();
+    if (!nom) { showToast('Le nom du refuge est obligatoire'); return; }
+    var sb = getSupabase();
+    var payload = { nom: nom };
+    var email = document.getElementById('newRefugeEmail').value.trim();
+    var ville = document.getElementById('newRefugeVille').value.trim();
+    var site = document.getElementById('newRefugeSite').value.trim();
+    if (email) payload.email = email;
+    if (ville) payload.ville = ville;
+    if (site) payload.site_web = site;
+    var { data: res, error } = await sb.from('Refuge').insert([payload]).select('id, nom');
+    if (error) { showToast('Erreur création refuge : ' + error.message); return; }
+    var newRefuge = res[0];
+    showToast('Refuge "' + newRefuge.nom + '" créé ✅');
+    toggleNouveauRefuge();
+    await chargerRefugesPourScraping();
+    var sel = document.getElementById('scrapingRefugeSelect');
+    if (sel) sel.value = newRefuge.id;
+  }
+
+  async function lancerScraping() {
+    var sel = document.getElementById('scrapingRefugeSelect');
+    var refugeId = sel ? sel.value : '';
+    if (!refugeId) { showToast('Sélectionne un refuge avant de lancer le scraping'); return; }
+    var status = document.getElementById('scrapingStatus');
+    if (status) { status.textContent = 'Déclenchement en cours…'; status.style.color = 'var(--amber)'; }
+
+    // Déclencher le workflow GitHub Actions via l'API GitHub
+    var GITHUB_TOKEN = ''; // À remplacer par un Personal Access Token en lecture seule (workflow:write)
+    var GITHUB_REPO = 'Volcae/coup-de-patte'; // À adapter
+    var res = await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/actions/workflows/scraping.yml/dispatches', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + GITHUB_TOKEN,
+        'Accept': 'application/vnd.github+json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ ref: 'main', inputs: { refuge_id: refugeId } })
+    });
+
+    if (res.status === 204) {
+      if (status) { status.textContent = '✅ Scraping lancé ! Les animaux apparaîtront dans la file d\'attente dans quelques minutes.'; status.style.color = 'var(--moss)'; }
+      showToast('Scraping déclenché ✅');
+    } else if (res.status === 401 || res.status === 403) {
+      if (status) { status.textContent = '⚠️ Token GitHub manquant ou invalide'; status.style.color = 'var(--rose)'; }
+      showToast('Configure le token GitHub dans le code');
+    } else {
+      var body = await res.json().catch(function() { return {}; });
+      if (status) { status.textContent = 'Erreur : ' + (body.message || res.status); status.style.color = 'var(--rose)'; }
+    }
+  }
 
   function toggleModeAutoFn(checkbox) {
     modeAutoActif = checkbox.checked;
