@@ -9,12 +9,14 @@ on:
         type: string
       refuge_email:
         description: 'Email du refuge'
-        required: true
+        required: false
         type: string
+        default: ''
       refuge_ville:
         description: 'Ville du refuge'
         required: false
         type: string
+        default: ''
       refuge_site:
         description: 'URL du site du refuge'
         required: false
@@ -24,6 +26,7 @@ on:
         description: 'Telephone du refuge'
         required: false
         type: string
+        default: ''
 
 jobs:
   scraping:
