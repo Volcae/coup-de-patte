@@ -6,469 +6,69 @@
 <title>Plaquette Refuge · Coup de Patte</title>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,600&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root {
-  --forest: #2D4A3E;
-  --moss: #4A7C59;
-  --sage: #7AAD89;
-  --mint: #C8E6C0;
-  --ivory: #F4F1E8;
-  --paper: #FDFCF8;
-  --dust: #7A6E65;
-  --amber: #D4A843;
-  --rose: #C9704A;
-  --border: rgba(45,74,62,0.12);
-}
-
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
-body {
-  font-family: 'Nunito', sans-serif;
-  background: #e8e4d8;
-  color: var(--forest);
-  padding: 32px;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 32px;
-}
-
-.print-btn {
-  background: var(--moss);
-  color: var(--ivory);
-  border: none;
-  padding: 12px 28px;
-  border-radius: 50px;
-  font-family: 'Nunito', sans-serif;
-  font-size: 0.9rem;
-  font-weight: 700;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.page {
-  width: 210mm;
-  background: var(--paper);
-  box-shadow: 0 8px 40px rgba(45,74,62,0.18);
-  position: relative;
-  overflow: hidden;
-}
-
-/* ── RECTO ── */
-.recto {
-  min-height: 297mm;
-  display: flex;
-  flex-direction: column;
-}
-
-.r-hero {
-  background: var(--forest);
-  padding: 44px 48px 36px;
-  position: relative;
-  overflow: hidden;
-}
-
-.r-hero::before {
-  content: '';
-  position: absolute;
-  right: -60px;
-  top: -60px;
-  width: 300px;
-  height: 300px;
-  background: radial-gradient(circle, rgba(74,124,89,0.4) 0%, transparent 70%);
-}
-
-.r-hero::after {
-  content: '';
-  position: absolute;
-  left: -40px;
-  bottom: -80px;
-  width: 240px;
-  height: 240px;
-  background: radial-gradient(circle, rgba(212,168,67,0.15) 0%, transparent 70%);
-}
-
-.logo-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 36px;
-  position: relative;
-  z-index: 1;
-}
-
-.logo-paw {
-  width: 38px;
-  height: 38px;
-  background: var(--amber);
-  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.1rem;
-  flex-shrink: 0;
-}
-
-.logo-name {
-  font-family: 'Fraunces', serif;
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: var(--ivory);
-  letter-spacing: 0.5px;
-}
-
-.r-headline {
-  font-family: 'Fraunces', serif;
-  font-size: 2.6rem;
-  font-weight: 700;
-  color: var(--ivory);
-  line-height: 1.15;
-  margin-bottom: 14px;
-  position: relative;
-  z-index: 1;
-}
-
-.r-headline em {
-  font-style: italic;
-  color: var(--amber);
-}
-
-.r-sub {
-  font-size: 0.95rem;
-  color: rgba(244,241,232,0.7);
-  line-height: 1.6;
-  max-width: 380px;
-  position: relative;
-  z-index: 1;
-}
-
-.r-body {
-  padding: 36px 48px;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 28px;
-}
-
-.r-lead {
-  font-size: 1.05rem;
-  color: var(--forest);
-  line-height: 1.7;
-  font-weight: 600;
-}
-
-.features {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-}
-
-.feat {
-  background: var(--ivory);
-  border-radius: 14px;
-  padding: 16px 18px;
-  border: 1.5px solid var(--border);
-}
-
-.feat-icon {
-  font-size: 1.4rem;
-  margin-bottom: 8px;
-  display: block;
-}
-
-.feat-title {
-  font-family: 'Fraunces', serif;
-  font-size: 0.88rem;
-  font-weight: 700;
-  color: var(--forest);
-  margin-bottom: 4px;
-}
-
-.feat-desc {
-  font-size: 0.75rem;
-  color: var(--dust);
-  line-height: 1.5;
-}
-
-.stats-row {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-}
-
-.stat {
-  text-align: center;
-  background: linear-gradient(135deg, rgba(74,124,89,0.08), rgba(74,124,89,0.03));
-  border-radius: 14px;
-  padding: 16px 12px;
-  border: 1px solid rgba(74,124,89,0.15);
-}
-
-.stat-n {
-  font-family: 'Fraunces', serif;
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: var(--moss);
-  display: block;
-}
-
-.stat-l {
-  font-size: 0.68rem;
-  color: var(--dust);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.testimonial {
-  background: var(--forest);
-  border-radius: 16px;
-  padding: 20px 24px;
-  position: relative;
-}
-
-.testimonial::before {
-  content: '"';
-  font-family: 'Fraunces', serif;
-  font-size: 4rem;
-  color: var(--amber);
-  position: absolute;
-  top: -8px;
-  left: 18px;
-  line-height: 1;
-}
-
-.testimonial p {
-  font-family: 'Fraunces', serif;
-  font-style: italic;
-  font-size: 0.88rem;
-  color: var(--ivory);
-  line-height: 1.6;
-  padding-top: 14px;
-}
-
-.testimonial cite {
-  font-size: 0.72rem;
-  color: rgba(244,241,232,0.6);
-  font-style: normal;
-  display: block;
-  margin-top: 8px;
-}
-
-.r-cta {
-  background: linear-gradient(135deg, var(--amber), #C49030);
-  border-radius: 16px;
-  padding: 20px 24px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-}
-
-.r-cta-text strong {
-  font-family: 'Fraunces', serif;
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: var(--forest);
-  display: block;
-  margin-bottom: 4px;
-}
-
-.r-cta-text span {
-  font-size: 0.78rem;
-  color: rgba(45,74,62,0.7);
-}
-
-.r-cta-url {
-  font-family: 'Fraunces', serif;
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: var(--forest);
-  text-decoration: none;
-  background: rgba(255,255,255,0.5);
-  padding: 8px 16px;
-  border-radius: 50px;
-  white-space: nowrap;
-}
-
-/* ── VERSO ── */
-.verso {
-  min-height: 297mm;
-  display: flex;
-  flex-direction: column;
-  border-top: 4px solid var(--forest);
-}
-
-.v-header {
-  padding: 36px 48px 0;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 28px;
-}
-
-.v-header span {
-  font-family: 'Fraunces', serif;
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--forest);
-}
-
-.v-body {
-  padding: 0 48px;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-.v-title {
-  font-family: 'Fraunces', serif;
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: var(--forest);
-  line-height: 1.2;
-}
-
-.v-title em {
-  font-style: italic;
-  color: var(--moss);
-}
-
-.steps {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.step {
-  display: flex;
-  gap: 14px;
-  align-items: flex-start;
-}
-
-.step-num {
-  width: 30px;
-  height: 30px;
-  background: var(--moss);
-  color: var(--ivory);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  font-size: 0.85rem;
-  flex-shrink: 0;
-  margin-top: 2px;
-}
-
-.step-content strong {
-  font-size: 0.88rem;
-  font-weight: 700;
-  color: var(--forest);
-  display: block;
-  margin-bottom: 2px;
-}
-
-.step-content span {
-  font-size: 0.78rem;
-  color: var(--dust);
-  line-height: 1.5;
-}
-
-.enfin-moi-box {
-  background: linear-gradient(135deg, rgba(212,168,67,0.12), rgba(212,168,67,0.04));
-  border: 1.5px solid rgba(212,168,67,0.3);
-  border-radius: 16px;
-  padding: 20px 24px;
-}
-
-.enfin-moi-box h3 {
-  font-family: 'Fraunces', serif;
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--forest);
-  margin-bottom: 6px;
-}
-
-.enfin-moi-box p {
-  font-size: 0.78rem;
-  color: var(--dust);
-  line-height: 1.6;
-}
-
-.gratuit-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: rgba(74,124,89,0.1);
-  border: 1px solid rgba(74,124,89,0.2);
-  border-radius: 50px;
-  padding: 4px 12px;
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--moss);
-  margin-top: 4px;
-}
-
-.v-footer {
-  margin: 0 48px 36px;
-  background: var(--forest);
-  border-radius: 16px;
-  padding: 24px 28px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 20px;
-}
-
-.v-footer-left strong {
-  font-family: 'Fraunces', serif;
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--ivory);
-  display: block;
-  margin-bottom: 4px;
-}
-
-.v-footer-left span {
-  font-size: 0.78rem;
-  color: rgba(244,241,232,0.6);
-}
-
-.v-footer-right {
-  text-align: right;
-}
-
-.v-footer-right a {
-  font-family: 'Fraunces', serif;
-  font-size: 0.9rem;
-  font-weight: 700;
-  color: var(--amber);
-  text-decoration: none;
-  display: block;
-}
-
-.v-footer-right small {
-  font-size: 0.68rem;
-  color: rgba(244,241,232,0.4);
-}
-
-@media print {
-  body { background: white; padding: 0; gap: 0; }
-  .print-btn { display: none; }
-  .page { box-shadow: none; width: 100%; }
-  .recto, .verso { min-height: 297mm; page-break-after: always; }
-}
+:root{--forest:#2D4A3E;--moss:#4A7C59;--sage:#7AAD89;--mint:#C8E6C0;--ivory:#F4F1E8;--paper:#FDFCF8;--dust:#7A6E65;--amber:#D4A843;--rose:#C9704A;--border:rgba(45,74,62,0.12)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Nunito',sans-serif;background:#e8e4d8;color:var(--forest);padding:32px;min-height:100vh;display:flex;flex-direction:column;align-items:center;gap:32px}
+.print-btn{background:var(--moss);color:var(--ivory);border:none;padding:12px 28px;border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer}
+.page{width:210mm;background:var(--paper);box-shadow:0 8px 40px rgba(45,74,62,0.18);position:relative;overflow:hidden}
+.recto{min-height:297mm;display:flex;flex-direction:column}
+.r-hero{background:var(--forest);padding:44px 48px 36px;position:relative;overflow:hidden}
+.r-hero::before{content:'';position:absolute;right:-60px;top:-60px;width:300px;height:300px;background:radial-gradient(circle,rgba(74,124,89,0.4) 0%,transparent 70%)}
+.logo-row{display:flex;align-items:center;gap:10px;margin-bottom:36px;position:relative;z-index:1}
+.logo-paw{width:38px;height:38px;background:var(--amber);border-radius:50% 50% 50% 50%/60% 60% 40% 40%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.logo-name{font-family:'Fraunces',serif;font-size:1.1rem;font-weight:700;color:var(--ivory)}
+.r-headline{font-family:'Fraunces',serif;font-size:2.6rem;font-weight:700;color:var(--ivory);line-height:1.15;margin-bottom:14px;position:relative;z-index:1}
+.r-headline em{font-style:italic;color:var(--amber)}
+.r-sub{font-size:0.95rem;color:rgba(244,241,232,0.7);line-height:1.6;max-width:380px;position:relative;z-index:1}
+.r-body{padding:36px 48px;flex:1;display:flex;flex-direction:column;gap:24px}
+.r-lead{font-size:1rem;color:var(--forest);line-height:1.7}
+.features{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.feat{background:var(--ivory);border-radius:14px;padding:16px 18px;border:1.5px solid var(--border)}
+.feat-icon{font-size:1.4rem;margin-bottom:8px;display:block}
+.feat-title{font-family:'Fraunces',serif;font-size:0.88rem;font-weight:700;color:var(--forest);margin-bottom:4px}
+.feat-desc{font-size:0.75rem;color:var(--dust);line-height:1.5}
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.stat{text-align:center;background:linear-gradient(135deg,rgba(74,124,89,0.08),rgba(74,124,89,0.03));border-radius:14px;padding:16px 12px;border:1px solid rgba(74,124,89,0.15)}
+.stat-n{font-family:'Fraunces',serif;font-size:1.8rem;font-weight:700;color:var(--moss);display:block}
+.stat-l{font-size:0.68rem;color:var(--dust);font-weight:700;text-transform:uppercase;letter-spacing:0.5px}
+.citation{background:var(--forest);border-radius:16px;padding:20px 24px;position:relative}
+.citation::before{content:'"';font-family:'Fraunces',serif;font-size:4rem;color:var(--amber);position:absolute;top:-8px;left:18px;line-height:1}
+.citation p{font-family:'Fraunces',serif;font-style:italic;font-size:0.85rem;color:var(--ivory);line-height:1.65;padding-top:14px}
+.citation cite{font-size:0.7rem;color:rgba(244,241,232,0.55);font-style:normal;display:block;margin-top:8px}
+.r-cta{background:linear-gradient(135deg,var(--amber),#C49030);border-radius:16px;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.r-cta-text strong{font-family:'Fraunces',serif;font-size:1.05rem;font-weight:700;color:var(--forest);display:block;margin-bottom:4px}
+.r-cta-text span{font-size:0.78rem;color:rgba(45,74,62,0.7)}
+.r-cta-url{font-family:'Fraunces',serif;font-size:0.85rem;font-weight:700;color:var(--forest);text-decoration:none;background:rgba(255,255,255,0.5);padding:8px 16px;border-radius:50px;white-space:nowrap}
+.verso{min-height:297mm;display:flex;flex-direction:column;border-top:4px solid var(--forest)}
+.v-header{padding:36px 48px 0;display:flex;align-items:center;gap:10px;margin-bottom:28px}
+.v-header span{font-family:'Fraunces',serif;font-size:1rem;font-weight:700;color:var(--forest)}
+.v-body{padding:0 48px;flex:1;display:flex;flex-direction:column;gap:22px}
+.v-title{font-family:'Fraunces',serif;font-size:1.6rem;font-weight:700;color:var(--forest);line-height:1.2}
+.v-title em{font-style:italic;color:var(--moss)}
+.steps{display:flex;flex-direction:column;gap:13px}
+.step{display:flex;gap:14px;align-items:flex-start}
+.step-num{width:30px;height:30px;background:var(--moss);color:var(--ivory);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.85rem;flex-shrink:0;margin-top:2px}
+.step-content strong{font-size:0.88rem;font-weight:700;color:var(--forest);display:block;margin-bottom:2px}
+.step-content span{font-size:0.78rem;color:var(--dust);line-height:1.5}
+.step-tip{font-size:0.72rem;color:var(--moss);font-style:italic;margin-top:3px;display:block}
+.enfin-box{background:linear-gradient(135deg,rgba(212,168,67,0.12),rgba(212,168,67,0.04));border:1.5px solid rgba(212,168,67,0.3);border-radius:16px;padding:18px 22px}
+.enfin-box h3{font-family:'Fraunces',serif;font-size:0.95rem;font-weight:700;color:var(--forest);margin-bottom:5px}
+.enfin-box p{font-size:0.75rem;color:var(--dust);line-height:1.6}
+.gratuit-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(74,124,89,0.1);border:1px solid rgba(74,124,89,0.2);border-radius:50px;padding:4px 12px;font-size:0.72rem;font-weight:700;color:var(--moss);margin-top:6px}
+.v-footer{margin:0 48px 32px;background:var(--forest);border-radius:16px;padding:22px 28px;display:flex;justify-content:space-between;align-items:center;gap:20px}
+.v-footer-left strong{font-family:'Fraunces',serif;font-size:1rem;font-weight:700;color:var(--ivory);display:block;margin-bottom:4px}
+.v-footer-left span{font-size:0.78rem;color:rgba(244,241,232,0.6)}
+.v-footer-right{text-align:right}
+.v-footer-right a{font-family:'Fraunces',serif;font-size:0.9rem;font-weight:700;color:var(--amber);text-decoration:none;display:block}
+.v-footer-right small{font-size:0.68rem;color:rgba(244,241,232,0.4)}
+.mentions{margin:0 48px 16px;font-size:0.62rem;color:var(--dust);line-height:1.5;border-top:1px solid var(--border);padding-top:10px}
+@media print{body{background:white;padding:0;gap:0}.print-btn{display:none}.page{box-shadow:none;width:100%}.recto,.verso{min-height:297mm;page-break-after:always}}
 </style>
 </head>
 <body>
-
 <button class="print-btn" onclick="window.print()">🖨️ Imprimer / Exporter en PDF</button>
 
-<!-- ══ RECTO ══ -->
+<!-- RECTO -->
 <div class="page">
   <div class="recto">
     <div class="r-hero">
@@ -477,7 +77,7 @@ body {
         <span class="logo-name">Coup de Patte</span>
       </div>
       <h1 class="r-headline">Vos animaux méritent<br><em>la bonne famille.</em></h1>
-      <p class="r-sub">Coup de Patte est une plateforme d'adoption gratuite qui connecte les adoptants avec les animaux des refuges — en mettant particulièrement en avant ceux qui attendent depuis le plus longtemps.</p>
+      <p class="r-sub">Coup de Patte est une plateforme d'adoption gratuite qui connecte les adoptants avec les animaux des refuges, en mettant en avant ceux qui attendent depuis le plus longtemps.</p>
     </div>
 
     <div class="r-body">
@@ -502,34 +102,25 @@ body {
         <div class="feat">
           <span class="feat-icon">🔔</span>
           <div class="feat-title">Notifications adoption</div>
-          <p class="feat-desc">Recevez un email dès qu'un adoptant confirme avoir adopté un de vos animaux.</p>
+          <p class="feat-desc">Recevez un email dès qu'un adoptant confirme l'adoption d'un de vos animaux.</p>
         </div>
       </div>
 
       <div class="stats-row">
-        <div class="stat">
-          <span class="stat-n">100%</span>
-          <span class="stat-l">Gratuit</span>
-        </div>
-        <div class="stat">
-          <span class="stat-n">60%</span>
-          <span class="stat-l">Score min. affiché</span>
-        </div>
-        <div class="stat">
-          <span class="stat-n">∞</span>
-          <span class="stat-l">Animaux ajoutables</span>
-        </div>
+        <div class="stat"><span class="stat-n">100%</span><span class="stat-l">Gratuit</span></div>
+        <div class="stat"><span class="stat-n">60%</span><span class="stat-l">Score min. affiché</span></div>
+        <div class="stat"><span class="stat-n">∞</span><span class="stat-l">Animaux ajoutables</span></div>
       </div>
 
-      <div class="testimonial">
-        <p>Coup de Patte ne remplace pas notre site — il touche des adoptants qu'on n'aurait jamais atteints autrement.</p>
-        <cite>— Responsable d'adoption, SPA Dijon</cite>
+      <div class="citation">
+        <p>Adopter ce n'est pas juste un coup de cœur. L'amour seul ne suffit pas. Il faut comprendre son animal, ses peurs, ses limites. Il a une histoire, un vécu qu'il faut prendre en compte au quotidien.</p>
+        <cite>— Volcae, créateur de Coup de Patte</cite>
       </div>
 
       <div class="r-cta">
         <div class="r-cta-text">
           <strong>Créez votre espace refuge gratuitement</strong>
-          <span>Inscription en 5 minutes · Aucune carte bancaire</span>
+          <span>Inscription en 5 minutes · Aucun frais</span>
         </div>
         <a href="https://coup-de-patte.fr" class="r-cta-url">coup-de-patte.fr →</a>
       </div>
@@ -537,7 +128,7 @@ body {
   </div>
 </div>
 
-<!-- ══ VERSO ══ -->
+<!-- VERSO -->
 <div class="page">
   <div class="verso">
     <div class="v-header">
@@ -553,21 +144,22 @@ body {
           <div class="step-num">1</div>
           <div class="step-content">
             <strong>Créez votre compte</strong>
-            <span>Rendez-vous sur coup-de-patte.fr → "Je gère un refuge" → "Créer mon compte". Renseignez le nom, l'adresse et les coordonnées de votre refuge.</span>
+            <span>Rendez-vous sur coup-de-patte.fr, cliquez sur "Je gère un refuge" puis "Créer mon compte". Renseignez le nom, l'adresse et les coordonnées de votre refuge.</span>
           </div>
         </div>
         <div class="step">
           <div class="step-num">2</div>
           <div class="step-content">
             <strong>Ajoutez vos animaux</strong>
-            <span>Pour chaque animal : photo, nom, espèce, race, âge, description. Indiquez les compatibilités (enfants, chats, chiens) et le niveau d'expérience requis.</span>
+            <span>Photo, nom, espèce, race, âge, description. Indiquez les compatibilités et le niveau d'expérience requis pour chaque animal.</span>
+            <span class="step-tip">Vous avez un site internet ? Notre outil importe automatiquement vos animaux et leurs informations depuis votre site.</span>
           </div>
         </div>
         <div class="step">
           <div class="step-num">3</div>
           <div class="step-content">
             <strong>L'algorithme fait le reste</strong>
-            <span>Coup de Patte propose vos animaux aux adoptants dont le profil correspond. Pas besoin d'intervenir — les matchs se font automatiquement.</span>
+            <span>Coup de Patte propose vos animaux aux adoptants dont le profil correspond. Les matchs se font automatiquement, sans intervention de votre part.</span>
           </div>
         </div>
         <div class="step">
@@ -579,16 +171,24 @@ body {
         </div>
       </div>
 
-      <div class="enfin-moi-box">
+      <div class="enfin-box">
         <h3>✨ La catégorie "Enfin Moi ?"</h3>
-        <p>Coup de Patte met automatiquement en avant les animaux qui ont le plus besoin de visibilité : <strong>seniors</strong> (chiens ≥ 8 ans, chats ≥ 10 ans), <strong>animaux présents depuis plus d'un an</strong>, ou avec des <strong>besoins médicaux importants</strong>. Une page dédiée leur est réservée, avec un algorithme qui priorise les adoptants prêts à les accueillir.</p>
+        <p>Coup de Patte met automatiquement en avant les animaux qui ont le plus besoin de visibilité : seniors (chiens ≥ 8 ans, chats ≥ 10 ans), animaux présents depuis plus d'un an, ou avec des besoins médicaux importants. Une page dédiée leur est réservée sur la plateforme.</p>
         <span class="gratuit-badge">🆓 Entièrement gratuit · Projet à but non lucratif</span>
       </div>
 
-      <div style="background:var(--ivory);border-radius:14px;padding:18px 20px;border:1.5px solid var(--border)">
-        <p style="font-size:0.82rem;font-weight:700;color:var(--forest);margin-bottom:8px">Questions fréquentes</p>
-        <p style="font-size:0.75rem;color:var(--dust);line-height:1.7"><strong>Faut-il avoir un site internet ?</strong> Non — Coup de Patte est votre vitrine en ligne.<br><strong>Combien d'animaux peut-on ajouter ?</strong> Autant que vous voulez, sans limite.<br><strong>Est-ce vraiment gratuit ?</strong> Oui, pour toujours. Coup de Patte est un projet indépendant.</p>
+      <div style="background:var(--ivory);border-radius:14px;padding:16px 18px;border:1.5px solid var(--border)">
+        <p style="font-size:0.8rem;font-weight:700;color:var(--forest);margin-bottom:7px">Questions fréquentes</p>
+        <p style="font-size:0.73rem;color:var(--dust);line-height:1.75">
+          <strong>Faut-il avoir un site internet ?</strong> Non, Coup de Patte est votre vitrine en ligne.<br>
+          <strong>Combien d'animaux peut-on ajouter ?</strong> Autant que vous voulez, sans limite.<br>
+          <strong>Est-ce vraiment gratuit ?</strong> Oui, sans exception. Coup de Patte est un projet indépendant.
+        </p>
       </div>
+    </div>
+
+    <div class="mentions">
+      Document imprimé par nos soins · Coup de Patte · coup-de-patte.fr · contact@coup-de-patte.fr · Projet indépendant à but non lucratif · 2026
     </div>
 
     <div class="v-footer">
