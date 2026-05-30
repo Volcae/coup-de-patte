@@ -194,7 +194,7 @@ Reponds UNIQUEMENT en JSON avec ces champs (true/false/null si inconnu):
 
     try:
         response = client.messages.create(
-            model="claude-sonnet-4-20250514",
+            model="claude-sonnet-4-5",
             max_tokens=500,
             messages=[{"role": "user", "content": prompt}]
         )
@@ -206,6 +206,31 @@ Reponds UNIQUEMENT en JSON avec ces champs (true/false/null si inconnu):
 
 
 # == SUPABASE AUTH ==
+
+def chercher_refuge_existant(email):
+    """Cherche un refuge existant par email dans Supabase"""
+    if not email:
+        return None
+    r = requests.get(
+        f"{SUPABASE_URL}/rest/v1/Refuge?email=eq.{email}&select=id",
+        headers=sb_headers()
+    )
+    if r.status_code == 200:
+        data = r.json()
+        if data and len(data) > 0:
+            return data[0]['id']
+    # Chercher aussi par nom
+    nom_encode = REFUGE_NOM.replace(' ', '%20')
+    r2 = requests.get(
+        f"{SUPABASE_URL}/rest/v1/Refuge?nom=eq.{nom_encode}&select=id",
+        headers=sb_headers()
+    )
+    if r2.status_code == 200:
+        data2 = r2.json()
+        if data2 and len(data2) > 0:
+            return data2[0]['id']
+    return None
+
 
 def creer_compte_auth(email):
     r = requests.post(
@@ -260,7 +285,7 @@ def creer_fiche_refuge(user_id, email):
 
 def envoyer_supabase(animal, analyse, refuge_id):
     payload = {
-        "refuge_id": refuge_id,
+        "refuge": refuge_id,
         "nom": animal.get("nom"),
         "espece": animal.get("espece"),
         "race": animal.get("race"),
@@ -320,15 +345,22 @@ def main():
     else:
         print("Aucun email trouve - compte Auth ignore")
 
-    # Creer le compte Auth
-    print(f"\nCreation du compte Auth...")
-    user_id = creer_compte_auth(email) if email else None
+    # Chercher si le refuge existe deja dans Supabase
+    print(f"\nRecherche du refuge existant...")
+    refuge_id = chercher_refuge_existant(email)
 
-    # Creer la fiche refuge
-    print(f"\nCreation de la fiche refuge {REFUGE_NOM}...")
-    refuge_id = creer_fiche_refuge(user_id, email) if user_id else None
-    if not refuge_id:
-        print("ERREUR: Impossible de creer le refuge - arret"); return
+    if refuge_id:
+        print(f"  Refuge existant trouve - ID : {refuge_id}")
+    else:
+        # Creer le compte Auth
+        print(f"\nCreation du compte Auth...")
+        user_id = creer_compte_auth(email) if email else None
+
+        # Creer la fiche refuge
+        print(f"\nCreation de la fiche refuge {REFUGE_NOM}...")
+        refuge_id = creer_fiche_refuge(user_id, email) if user_id else None
+        if not refuge_id:
+            print("ERREUR: Impossible de creer le refuge - arret"); return
 
     # Scraping
     print(f"\nRecuperation des animaux sur {ANIMAUX_URL}...")
