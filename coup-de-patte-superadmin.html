@@ -1401,7 +1401,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       description: item.description, histoire: d.histoire || null,
       photo_url: item.photo_url || null,
       date_arrivee_refuge: item.date_arrivee_refuge || null,
-      refuge: item.refuge_id || (Array.isArray(item.refuge) ? item.refuge[0]?.id : item.refuge?.id) || null,
+      refuge: (Array.isArray(item.refuge) ? item.refuge[0]?.id : item.refuge?.id) || item.refuge || null,
       disponible: true, enfin_moi: enfinMoi, statut: 'disponible',
       gabarit: d.gabarit || null, energie: d.energie || null,
       experience_requise: d.experience_requise || null,
