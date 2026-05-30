@@ -8,7 +8,7 @@ on:
         required: true
         type: string
       refuge_email:
-        description: 'Email du refuge'
+        description: 'Email du refuge (laisser vide pour extraction auto)'
         required: false
         type: string
         default: ''
