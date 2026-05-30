@@ -624,6 +624,51 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <a href="cdp-emails-refuge.html" target="_blank" target="_blank" class="btn-primary" style="display:inline-flex">📧 Ouvrir les modèles d'emails</a>
       </div>
 
+      <!-- Modèle email refuges sans site -->
+      <p style="font-family:'Fraunces',serif;font-size:0.95rem;font-weight:600;font-style:italic;color:var(--forest);margin:0 0 14px">📬 Email — Refuges sans site internet</p>
+      <div class="dash-card" style="margin-bottom:28px">
+        <p style="font-size:0.78rem;color:var(--dust);line-height:1.6;margin-bottom:16px">Modèle d'email pour inviter des associations et refuges qui n'ont pas de site internet à rejoindre Coup de Patte.</p>
+        <div style="display:flex;gap:10px;margin-bottom:16px">
+          <button onclick="copierEmailRefuge()" style="padding:8px 16px;background:var(--moss);color:var(--ivory);border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer">📋 Copier l'email</button>
+          <button onclick="document.getElementById('emailPreviewRefuge').style.display=document.getElementById('emailPreviewRefuge').style.display==='none'?'block':'none'" style="padding:8px 16px;background:transparent;border:1.5px solid var(--border);border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.8rem;font-weight:700;color:var(--dust);cursor:pointer">👁 Aperçu</button>
+        </div>
+        <div id="emailPreviewRefuge" style="display:none;border:1.5px solid var(--border);border-radius:16px;overflow:hidden">
+          <div style="background:#F4F1E8;padding:40px;font-family:Arial,sans-serif;max-width:520px;margin:0 auto">
+            <div style="text-align:center;margin-bottom:24px">
+              <div style="width:52px;height:52px;background:#2D4A3E;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;display:inline-flex;align-items:center;justify-content:center;font-size:1.4rem;margin:0 auto 8px">🐾</div>
+              <p style="font-size:17px;font-weight:700;color:#2D4A3E;margin:0">Coup de Patte</p>
+            </div>
+            <h2 style="font-size:20px;color:#2D4A3E;margin:0 0 6px">Votre refuge mérite d'être vu</h2>
+            <p style="font-size:13px;color:#7A6E65;margin:0 0 24px">Une vitrine gratuite pour vos animaux, sans site internet</p>
+            <div style="background:#FDFCF8;border-radius:16px;padding:28px;margin-bottom:20px">
+              <p style="font-size:13px;color:#2D4A3E;line-height:1.7;margin:0 0 14px">Bonjour,</p>
+              <p style="font-size:13px;color:#2D4A3E;line-height:1.7;margin:0 0 14px">Nous avons découvert votre association et le travail remarquable que vous faites pour les animaux en attente d'une famille.</p>
+              <p style="font-size:13px;color:#2D4A3E;line-height:1.7;margin:0 0 14px"><strong>Coup de Patte</strong> est une plateforme d'adoption gratuite qui connecte les adoptants avec les animaux des refuges, et met particulièrement en avant ceux qui attendent depuis le plus longtemps.</p>
+              <p style="font-size:13px;color:#2D4A3E;line-height:1.7;margin:0 0 20px">Votre espace refuge sur Coup de Patte vous permet de :</p>
+              <div style="margin-bottom:20px">
+                <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px"><span>📋</span><p style="font-size:13px;color:#2D4A3E;margin:0;line-height:1.6"><strong>Créer les fiches de vos animaux</strong> — photos, description, compatibilités</p></div>
+                <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px"><span>🎯</span><p style="font-size:13px;color:#2D4A3E;margin:0;line-height:1.6"><strong>Être mis en relation avec les bons adoptants</strong> — notre algorithme propose vos animaux aux familles qui leur correspondent vraiment</p></div>
+                <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px"><span>✨</span><p style="font-size:13px;color:#2D4A3E;margin:0;line-height:1.6"><strong>Donner plus de visibilité à vos "Enfin Moi ?"</strong> — une catégorie dédiée aux animaux qui attendent depuis longtemps</p></div>
+                <div style="display:flex;align-items:flex-start;gap:10px"><span>🆓</span><p style="font-size:13px;color:#2D4A3E;margin:0;line-height:1.6"><strong>Entièrement gratuit</strong> — Coup de Patte est un projet indépendant à but non lucratif</p></div>
+              </div>
+              <p style="font-size:13px;color:#2D4A3E;line-height:1.7;margin:0 0 16px">Créer votre compte en quelques clics :</p>
+              <div style="background:#F4F1E8;border-radius:12px;padding:16px;margin-bottom:20px">
+                <p style="font-size:12px;color:#2D4A3E;margin:0 0 6px"><strong>1.</strong> Rendez-vous sur <a href="https://coup-de-patte.fr/coup-de-patte-login.html" style="color:#4A7C59">coup-de-patte.fr</a></p>
+                <p style="font-size:12px;color:#2D4A3E;margin:0 0 6px"><strong>2.</strong> Cliquez sur <strong>"Je gère un refuge"</strong> puis <strong>"Créer mon compte"</strong></p>
+                <p style="font-size:12px;color:#2D4A3E;margin:0 0 6px"><strong>3.</strong> Renseignez les informations de votre refuge</p>
+                <p style="font-size:12px;color:#2D4A3E;margin:0"><strong>4.</strong> Ajoutez vos animaux et commencez à recevoir des demandes d'adoption</p>
+              </div>
+              <div style="text-align:center">
+                <a href="https://coup-de-patte.fr/coup-de-patte-login.html" style="display:inline-block;background:#4A7C59;color:#F4F1E8;font-size:14px;font-weight:700;padding:13px 28px;border-radius:50px;text-decoration:none">🐾 Créer mon espace refuge</a>
+              </div>
+              <p style="font-size:11px;color:#A89E96;margin:16px 0 0;text-align:center">Si vous ne souhaitez pas être contacté par Coup de Patte, ignorez simplement cet email.</p>
+            </div>
+            <p style="text-align:center;font-size:11px;color:#A89E96">© 2025 Coup de Patte · coup-de-patte.fr</p>
+          </div>
+        </div>
+        <span id="copieConfirm" style="font-size:0.75rem;color:var(--moss);display:none;margin-top:8px;display:none">✅ Texte copié !</span>
+      </div>
+
       <!-- Réseaux sociaux -->
       <p style="font-family:'Fraunces',serif;font-size:0.95rem;font-weight:600;font-style:italic;color:var(--forest);margin-bottom:14px">📱 Kit réseaux sociaux</p>
       <div class="dash-card" style="margin-bottom:28px">
@@ -1107,6 +1152,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   // ═══ SCRAPING IA ═══
   var modeAutoActif = false;
+
+  function copierEmailRefuge() {
+    var texte = `Bonjour,\n\nNous avons découvert votre association et le travail remarquable que vous faites pour les animaux en attente d'une famille.\n\nCoup de Patte est une plateforme d'adoption gratuite qui connecte les adoptants avec les animaux des refuges, et met particulièrement en avant ceux qui attendent depuis le plus longtemps.\n\nVotre espace refuge sur Coup de Patte vous permet de :\n📋 Créer les fiches de vos animaux — photos, description, compatibilités\n🎯 Être mis en relation avec les bons adoptants\n✨ Donner plus de visibilité à vos animaux qui attendent depuis longtemps\n🆓 Entièrement gratuit — projet indépendant à but non lucratif\n\nPour créer votre compte :\n1. Rendez-vous sur https://coup-de-patte.fr/coup-de-patte-login.html\n2. Cliquez sur "Je gère un refuge" puis "Créer mon compte"\n3. Renseignez les informations de votre refuge\n4. Ajoutez vos animaux\n\nL'équipe Coup de Patte\n\nSi vous ne souhaitez pas être contacté par Coup de Patte, ignorez simplement cet email.`;
+    navigator.clipboard.writeText(texte).then(function() {
+      showToast('Email copié dans le presse-papiers ✅');
+    }).catch(function() {
+      showToast('Impossible de copier — sélectionne le texte manuellement');
+    });
+  }
 
   function toggleModeAutoFn(checkbox) {
     modeAutoActif = checkbox.checked;
