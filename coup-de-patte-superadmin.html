@@ -782,6 +782,39 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   var toastTimer;
   // ═══ FONCTIONS MAINTENANCE ═══
+  async function envoyerInvitation(btn) {
+    var refugeId = btn.dataset.id;
+    var refugeNom = btn.dataset.nom;
+    var refugeEmail = btn.dataset.email;
+    var hasSite = btn.dataset.site === '1';
+    if (!refugeEmail) { showToast('Pas d\'email pour ce refuge'); return; }
+    if (!confirm('Envoyer l\'email d\'invitation à ' + refugeNom + ' (' + refugeEmail + ') ?')) return;
+    btn.disabled = true; btn.textContent = '⏳ Envoi…';
+    var sb = getSupabase();
+    // Appel Edge Function
+    var { data: { session } } = await sb.auth.getSession();
+    var res = await fetch('https://mbqsaaxaglcemdxmfvkc.supabase.co/functions/v1/send-invitation-refuge', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + (session ? session.access_token : '') },
+      body: JSON.stringify({ refuge_id: refugeId, refuge_nom: refugeNom, refuge_email: refugeEmail, has_site: hasSite })
+    });
+    if (!res.ok) {
+      var err = await res.json().catch(function() { return {}; });
+      showToast('Erreur : ' + (err.error || res.status));
+      btn.disabled = false; btn.textContent = '📧 Inviter';
+      return;
+    }
+    // Mettre à jour la colonne
+    await sb.from('Refuge').update({ email_invitation_envoye_le: new Date().toISOString() }).eq('id', refugeId);
+    // Remplacer le bouton par un badge
+    var d = new Date().toLocaleDateString('fr-FR');
+    var badge = document.createElement('span');
+    badge.style.cssText = 'font-size:0.68rem;font-weight:700;color:var(--moss);background:rgba(74,124,89,0.08);border:1px solid rgba(74,124,89,0.2);padding:3px 8px;border-radius:50px';
+    badge.textContent = '✅ Invité le ' + d;
+    btn.parentNode.replaceChild(badge, btn);
+    showToast('Invitation envoyée à ' + refugeNom + ' ✅');
+  }
+
   async function toggleEmailRefuge(btn) {
     var id = btn.dataset.id;
     var actif = btn.dataset.actif === '1';
@@ -946,7 +979,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     var set = function(id, v) { var e = document.getElementById(id); if (e) e.textContent = v; };
 
     // Refuges
-    var refugesRes = await sb.from('Refuge').select('id, nom, email, ville, created_at, email_scraping_ok').order('created_at', { ascending: false });
+    var refugesRes = await sb.from('Refuge').select('id, nom, email, ville, created_at, email_scraping_ok, site_web, email_invitation_envoye_le').order('created_at', { ascending: false });
     var refuges = refugesRes.data || [];
     set('kpiRefuges', refuges.length);
     set('badgeRefuges', refuges.length);
@@ -968,6 +1001,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             var label = ok ? '✉️ Email ON' : '✉️ Email OFF';
             var style = ok ? 'background:rgba(74,124,89,0.12);color:var(--moss);border:1.5px solid rgba(74,124,89,0.3)' : 'background:rgba(201,112,74,0.08);color:var(--rose);border:1.5px solid rgba(201,112,74,0.25)';
             return '<button style="' + style + ';padding:4px 10px;border-radius:50px;font-size:0.7rem;font-weight:700;cursor:pointer;font-family:Nunito,sans-serif" onclick="toggleEmailRefuge(this)" data-id="' + r.id + '" data-actif="' + (ok ? '1' : '0') + '">' + label + '</button>';
+          })() +
+          (function() {
+            var hasSite = !!(r.site_web && r.site_web.trim());
+            var invEnvoye = r.email_invitation_envoye_le;
+            if (invEnvoye) {
+              var d = new Date(invEnvoye).toLocaleDateString('fr-FR');
+              return '<span style="font-size:0.68rem;font-weight:700;color:var(--moss);background:rgba(74,124,89,0.08);border:1px solid rgba(74,124,89,0.2);padding:3px 8px;border-radius:50px">✅ Invité le ' + d + '</span>';
+            } else {
+              return '<button style="font-size:0.68rem;font-weight:700;cursor:pointer;padding:4px 10px;border-radius:50px;border:1.5px solid rgba(91,141,239,0.3);background:rgba(91,141,239,0.07);color:var(--blue);font-family:Nunito,sans-serif" onclick="envoyerInvitation(this)" data-id="' + r.id + '" data-nom="' + (r.nom||'').replace(/"/g,'') + '" data-email="' + (r.email||'') + '" data-site="' + (hasSite?'1':'0') + '">📧 Inviter</button>';
+            }
           })() +
           '<button class="row-btn row-btn-red" onclick="supprimerRefugeBtn(this)" data-id="' + r.id + '" data-nom="' + (r.nom || '').replace(/"/g, '') + '">✕</button>' +
           '</div></td>';
