@@ -1410,7 +1410,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       compat_chats: d.compat_chats ?? null,
       compat_chiens: d.compat_chiens ?? null,
       reactivite_inconnus: d.reactivite_inconnus || null,
-      vie_en_refuge: d.vie_en_refuge || null
+      vie_en_refuge: d.vie_en_refuge || null,
+      sterilisation: d.sterilise === true ? 'oui' : (d.sterilise === false ? 'non' : null),
+      sexe: item.sexe || d.sexe || null,
+      race: item.race || d.race || null,
+      age_annees: item.age_annees || d.age_annees || null
     };
 
     var { error: insertError } = await sb.from('Animal').insert([payload]);

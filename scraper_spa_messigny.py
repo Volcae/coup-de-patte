@@ -148,13 +148,31 @@ def scraper_fiche_animal(url):
     else:
         animal["age_annees"] = None
 
+    # Mots-clés qui signalent la fin de la description utile
+    STOP_WORDS = [
+        "Contact", "Refuge de Jouvence", "Route du Val", "Messigny",
+        "horaires", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche",
+        "Mentions légales", "Conseil d'administration", "Tout droits", "Création Agence",
+        "Plan du site", "MagicWeb", "Suivre", "250 26", "250 27", "refugedejouvence",
+        "03 80", "@gmail", "Retour", "Animaux >"
+    ]
     description_lines = []
     for line in lines:
-        if any(x in line for x in ["250 269", "Lundi", "Mardi", "Contact", "Refuge", "Route"]):
+        # Arrêter dès qu'on rencontre un mot-clé de fin
+        if any(stop in line for stop in STOP_WORDS):
+            break
+        # Ignorer les lignes trop courtes ou techniques
+        if len(line) < 20:
             continue
-        if len(line) > 20 and not re.match(r"^\d{2}/\d{2}/\d{2}", line):
-            description_lines.append(line)
-    animal["description"] = " ".join(description_lines[:5])
+        if re.match(r"^\d{2}/\d{2}/\d{2}", line):
+            continue
+        # Ignorer le nom de l'animal en majuscules
+        if line == line.upper() and len(line) < 30:
+            continue
+        description_lines.append(line)
+    # Garder uniquement les lignes de description réelle (max 800 caractères)
+    description = " ".join(description_lines)
+    animal["description"] = description[:800].strip()
 
     og_image = soup.find("meta", property="og:image")
     if og_image:
@@ -164,6 +182,8 @@ def scraper_fiche_animal(url):
         animal["photo_url"] = img["src"] if img else ""
 
     animal["source_url"] = url
+    # Stocker le texte brut complet (filtré des infos refuge) pour Claude
+    animal["texte_brut"] = " ".join(description_lines)[:3000]
     return animal
 
 
@@ -171,25 +191,27 @@ def analyser_avec_claude(animal):
     import anthropic
     client = anthropic.Anthropic(api_key=ANTHROPIC_KEY)
 
-    prompt = f"""Tu es un expert en bien-etre animal. Analyse cette fiche d'adoption et extrait les informations structurees.
+    prompt = f"""Tu es un expert en bien-etre animal. Lis attentivement ce texte brut extrait d'une fiche d'adoption et extrais UNIQUEMENT les informations utiles.
 
-Animal: {animal.get('nom', '')}
-Espece: {animal.get('espece', '')}
-Race: {animal.get('race', '')}
-Sexe: {animal.get('sexe', '')}
-Age: {animal.get('age_annees', '')} ans
-Description: {animal.get('description', '')}
+TEXTE BRUT:
+{animal.get('texte_brut', animal.get('description', ''))}
 
-Reponds UNIQUEMENT en JSON avec ces champs (true/false/null si inconnu):
+Reponds UNIQUEMENT en JSON valide, sans commentaire, avec exactement ces champs:
 {{
+  "description_propre": "description courte et claire de l'animal en 2-3 phrases maximum, sans adresse ni horaires ni mentions legales",
+  "sexe": "male"/"femelle"/null,
+  "sterilise": true/false/null,
+  "race": "race exacte ou null",
+  "age_annees": nombre entier ou null,
+  "gabarit": "petit"/"moyen"/"grand"/null,
+  "energie": "faible"/"moyen"/"eleve"/null,
   "compat_enfants_moins13": true/false/null,
   "compat_chats": true/false/null,
   "compat_chiens": true/false/null,
-  "experience_requise": "debutant"/"intermediaire"/"experimente",
-  "energie": "faible"/"moyen"/"eleve",
+  "experience_requise": "debutant"/"intermediaire"/"experimente"/null,
+  "besoins_medicaux": "aucun"/"legers"/"lourds"/null,
   "vie_en_refuge": "Tres bien"/"Bien"/"Moyennement bien"/"Difficilement"/"Tres difficilement"/null,
-  "besoins_medicaux": "aucun"/"legers"/"lourds",
-  "gabarit": "petit"/"moyen"/"grand"/null
+  "origine": "abandon"/"trouve"/"saisie"/"sauvetage_elevage"/"transfert"/null
 }}"""
 
     try:
@@ -295,6 +317,11 @@ def envoyer_supabase(animal, analyse, refuge_id):
         "photo_url": animal.get("photo_url", ""),
         "donnees_brutes": json.dumps(animal, ensure_ascii=False),
         "donnees_extraites": json.dumps({**animal, **analyse}, ensure_ascii=False),
+        "nom": analyse.get("nom") or animal.get("nom"),
+        "sexe": analyse.get("sexe") or animal.get("sexe"),
+        "race": analyse.get("race") or animal.get("race"),
+        "age_annees": analyse.get("age_annees") or animal.get("age_annees"),
+        "description": analyse.get("description_propre") or animal.get("description"),
         "statut": "en_attente"
     }
     r = requests.post(f"{SUPABASE_URL}/rest/v1/ScrapingQueue", headers=sb_headers(), json=payload)
@@ -379,6 +406,15 @@ def main():
         print("  Analyse Claude API...")
         analyse = analyser_avec_claude(animal)
         print(f"  Energie: {analyse.get('energie')} | Experience: {analyse.get('experience_requise')}")
+        # Enrichir l'animal avec les données extraites par Claude
+        if analyse.get('description_propre'):
+            animal['description'] = analyse.get('description_propre')
+        if analyse.get('sexe') and not animal.get('sexe'):
+            animal['sexe'] = analyse.get('sexe')
+        if analyse.get('race') and not animal.get('race'):
+            animal['race'] = analyse.get('race')
+        if analyse.get('age_annees') and not animal.get('age_annees'):
+            animal['age_annees'] = analyse.get('age_annees')
         envoyer_supabase(animal, analyse, refuge_id)
         succes += 1
         time.sleep(1)
