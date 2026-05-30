@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kit Réseaux Sociaux · Coup de Patte</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;1,9..144,400&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--forest:#2D4A3E;--moss:#4A7C59;--sage:#7AAD89;--mint:#C8E6C0;--ivory:#F4F1E8;--paper:#FDFCF8;--dust:#7A6E65;--amber:#D4A843;--rose:#C9704A;--border:rgba(45,74,62,0.11)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Nunito',sans-serif;background:var(--ivory);color:var(--forest);min-height:100vh}
+header{background:var(--forest);padding:28px 48px;display:flex;align-items:center;gap:12px}
+.logo-paw{width:36px;height:36px;background:var(--amber);border-radius:50% 50% 50% 50%/60% 60% 40% 40%;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+header h1{font-family:'Fraunces',serif;font-size:1.1rem;font-weight:700;color:var(--ivory)}
+header p{font-size:0.75rem;color:rgba(244,241,232,0.6);margin-top:2px}
+.container{max-width:1000px;margin:0 auto;padding:40px 24px;display:flex;flex-direction:column;gap:40px}
+.section-title{font-family:'Fraunces',serif;font-size:1.2rem;font-weight:700;color:var(--forest);margin-bottom:20px;padding-bottom:10px;border-bottom:2px solid var(--border)}
+.card{background:var(--paper);border-radius:20px;border:1.5px solid var(--border);overflow:hidden;box-shadow:0 4px 20px rgba(45,74,62,0.06)}
+
+/* Visuels carrés */
+.visuals-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.visual-wrap{display:flex;flex-direction:column;gap:10px}
+.visual-label{font-size:0.72rem;font-weight:700;color:var(--dust);text-transform:uppercase;letter-spacing:0.5px}
+.visual-actions{display:flex;gap:8px}
+.btn-dl{padding:6px 12px;background:var(--moss);color:var(--ivory);border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.68rem;font-weight:700;cursor:pointer}
+.btn-copy-text{padding:6px 12px;background:transparent;border:1.5px solid var(--border);border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.68rem;font-weight:700;color:var(--dust);cursor:pointer}
+
+/* Visuel 1 : Carré 1:1 */
+.v-square{width:100%;aspect-ratio:1;border-radius:16px;overflow:hidden;position:relative;display:flex;flex-direction:column;justify-content:flex-end}
+
+.v1{background:var(--forest)}
+.v1-inner{padding:24px;position:relative;z-index:1}
+.v1-before{position:absolute;inset:0;background:radial-gradient(circle at 80% 20%,rgba(74,124,89,0.5) 0%,transparent 60%)}
+.v1-paw{font-size:3rem;position:absolute;top:20px;right:20px;opacity:0.3}
+.v1-tag{display:inline-block;background:var(--amber);color:var(--forest);font-size:0.55rem;font-weight:800;padding:3px 8px;border-radius:50px;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.v1-title{font-family:'Fraunces',serif;font-size:1.4rem;font-weight:700;font-style:italic;color:var(--ivory);line-height:1.15;margin-bottom:6px}
+.v1-sub{font-size:0.65rem;color:rgba(244,241,232,0.7);line-height:1.5}
+.v1-url{font-size:0.6rem;color:var(--amber);font-weight:700;margin-top:10px;display:block}
+
+.v2{background:linear-gradient(160deg,#F4F1E8,#E8E4D0)}
+.v2-inner{padding:20px}
+.v2-logo{display:flex;align-items:center;gap:6px;margin-bottom:16px}
+.v2-paw{width:28px;height:28px;background:var(--forest);border-radius:50% 50% 50% 50%/60% 60% 40% 40%;display:flex;align-items:center;justify-content:center;font-size:0.75rem}
+.v2-brand{font-family:'Fraunces',serif;font-size:0.8rem;font-weight:700;color:var(--forest)}
+.v2-emoji{font-size:2.5rem;margin-bottom:10px;display:block}
+.v2-title{font-family:'Fraunces',serif;font-size:1.1rem;font-weight:700;color:var(--forest);line-height:1.2;margin-bottom:6px}
+.v2-desc{font-size:0.62rem;color:var(--dust);line-height:1.5}
+.v2-badge{display:inline-block;background:var(--moss);color:var(--ivory);font-size:0.55rem;font-weight:700;padding:3px 8px;border-radius:50px;margin-top:8px}
+
+.v3{background:var(--moss)}
+.v3-inner{padding:20px}
+.v3-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:auto}
+.v3-icon{font-size:2.2rem}
+.v3-free{background:rgba(255,255,255,0.2);color:var(--ivory);font-size:0.55rem;font-weight:700;padding:3px 8px;border-radius:50px;text-transform:uppercase;letter-spacing:0.5px}
+.v3-main{margin-top:24px}
+.v3-title{font-family:'Fraunces',serif;font-size:1.2rem;font-weight:700;color:var(--ivory);line-height:1.2;margin-bottom:6px}
+.v3-list{list-style:none;display:flex;flex-direction:column;gap:3px}
+.v3-list li{font-size:0.6rem;color:rgba(244,241,232,0.85);display:flex;gap:5px;align-items:flex-start}
+.v3-url{display:block;font-size:0.6rem;font-weight:700;color:var(--amber);margin-top:10px}
+
+/* Textes */
+.texts-grid{display:flex;flex-direction:column;gap:16px}
+.text-card{background:var(--paper);border-radius:16px;border:1.5px solid var(--border);overflow:hidden}
+.text-card-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.platform-badge{font-size:0.68rem;font-weight:700;padding:3px 10px;border-radius:50px}
+.badge-ig{background:#E1306C;color:white}
+.badge-fb{background:#1877f2;color:white}
+.badge-tt{background:#000;color:white}
+.text-card-header h4{font-size:0.82rem;font-weight:700;color:var(--forest)}
+.text-card-header p{font-size:0.7rem;color:var(--dust)}
+.text-body{padding:14px 18px}
+.text-body pre{font-family:'Nunito',sans-serif;font-size:0.78rem;line-height:1.8;color:var(--forest);white-space:pre-wrap}
+.btn-copy-sm{padding:5px 12px;background:var(--moss);color:var(--ivory);border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.68rem;font-weight:700;cursor:pointer;flex-shrink:0}
+
+/* Conseils */
+.tips-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.tip{background:var(--paper);border-radius:14px;border:1.5px solid var(--border);padding:16px}
+.tip-icon{font-size:1.4rem;margin-bottom:8px;display:block}
+.tip h4{font-size:0.82rem;font-weight:700;color:var(--forest);margin-bottom:6px}
+.tip p{font-size:0.72rem;color:var(--dust);line-height:1.5}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-paw">🐾</div>
+  <div>
+    <h1>Kit Réseaux Sociaux · Coup de Patte</h1>
+    <p>Visuels et textes prêts à publier sur Instagram, Facebook, TikTok</p>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- VISUELS -->
+  <div>
+    <h2 class="section-title">🖼️ Visuels carrés — Format 1:1 (Instagram / Facebook)</h2>
+    <div class="visuals-grid">
+
+      <div class="visual-wrap">
+        <span class="visual-label">Visuel 1 — Présentation plateforme</span>
+        <div class="v-square v1">
+          <div class="v1-before"></div>
+          <div class="v1-paw">🐾</div>
+          <div class="v1-inner">
+            <span class="v1-tag">Nouveau</span>
+            <h2 class="v1-title">L'adoption<br>autrement.</h2>
+            <p class="v1-sub">Un algorithme qui connecte les bons adoptants aux bons animaux — gratuitement.</p>
+            <span class="v1-url">coup-de-patte.fr</span>
+          </div>
+        </div>
+        <div class="visual-actions">
+          <button class="btn-dl" onclick="telechargerVisuel('v1')">⬇️ Télécharger</button>
+        </div>
+      </div>
+
+      <div class="visual-wrap">
+        <span class="visual-label">Visuel 2 — Enfin Moi ?</span>
+        <div class="v-square v2">
+          <div class="v2-inner" style="height:100%;display:flex;flex-direction:column">
+            <div class="v2-logo">
+              <div class="v2-paw">🐾</div>
+              <span class="v2-brand">Coup de Patte</span>
+            </div>
+            <span class="v2-emoji">✨</span>
+            <h2 class="v2-title">Les oubliés<br>des refuges</h2>
+            <p class="v2-desc">Seniors, malades, présents depuis plus d'un an… Une catégorie dédiée à ceux qui attendent depuis trop longtemps.</p>
+            <span class="v2-badge">Découvrir → coup-de-patte.fr</span>
+          </div>
+        </div>
+        <div class="visual-actions">
+          <button class="btn-dl" onclick="telechargerVisuel('v2')">⬇️ Télécharger</button>
+        </div>
+      </div>
+
+      <div class="visual-wrap">
+        <span class="visual-label">Visuel 3 — Pour les refuges</span>
+        <div class="v-square v3">
+          <div class="v3-inner" style="height:100%;display:flex;flex-direction:column">
+            <div class="v3-top">
+              <span class="v3-icon">🏡</span>
+              <span class="v3-free">Gratuit</span>
+            </div>
+            <div class="v3-main" style="flex:1;display:flex;flex-direction:column;justify-content:flex-end">
+              <h2 class="v3-title">Votre refuge<br>mérite d'être vu</h2>
+              <ul class="v3-list">
+                <li><span>✓</span> Fiches animaux en ligne</li>
+                <li><span>✓</span> Matching avec les adoptants</li>
+                <li><span>✓</span> 100% gratuit</li>
+              </ul>
+              <span class="v3-url">coup-de-patte.fr</span>
+            </div>
+          </div>
+        </div>
+        <div class="visual-actions">
+          <button class="btn-dl" onclick="telechargerVisuel('v3')">⬇️ Télécharger</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- TEXTES -->
+  <div>
+    <h2 class="section-title">✍️ Textes à copier-coller</h2>
+    <div class="texts-grid">
+
+      <div class="text-card">
+        <div class="text-card-header">
+          <div>
+            <div style="display:flex;gap:6px;margin-bottom:4px">
+              <span class="platform-badge badge-ig">Instagram</span>
+              <span class="platform-badge badge-fb">Facebook</span>
+            </div>
+            <h4>Post de présentation</h4>
+            <p>Pour annoncer votre arrivée sur Coup de Patte</p>
+          </div>
+          <button class="btn-copy-sm" onclick="copierTexte('t1',this)">📋 Copier</button>
+        </div>
+        <div class="text-body">
+          <pre id="t1">🐾 Bonne nouvelle — nos animaux sont désormais sur @coupdepattefr !
+
+Coup de Patte est une plateforme d'adoption gratuite qui utilise un algorithme pour mettre en relation les adoptants avec les animaux qui leur correspondent vraiment.
+
+Nos [chiens/chats/animaux] sont maintenant visibles sur coup-de-patte.fr 🏡
+
+Si vous cherchez un compagnon, créez votre profil adoptant gratuitement et découvrez vos matchs 🎯
+
+#adoption #refuge #animaux #coupdepattes #adoptezneachetezpas</pre>
+        </div>
+      </div>
+
+      <div class="text-card">
+        <div class="text-card-header">
+          <div>
+            <div style="display:flex;gap:6px;margin-bottom:4px">
+              <span class="platform-badge badge-tt">TikTok</span>
+            </div>
+            <h4>Script vidéo — 30 secondes</h4>
+            <p>Pour une vidéo de présentation rapide</p>
+          </div>
+          <button class="btn-copy-sm" onclick="copierTexte('t2',this)">📋 Copier</button>
+        </div>
+        <div class="text-body">
+          <pre id="t2">🎬 SCRIPT — 30 secondes
+
+[0-5s] "Vous cherchez un animal à adopter, mais vous ne savez pas lequel ?"
+
+[5-15s] "Coup de Patte analyse votre logement, votre quotidien, votre expérience avec les animaux… et vous propose les animaux qui correspondent vraiment à votre vie."
+
+[15-25s] "C'est gratuit, c'est en France, et ça met en avant les animaux qui attendent depuis le plus longtemps."
+
+[25-30s] "Coup-de-patte.fr — lien en bio 🐾"
+
+#adoption #animaux #refuge #chien #chat #coupdepattes</pre>
+        </div>
+      </div>
+
+      <div class="text-card">
+        <div class="text-card-header">
+          <div>
+            <div style="display:flex;gap:6px;margin-bottom:4px">
+              <span class="platform-badge badge-ig">Instagram</span>
+              <span class="platform-badge badge-fb">Facebook</span>
+            </div>
+            <h4>Post "Enfin Moi ?"</h4>
+            <p>Pour mettre en avant vos animaux les plus anciens</p>
+          </div>
+          <button class="btn-copy-sm" onclick="copierTexte('t3',this)">📋 Copier</button>
+        </div>
+        <div class="text-body">
+          <pre id="t3">✨ Certains de nos animaux attendent depuis [X mois / X ans].
+
+Ils s'appellent [Noms], et ils méritent une famille autant que les autres.
+
+Sur Coup de Patte, ils ont leur propre catégorie : "Enfin Moi ?" — une page dédiée aux seniors, aux animaux malades et à ceux qui attendent depuis trop longtemps.
+
+👉 Découvrez leurs fiches sur coup-de-patte.fr → Enfin Moi ?
+
+#EnfinMoi #adoption #seniordog #seniorchat #refugeanimal</pre>
+        </div>
+      </div>
+
+      <div class="text-card">
+        <div class="text-card-header">
+          <div>
+            <div style="display:flex;gap:6px;margin-bottom:4px">
+              <span class="platform-badge badge-fb">Facebook</span>
+            </div>
+            <h4>Post long — Pour les groupes d'adoption</h4>
+            <p>Pour partager dans les groupes locaux Facebook</p>
+          </div>
+          <button class="btn-copy-sm" onclick="copierTexte('t4',this)">📋 Copier</button>
+        </div>
+        <div class="text-body">
+          <pre id="t4">🐾 Vous cherchez un animal à adopter dans la région ?
+
+Notre refuge est maintenant référencé sur Coup de Patte, une nouvelle plateforme d'adoption qui fonctionne différemment des autres.
+
+Comment ça marche ?
+→ Vous créez un profil en répondant à quelques questions (logement, disponibilité, expérience)
+→ L'algorithme vous propose les animaux qui correspondent vraiment à votre mode de vie
+→ Vous consultez les fiches et contactez directement le refuge
+
+C'est gratuit, sans inscription obligatoire pour voir les animaux, et ça met en avant les animaux qui attendent depuis le plus longtemps ✨
+
+Retrouvez nos animaux sur : coup-de-patte.fr
+(Recherchez [Nom du refuge] dans la barre de recherche)
+
+Des questions ? Répondez à ce message ou contactez-nous directement 🐾</pre>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CONSEILS -->
+  <div>
+    <h2 class="section-title">💡 Conseils de publication</h2>
+    <div class="tips-grid">
+      <div class="tip">
+        <span class="tip-icon">📅</span>
+        <h4>Meilleurs horaires</h4>
+        <p>Instagram & Facebook : mardi-jeudi, 18h-21h. TikTok : 19h-22h ou le matin (7h-9h). Évitez le lundi matin et le dimanche soir.</p>
+      </div>
+      <div class="tip">
+        <span class="tip-icon">📸</span>
+        <h4>Photos qui convertissent</h4>
+        <p>Photo de l'animal face caméra, lumière naturelle, fond neutre. Évitez les cages ou boxes visibles. Un animal avec un humain = plus d'engagement.</p>
+      </div>
+      <div class="tip">
+        <span class="tip-icon">#️⃣</span>
+        <h4>Hashtags efficaces</h4>
+        <p>#adoption #refuge #adoptezneachetezpas #animauxàadopter + hashtag de votre ville (#Dijon #Lyon etc.) + #coupdepattes</p>
+      </div>
+      <div class="tip">
+        <span class="tip-icon">🔗</span>
+        <h4>Lien en bio</h4>
+        <p>Sur Instagram, mettez directement le lien de votre fiche refuge : coup-de-patte.fr/coup-de-patte-refuge.html?id=VOTRE_ID</p>
+      </div>
+      <div class="tip">
+        <span class="tip-icon">📖</span>
+        <h4>Stories efficaces</h4>
+        <p>Story avec photo de l'animal + sticker lien vers Coup de Patte. Ajoutez un sondage "Vous adopteriez ?" pour booster l'algorithme Instagram.</p>
+      </div>
+      <div class="tip">
+        <span class="tip-icon">🤝</span>
+        <h4>Collaborations</h4>
+        <p>Identifiez d'autres refuges ou vétérinaires locaux. Un post partagé entre deux comptes double la portée sans budget publicitaire.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function copierTexte(id, btn) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  navigator.clipboard.writeText(el.textContent.trim()).then(function() {
+    btn.textContent = '✅ Copié !';
+    setTimeout(function() { btn.textContent = '📋 Copier'; }, 2000);
+  });
+}
+
+function telechargerVisuel(id) {
+  alert('Pour télécharger ce visuel : faites un clic droit sur l\'image → "Enregistrer l\'image" ou faites une capture d\'écran. Un export PNG automatique sera disponible prochainement.');
+}
+</script>
+
+</body>
+</html>

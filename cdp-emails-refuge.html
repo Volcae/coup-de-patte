@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modèles d'emails · Coup de Patte</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;1,9..144,400&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--forest:#2D4A3E;--moss:#4A7C59;--sage:#7AAD89;--mint:#C8E6C0;--ivory:#F4F1E8;--paper:#FDFCF8;--dust:#7A6E65;--amber:#D4A843;--rose:#C9704A;--border:rgba(45,74,62,0.11);--shadow:0 4px 20px rgba(45,74,62,0.08)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Nunito',sans-serif;background:var(--ivory);color:var(--forest);min-height:100vh}
+header{background:var(--forest);padding:28px 48px;display:flex;align-items:center;gap:12px}
+.logo-paw{width:36px;height:36px;background:var(--amber);border-radius:50% 50% 50% 50%/60% 60% 40% 40%;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+header h1{font-family:'Fraunces',serif;font-size:1.1rem;font-weight:700;color:var(--ivory)}
+header p{font-size:0.75rem;color:rgba(244,241,232,0.6);margin-top:2px}
+.container{max-width:900px;margin:0 auto;padding:40px 24px;display:flex;flex-direction:column;gap:32px}
+.email-card{background:var(--paper);border-radius:20px;border:1.5px solid var(--border);overflow:hidden;box-shadow:var(--shadow)}
+.email-card-header{padding:20px 28px;border-bottom:1.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.email-card-meta{display:flex;flex-direction:column;gap:4px}
+.email-tag{display:inline-flex;align-items:center;gap:5px;font-size:0.68rem;font-weight:700;padding:3px 10px;border-radius:50px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px}
+.tag-bienvenue{background:rgba(74,124,89,0.1);color:var(--moss)}
+.tag-notification{background:rgba(212,168,67,0.12);color:#A07820}
+.tag-relance{background:rgba(91,141,239,0.1);color:#3B6FD4}
+.tag-invitation{background:rgba(201,112,74,0.1);color:var(--rose)}
+.email-card-header h3{font-family:'Fraunces',serif;font-size:1rem;font-weight:700;color:var(--forest)}
+.email-card-header p{font-size:0.75rem;color:var(--dust)}
+.btn-copy{padding:8px 16px;background:var(--moss);color:var(--ivory);border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.75rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:opacity 0.2s}
+.btn-copy:hover{opacity:0.85}
+.btn-copy.copied{background:var(--sage)}
+.email-preview{padding:28px;background:var(--ivory);border-bottom:1.5px solid var(--border)}
+.email-subject{font-size:0.72rem;font-weight:700;color:var(--dust);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px}
+.email-subject span{color:var(--forest);font-size:0.82rem;text-transform:none;letter-spacing:0;font-weight:600}
+.email-render{background:var(--paper);border-radius:14px;border:1.5px solid var(--border);overflow:hidden;margin-top:14px}
+.email-text{padding:20px 28px;font-size:0.78rem;color:var(--dust);background:var(--paper)}
+.email-text pre{white-space:pre-wrap;font-family:'Nunito',sans-serif;font-size:0.78rem;line-height:1.8;color:var(--forest)}
+.tab-btns{display:flex;gap:0;border-bottom:1.5px solid var(--border)}
+.tab-btn{padding:10px 18px;font-family:'Nunito',sans-serif;font-size:0.75rem;font-weight:700;cursor:pointer;border:none;background:transparent;color:var(--dust);border-bottom:2px solid transparent;transition:all 0.2s}
+.tab-btn.active{color:var(--moss);border-bottom-color:var(--moss);background:rgba(74,124,89,0.04)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-paw">🐾</div>
+  <div>
+    <h1>Modèles d'emails · Coup de Patte</h1>
+    <p>Templates prêts à copier-coller pour chaque situation</p>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- 1. Bienvenue après scraping -->
+  <div class="email-card" id="card-bienvenue">
+    <div class="email-card-header">
+      <div class="email-card-meta">
+        <span class="email-tag tag-bienvenue">✅ Bienvenue</span>
+        <h3>Email de bienvenue — refuge scraped</h3>
+        <p>Envoyé automatiquement après import des animaux. Le refuge a déjà un compte créé.</p>
+      </div>
+      <button class="btn-copy" onclick="copier('bienvenue', this)">📋 Copier</button>
+    </div>
+    <div class="tab-btns">
+      <button class="tab-btn active" onclick="showTab('bienvenue','rendu',this)">Aperçu</button>
+      <button class="tab-btn" onclick="showTab('bienvenue','texte',this)">Texte brut</button>
+    </div>
+    <div id="bienvenue-rendu" class="email-preview">
+      <div class="email-subject">Objet : <span>🐾 Vos animaux sont sur Coup de Patte !</span></div>
+      <div class="email-render">
+        <div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:32px 24px;color:#2D4A3E">
+          <h2 style="font-size:1.3rem;margin-bottom:8px">🐾 Vos animaux sont sur Coup de Patte !</h2>
+          <p style="color:#7A6E65;margin-bottom:16px;font-size:0.88rem;line-height:1.7">Bonjour,</p>
+          <p style="color:#7A6E65;margin-bottom:16px;font-size:0.88rem;line-height:1.7">Nous avons importé les fiches de vos animaux sur <strong>Coup de Patte</strong>, plateforme d'adoption gratuite qui met en avant les animaux qui attendent depuis le plus longtemps.</p>
+          <p style="color:#7A6E65;margin-bottom:20px;font-size:0.88rem;line-height:1.7">Pour accéder à votre espace refuge et gérer vos animaux :</p>
+          <ol style="color:#7A6E65;line-height:2;margin-bottom:24px;padding-left:20px;font-size:0.85rem">
+            <li>Rendez-vous sur <a href="https://coup-de-patte.fr/coup-de-patte-login.html" style="color:#4A7C59">coup-de-patte.fr</a></li>
+            <li>Cliquez sur <strong>"Mot de passe oublié"</strong></li>
+            <li>Entrez votre adresse email</li>
+            <li>Suivez le lien reçu pour créer votre mot de passe</li>
+          </ol>
+          <div style="background:#F4F1E8;border-radius:12px;padding:16px;margin-bottom:20px;font-size:0.82rem;color:#7A6E65;line-height:1.6">
+            Si vous ne souhaitez pas être référencé, répondez à cet email — nous retirerons votre refuge immédiatement.
+          </div>
+          <p style="font-size:0.78rem;color:#A89E96;text-align:center">L'équipe Coup de Patte 🐾</p>
+        </div>
+      </div>
+    </div>
+    <div id="bienvenue-texte" class="email-text" style="display:none">
+      <pre id="bienvenue-content">Objet : 🐾 Vos animaux sont sur Coup de Patte !
+
+Bonjour,
+
+Nous avons importé les fiches de vos animaux sur Coup de Patte, plateforme d'adoption gratuite qui met en avant les animaux qui attendent depuis le plus longtemps.
+
+Pour accéder à votre espace refuge et gérer vos animaux :
+1. Rendez-vous sur https://coup-de-patte.fr/coup-de-patte-login.html
+2. Cliquez sur "Mot de passe oublié"
+3. Entrez votre adresse email
+4. Suivez le lien reçu pour créer votre mot de passe
+
+Votre espace vous permet de modifier les fiches, ajouter des photos et mettre à jour les disponibilités.
+
+Si vous ne souhaitez pas être référencé sur Coup de Patte, répondez simplement à cet email — nous retirerons votre refuge immédiatement.
+
+L'équipe Coup de Patte</pre>
+    </div>
+  </div>
+
+  <!-- 2. Invitation refuge sans site -->
+  <div class="email-card" id="card-invitation">
+    <div class="email-card-header">
+      <div class="email-card-meta">
+        <span class="email-tag tag-invitation">📬 Invitation</span>
+        <h3>Email d'invitation — refuge sans site</h3>
+        <p>À envoyer manuellement aux associations sans présence web.</p>
+      </div>
+      <button class="btn-copy" onclick="copier('invitation', this)">📋 Copier</button>
+    </div>
+    <div class="tab-btns">
+      <button class="tab-btn active" onclick="showTab('invitation','rendu',this)">Aperçu</button>
+      <button class="tab-btn" onclick="showTab('invitation','texte',this)">Texte brut</button>
+    </div>
+    <div id="invitation-rendu" class="email-preview">
+      <div class="email-subject">Objet : <span>Votre refuge mérite d'être vu — Coup de Patte</span></div>
+      <div class="email-render">
+        <div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:32px 24px;color:#2D4A3E">
+          <h2 style="font-size:1.3rem;margin-bottom:8px">Votre refuge mérite d'être vu</h2>
+          <p style="font-size:0.82rem;color:#7A6E65;margin-bottom:20px">Une vitrine gratuite pour vos animaux, sans site internet</p>
+          <p style="color:#7A6E65;margin-bottom:14px;font-size:0.88rem;line-height:1.7">Bonjour,</p>
+          <p style="color:#7A6E65;margin-bottom:14px;font-size:0.88rem;line-height:1.7">Nous avons découvert votre association et le travail remarquable que vous faites pour les animaux en attente d'une famille.</p>
+          <p style="color:#7A6E65;margin-bottom:14px;font-size:0.88rem;line-height:1.7"><strong>Coup de Patte</strong> est une plateforme d'adoption gratuite qui connecte les adoptants avec les animaux des refuges, et met particulièrement en avant ceux qui attendent depuis le plus longtemps.</p>
+          <div style="margin:20px 0">
+            <div style="display:flex;gap:10px;margin-bottom:10px"><span>📋</span><p style="font-size:0.85rem;color:#2D4A3E;line-height:1.6"><strong>Fiches animaux</strong> — photos, description, compatibilités</p></div>
+            <div style="display:flex;gap:10px;margin-bottom:10px"><span>🎯</span><p style="font-size:0.85rem;color:#2D4A3E;line-height:1.6"><strong>Matching intelligent</strong> — vos animaux proposés aux bonnes familles</p></div>
+            <div style="display:flex;gap:10px;margin-bottom:10px"><span>✨</span><p style="font-size:0.85rem;color:#2D4A3E;line-height:1.6"><strong>Catégorie "Enfin Moi ?"</strong> — visibilité accrue pour les animaux oubliés</p></div>
+            <div style="display:flex;gap:10px"><span>🆓</span><p style="font-size:0.85rem;color:#2D4A3E;line-height:1.6"><strong>Entièrement gratuit</strong> — projet indépendant à but non lucratif</p></div>
+          </div>
+          <div style="text-align:center;margin-top:20px">
+            <a href="https://coup-de-patte.fr/coup-de-patte-login.html" style="display:inline-block;background:#4A7C59;color:#F4F1E8;font-size:14px;font-weight:700;padding:12px 26px;border-radius:50px;text-decoration:none">🐾 Créer mon espace refuge</a>
+          </div>
+          <p style="font-size:0.72rem;color:#A89E96;text-align:center;margin-top:14px">Si vous ne souhaitez pas être contacté, ignorez simplement cet email.</p>
+        </div>
+      </div>
+    </div>
+    <div id="invitation-texte" class="email-text" style="display:none">
+      <pre id="invitation-content">Objet : Votre refuge mérite d'être vu — Coup de Patte
+
+Bonjour,
+
+Nous avons découvert votre association et le travail remarquable que vous faites pour les animaux en attente d'une famille.
+
+Coup de Patte est une plateforme d'adoption gratuite qui connecte les adoptants avec les animaux des refuges, et met particulièrement en avant ceux qui attendent depuis le plus longtemps.
+
+Votre espace refuge vous permet de :
+📋 Créer les fiches de vos animaux — photos, description, compatibilités
+🎯 Être mis en relation avec les bons adoptants
+✨ Donner plus de visibilité à vos animaux qui attendent depuis longtemps
+🆓 Entièrement gratuit — projet indépendant à but non lucratif
+
+Pour créer votre compte :
+1. Rendez-vous sur https://coup-de-patte.fr/coup-de-patte-login.html
+2. Cliquez sur "Je gère un refuge" puis "Créer mon compte"
+3. Renseignez les informations de votre refuge
+4. Ajoutez vos animaux
+
+L'équipe Coup de Patte
+
+Si vous ne souhaitez pas être contacté par Coup de Patte, ignorez simplement cet email.</pre>
+    </div>
+  </div>
+
+  <!-- 3. Relance -->
+  <div class="email-card" id="card-relance">
+    <div class="email-card-header">
+      <div class="email-card-meta">
+        <span class="email-tag tag-relance">🔁 Relance</span>
+        <h3>Relance douce — après 2 semaines sans réponse</h3>
+        <p>Court et bienveillant. À envoyer si le refuge n'a pas réagi au premier email.</p>
+      </div>
+      <button class="btn-copy" onclick="copier('relance', this)">📋 Copier</button>
+    </div>
+    <div class="tab-btns">
+      <button class="tab-btn active" onclick="showTab('relance','rendu',this)">Aperçu</button>
+      <button class="tab-btn" onclick="showTab('relance','texte',this)">Texte brut</button>
+    </div>
+    <div id="relance-rendu" class="email-preview">
+      <div class="email-subject">Objet : <span>Re : Coup de Patte — une petite nouvelle 🐾</span></div>
+      <div class="email-render">
+        <div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:32px 24px;color:#2D4A3E">
+          <p style="color:#7A6E65;margin-bottom:14px;font-size:0.88rem;line-height:1.7">Bonjour,</p>
+          <p style="color:#7A6E65;margin-bottom:14px;font-size:0.88rem;line-height:1.7">Je me permets de revenir vers vous au sujet de Coup de Patte, la plateforme d'adoption gratuite dont je vous avais parlé.</p>
+          <p style="color:#7A6E65;margin-bottom:14px;font-size:0.88rem;line-height:1.7">Si vous n'avez pas encore eu le temps de regarder, pas d'inquiétude — l'inscription ne prend que quelques minutes et tout est gratuit.</p>
+          <p style="color:#7A6E65;margin-bottom:20px;font-size:0.88rem;line-height:1.7">Si vous avez des questions ou souhaitez qu'on vous aide à importer vos animaux, répondez simplement à cet email. 🐾</p>
+          <div style="text-align:center">
+            <a href="https://coup-de-patte.fr" style="display:inline-block;background:#4A7C59;color:#F4F1E8;font-size:13px;font-weight:700;padding:11px 24px;border-radius:50px;text-decoration:none">Voir Coup de Patte →</a>
+          </div>
+          <p style="font-size:0.72rem;color:#A89E96;text-align:center;margin-top:14px">Pas d'intérêt ? Ignorez cet email, nous ne vous recontacterons plus.</p>
+        </div>
+      </div>
+    </div>
+    <div id="relance-texte" class="email-text" style="display:none">
+      <pre id="relance-content">Objet : Re : Coup de Patte — une petite nouvelle 🐾
+
+Bonjour,
+
+Je me permets de revenir vers vous au sujet de Coup de Patte, la plateforme d'adoption gratuite dont je vous avais parlé.
+
+Si vous n'avez pas encore eu le temps de regarder, pas d'inquiétude — l'inscription ne prend que quelques minutes et tout est gratuit.
+
+Si vous avez des questions ou souhaitez qu'on vous aide à importer vos animaux, répondez simplement à cet email.
+
+https://coup-de-patte.fr
+
+Pas d'intérêt ? Ignorez cet email, nous ne vous recontacterons plus.</pre>
+    </div>
+  </div>
+
+  <!-- 4. Notification match -->
+  <div class="email-card" id="card-match">
+    <div class="email-card-header">
+      <div class="email-card-meta">
+        <span class="email-tag tag-notification">🔔 Notification</span>
+        <h3>Notification adoption signalée</h3>
+        <p>Envoyé automatiquement quand un adoptant confirme une adoption via CDP.</p>
+      </div>
+    </div>
+    <div class="email-preview">
+      <div class="email-subject">Objet : <span>Adoption signalée — [Nom de l'animal]</span></div>
+      <div class="email-render">
+        <div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:32px 24px;color:#2D4A3E">
+          <h2 style="font-size:1.3rem;margin-bottom:8px">🐾 Adoption signalée pour [Nom]</h2>
+          <p style="color:#7A6E65;margin-bottom:16px;font-size:0.88rem;line-height:1.7">Un adoptant a confirmé avoir adopté <strong>[Nom]</strong> via Coup de Patte.</p>
+          <div style="background:#F4F1E8;border-radius:12px;padding:16px;margin-bottom:20px;font-size:0.85rem">
+            <p style="margin:0 0 6px"><strong>Animal :</strong> [Nom]</p>
+            <p style="margin:0;color:#7A6E65"><strong>Refuge :</strong> [Nom du refuge]</p>
+          </div>
+          <p style="color:#7A6E65;margin-bottom:16px;font-size:0.85rem;line-height:1.7">Connectez-vous à votre espace refuge pour valider ou ignorer ce signalement.</p>
+          <div style="text-align:center">
+            <a href="https://coup-de-patte.fr/coup-de-patte-admin.html" style="display:inline-block;background:#4A7C59;color:#F4F1E8;font-size:13px;font-weight:700;padding:11px 24px;border-radius:50px;text-decoration:none">🏠 Accéder à mon espace refuge</a>
+          </div>
+        </div>
+      </div>
+      <p style="font-size:0.72rem;color:var(--dust);margin-top:10px;font-style:italic">Cet email est envoyé automatiquement via la Edge Function notify-adoption.</p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function showTab(card, tab, btn) {
+  var rendu = document.getElementById(card + '-rendu');
+  var texte = document.getElementById(card + '-texte');
+  var btns = btn.closest('.tab-btns').querySelectorAll('.tab-btn');
+  btns.forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+  if (tab === 'rendu') { rendu.style.display = 'block'; texte.style.display = 'none'; }
+  else { rendu.style.display = 'none'; texte.style.display = 'block'; }
+}
+
+function copier(card, btn) {
+  var el = document.getElementById(card + '-content');
+  if (!el) return;
+  navigator.clipboard.writeText(el.textContent.trim()).then(function() {
+    btn.textContent = '✅ Copié !';
+    btn.classList.add('copied');
+    setTimeout(function() { btn.textContent = '📋 Copier'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+</script>
+</body>
+</html>

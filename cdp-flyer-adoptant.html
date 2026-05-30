@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flyer Adoptants · Coup de Patte</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,600&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --forest: #2D4A3E;
+  --moss: #4A7C59;
+  --sage: #7AAD89;
+  --mint: #C8E6C0;
+  --ivory: #F4F1E8;
+  --paper: #FDFCF8;
+  --dust: #7A6E65;
+  --amber: #D4A843;
+  --rose: #C9704A;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background: #e8e4d8;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+  min-height: 100vh;
+}
+
+.print-btn {
+  background: var(--moss);
+  color: var(--ivory);
+  border: none;
+  padding: 12px 28px;
+  border-radius: 50px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+/* Flyer = 148mm x 210mm (A5) */
+.flyer {
+  width: 148mm;
+  min-height: 210mm;
+  background: var(--paper);
+  box-shadow: 0 8px 40px rgba(45,74,62,0.18);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ── RECTO ── */
+.f-hero {
+  background: var(--forest);
+  padding: 32px 28px 28px;
+  position: relative;
+  overflow: hidden;
+}
+
+.f-hero::before {
+  content: '';
+  position: absolute;
+  right: -40px;
+  top: -40px;
+  width: 180px;
+  height: 180px;
+  background: radial-gradient(circle, rgba(74,124,89,0.5) 0%, transparent 70%);
+}
+
+.logo-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 24px;
+  position: relative;
+  z-index: 1;
+}
+
+.logo-paw {
+  width: 30px;
+  height: 30px;
+  background: var(--amber);
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.logo-name {
+  font-family: 'Fraunces', serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--ivory);
+}
+
+.f-title {
+  font-family: 'Fraunces', serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--ivory);
+  line-height: 1.15;
+  margin-bottom: 10px;
+  position: relative;
+  z-index: 1;
+}
+
+.f-title em { font-style: italic; color: var(--amber); }
+
+.f-sub {
+  font-size: 0.75rem;
+  color: rgba(244,241,232,0.7);
+  line-height: 1.6;
+  position: relative;
+  z-index: 1;
+}
+
+.f-body {
+  padding: 22px 28px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.f-desc {
+  font-size: 0.78rem;
+  color: var(--forest);
+  line-height: 1.7;
+}
+
+.f-points {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.f-point {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.f-point-icon {
+  font-size: 1rem;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.f-point-text {
+  font-size: 0.75rem;
+  color: var(--forest);
+  line-height: 1.5;
+}
+
+.f-point-text strong {
+  font-weight: 700;
+  display: block;
+  margin-bottom: 1px;
+}
+
+.f-enfin {
+  background: linear-gradient(135deg, rgba(212,168,67,0.12), rgba(212,168,67,0.04));
+  border: 1px solid rgba(212,168,67,0.25);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+
+.f-enfin p {
+  font-size: 0.72rem;
+  color: var(--dust);
+  line-height: 1.5;
+}
+
+.f-enfin strong {
+  font-family: 'Fraunces', serif;
+  font-size: 0.82rem;
+  color: var(--forest);
+  display: block;
+  margin-bottom: 3px;
+}
+
+.f-cta {
+  background: var(--amber);
+  border-radius: 12px;
+  padding: 14px 16px;
+  text-align: center;
+}
+
+.f-cta strong {
+  font-family: 'Fraunces', serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--forest);
+  display: block;
+  margin-bottom: 3px;
+}
+
+.f-cta a {
+  font-size: 0.75rem;
+  color: var(--forest);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+/* ── VERSO ── */
+.f-verso-hero {
+  background: linear-gradient(160deg, var(--moss), var(--forest));
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  flex: 0 0 auto;
+}
+
+.f-verso-title {
+  font-family: 'Fraunces', serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  font-style: italic;
+  color: var(--ivory);
+  line-height: 1.2;
+}
+
+.steps-mini {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.step-mini {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.step-mini-n {
+  width: 22px;
+  height: 22px;
+  background: var(--amber);
+  color: var(--forest);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.72rem;
+  flex-shrink: 0;
+}
+
+.step-mini-t {
+  font-size: 0.72rem;
+  color: rgba(244,241,232,0.85);
+  line-height: 1.5;
+}
+
+.step-mini-t strong {
+  color: var(--ivory);
+  font-weight: 700;
+}
+
+.f-verso-body {
+  padding: 20px 28px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.f-algo-box {
+  background: var(--ivory);
+  border-radius: 12px;
+  padding: 14px 16px;
+  border: 1.5px solid rgba(45,74,62,0.1);
+}
+
+.f-algo-box h4 {
+  font-family: 'Fraunces', serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--forest);
+  margin-bottom: 6px;
+}
+
+.f-algo-box p {
+  font-size: 0.72rem;
+  color: var(--dust);
+  line-height: 1.5;
+}
+
+.f-qr-zone {
+  border: 2px dashed rgba(45,74,62,0.2);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.f-qr-placeholder {
+  width: 64px;
+  height: 64px;
+  background: var(--forest);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+}
+
+.f-qr-zone p {
+  font-size: 0.7rem;
+  color: var(--dust);
+}
+
+.f-qr-zone strong {
+  font-size: 0.78rem;
+  color: var(--forest);
+  font-weight: 700;
+  font-family: 'Fraunces', serif;
+}
+
+.f-footer {
+  margin: 0 28px 24px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(45,74,62,0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.f-footer span {
+  font-size: 0.65rem;
+  color: var(--dust);
+}
+
+.f-footer strong {
+  font-size: 0.72rem;
+  color: var(--forest);
+  font-weight: 700;
+}
+
+@media print {
+  body { background: white; padding: 0; }
+  .print-btn { display: none; }
+  .grid { gap: 0; }
+  .flyer { box-shadow: none; page-break-after: always; }
+}
+</style>
+</head>
+<body>
+
+<button class="print-btn" onclick="window.print()">🖨️ Imprimer / Exporter en PDF</button>
+
+<div class="grid">
+
+<!-- ══ RECTO ══ -->
+<div class="flyer">
+  <div class="f-hero">
+    <div class="logo-row">
+      <div class="logo-paw">🐾</div>
+      <span class="logo-name">Coup de Patte</span>
+    </div>
+    <h1 class="f-title">Trouvez l'animal<br>qui <em>vous correspond</em><br>vraiment.</h1>
+    <p class="f-sub">Pas un animal au hasard — le vôtre.</p>
+  </div>
+
+  <div class="f-body">
+    <p class="f-desc">Coup de Patte est une plateforme d'adoption gratuite qui utilise un algorithme pour mettre en relation les adoptants avec les animaux des refuges selon leur mode de vie réel.</p>
+
+    <div class="f-points">
+      <div class="f-point">
+        <span class="f-point-icon">🎯</span>
+        <div class="f-point-text">
+          <strong>Un profil, des matchs personnalisés</strong>
+          Répondez à quelques questions sur votre logement et votre quotidien — l'algorithme fait le reste.
+        </div>
+      </div>
+      <div class="f-point">
+        <span class="f-point-icon">🐾</span>
+        <div class="f-point-text">
+          <strong>Des animaux de refuges près de chez vous</strong>
+          Chats, chiens, toutes races et tous âges — issus d'associations locales.
+        </div>
+      </div>
+      <div class="f-point">
+        <span class="f-point-icon">🆓</span>
+        <div class="f-point-text">
+          <strong>100% gratuit</strong>
+          Coup de Patte est un projet indépendant à but non lucratif.
+        </div>
+      </div>
+    </div>
+
+    <div class="f-enfin">
+      <strong>✨ Enfin Moi ? — les oubliés des refuges</strong>
+      <p>Une section dédiée aux animaux seniors, malades ou présents depuis plus d'un an. Ceux qui attendent depuis le plus longtemps méritent une famille, eux aussi.</p>
+    </div>
+
+    <div class="f-cta">
+      <strong>Créez votre profil gratuitement</strong>
+      <a href="https://coup-de-patte.fr">coup-de-patte.fr →</a>
+    </div>
+  </div>
+</div>
+
+<!-- ══ VERSO ══ -->
+<div class="flyer">
+  <div class="f-verso-hero">
+    <h2 class="f-verso-title">Comment ça<br>marche ?</h2>
+    <div class="steps-mini">
+      <div class="step-mini">
+        <div class="step-mini-n">1</div>
+        <div class="step-mini-t"><strong>Créez votre profil adoptant</strong> — logement, disponibilité, expérience avec les animaux.</div>
+      </div>
+      <div class="step-mini">
+        <div class="step-mini-n">2</div>
+        <div class="step-mini-t"><strong>Découvrez vos matchs</strong> — les animaux les plus compatibles avec votre mode de vie.</div>
+      </div>
+      <div class="step-mini">
+        <div class="step-mini-n">3</div>
+        <div class="step-mini-t"><strong>Contactez le refuge</strong> — directement depuis la fiche de l'animal.</div>
+      </div>
+      <div class="step-mini">
+        <div class="step-mini-n">4</div>
+        <div class="step-mini-t"><strong>Rencontrez votre animal</strong> — et commencez une nouvelle aventure.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="f-verso-body">
+    <div class="f-algo-box">
+      <h4>🧮 L'algorithme de matching</h4>
+      <p>5 critères pondérés : logement (30%), foyer (25%), disponibilité (20%), expérience (15%), mode de vie (10%). Seuls les animaux avec un score ≥ 60% vous sont proposés.</p>
+    </div>
+
+    <div class="f-qr-zone">
+      <div class="f-qr-placeholder">📱</div>
+      <strong>Scannez pour accéder</strong>
+      <p>Ajoutez ici le QR code de<br>coup-de-patte.fr</p>
+    </div>
+  </div>
+
+  <div class="f-footer">
+    <span>Projet indépendant · 2025</span>
+    <strong>coup-de-patte.fr</strong>
+  </div>
+</div>
+
+</div>
+</body>
+</html>
