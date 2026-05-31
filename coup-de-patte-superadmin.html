@@ -1396,25 +1396,42 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       || (d.vie_en_refuge === 'Difficilement' || d.vie_en_refuge === 'Très difficilement');
 
     var payload = {
-      nom: item.nom, espece: item.espece, race: item.race,
-      age_annees: item.age_annees, sexe: item.sexe,
-      description: item.description, histoire: d.histoire || null,
+      nom: item.nom || d.nom,
+      espece: item.espece || d.espece,
+      race: item.race || d.race || null,
+      sexe: item.sexe || d.sexe || null,
+      age_annees: item.age_annees || d.age_annees || null,
+      description: d.description || item.description || null,
+      histoire: d.histoire || null,
       photo_url: item.photo_url || null,
+      source_url: item.source_url || null,
       date_arrivee_refuge: item.date_arrivee_refuge || null,
       refuge: (Array.isArray(item.refuge) ? item.refuge[0]?.id : item.refuge?.id) || item.refuge || null,
       disponible: true, enfin_moi: enfinMoi, statut: 'disponible',
-      gabarit: d.gabarit || null, energie: d.energie || null,
+      // Morphologie
+      gabarit: d.gabarit || null,
+      poids_kg: d.poids_kg || null,
+      pelage: d.pelage || null,
+      couleur: d.couleur || null,
+      mobilite: d.mobilite || null,
+      // Comportement
+      energie: d.energie || null,
+      lien_humain: d.lien_humain || null,
+      reactivite_inconnus: d.reactivite_inconnus || null,
+      supporte_solitude: d.supporte_solitude || null,
       experience_requise: d.experience_requise || null,
-      besoins_medicaux: d.besoins_medicaux || null,
+      vie_en_refuge: d.vie_en_refuge || null,
+      // Compatibilités
       compat_enfants_moins13: d.compat_enfants_moins13 ?? null,
+      compat_ados_plus13: d.compat_ados_plus13 ?? null,
       compat_chats: d.compat_chats ?? null,
       compat_chiens: d.compat_chiens ?? null,
-      reactivite_inconnus: d.reactivite_inconnus || null,
-      vie_en_refuge: d.vie_en_refuge || null,
-      sterilisation: d.sterilise === true ? 'oui' : (d.sterilise === false ? 'non' : null),
-      sexe: item.sexe || d.sexe || null,
-      race: item.race || d.race || null,
-      age_annees: item.age_annees || d.age_annees || null
+      // Santé
+      vaccination: d.vaccination || null,
+      sterilisation: d.sterilisation || null,
+      identification: d.identification || null,
+      antiparasitaire: d.antiparasitaire || null,
+      besoins_medicaux: d.besoins_medicaux || null
     };
 
     var { error: insertError } = await sb.from('Animal').insert([payload]);

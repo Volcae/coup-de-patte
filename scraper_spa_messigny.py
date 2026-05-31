@@ -191,27 +191,45 @@ def analyser_avec_claude(animal):
     import anthropic
     client = anthropic.Anthropic(api_key=ANTHROPIC_KEY)
 
-    prompt = f"""Tu es un expert en bien-etre animal. Lis attentivement ce texte brut extrait d'une fiche d'adoption et extrais UNIQUEMENT les informations utiles.
+    nom = animal.get('nom', 'cet animal')
+    espece = animal.get('espece', '')
+    texte = animal.get('texte_brut', animal.get('description', ''))
+    prompt = f"""Voici le texte brut de la fiche d'adoption de {nom} ({espece}) extrait d'un site de refuge.
 
-TEXTE BRUT:
-{animal.get('texte_brut', animal.get('description', ''))}
+{texte}
 
-Reponds UNIQUEMENT en JSON valide, sans commentaire, avec exactement ces champs:
+Extrais uniquement les informations factuelles explicitement presentes dans ce texte.
+Regle absolue : si une information n'est pas mentionnee dans le texte, mets null. Ne deduis rien, n'invente rien.
+
+Reponds UNIQUEMENT en JSON valide, sans commentaire :
 {{
-  "description_propre": "description courte et claire de l'animal en 2-3 phrases maximum, sans adresse ni horaires ni mentions legales",
-  "sexe": "male"/"femelle"/null,
-  "sterilise": true/false/null,
-  "race": "race exacte ou null",
-  "age_annees": nombre entier ou null,
-  "gabarit": "petit"/"moyen"/"grand"/null,
-  "energie": "faible"/"moyen"/"eleve"/null,
-  "compat_enfants_moins13": true/false/null,
-  "compat_chats": true/false/null,
-  "compat_chiens": true/false/null,
-  "experience_requise": "debutant"/"intermediaire"/"experimente"/null,
-  "besoins_medicaux": "aucun"/"legers"/"lourds"/null,
-  "vie_en_refuge": "Tres bien"/"Bien"/"Moyennement bien"/"Difficilement"/"Tres difficilement"/null,
-  "origine": "abandon"/"trouve"/"saisie"/"sauvetage_elevage"/"transfert"/null
+  "nom": "{nom}",
+  "espece": "{espece}",
+  "race": "race exacte si mentionnee, sinon null",
+  "sexe": "male" ou "femelle" ou null,
+  "sterilisation": "oui" ou "non" ou null,
+  "identification": "oui" ou "non" ou null,
+  "vaccination": "oui" ou "non" ou null,
+  "antiparasitaire": "oui" ou "non" ou null,
+  "age_annees": nombre entier si date de naissance presente sinon null,
+  "poids_kg": nombre decimal si mentionne sinon null,
+  "gabarit": "petit" ou "moyen" ou "grand" ou null,
+  "pelage": "court" ou "mi-long" ou "long" ou null,
+  "couleur": "couleur principale si mentionnee" ou null,
+  "energie": "faible" ou "moyen" ou "eleve" ou null,
+  "lien_humain": "faible" ou "moyen" ou "fort" ou null,
+  "reactivite_inconnus": "faible" ou "moyen" ou "forte" ou null,
+  "supporte_solitude": "bien" ou "moyen" ou "mal" ou null,
+  "mobilite": "normale" ou "reduite" ou "tres_reduite" ou null,
+  "compat_enfants_moins13": true ou false ou null,
+  "compat_ados_plus13": true ou false ou null,
+  "compat_chiens": true ou false ou null,
+  "compat_chats": true ou false ou null,
+  "experience_requise": "debutant" ou "intermediaire" ou "experimente" ou null,
+  "besoins_medicaux": "aucun" ou "legers" ou "lourds" ou null,
+  "vie_en_refuge": "Tres bien" ou "Bien" ou "Moyennement bien" ou "Difficilement" ou "Tres difficilement" ou null,
+  "histoire": "origine de l'animal en une phrase si mentionnee : abandon, saisie, sauvetage elevage, etc. Sinon null",
+  "description": "2 phrases maximum sur le caractere et les besoins de {nom}, basees uniquement sur ce qui est ecrit. Sinon null"
 }}"""
 
     try:
@@ -305,7 +323,27 @@ def creer_fiche_refuge(user_id, email):
     return None
 
 
-def envoyer_supabase(animal, analyse, refuge_id):
+def verifier_animal_existant(source_url):
+    """Verifie si un animal avec cette URL existe deja dans Animal ou ScrapingQueue"""
+    if not source_url:
+        return None, None
+    # Verifier dans Animal
+    r = requests.get(
+        f"{SUPABASE_URL}/rest/v1/Animal?source_url=eq.{requests.utils.quote(source_url)}&select=id,nom",
+        headers=sb_headers()
+    )
+    if r.status_code == 200 and r.json():
+        return 'animal', r.json()[0]['id']
+    # Verifier dans ScrapingQueue
+    r2 = requests.get(
+        f"{SUPABASE_URL}/rest/v1/ScrapingQueue?select=id,nom,statut",
+        headers=sb_headers()
+    )
+    # Chercher par nom dans la queue
+    return None, None
+
+
+def envoyer_supabase(animal, analyse, refuge_id, existing_animal_id=None):
     payload = {
         "refuge": refuge_id,
         "nom": animal.get("nom"),
@@ -318,15 +356,18 @@ def envoyer_supabase(animal, analyse, refuge_id):
         "donnees_brutes": json.dumps(animal, ensure_ascii=False),
         "donnees_extraites": json.dumps({**animal, **analyse}, ensure_ascii=False),
         "nom": analyse.get("nom") or animal.get("nom"),
-        "sexe": analyse.get("sexe") or animal.get("sexe"),
+        "espece": analyse.get("espece") or animal.get("espece"),
         "race": analyse.get("race") or animal.get("race"),
+        "sexe": analyse.get("sexe") or animal.get("sexe"),
         "age_annees": analyse.get("age_annees") or animal.get("age_annees"),
-        "description": analyse.get("description_propre") or animal.get("description"),
-        "statut": "en_attente"
+        "description": analyse.get("description") or animal.get("description"),
+        "statut": "en_attente",
+        "commentaire": ("MISE A JOUR - animal existant ID: " + existing_animal_id) if existing_animal_id else None
     }
     r = requests.post(f"{SUPABASE_URL}/rest/v1/ScrapingQueue", headers=sb_headers(), json=payload)
     if r.status_code in [200, 201]:
-        print(f"  OK {animal.get('nom')} -> ScrapingQueue")
+        mode = 'mise a jour' if existing_animal_id else 'nouveau'
+        print(f"  OK {animal.get('nom')} -> ScrapingQueue ({mode})")
     else:
         print(f"  ERREUR ScrapingQueue: {r.status_code} - {r.text[:100]}")
 
@@ -403,19 +444,21 @@ def main():
         if not animal or not animal.get("nom"):
             print("  INFO Fiche invalide, ignoree"); continue
         print(f"  {animal['nom']} | {animal['espece']} | {animal.get('race', '-')} | {animal.get('age_annees', '-')} ans")
+        # Verifier si l'animal existe deja
+        where, existing_id = verifier_animal_existant(animal.get('source_url'))
+        if where == 'animal':
+            print(f"  INFO Animal existant dans Animal (ID: {existing_id}) - passage en mode mise a jour")
         print("  Analyse Claude API...")
         analyse = analyser_avec_claude(animal)
-        print(f"  Energie: {analyse.get('energie')} | Experience: {analyse.get('experience_requise')}")
+        print(f"  Energie: {analyse.get('energie')} | Experience: {analyse.get('experience_requise')} | Sterilise: {analyse.get('sterilisation')}")
         # Enrichir l'animal avec les données extraites par Claude
-        if analyse.get('description_propre'):
-            animal['description'] = analyse.get('description_propre')
         if analyse.get('sexe') and not animal.get('sexe'):
             animal['sexe'] = analyse.get('sexe')
         if analyse.get('race') and not animal.get('race'):
             animal['race'] = analyse.get('race')
         if analyse.get('age_annees') and not animal.get('age_annees'):
             animal['age_annees'] = analyse.get('age_annees')
-        envoyer_supabase(animal, analyse, refuge_id)
+        envoyer_supabase(animal, analyse, refuge_id, existing_id if where == 'animal' else None)
         succes += 1
         time.sleep(1)
 
