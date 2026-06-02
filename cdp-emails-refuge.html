@@ -202,6 +202,54 @@ coup-de-patte.fr</pre>
     </div>
   </div>
 
+  <!-- 4. Prospection locale -->
+  <div class="email-card" id="card-prospection">
+    <div class="email-card-header">
+      <div class="email-card-meta">
+        <span class="email-tag" style="background:rgba(74,124,89,0.1);color:var(--moss)">📍 Prospection locale</span>
+        <h3>Premier contact — associations locales</h3>
+        <p>Pour cibler les associations de Côte-d'Or. Ton et signature personnels.</p>
+      </div>
+      <button class="btn-copy" onclick="copier('prospection', this)">📋 Copier</button>
+    </div>
+    <div class="tab-btns">
+      <button class="tab-btn active" onclick="showTab('prospection','rendu',this)">Aperçu</button>
+      <button class="tab-btn" onclick="showTab('prospection','texte',this)">Texte brut</button>
+    </div>
+    <div id="prospection-rendu" class="email-preview">
+      <div class="email-subject">Objet : <span>Un projet local pour aider vos animaux à trouver une famille</span></div>
+      <div class="email-render">
+        <div style="font-family:Georgia,serif;max-width:520px;margin:0 auto;padding:32px 28px;color:#2D4A3E;line-height:1.75;font-size:15px">
+          <p style="margin-bottom:18px">Bonjour,</p>
+          <p style="margin-bottom:18px">Je me permets de vous contacter directement. Je m'appelle Cédric, je vis en Côte-d'Or, et j'ai créé Coup de Patte, une plateforme d'adoption animale gratuite. Je la développe seul, avec l'envie de lui donner une vraie portée au-delà du département.</p>
+          <p style="margin-bottom:18px">L'idée de départ : arrêter de confier l'adoption au hasard. Les adoptants remplissent un profil sur leur logement, leur quotidien et leur expérience avec les animaux. Un algorithme calcule ensuite leur compatibilité avec chaque animal du refuge, et ne leur propose que ceux qui correspondent vraiment à leur situation. Les animaux qui attendent depuis longtemps, les seniors et ceux avec des besoins particuliers ont une section dédiée pour ne pas être oubliés.</p>
+          <p style="margin-bottom:18px">Pour votre refuge, c'est entièrement gratuit. Aucune donnée personnelle n'est demandée ni à vous ni aux adoptants, et il n'y a aucun engagement. Vous gérez vos fiches animaux comme vous le souhaitez.</p>
+          <p style="margin-bottom:18px">Si vous souhaitez en savoir plus ou créer un compte, tout se passe sur coup-de-patte.fr, rubrique "Je gère un refuge". Je reste disponible si vous avez des questions.</p>
+          <p style="margin-bottom:4px">Bien cordialement,</p>
+          <p style="color:#7A6E65;font-size:13px">Cédric<br>Créateur de Coup de Patte<br>coup-de-patte.fr</p>
+        </div>
+      </div>
+    </div>
+    <div id="prospection-texte" class="email-text" style="display:none">
+      <pre id="prospection-content">Objet : Un projet local pour aider vos animaux à trouver une famille
+
+Bonjour,
+
+Je me permets de vous contacter directement. Je m'appelle Cédric, je vis en Côte-d'Or, et j'ai créé Coup de Patte, une plateforme d'adoption animale gratuite. Je la développe seul, avec l'envie de lui donner une vraie portée au-delà du département.
+
+L'idée de départ : arrêter de confier l'adoption au hasard. Les adoptants remplissent un profil sur leur logement, leur quotidien et leur expérience avec les animaux. Un algorithme calcule ensuite leur compatibilité avec chaque animal du refuge, et ne leur propose que ceux qui correspondent vraiment à leur situation. Les animaux qui attendent depuis longtemps, les seniors et ceux avec des besoins particuliers ont une section dédiée pour ne pas être oubliés.
+
+Pour votre refuge, c'est entièrement gratuit. Aucune donnée personnelle n'est demandée ni à vous ni aux adoptants, et il n'y a aucun engagement. Vous gérez vos fiches animaux comme vous le souhaitez.
+
+Si vous souhaitez en savoir plus ou créer un compte, tout se passe sur coup-de-patte.fr, rubrique "Je gère un refuge". Je reste disponible si vous avez des questions.
+
+Bien cordialement,
+Cédric
+Créateur de Coup de Patte
+coup-de-patte.fr</pre>
+    </div>
+  </div>
+
   <!-- 4. Notification adoption -->
   <div class="email-card" id="card-match">
     <div class="email-card-header">
