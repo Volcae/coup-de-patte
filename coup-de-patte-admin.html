@@ -1001,7 +1001,7 @@ function renderTable(tbodyId, animals, mode) {
         + '<td><div style="display:flex;flex-direction:column;gap:4px">' + raisons.join('') + '</div></td>'
         + '<td>' + statusBtn + '</td>'
         + '<td style="font-size:0.82rem;color:var(--rose);font-weight:700">' + duree + '</td>'
-        + '<td><div style="display:flex;gap:6px"><button class="row-btn" onclick="openEditModal(\'' + a.id + '\')">✏️ Modifier</button><button class="row-btn row-btn-danger" onclick="confirmDelete(\'' + a.id + '\',\'' + a.nom + '\')">🗑</button></div></td>'
+        + '<td><div style="display:flex;gap:6px"><button class="row-btn" onclick="openEditModal(\'' + a.id + '\')">✏️ Modifier</button><button class="row-btn" style="border-color:rgba(91,141,239,0.3);color:var(--blue)" onclick="ouvrirPartageAdmin(\'' + a.id + '\',\'' + a.nom.replace(/'/g,"\\\\'") + '\',\'' + (a.espece||'') + '\',\'' + (a.race||'') + '\',\'' + (a.photo_url||'') + '\')">📣 Partager</button><button class="row-btn row-btn-danger" onclick="confirmDelete(\'' + a.id + '\',\'' + a.nom + '\')">🗑</button></div></td>'
         + '</tr>';
     }
     if (mode === 'adoptes') {
@@ -1032,7 +1032,7 @@ function renderTable(tbodyId, animals, mode) {
       + '<td><div style="display:flex;align-items:center;gap:12px"><div class="animal-row-thumb" style="background:linear-gradient(135deg,var(--mint),var(--sage))">' + emoji + '</div><div><div class="animal-row-name"><a href=\"coup-de-patte-fiche.html?id=' + a.id + '\" style=\"color:var(--forest);font-weight:700;text-decoration:none;font-family:Fraunces,serif;font-style:italic\">' + a.nom + ' ↗</a></div><div class="animal-row-meta">' + (a.race || a.espece) + ' · ' + age + ' · ' + sexe + '</div></div></div></td>'
       + '<td>' + statusBtn + '</td>'
       + '<td style="font-size:0.82rem;color:var(--dust)">' + duree + '</td>'
-      + '<td><div style="display:flex;gap:6px"><button class="row-btn" onclick="openEditModal(\'' + a.id + '\')">✏️ Modifier</button><button class="row-btn row-btn-danger" onclick="confirmDelete(\'' + a.id + '\',\'' + a.nom + '\')">🗑</button></div></td>'
+      + '<td><div style="display:flex;gap:6px"><button class="row-btn" onclick="openEditModal(\'' + a.id + '\')">✏️ Modifier</button><button class="row-btn" style="border-color:rgba(91,141,239,0.3);color:var(--blue)" onclick="ouvrirPartageAdmin(\'' + a.id + '\',\'' + a.nom.replace(/'/g,"\\\\'") + '\',\'' + (a.espece||'') + '\',\'' + (a.race||'') + '\',\'' + (a.photo_url||'') + '\')">📣 Partager</button><button class="row-btn row-btn-danger" onclick="confirmDelete(\'' + a.id + '\',\'' + a.nom + '\')">🗑</button></div></td>'
       + '</tr>';
   }).join('');
 }
@@ -1754,6 +1754,31 @@ document.addEventListener('click', function(e) {
     if (d) d.style.display = 'none';
   }
 });
+
+function ouvrirPartageAdmin(id, nom, espece, race, photoUrl) {
+  var modal = document.getElementById("partageAdminModal");
+  if (!modal) return;
+  var url = window.location.origin + "/coup-de-patte-fiche.html?id=" + id;
+  var meta = [espece, race].filter(Boolean).join(" · ");
+  document.getElementById("partageVisNom").textContent = nom;
+  document.getElementById("partageVisMeta").textContent = meta;
+  var bg = document.getElementById("partageVisBg");
+  if (bg) { if (photoUrl) { bg.style.backgroundImage = "url(" + photoUrl + ")"; bg.style.display = "block"; } else { bg.style.display = "none"; } }
+  var fb = document.getElementById("texteFB");
+  if (fb) fb.textContent = nom + " attend sa famille au refuge.\n\nRetrouvez sa fiche sur Coup de Patte et decouvrez si vous etes compatibles :\n" + url + "\n\n#adoption #refuge #animaux #coupdepattes";
+  var tx = document.getElementById("texteX");
+  if (tx) tx.textContent = nom + " cherche une famille. Sa fiche sur Coup de Patte : " + url + " #adoption #refuge";
+  var textePartage = nom + " cherche une famille ! Sa fiche : " + url;
+  var wa = document.getElementById("partageWA"); if (wa) wa.href = "https://wa.me/?text=" + encodeURIComponent(textePartage);
+  var fbLink = document.getElementById("partageFB"); if (fbLink) fbLink.href = "https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent(url);
+  modal.style.display = "flex";
+}
+function fermerPartageAdmin() { var m = document.getElementById("partageAdminModal"); if (m) m.style.display = "none"; }
+function copierTextePartage(id) {
+  var el = document.getElementById(id); if (!el) return;
+  navigator.clipboard.writeText(el.textContent.trim()).then(function() { showToast("Texte copie !"); });
+}
+document.addEventListener("click", function(e) { var m = document.getElementById("partageAdminModal"); if (m && e.target === m) fermerPartageAdmin(); });
 </script>
 <footer>
   <div class="footer-logo">
@@ -1783,6 +1808,57 @@ document.addEventListener('click', function(e) {
       <button id="adoptionBtnSupprimer" style="padding:13px 24px;background:var(--moss);color:var(--ivory);border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer;transition:transform 0.2s" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">✅ Confirmer et retirer la fiche</button>
       <button id="adoptionBtnConserver" style="padding:13px 24px;background:transparent;border:2px solid var(--amber);color:var(--amber);border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer;transition:transform 0.2s" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">⏳ Confirmer et conserver 30 jours</button>
       <button id="adoptionBtnIgnorer" style="padding:10px 24px;background:transparent;border:none;color:var(--smoke);font-family:'Nunito',sans-serif;font-size:0.82rem;font-weight:600;cursor:pointer">Ignorer — la fiche restera visible</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- MODALE PARTAGE ADMIN -->
+<div id="partageAdminModal" style="display:none;position:fixed;inset:0;background:rgba(45,74,62,0.5);backdrop-filter:blur(10px);z-index:800;align-items:flex-start;justify-content:center;padding:80px 24px 24px;overflow-y:auto">
+  <div style="background:var(--paper);border-radius:28px;padding:36px 32px;max-width:560px;width:100%;border:1.5px solid var(--border);box-shadow:0 20px 60px rgba(45,74,62,0.2)">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
+      <p style="font-family:'Fraunces',serif;font-size:1.2rem;font-weight:700;font-style:italic;color:var(--forest);margin:0">📣 Partager sur les réseaux</p>
+      <button onclick="fermerPartageAdmin()" style="background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--dust)">✕</button>
+    </div>
+
+    <!-- Visuel CSS exportable -->
+    <p style="font-size:0.72rem;font-weight:700;color:var(--dust);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px">Visuel à capturer (1:1 pour Instagram/Facebook)</p>
+    <div id="partageVisuel" style="width:100%;aspect-ratio:1;border-radius:20px;overflow:hidden;position:relative;background:var(--forest);margin-bottom:16px;display:flex;flex-direction:column;justify-content:flex-end">
+      <div id="partageVisBg" style="position:absolute;inset:0;background-size:cover;background-position:center"></div>
+      <div style="position:absolute;inset:0;background:linear-gradient(to bottom,transparent 30%,rgba(45,74,62,0.9) 100%)"></div>
+      <div style="position:relative;z-index:2;padding:24px">
+        <div style="display:inline-flex;align-items:center;gap:6px;background:var(--amber);border-radius:50px;padding:4px 12px;font-size:0.68rem;font-weight:800;color:var(--forest);margin-bottom:10px">🐾 Coup de Patte</div>
+        <h2 id="partageVisNom" style="font-family:'Fraunces',serif;font-size:2rem;font-weight:700;color:var(--ivory);margin-bottom:4px"></h2>
+        <p id="partageVisMeta" style="font-size:0.82rem;color:rgba(244,241,232,0.75)"></p>
+        <p style="font-size:0.72rem;color:rgba(244,241,232,0.55);margin-top:8px">coup-de-patte.fr</p>
+      </div>
+    </div>
+    <p style="font-size:0.7rem;color:var(--dust);margin-bottom:20px;font-style:italic">Faites une capture d'écran du visuel ci-dessus pour l'utiliser sur les réseaux.</p>
+
+    <!-- Textes prêts à copier -->
+    <p style="font-size:0.72rem;font-weight:700;color:var(--dust);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px">Textes prêts à copier</p>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px">
+      <div style="background:var(--ivory);border-radius:14px;border:1.5px solid var(--border);overflow:hidden">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border)">
+          <span style="font-size:0.72rem;font-weight:700;color:var(--dust)">📘 Facebook / Instagram</span>
+          <button onclick="copierTextePartage('texteFB')" style="font-size:0.68rem;font-weight:700;color:var(--moss);background:none;border:none;cursor:pointer">📋 Copier</button>
+        </div>
+        <p id="texteFB" style="font-size:0.78rem;color:var(--forest);padding:12px 14px;line-height:1.7;white-space:pre-line"></p>
+      </div>
+      <div style="background:var(--ivory);border-radius:14px;border:1.5px solid var(--border);overflow:hidden">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border)">
+          <span style="font-size:0.72rem;font-weight:700;color:var(--dust)">&#x1D54F; X / Twitter</span>
+          <button onclick="copierTextePartage('texteX')" style="font-size:0.68rem;font-weight:700;color:var(--moss);background:none;border:none;cursor:pointer">📋 Copier</button>
+        </div>
+        <p id="texteX" style="font-size:0.78rem;color:var(--forest);padding:12px 14px;line-height:1.7;white-space:pre-line"></p>
+      </div>
+    </div>
+
+    <!-- Liens directs -->
+    <p style="font-size:0.72rem;font-weight:700;color:var(--dust);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px">Partager le lien</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <a id="partageWA" href="#" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:10px;background:#25D366;border-radius:12px;font-family:'Nunito',sans-serif;font-size:0.82rem;font-weight:700;color:white;text-decoration:none">💬 WhatsApp</a>
+      <a id="partageFB" href="#" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:10px;background:#1877F2;border-radius:12px;font-family:'Nunito',sans-serif;font-size:0.82rem;font-weight:700;color:white;text-decoration:none">📘 Facebook</a>
     </div>
   </div>
 </div>
