@@ -152,6 +152,7 @@ def scraper_fiche_animal(url):
     texte_brut = " ".join(lines)
     animal["description"] = ""
     animal["texte_brut"] = texte_brut[:4000]
+    description_lines = lines  # compatibilité avec source_url
 
     og_image = soup.find("meta", property="og:image")
     if og_image:
@@ -162,7 +163,7 @@ def scraper_fiche_animal(url):
 
     animal["source_url"] = url
     # Stocker le texte brut complet (filtré des infos refuge) pour Claude
-    animal["texte_brut"] = " ".join(description_lines)[:3000]
+    animal["texte_brut"] = texte_brut[:4000]
     return animal
 
 
