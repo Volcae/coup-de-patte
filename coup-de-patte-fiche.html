@@ -529,6 +529,7 @@ window.addEventListener('load', async function() {
       <span id="metaGabarit">–</span>
     </div>
     <div class="animal-tags" id="animalTags"></div>
+    <button onclick="ouvrirPartage()" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;padding:8px 16px;background:transparent;border:1.5px solid var(--border);border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.78rem;font-weight:700;color:var(--dust);cursor:pointer">&#x1F517; Partager cette fiche</button>
   </div>
 
   <div class="tabs-wrap">
@@ -791,6 +792,23 @@ window.addEventListener('load', function() { setTimeout(chargerSignalements, 800
 
 
 <!-- Modale confirmation adoption -->
+<div id="partageModal" style="display:none;position:fixed;inset:0;background:rgba(45,74,62,0.45);backdrop-filter:blur(8px);z-index:700;align-items:center;justify-content:center;padding:24px">
+  <div style="background:var(--paper);border-radius:28px;padding:36px 32px;max-width:400px;width:100%;border:1.5px solid var(--border);box-shadow:0 20px 56px rgba(45,74,62,0.18)">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+      <p style="font-family:'Fraunces',serif;font-size:1.1rem;font-weight:700;font-style:italic;color:var(--forest);margin:0">Partager cette fiche</p>
+      <button onclick="fermerPartage()" style="background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--dust)">&#x2715;</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <button onclick="partagerNatif()" id="btnPartageNatif" style="display:none;align-items:center;gap:12px;padding:12px 18px;background:var(--forest);color:var(--ivory);border:none;border-radius:14px;font-family:'Nunito',sans-serif;font-size:0.88rem;font-weight:700;cursor:pointer">&#x1F4F1; Partager via mon t&#xE9;l&#xE9;phone</button>
+      <button onclick="copierLien()" id="btnCopierLien" style="display:flex;align-items:center;gap:12px;padding:12px 18px;background:var(--ivory);border:1.5px solid var(--border);border-radius:14px;font-family:'Nunito',sans-serif;font-size:0.88rem;font-weight:700;color:var(--forest);cursor:pointer">&#x1F4CB; Copier le lien</button>
+      <a id="btnWhatsapp" href="#" target="_blank" style="display:flex;align-items:center;gap:12px;padding:12px 18px;background:#25D366;border-radius:14px;font-family:'Nunito',sans-serif;font-size:0.88rem;font-weight:700;color:white;text-decoration:none">&#x1F4AC; WhatsApp</a>
+      <a id="btnFacebook" href="#" target="_blank" style="display:flex;align-items:center;gap:12px;padding:12px 18px;background:#1877F2;border-radius:14px;font-family:'Nunito',sans-serif;font-size:0.88rem;font-weight:700;color:white;text-decoration:none">&#x1F4D8; Facebook</a>
+      <a id="btnTwitter" href="#" target="_blank" style="display:flex;align-items:center;gap:12px;padding:12px 18px;background:#000;border-radius:14px;font-family:'Nunito',sans-serif;font-size:0.88rem;font-weight:700;color:white;text-decoration:none">&#x1D54F; X / Twitter</a>
+      <a id="btnEmail" href="#" style="display:flex;align-items:center;gap:12px;padding:12px 18px;background:var(--ivory);border:1.5px solid var(--border);border-radius:14px;font-family:'Nunito',sans-serif;font-size:0.88rem;font-weight:700;color:var(--forest);text-decoration:none">&#x1F4E7; Envoyer par email</a>
+    </div>
+  </div>
+</div>
+
 <div class="adoption-popup" id="adoptionPopup">
   <div class="adoption-box">
     <span class="adoption-emoji">🐾</span>
@@ -819,5 +837,32 @@ window.addEventListener('load', function() { setTimeout(chargerSignalements, 800
   </div>
   <div class="footer-copy">© 2025 Coup de Patte · Projet indépendant</div>
 </footer>
+<script>
+function ouvrirPartage() {
+  var modal = document.getElementById("partageModal");
+  if (!modal) return;
+  var nom = document.getElementById("animalNom") ? document.getElementById("animalNom").textContent : "Cet animal";
+  var url = window.location.href;
+  var texte = nom + " cherche une famille - decouvrez sa fiche sur Coup de Patte !";
+  if (navigator.share) { var n = document.getElementById("btnPartageNatif"); if (n) n.style.display = "flex"; }
+  var wa = document.getElementById("btnWhatsapp"); if (wa) wa.href = "https://wa.me/?text=" + encodeURIComponent(texte + " " + url);
+  var fb = document.getElementById("btnFacebook"); if (fb) fb.href = "https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent(url);
+  var tw = document.getElementById("btnTwitter"); if (tw) tw.href = "https://x.com/intent/tweet?text=" + encodeURIComponent(texte) + "&url=" + encodeURIComponent(url);
+  var em = document.getElementById("btnEmail"); if (em) em.href = "mailto:?subject=" + encodeURIComponent("Je pense que " + nom + " pourrait te plaire") + "&body=" + encodeURIComponent("J'ai trouve cette fiche sur Coup de Patte :\n\n" + url);
+  modal.style.display = "flex";
+}
+function fermerPartage() { var m = document.getElementById("partageModal"); if (m) m.style.display = "none"; }
+function partagerNatif() {
+  var nom = document.getElementById("animalNom") ? document.getElementById("animalNom").textContent : "Cet animal";
+  navigator.share({ title: nom + " - Coup de Patte", text: nom + " cherche une famille.", url: window.location.href }).catch(function() {});
+}
+function copierLien() {
+  navigator.clipboard.writeText(window.location.href).then(function() {
+    var btn = document.getElementById("btnCopierLien");
+    if (btn) { btn.textContent = "Lien copie !"; setTimeout(function() { btn.textContent = "Copier le lien"; }, 2000); }
+  });
+}
+document.addEventListener("click", function(e) { var m = document.getElementById("partageModal"); if (m && e.target === m) fermerPartage(); });
+</script>
 </body>
 </html>
