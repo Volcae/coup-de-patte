@@ -148,33 +148,10 @@ def scraper_fiche_animal(url):
     else:
         animal["age_annees"] = None
 
-    # Mots qui signalent la fin du contenu utile
-    STOP_WORDS_FIN = [
-        "Refuge de Jouvence", "Route du Val", "Messigny",
-        "horaires d'ouverture", "Lundi de", "Mardi de", "Mercredi de",
-        "Mentions légales", "Conseil d'administration", "Tout droits réservés",
-        "Plan du site", "MagicWeb", "refugedejouvence", "03 80 35"
-    ]
-    # Lignes à ignorer (navigation, fil d'ariane, etc.)
-    IGNORE_WORDS = [
-        "Animaux >", "Retour", "250 26", "250 27", "250 28", "250 29",
-        "@gmail", "Suivre", "Contact"
-    ]
-    description_lines = []
-    for line in lines:
-        if any(stop in line for stop in STOP_WORDS_FIN):
-            break
-        if any(ign in line for ign in IGNORE_WORDS):
-            continue
-        if len(line) < 15:
-            continue
-        if re.match(r"^\d{2}/\d{2}/\d{2}", line):
-            continue
-        if line.strip() == animal.get("nom", "").upper():
-            continue
-        description_lines.append(line)
-    description = " ".join(description_lines)
-    animal["description"] = description[:2000].strip()
+    # Stocker le texte brut complet — Claude se charge de filtrer
+    texte_brut = " ".join(lines)
+    animal["description"] = ""
+    animal["texte_brut"] = texte_brut[:4000]
 
     og_image = soup.find("meta", property="og:image")
     if og_image:
