@@ -264,6 +264,7 @@ Réponds UNIQUEMENT en JSON valide, sans commentaire ni balise markdown :
   "experience_requise": "debutant" ou "intermediaire" ou "experimente" ou null,
   "besoins_medicaux": "aucun" ou "legers" ou "lourds" ou null,
   "vie_en_refuge": "Tres bien" ou "Bien" ou "Moyennement bien" ou "Difficilement" ou "Tres difficilement" ou null,
+  "handicap": true si un handicap physique ou sensoriel est explicitement mentionné (aveugle, sourd, amputé, paralysé, etc.), false sinon. Ne pas confondre avec besoins médicaux,
   "date_arrivee_refuge": "YYYY-MM-DD si mentionnée sinon null",
   "histoire": "origine en une phrase si mentionnée : abandon, saisie, sauvetage, etc. Sinon null",
   "description": "texte de présentation de l'animal, rédigé positivement, max 300 mots. Synthèse du texte brut."
@@ -345,14 +346,38 @@ def extraire_email_site(site_url):
 
 
 def chercher_refuge_existant(email):
-    if not email:
-        return None
-    r = requests.get(
-        f"{SUPABASE_URL}/rest/v1/Refuge?email=eq.{email}&select=id",
-        headers=sb_headers()
-    )
-    if r.status_code == 200 and r.json():
-        return r.json()[0]["id"]
+    """Cherche le refuge par email, puis par site_web, puis par nom."""
+    # Par email
+    if email:
+        r = requests.get(
+            f"{SUPABASE_URL}/rest/v1/Refuge?email=eq.{requests.utils.quote(email)}&select=id",
+            headers=sb_headers()
+        )
+        if r.status_code == 200 and r.json():
+            print(f"  → Refuge trouvé par email")
+            return r.json()[0]["id"]
+
+    # Par site_web
+    if REFUGE_SITE:
+        site = REFUGE_SITE.rstrip('/')
+        r = requests.get(
+            f"{SUPABASE_URL}/rest/v1/Refuge?site_web=eq.{requests.utils.quote(site)}&select=id",
+            headers=sb_headers()
+        )
+        if r.status_code == 200 and r.json():
+            print(f"  → Refuge trouvé par site_web")
+            return r.json()[0]["id"]
+
+    # Par nom exact
+    if REFUGE_NOM:
+        r = requests.get(
+            f"{SUPABASE_URL}/rest/v1/Refuge?nom=eq.{requests.utils.quote(REFUGE_NOM)}&select=id",
+            headers=sb_headers()
+        )
+        if r.status_code == 200 and r.json():
+            print(f"  → Refuge trouvé par nom")
+            return r.json()[0]["id"]
+
     return None
 
 
@@ -496,8 +521,7 @@ def main():
     else:
         print(f"  Création du refuge {REFUGE_NOM}...")
         user_id = creer_compte_auth(email) if email else None
-        if not user_id and email:
-            print("  ✗ Échec Auth — arrêt"); return
+        # Si pas d'email ou échec Auth, on crée quand même la fiche refuge sans compte
         refuge_id = creer_fiche_refuge(user_id, email)
         if not refuge_id:
             print("  ✗ Impossible de créer le refuge — arrêt"); return

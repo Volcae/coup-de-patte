@@ -1396,7 +1396,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     });
   }
 
-  async function validerScraping(itemId) {
+  async function validerScraping(itemId, dateArriveeParam) {
     var sb = getSupabase();
     var { data: items } = await sb.from('ScrapingQueue').select('*').eq('id', itemId);
     if (!items || items.length === 0) { showToast('Élément introuvable'); return; }
@@ -1405,52 +1405,73 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     try { d = typeof item.donnees_extraites === 'string' ? JSON.parse(item.donnees_extraites) : (item.donnees_extraites || {}); } catch(e) {}
 
     // Calculer enfin_moi
-    var moisRef = item.date_arrivee_refuge ? (new Date() - new Date(item.date_arrivee_refuge)) / (1000*60*60*24*30) : 0;
+    var dateArrivee = dateArriveeParam || item.date_arrivee_refuge || null;
+    var moisRef = dateArrivee ? (new Date() - new Date(dateArrivee)) / (1000*60*60*24*30) : 0;
     var especeL = (item.espece || '').toLowerCase();
+    var ageNum = parseFloat(item.age_annees || d.age_annees || 0);
     var enfinMoi = moisRef >= 12
-      || (especeL === 'chien' && item.age_annees >= 8)
-      || (especeL === 'chat' && item.age_annees >= 10)
+      || (especeL === 'chien' && ageNum >= 8)
+      || (especeL === 'chat'  && ageNum >= 10)
+      || (d.vie_en_refuge === 'Difficilement' || d.vie_en_refuge === 'Tres difficilement' || d.vie_en_refuge === 'Très difficilement')
       || (d.besoins_medicaux === 'lourds')
-      || (d.vie_en_refuge === 'Difficilement' || d.vie_en_refuge === 'Très difficilement');
+      || (d.handicap === true);
+    var raisonEnfinMoi = '';
+    if (moisRef >= 12) raisonEnfinMoi = Math.round(moisRef) + ' mois au refuge';
+    else if (especeL === 'chien' && ageNum >= 8) raisonEnfinMoi = 'chien senior (' + ageNum + ' ans)';
+    else if (especeL === 'chat'  && ageNum >= 10) raisonEnfinMoi = 'chat senior (' + ageNum + ' ans)';
+    else if (d.vie_en_refuge === 'Difficilement' || d.vie_en_refuge === 'Tres difficilement' || d.vie_en_refuge === 'Très difficilement') raisonEnfinMoi = 'supporte mal la vie en refuge';
+    else if (d.besoins_medicaux === 'lourds') raisonEnfinMoi = 'besoins médicaux lourds';
+    else if (d.handicap === true) raisonEnfinMoi = 'handicap mentionné';
+
+    var photoVal = item.photo_url || null;
+    var ageVal = item.age_annees ? parseFloat(item.age_annees) : (d.age_annees ? parseFloat(d.age_annees) : null);
+    var refugeVal = item.refuge_id || (Array.isArray(item.refuge) ? item.refuge[0]?.id : item.refuge?.id) || item.refuge || null;
 
     var payload = {
-      nom: item.nom || d.nom,
-      espece: item.espece || d.espece,
-      race: item.race || d.race || null,
-      sexe: item.sexe || d.sexe || null,
-      age_annees: item.age_annees || d.age_annees || null,
-      description: d.description || item.description || null,
-      histoire: d.histoire || null,
-      photo_url: item.photo_url || null,
-      source_url: item.source_url || null,
-      date_arrivee_refuge: item.date_arrivee_refuge || null,
-      refuge: (Array.isArray(item.refuge) ? item.refuge[0]?.id : item.refuge?.id) || item.refuge || null,
-      disponible: true, enfin_moi: enfinMoi, statut: 'disponible',
+      nom:                    item.nom || d.nom || null,
+      espece:                 item.espece || d.espece || null,
+      race:                   item.race || d.race || null,
+      sexe:                   item.sexe || d.sexe || null,
+      age_annees:             ageVal,
+      description:            d.description || item.description || null,
+      histoire:               d.histoire || null,
+      photo_url:              photoVal,
+      photo:                  photoVal,
+      source_url:             item.source_url || null,
+      date_arrivee_refuge:    dateArrivee || null,
+      refuge:                 refugeVal,
+      disponible:             true,
+      enfin_moi:              enfinMoi,
+      raison_enfin_moi:       enfinMoi ? raisonEnfinMoi : null,
+      statut:                 'disponible',
       // Morphologie
-      gabarit: d.gabarit || null,
-      poids_kg: d.poids_kg || null,
-      pelage: d.pelage || null,
-      couleur: d.couleur || null,
-      mobilite: d.mobilite || null,
+      gabarit:                d.gabarit || null,
+      poids_kg:               d.poids_kg ? parseFloat(d.poids_kg) : null,
+      pelage:                 d.pelage || null,
+      couleur:                d.couleur || null,
+      mobilite:               d.mobilite || null,
       // Comportement
-      energie: d.energie || null,
-      lien_humain: d.lien_humain || null,
-      reactivite_inconnus: d.reactivite_inconnus || null,
-      supporte_solitude: d.supporte_solitude || null,
-      experience_requise: d.experience_requise || null,
-      vie_en_refuge: d.vie_en_refuge || null,
+      energie:                d.energie || null,
+      lien_humain:            d.lien_humain || null,
+      reactivite_inconnus:    d.reactivite_inconnus || null,
+      supporte_solitude:      d.supporte_solitude || null,
+      experience_requise:     d.experience_requise || null,
+      vie_en_refuge:          d.vie_en_refuge || null,
       // Compatibilités
       compat_enfants_moins13: d.compat_enfants_moins13 ?? null,
-      compat_ados_plus13: d.compat_ados_plus13 ?? null,
-      compat_chats: d.compat_chats ?? null,
-      compat_chiens: d.compat_chiens ?? null,
+      compat_ados_plus13:     d.compat_ados_plus13 ?? null,
+      compat_chats:           d.compat_chats ?? null,
+      compat_chiens:          d.compat_chiens ?? null,
       // Santé
-      vaccination: d.vaccination || null,
-      sterilisation: d.sterilisation || null,
-      identification: d.identification || null,
-      antiparasitaire: d.antiparasitaire || null,
-      besoins_medicaux: d.besoins_medicaux || null
+      vaccination:            d.vaccination || null,
+      sterilisation:          d.sterilisation || null,
+      identification:         d.identification || null,
+      antiparasitaire:        d.antiparasitaire || null,
+      besoins_medicaux:       d.besoins_medicaux || null
     };
+
+    // Nettoyer les null explicites pour ne pas écraser de données existantes
+    Object.keys(payload).forEach(function(k) { if (payload[k] === null) delete payload[k]; });
 
     var { error: insertError } = await sb.from('Animal').insert([payload]);
     if (insertError) { showToast('Erreur insertion : ' + insertError.message); return; }
@@ -1598,6 +1619,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <p id="detailNulls" style="font-size:0.78rem;color:var(--dust);margin:0;line-height:1.8"></p>
     </div>
 
+    <!-- Date arrivée refuge -->
+    <div style="padding:16px 28px;border-bottom:1px solid var(--border);background:rgba(196,154,26,0.05)">
+      <p style="font-size:0.72rem;font-weight:700;color:var(--amber);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">📅 Date d'arrivée au refuge <span style="font-weight:400;color:var(--dust)">(importante pour le calcul Enfin Moi)</span></p>
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <input type="date" id="detailDateArrivee" style="padding:8px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:'Nunito',sans-serif;font-size:0.85rem;background:var(--paper);color:var(--forest)">
+        <div id="detailEnfinMoiPreview" style="font-size:0.75rem;font-weight:700;padding:5px 12px;border-radius:50px;display:none"></div>
+      </div>
+      <p style="font-size:0.68rem;color:var(--dust);margin:6px 0 0">Enfin Moi si : ≥ 1 an au refuge · chien ≥ 8 ans · chat ≥ 10 ans · besoins médicaux lourds</p>
+    </div>
+
     <!-- Actions -->
     <div style="padding:20px 28px;display:flex;gap:10px;flex-wrap:wrap">
       <button id="detailBtnValider" onclick="" style="padding:11px 26px;background:var(--moss);color:var(--ivory);border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.88rem;font-weight:700;cursor:pointer">✅ Valider et publier</button>
@@ -1696,8 +1727,54 @@ function ouvrirDetailScraping(item) {
     nullsWrap.style.display = 'none';
   }
 
-  // Boutons valider / refuser
-  document.getElementById('detailBtnValider').onclick = function() { fermerDetailScraping(); validerScraping(item.id); };
+  // Pré-remplir la date d'arrivée si déjà connue
+  var dateInput = document.getElementById('detailDateArrivee');
+  if (dateInput) {
+    dateInput.value = item.date_arrivee_refuge || '';
+    // Calcul preview Enfin Moi en temps réel
+    function mettreAJourEnfinMoi() {
+      var dateVal = dateInput.value;
+      var preview = document.getElementById('detailEnfinMoiPreview');
+      var especeL = (item.espece || '').toLowerCase();
+      var age = parseFloat(item.age_annees || d.age_annees || 0);
+      var besoins = d.besoins_medicaux;
+      var vieRefuge = d.vie_en_refuge;
+      var enfinMoi = false;
+      var raison = '';
+      if (dateVal) {
+        var mois = (new Date() - new Date(dateVal)) / (1000*60*60*24*30);
+        if (mois >= 12) { enfinMoi = true; raison = Math.round(mois) + ' mois au refuge'; }
+      }
+      if (!enfinMoi && especeL === 'chien' && age >= 8)  { enfinMoi = true; raison = 'chien senior (' + age + ' ans)'; }
+      if (!enfinMoi && especeL === 'chat'  && age >= 10) { enfinMoi = true; raison = 'chat senior (' + age + ' ans)'; }
+      if (!enfinMoi && (vieRefuge === 'Difficilement' || vieRefuge === 'Tres difficilement' || vieRefuge === 'Très difficilement')) { enfinMoi = true; raison = 'supporte mal la vie en refuge'; }
+      if (!enfinMoi && besoins === 'lourds')   { enfinMoi = true; raison = 'besoins médicaux lourds'; }
+      if (!enfinMoi && d.handicap === true)    { enfinMoi = true; raison = 'handicap mentionné'; }
+      if (preview) {
+        preview.style.display = 'flex';
+        if (enfinMoi) {
+          preview.textContent = '✨ Enfin Moi — ' + raison;
+          preview.style.background = 'rgba(212,168,67,0.15)';
+          preview.style.color = 'var(--amber)';
+          preview.style.border = '1px solid rgba(212,168,67,0.3)';
+        } else {
+          preview.textContent = 'Statut standard';
+          preview.style.background = 'rgba(74,124,89,0.1)';
+          preview.style.color = 'var(--moss)';
+          preview.style.border = '1px solid rgba(74,124,89,0.2)';
+        }
+      }
+    }
+    dateInput.addEventListener('change', mettreAJourEnfinMoi);
+    mettreAJourEnfinMoi(); // calcul initial
+  }
+
+  // Boutons valider / refuser — passer la date saisie à validerScraping
+  document.getElementById('detailBtnValider').onclick = function() {
+    var dateVal = document.getElementById('detailDateArrivee') ? document.getElementById('detailDateArrivee').value : '';
+    fermerDetailScraping();
+    validerScraping(item.id, dateVal || null);
+  };
   document.getElementById('detailBtnRefuser').onclick = function() { fermerDetailScraping(); refuserScraping(item.id); };
 
   // Afficher la modale
