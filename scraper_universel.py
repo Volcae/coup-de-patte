@@ -41,6 +41,7 @@ REFUGE_EMAIL = os.environ.get("REFUGE_EMAIL", "")
 REFUGE_VILLE = os.environ.get("REFUGE_VILLE", "")
 REFUGE_SITE  = os.environ.get("REFUGE_SITE", "")
 REFUGE_TEL   = os.environ.get("REFUGE_TEL", "")
+REFUGE_ID    = os.environ.get("REFUGE_ID", "")   # UUID Supabase — prioritaire sur recherche par nom
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (compatible; CoupDePatte/1.0; +https://coup-de-patte.fr)"
@@ -515,16 +516,22 @@ def main():
 
     # ── Refuge Supabase
     print(f"\nRecherche du refuge dans Supabase...")
-    refuge_id = chercher_refuge_existant(email)
-    if refuge_id:
-        print(f"  ✓ Refuge existant — ID : {refuge_id}")
+
+    # Priorité 1 : ID passé directement par le superadmin
+    if REFUGE_ID:
+        refuge_id = REFUGE_ID
+        print(f"  ✓ Refuge ID fourni directement : {refuge_id}")
     else:
-        print(f"  Création du refuge {REFUGE_NOM}...")
-        user_id = creer_compte_auth(email) if email else None
-        # Si pas d'email ou échec Auth, on crée quand même la fiche refuge sans compte
-        refuge_id = creer_fiche_refuge(user_id, email)
-        if not refuge_id:
-            print("  ✗ Impossible de créer le refuge — arrêt"); return
+        refuge_id = chercher_refuge_existant(email)
+        if refuge_id:
+            print(f"  ✓ Refuge trouvé — ID : {refuge_id}")
+        else:
+            print(f"  Création du refuge {REFUGE_NOM}...")
+            user_id = creer_compte_auth(email) if email else None
+            # Si pas d'email ou échec Auth, on crée quand même la fiche refuge sans compte
+            refuge_id = creer_fiche_refuge(user_id, email)
+            if not refuge_id:
+                print("  ✗ Impossible de créer le refuge — arrêt"); return
 
     # ── Découverte des fiches
     fiches_urls = decouvrir_pages_adoption(REFUGE_SITE)

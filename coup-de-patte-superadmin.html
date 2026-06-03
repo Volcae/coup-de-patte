@@ -1308,7 +1308,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     var res = await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/actions/workflows/scraping.yml/dispatches', {
       method: 'POST',
       headers: { 'Authorization': 'Bearer ' + GITHUB_TOKEN, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ref: 'main', inputs: { refuge_nom: refugeNom, refuge_site: refugeSite, refuge_email: refugeEmail, refuge_ville: refugeVille } })
+      body: JSON.stringify({ ref: 'main', inputs: { refuge_id: refugeId, refuge_nom: refugeNom, refuge_site: refugeSite, refuge_email: refugeEmail, refuge_ville: refugeVille } })
     });
     if (res.status === 204) {
       if (status) { status.textContent = '✅ Scraping lancé ! Les animaux apparaîtront dans la file d\'attente dans quelques minutes.'; status.style.color = 'var(--moss)'; }
