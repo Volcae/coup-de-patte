@@ -6,15 +6,19 @@ on:
   workflow_dispatch:
     inputs:
       refuge_id:
-        description: 'UUID Supabase du refuge (prioritaire)'
+        description: 'UUID Supabase du refuge'
         required: false
         default: ''
       refuge_nom:
         description: 'Nom du refuge'
         required: true
       refuge_site:
-        description: 'URL du site du refuge'
+        description: 'URL du site (ex: https://www.spa-messigny.fr)'
         required: true
+      refuge_url_adoption:
+        description: 'URL directe de la page animaux (ex: https://www.spa-messigny.fr/adoption-animaux/)'
+        required: false
+        default: ''
       refuge_email:
         description: 'Email du refuge (optionnel)'
         required: false
@@ -43,13 +47,14 @@ jobs:
       - name: Run scraper universel
         timeout-minutes: 40
         env:
-          ANTHROPIC_API_KEY:         ${{ secrets.ANTHROPIC_API_KEY }}
-          SUPABASE_URL:              ${{ secrets.SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          RESEND_API_KEY:            ${{ secrets.RESEND_API_KEY }}
-          REFUGE_ID:                 ${{ github.event.inputs.refuge_id }}
-          REFUGE_NOM:                ${{ github.event.inputs.refuge_nom }}
-          REFUGE_SITE:               ${{ github.event.inputs.refuge_site }}
-          REFUGE_EMAIL:              ${{ github.event.inputs.refuge_email }}
-          REFUGE_VILLE:              ${{ github.event.inputs.refuge_ville }}
+          ANTHROPIC_API_KEY:          ${{ secrets.ANTHROPIC_API_KEY }}
+          SUPABASE_URL:               ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY:  ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          RESEND_API_KEY:             ${{ secrets.RESEND_API_KEY }}
+          REFUGE_ID:                  ${{ github.event.inputs.refuge_id }}
+          REFUGE_NOM:                 ${{ github.event.inputs.refuge_nom }}
+          REFUGE_SITE:                ${{ github.event.inputs.refuge_site }}
+          REFUGE_URL_ADOPTION:        ${{ github.event.inputs.refuge_url_adoption }}
+          REFUGE_EMAIL:               ${{ github.event.inputs.refuge_email }}
+          REFUGE_VILLE:               ${{ github.event.inputs.refuge_ville }}
         run: python scraper_universel.py
