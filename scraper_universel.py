@@ -432,44 +432,23 @@ def verifier_animal_existant(source_url):
 
 def envoyer_supabase(analyse, photo_url, source_url, refuge_id, existing_id=None, where=None):
     """
-    Envoie les données extraites dans ScrapingQueue.
-    Colonnes correspondant exactement à la table Animal.
+    Envoie dans ScrapingQueue uniquement les colonnes qui existent dans cette table.
+    Tous les champs détaillés (compat, santé, comportement...) sont stockés
+    dans donnees_extraites (JSONB) et transférés vers Animal lors de la validation.
     """
     payload = {
-        "refuge":                  refuge_id,
-        "nom":                     analyse.get("nom"),
-        "espece":                  analyse.get("espece"),
-        "race":                    analyse.get("race"),
-        "age_annees":              analyse.get("age_annees"),
-        "sexe":                    analyse.get("sexe"),
-        "poids_kg":                analyse.get("poids_kg"),
-        "gabarit":                 analyse.get("gabarit"),
-        "pelage":                  analyse.get("pelage"),
-        "couleur":                 analyse.get("couleur"),
-        "description":             analyse.get("description"),
-        "histoire":                analyse.get("histoire"),
-        "photo_url":               photo_url or "",
-        "date_arrivee_refuge":     analyse.get("date_arrivee_refuge"),
-        "vie_en_refuge":           analyse.get("vie_en_refuge"),
-        "supporte_solitude":       analyse.get("supporte_solitude"),
-        "energie":                 analyse.get("energie"),
-        "lien_humain":             analyse.get("lien_humain"),
-        "reactivite_inconnus":     analyse.get("reactivite_inconnus"),
-        "experience_requise":      analyse.get("experience_requise"),
-        "compat_enfants_moins13":  analyse.get("compat_enfants_moins13"),
-        "compat_ados_plus13":      analyse.get("compat_ados_plus13"),
-        "compat_chiens":           analyse.get("compat_chiens"),
-        "compat_chats":            analyse.get("compat_chats"),
-        "vaccination":             analyse.get("vaccination"),
-        "sterilisation":           analyse.get("sterilisation"),
-        "identification":          analyse.get("identification"),
-        "antiparasitaire":         analyse.get("antiparasitaire"),
-        "besoins_medicaux":        analyse.get("besoins_medicaux"),
-        "mobilite":                analyse.get("mobilite"),
-        "source_url":              source_url,
-        "statut":                  "en_attente",
-        "donnees_extraites":       json.dumps(analyse, ensure_ascii=False),
-        "commentaire":             (f"MISE À JOUR — {where} ID: {existing_id}") if existing_id else None
+        "refuge":           refuge_id,
+        "nom":              analyse.get("nom"),
+        "espece":           analyse.get("espece"),
+        "race":             analyse.get("race"),
+        "age_annees":       analyse.get("age_annees"),
+        "sexe":             analyse.get("sexe"),
+        "description":      analyse.get("description"),
+        "photo_url":        photo_url or "",
+        "source_url":       source_url,
+        "statut":           "en_attente",
+        "donnees_extraites": json.dumps(analyse, ensure_ascii=False),
+        "commentaire":      (f"MISE À JOUR — {where} ID: {existing_id}") if existing_id else None
     }
     # Supprimer les valeurs None pour éviter d'écraser des champs existants avec null
     payload = {k: v for k, v in payload.items() if v is not None}
