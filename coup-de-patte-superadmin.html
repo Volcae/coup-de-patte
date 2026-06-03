@@ -1404,6 +1404,39 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     var d = {};
     try { d = typeof item.donnees_extraites === 'string' ? JSON.parse(item.donnees_extraites) : (item.donnees_extraites || {}); } catch(e) {}
 
+    // Lire les valeurs éditées dans la modale (prioritaires sur les données Claude)
+    function getEdit(id) { var el = document.getElementById(id); return el ? el.value.trim() || null : null; }
+    function getBoolEdit(id) { var v = getEdit(id); return v === 'true' ? true : v === 'false' ? false : null; }
+    var editNom          = getEdit('editNom');
+    var editEspece       = getEdit('editEspece');
+    var editRace         = getEdit('editRace');
+    var editSexe         = getEdit('editSexe');
+    var editAge          = getEdit('editAge') ? parseFloat(getEdit('editAge')) : null;
+    var editPhotoUrl     = getEdit('editPhotoUrl');
+    var editDescription  = getEdit('editDescription');
+    var editHistoire     = getEdit('editHistoire');
+    var editGabarit      = getEdit('editGabarit');
+    var editPoids        = getEdit('editPoids') ? parseFloat(getEdit('editPoids')) : null;
+    var editPelage       = getEdit('editPelage');
+    var editCouleur      = getEdit('editCouleur');
+    var editMobilite     = getEdit('editMobilite');
+    var editEnergie      = getEdit('editEnergie');
+    var editLienHumain   = getEdit('editLienHumain');
+    var editReactivite   = getEdit('editReactivite');
+    var editSolitude     = getEdit('editSolitude');
+    var editVieRefuge    = getEdit('editVieRefuge');
+    var editExperience   = getEdit('editExperience');
+    var editCompatEnfants= getBoolEdit('editCompatEnfants');
+    var editCompatAdos   = getBoolEdit('editCompatAdos');
+    var editCompatChiens = getBoolEdit('editCompatChiens');
+    var editCompatChats  = getBoolEdit('editCompatChats');
+    var editVaccination  = getEdit('editVaccination');
+    var editSterilisation= getEdit('editSterilisation');
+    var editIdentification=getEdit('editIdentification');
+    var editAntiparasitaire=getEdit('editAntiparasitaire');
+    var editBesoins      = getEdit('editBesoins');
+    var editHandicap     = getBoolEdit('editHandicap');
+
     // Calculer enfin_moi
     var dateArrivee = dateArriveeParam || item.date_arrivee_refuge || null;
     var moisRef = dateArrivee ? (new Date() - new Date(dateArrivee)) / (1000*60*60*24*30) : 0;
@@ -1423,18 +1456,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     else if (d.besoins_medicaux === 'lourds') raisonEnfinMoi = 'besoins médicaux lourds';
     else if (d.handicap === true) raisonEnfinMoi = 'handicap mentionné';
 
-    var photoVal = item.photo_url || null;
-    var ageVal = item.age_annees ? parseFloat(item.age_annees) : (d.age_annees ? parseFloat(d.age_annees) : null);
+    var photoVal = editPhotoUrl !== null ? editPhotoUrl : (item.photo_url || null);
     var refugeVal = item.refuge_id || (Array.isArray(item.refuge) ? item.refuge[0]?.id : item.refuge?.id) || item.refuge || null;
 
     var payload = {
-      nom:                    item.nom || d.nom || null,
-      espece:                 item.espece || d.espece || null,
-      race:                   item.race || d.race || null,
-      sexe:                   item.sexe || d.sexe || null,
-      age_annees:             ageVal,
-      description:            d.description || item.description || null,
-      histoire:               d.histoire || null,
+      nom:                    editNom          || item.nom || d.nom || null,
+      espece:                 editEspece       || item.espece || d.espece || null,
+      race:                   editRace         || item.race || d.race || null,
+      sexe:                   editSexe         || item.sexe || d.sexe || null,
+      age_annees:             editAge          !== null ? editAge : (item.age_annees ? parseFloat(item.age_annees) : null),
+      description:            editDescription  || d.description || item.description || null,
+      histoire:               editHistoire     || d.histoire || null,
       photo_url:              photoVal,
       photo:                  photoVal,
       source_url:             item.source_url || null,
@@ -1445,29 +1477,29 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       raison_enfin_moi:       enfinMoi ? raisonEnfinMoi : null,
       statut:                 'disponible',
       // Morphologie
-      gabarit:                d.gabarit || null,
-      poids_kg:               d.poids_kg ? parseFloat(d.poids_kg) : null,
-      pelage:                 d.pelage || null,
-      couleur:                d.couleur || null,
-      mobilite:               d.mobilite || null,
+      gabarit:                editGabarit      || d.gabarit || null,
+      poids_kg:               editPoids        !== null ? editPoids : (d.poids_kg ? parseFloat(d.poids_kg) : null),
+      pelage:                 editPelage       || d.pelage || null,
+      couleur:                editCouleur      || d.couleur || null,
+      mobilite:               editMobilite     || d.mobilite || null,
       // Comportement
-      energie:                d.energie || null,
-      lien_humain:            d.lien_humain || null,
-      reactivite_inconnus:    d.reactivite_inconnus || null,
-      supporte_solitude:      d.supporte_solitude || null,
-      experience_requise:     d.experience_requise || null,
-      vie_en_refuge:          d.vie_en_refuge || null,
+      energie:                editEnergie      || d.energie || null,
+      lien_humain:            editLienHumain   || d.lien_humain || null,
+      reactivite_inconnus:    editReactivite   || d.reactivite_inconnus || null,
+      supporte_solitude:      editSolitude     || d.supporte_solitude || null,
+      experience_requise:     editExperience   || d.experience_requise || null,
+      vie_en_refuge:          editVieRefuge    || d.vie_en_refuge || null,
       // Compatibilités
-      compat_enfants_moins13: d.compat_enfants_moins13 ?? null,
-      compat_ados_plus13:     d.compat_ados_plus13 ?? null,
-      compat_chats:           d.compat_chats ?? null,
-      compat_chiens:          d.compat_chiens ?? null,
+      compat_enfants_moins13: editCompatEnfants !== null ? editCompatEnfants : (d.compat_enfants_moins13 ?? null),
+      compat_ados_plus13:     editCompatAdos    !== null ? editCompatAdos    : (d.compat_ados_plus13    ?? null),
+      compat_chats:           editCompatChats   !== null ? editCompatChats   : (d.compat_chats          ?? null),
+      compat_chiens:          editCompatChiens  !== null ? editCompatChiens  : (d.compat_chiens         ?? null),
       // Santé
-      vaccination:            d.vaccination || null,
-      sterilisation:          d.sterilisation || null,
-      identification:         d.identification || null,
-      antiparasitaire:        d.antiparasitaire || null,
-      besoins_medicaux:       d.besoins_medicaux || null
+      vaccination:            editVaccination   || d.vaccination   || null,
+      sterilisation:          editSterilisation || d.sterilisation || null,
+      identification:         editIdentification|| d.identification|| null,
+      antiparasitaire:        editAntiparasitaire||d.antiparasitaire||null,
+      besoins_medicaux:       editBesoins       || d.besoins_medicaux || null
     };
 
     // Nettoyer les null explicites pour ne pas écraser de données existantes
@@ -1557,219 +1589,308 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </body>
 </html>
 
-<!-- ══════════ MODALE DÉTAIL SCRAPING ══════════ -->
+<!-- ══════════ MODALE DÉTAIL + ÉDITION SCRAPING ══════════ -->
+<style>
+.edit-input { width:100%;padding:6px 10px;border:1.5px solid var(--border);border-radius:8px;font-family:'Nunito',sans-serif;font-size:0.82rem;background:var(--paper);color:var(--forest);box-sizing:border-box; }
+.edit-input:focus { outline:none;border-color:var(--moss); }
+.edit-select { width:100%;padding:6px 10px;border:1.5px solid var(--border);border-radius:8px;font-family:'Nunito',sans-serif;font-size:0.82rem;background:var(--paper);color:var(--forest); }
+.edit-label { font-size:0.68rem;font-weight:700;color:var(--dust);text-transform:uppercase;letter-spacing:0.4px;display:block;margin-bottom:3px; }
+.edit-row { padding:6px 0;border-bottom:1px solid rgba(45,74,62,0.06); }
+</style>
 <div id="scrapingDetailModal" style="display:none;position:fixed;inset:0;background:rgba(45,74,62,0.5);backdrop-filter:blur(6px);z-index:800;align-items:flex-start;justify-content:center;padding:24px;overflow-y:auto">
-  <div style="background:var(--paper);border-radius:28px;border:1.5px solid var(--border);box-shadow:0 24px 64px rgba(45,74,62,0.2);width:100%;max-width:760px;margin:auto;position:relative">
+  <div style="background:var(--paper);border-radius:28px;border:1.5px solid var(--border);box-shadow:0 24px 64px rgba(45,74,62,0.2);width:100%;max-width:820px;margin:auto;position:relative">
 
     <!-- Header -->
     <div style="display:flex;align-items:center;justify-content:space-between;padding:24px 28px 0">
       <p style="font-family:'Fraunces',serif;font-size:1.15rem;font-weight:700;font-style:italic;color:var(--forest);margin:0" id="detailNomHeader">Détail de la fiche</p>
-      <button onclick="fermerDetailScraping()" style="background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--dust);line-height:1">✕</button>
-    </div>
-
-    <!-- Photo + infos de base -->
-    <div style="display:flex;gap:20px;padding:20px 28px;border-bottom:1px solid var(--border)">
-      <div id="detailPhoto" style="width:120px;height:120px;border-radius:18px;flex-shrink:0;overflow:hidden;background:linear-gradient(135deg,var(--mint),var(--sage));display:flex;align-items:center;justify-content:center;font-size:3rem"></div>
-      <div style="flex:1">
-        <p style="font-family:'Fraunces',serif;font-size:1.6rem;font-weight:700;font-style:italic;color:var(--forest);margin:0 0 6px" id="detailNom">–</p>
-        <p style="font-size:0.82rem;color:var(--dust);margin:0 0 10px" id="detailMeta">–</p>
-        <div id="detailTags" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+      <div style="display:flex;gap:10px;align-items:center">
+        <a id="detailSourceLink" href="#" target="_blank" style="font-size:0.72rem;color:var(--blue);font-weight:700;text-decoration:none;padding:4px 10px;border:1px solid rgba(91,141,239,0.3);border-radius:50px">🔗 Fiche originale</a>
+        <button onclick="fermerDetailScraping()" style="background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--dust);line-height:1">✕</button>
       </div>
-      <a id="detailSourceLink" href="#" target="_blank" style="font-size:0.72rem;color:var(--blue);font-weight:700;white-space:nowrap;align-self:flex-start;text-decoration:none;padding:4px 10px;border:1px solid rgba(91,141,239,0.3);border-radius:50px">🔗 Voir fiche originale</a>
     </div>
 
-    <!-- Description -->
-    <div style="padding:16px 28px;border-bottom:1px solid var(--border)">
-      <p style="font-size:0.72rem;font-weight:700;color:var(--dust);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">Description</p>
-      <p id="detailDescription" style="font-size:0.82rem;color:var(--forest);line-height:1.7;margin:0;font-style:italic">–</p>
-    </div>
-    <div style="padding:16px 28px;border-bottom:1px solid var(--border)">
-      <p style="font-size:0.72rem;font-weight:700;color:var(--dust);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">Histoire</p>
-      <p id="detailHistoire" style="font-size:0.82rem;color:var(--forest);line-height:1.7;margin:0">–</p>
+    <!-- Photo + champs principaux éditables -->
+    <div style="display:flex;gap:20px;padding:20px 28px;border-bottom:1px solid var(--border);align-items:flex-start">
+      <!-- Photo -->
+      <div style="flex-shrink:0;text-align:center">
+        <div id="detailPhoto" style="width:110px;height:110px;border-radius:14px;overflow:hidden;background:linear-gradient(135deg,var(--mint),var(--sage));display:flex;align-items:center;justify-content:center;font-size:3rem;margin-bottom:6px"></div>
+        <button onclick="supprimerPhotoDetail()" style="font-size:0.65rem;color:var(--rose);background:none;border:1px solid var(--rose);border-radius:50px;padding:2px 8px;cursor:pointer;font-family:'Nunito',sans-serif;font-weight:700">🗑 Supprimer photo</button>
+      </div>
+      <!-- Infos de base éditables -->
+      <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="edit-row" style="grid-column:1/-1">
+          <label class="edit-label">Nom</label>
+          <input id="editNom" class="edit-input" type="text" placeholder="Prénom de l'animal">
+        </div>
+        <div class="edit-row">
+          <label class="edit-label">Espèce</label>
+          <select id="editEspece" class="edit-select">
+            <option value="">—</option>
+            <option value="chien">Chien</option>
+            <option value="chat">Chat</option>
+            <option value="lapin">Lapin</option>
+            <option value="nac">NAC</option>
+          </select>
+        </div>
+        <div class="edit-row">
+          <label class="edit-label">Race</label>
+          <input id="editRace" class="edit-input" type="text" placeholder="Race ou croisé...">
+        </div>
+        <div class="edit-row">
+          <label class="edit-label">Sexe</label>
+          <select id="editSexe" class="edit-select">
+            <option value="">—</option>
+            <option value="male">Mâle</option>
+            <option value="femelle">Femelle</option>
+          </select>
+        </div>
+        <div class="edit-row">
+          <label class="edit-label">Âge (années)</label>
+          <input id="editAge" class="edit-input" type="number" min="0" max="30" step="0.5">
+        </div>
+      </div>
     </div>
 
-    <!-- Grille de tous les champs -->
-    <div style="padding:20px 28px;display:grid;grid-template-columns:1fr 1fr;gap:0">
+    <!-- URL Photo éditable -->
+    <div style="padding:12px 28px;border-bottom:1px solid var(--border);background:rgba(91,141,239,0.04)">
+      <label class="edit-label">🖼 URL de la photo</label>
+      <div style="display:flex;gap:8px;align-items:center">
+        <input id="editPhotoUrl" class="edit-input" type="text" placeholder="https://..." oninput="aperçuPhoto(this.value)" style="flex:1">
+        <button onclick="aperçuPhoto(document.getElementById('editPhotoUrl').value)" style="padding:6px 12px;background:var(--sage);color:var(--forest);border:none;border-radius:8px;font-size:0.75rem;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif">Aperçu</button>
+      </div>
+    </div>
 
-      <div style="border-bottom:1px solid var(--border);border-right:1px solid var(--border);padding:10px 0">
-        <p style="font-size:0.72rem;font-weight:700;color:var(--dust);text-transform:uppercase;letter-spacing:0.5px;margin:0 0 10px">🐾 Morphologie</p>
-        <div id="detailMorpho"></div>
+    <!-- Description éditable -->
+    <div style="padding:14px 28px;border-bottom:1px solid var(--border)">
+      <label class="edit-label">Description (texte public affiché sur la fiche)</label>
+      <textarea id="editDescription" class="edit-input" rows="4" style="resize:vertical" placeholder="Description de l'animal..."></textarea>
+    </div>
+
+    <!-- Histoire éditable -->
+    <div style="padding:14px 28px;border-bottom:1px solid var(--border)">
+      <label class="edit-label">Histoire / origine</label>
+      <textarea id="editHistoire" class="edit-input" rows="2" style="resize:vertical" placeholder="Abandon, saisie, sauvetage..."></textarea>
+    </div>
+
+    <!-- Grille comportement / morpho / compat / santé -->
+    <div style="padding:16px 28px;display:grid;grid-template-columns:1fr 1fr;gap:20px;border-bottom:1px solid var(--border)">
+
+      <!-- Morphologie -->
+      <div>
+        <p style="font-size:0.72rem;font-weight:700;color:var(--dust);text-transform:uppercase;letter-spacing:0.5px;margin:0 0 8px">🐾 Morphologie</p>
+        <div class="edit-row"><label class="edit-label">Gabarit</label>
+          <select id="editGabarit" class="edit-select"><option value="">—</option><option value="petit">Petit</option><option value="moyen">Moyen</option><option value="grand">Grand</option></select></div>
+        <div class="edit-row"><label class="edit-label">Poids (kg)</label>
+          <input id="editPoids" class="edit-input" type="number" min="0" step="0.1"></div>
+        <div class="edit-row"><label class="edit-label">Pelage</label>
+          <select id="editPelage" class="edit-select"><option value="">—</option><option value="court">Court</option><option value="mi-long">Mi-long</option><option value="long">Long</option></select></div>
+        <div class="edit-row"><label class="edit-label">Couleur</label>
+          <input id="editCouleur" class="edit-input" type="text"></div>
+        <div class="edit-row"><label class="edit-label">Mobilité</label>
+          <select id="editMobilite" class="edit-select"><option value="">—</option><option value="normale">Normale</option><option value="reduite">Réduite</option><option value="tres_reduite">Très réduite</option></select></div>
       </div>
 
-      <div style="border-bottom:1px solid var(--border);padding:10px 0 10px 20px">
-        <p style="font-size:0.72rem;font-weight:700;color:var(--dust);text-transform:uppercase;letter-spacing:0.5px;margin:0 0 10px">⚡ Comportement</p>
-        <div id="detailComportement"></div>
+      <!-- Comportement -->
+      <div>
+        <p style="font-size:0.72rem;font-weight:700;color:var(--dust);text-transform:uppercase;letter-spacing:0.5px;margin:0 0 8px">⚡ Comportement</p>
+        <div class="edit-row"><label class="edit-label">Énergie</label>
+          <select id="editEnergie" class="edit-select"><option value="">—</option><option value="faible">Faible</option><option value="moyen">Moyen</option><option value="eleve">Élevé</option></select></div>
+        <div class="edit-row"><label class="edit-label">Lien humain</label>
+          <select id="editLienHumain" class="edit-select"><option value="">—</option><option value="faible">Faible</option><option value="moyen">Moyen</option><option value="fort">Fort</option></select></div>
+        <div class="edit-row"><label class="edit-label">Réactivité inconnus</label>
+          <select id="editReactivite" class="edit-select"><option value="">—</option><option value="faible">Faible</option><option value="moyen">Moyen</option><option value="forte">Forte</option></select></div>
+        <div class="edit-row"><label class="edit-label">Supporte solitude</label>
+          <select id="editSolitude" class="edit-select"><option value="">—</option><option value="bien">Bien</option><option value="moyen">Moyen</option><option value="mal">Mal</option></select></div>
+        <div class="edit-row"><label class="edit-label">Vie en refuge</label>
+          <select id="editVieRefuge" class="edit-select"><option value="">—</option><option value="Tres bien">Très bien</option><option value="Bien">Bien</option><option value="Moyennement bien">Moyennement bien</option><option value="Difficilement">Difficilement</option><option value="Tres difficilement">Très difficilement</option></select></div>
+        <div class="edit-row"><label class="edit-label">Expérience requise</label>
+          <select id="editExperience" class="edit-select"><option value="">—</option><option value="debutant">Débutant</option><option value="intermediaire">Intermédiaire</option><option value="experimente">Expérimenté</option></select></div>
       </div>
 
-      <div style="border-bottom:1px solid var(--border);border-right:1px solid var(--border);padding:10px 0">
-        <p style="font-size:0.72rem;font-weight:700;color:var(--dust);text-transform:uppercase;letter-spacing:0.5px;margin:0 0 10px">🤝 Compatibilités</p>
-        <div id="detailCompat"></div>
+      <!-- Compatibilités -->
+      <div>
+        <p style="font-size:0.72rem;font-weight:700;color:var(--dust);text-transform:uppercase;letter-spacing:0.5px;margin:0 0 8px">🤝 Compatibilités</p>
+        <div class="edit-row"><label class="edit-label">Enfants &lt; 13 ans</label>
+          <select id="editCompatEnfants" class="edit-select"><option value="">—</option><option value="true">✅ Oui</option><option value="false">❌ Non</option></select></div>
+        <div class="edit-row"><label class="edit-label">Ados 13+</label>
+          <select id="editCompatAdos" class="edit-select"><option value="">—</option><option value="true">✅ Oui</option><option value="false">❌ Non</option></select></div>
+        <div class="edit-row"><label class="edit-label">Chiens</label>
+          <select id="editCompatChiens" class="edit-select"><option value="">—</option><option value="true">✅ Oui</option><option value="false">❌ Non</option></select></div>
+        <div class="edit-row"><label class="edit-label">Chats</label>
+          <select id="editCompatChats" class="edit-select"><option value="">—</option><option value="true">✅ Oui</option><option value="false">❌ Non</option></select></div>
       </div>
 
-      <div style="border-bottom:1px solid var(--border);padding:10px 0 10px 20px">
-        <p style="font-size:0.72rem;font-weight:700;color:var(--dust);text-transform:uppercase;letter-spacing:0.5px;margin:0 0 10px">💉 Santé</p>
-        <div id="detailSante"></div>
+      <!-- Santé -->
+      <div>
+        <p style="font-size:0.72rem;font-weight:700;color:var(--dust);text-transform:uppercase;letter-spacing:0.5px;margin:0 0 8px">💉 Santé</p>
+        <div class="edit-row"><label class="edit-label">Vaccination</label>
+          <select id="editVaccination" class="edit-select"><option value="">—</option><option value="oui">Oui</option><option value="non">Non</option></select></div>
+        <div class="edit-row"><label class="edit-label">Stérilisation</label>
+          <select id="editSterilisation" class="edit-select"><option value="">—</option><option value="oui">Oui</option><option value="non">Non</option></select></div>
+        <div class="edit-row"><label class="edit-label">Identification</label>
+          <select id="editIdentification" class="edit-select"><option value="">—</option><option value="oui">Oui</option><option value="non">Non</option></select></div>
+        <div class="edit-row"><label class="edit-label">Antiparasitaire</label>
+          <select id="editAntiparasitaire" class="edit-select"><option value="">—</option><option value="oui">Oui</option><option value="non">Non</option></select></div>
+        <div class="edit-row"><label class="edit-label">Besoins médicaux</label>
+          <select id="editBesoins" class="edit-select"><option value="">—</option><option value="aucun">Aucun</option><option value="legers">Légers</option><option value="lourds">Lourds</option></select></div>
+        <div class="edit-row"><label class="edit-label">Handicap</label>
+          <select id="editHandicap" class="edit-select"><option value="">—</option><option value="true">Oui</option><option value="false">Non</option></select></div>
       </div>
 
     </div>
 
-    <!-- Champs null = non extraits par Claude -->
-    <div id="detailNullsWrap" style="padding:12px 28px;border-bottom:1px solid var(--border);display:none">
-      <p style="font-size:0.72rem;font-weight:700;color:var(--rose);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">⚠️ Champs non trouvés par Claude (null)</p>
-      <p id="detailNulls" style="font-size:0.78rem;color:var(--dust);margin:0;line-height:1.8"></p>
-    </div>
-
-    <!-- Date arrivée refuge -->
-    <div style="padding:16px 28px;border-bottom:1px solid var(--border);background:rgba(196,154,26,0.05)">
+    <!-- Date arrivée + Enfin Moi preview -->
+    <div style="padding:14px 28px;border-bottom:1px solid var(--border);background:rgba(196,154,26,0.05)">
       <p style="font-size:0.72rem;font-weight:700;color:var(--amber);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">📅 Date d'arrivée au refuge <span style="font-weight:400;color:var(--dust)">(importante pour le calcul Enfin Moi)</span></p>
       <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
         <input type="date" id="detailDateArrivee" style="padding:8px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:'Nunito',sans-serif;font-size:0.85rem;background:var(--paper);color:var(--forest)">
         <div id="detailEnfinMoiPreview" style="font-size:0.75rem;font-weight:700;padding:5px 12px;border-radius:50px;display:none"></div>
       </div>
-      <p style="font-size:0.68rem;color:var(--dust);margin:6px 0 0">Enfin Moi si : ≥ 1 an au refuge · chien ≥ 8 ans · chat ≥ 10 ans · besoins médicaux lourds</p>
+      <p style="font-size:0.68rem;color:var(--dust);margin:6px 0 0">Enfin Moi si : ≥ 1 an au refuge · chien ≥ 8 ans · chat ≥ 10 ans · besoins médicaux lourds · handicap</p>
+    </div>
+
+    <!-- Champs null -->
+    <div id="detailNullsWrap" style="padding:12px 28px;border-bottom:1px solid var(--border);display:none">
+      <p style="font-size:0.72rem;font-weight:700;color:var(--rose);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">⚠️ Champs non trouvés par Claude — à compléter si possible</p>
+      <p id="detailNulls" style="font-size:0.78rem;color:var(--dust);margin:0;line-height:1.8"></p>
     </div>
 
     <!-- Actions -->
-    <div style="padding:20px 28px;display:flex;gap:10px;flex-wrap:wrap">
+    <div style="padding:20px 28px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
       <button id="detailBtnValider" onclick="" style="padding:11px 26px;background:var(--moss);color:var(--ivory);border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.88rem;font-weight:700;cursor:pointer">✅ Valider et publier</button>
       <button id="detailBtnRefuser" onclick="" style="padding:11px 22px;background:transparent;border:1.5px solid var(--rose);color:var(--rose);border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.88rem;font-weight:700;cursor:pointer">❌ Refuser</button>
       <button onclick="fermerDetailScraping()" style="padding:11px 20px;background:transparent;border:1.5px solid var(--border);color:var(--dust);border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.88rem;font-weight:700;cursor:pointer">Fermer</button>
+      <span style="font-size:0.72rem;color:var(--dust);margin-left:auto">Les modifications sont appliquées à la validation</span>
     </div>
 
   </div>
 </div>
 
 <script>
+function aperçuPhoto(url) {
+  var photoEl = document.getElementById('detailPhoto');
+  if (!photoEl) return;
+  if (url && url.startsWith('http')) {
+    photoEl.innerHTML = '<img src="' + url + '" style="width:100%;height:100%;object-fit:cover" onerror="this.parentElement.innerHTML='🐾'">';
+  } else {
+    var espece = document.getElementById('editEspece') ? document.getElementById('editEspece').value : '';
+    photoEl.innerHTML = espece === 'chat' ? '🐱' : '🐕';
+  }
+}
+
+function supprimerPhotoDetail() {
+  document.getElementById('editPhotoUrl').value = '';
+  var photoEl = document.getElementById('detailPhoto');
+  var espece = document.getElementById('editEspece') ? document.getElementById('editEspece').value : '';
+  if (photoEl) photoEl.innerHTML = espece === 'chat' ? '🐱' : '🐕';
+}
+
+function selVal(id, val) {
+  var el = document.getElementById(id);
+  if (!el || val === null || val === undefined) return;
+  var strVal = String(val);
+  for (var i = 0; i < el.options.length; i++) {
+    if (el.options[i].value === strVal) { el.selectedIndex = i; return; }
+  }
+}
+
 function ouvrirDetailScraping(item) {
   var d = {};
   try { d = typeof item.donnees_extraites === 'string' ? JSON.parse(item.donnees_extraites) : (item.donnees_extraites || {}); } catch(e) {}
-  var refuge = Array.isArray(item.refuge) ? item.refuge[0] : item.refuge || {};
 
   // Header
-  document.getElementById('detailNomHeader').textContent = (item.nom || 'Sans nom') + ' — vérification';
-  document.getElementById('detailNom').textContent = item.nom || d.nom || 'Sans nom';
-  document.getElementById('detailMeta').textContent = [item.espece, item.race, item.age_annees ? item.age_annees + ' ans' : null, item.sexe, refuge.nom ? '🏡 ' + refuge.nom : null].filter(Boolean).join(' · ');
-
-  // Photo
-  var photoEl = document.getElementById('detailPhoto');
-  if (item.photo_url) {
-    photoEl.innerHTML = '<img src="' + item.photo_url + '" style="width:100%;height:100%;object-fit:cover" onerror="this.parentElement.innerHTML=\'🐾\'">';
-  } else {
-    photoEl.innerHTML = item.espece === 'chat' ? '🐱' : '🐕';
-  }
+  document.getElementById('detailNomHeader').textContent = (item.nom || 'Sans nom') + ' — vérification & édition';
 
   // Lien source
   var linkEl = document.getElementById('detailSourceLink');
   if (item.source_url) { linkEl.href = item.source_url; linkEl.style.display = ''; }
   else { linkEl.style.display = 'none'; }
 
-  // Description / Histoire
-  document.getElementById('detailDescription').textContent = d.description || item.description || '(aucune)';
-  document.getElementById('detailHistoire').textContent = d.histoire || item.histoire || '(non renseignée)';
+  // Champs éditables — infos de base
+  document.getElementById('editNom').value         = item.nom || d.nom || '';
+  selVal('editEspece', item.espece || d.espece);
+  document.getElementById('editRace').value        = item.race || d.race || '';
+  selVal('editSexe', item.sexe || d.sexe);
+  document.getElementById('editAge').value         = item.age_annees || d.age_annees || '';
 
-  // Tags
-  var tags = document.getElementById('detailTags');
-  tags.innerHTML = '';
-  function tag(txt, bg, col) { var s = document.createElement('span'); s.textContent = txt; s.style.cssText = 'background:' + bg + ';color:' + col + ';font-size:0.68rem;font-weight:700;padding:3px 10px;border-radius:50px'; tags.appendChild(s); }
-  if (d.energie) tag('⚡ ' + d.energie, 'rgba(74,124,89,0.12)', 'var(--moss)');
-  if (d.experience_requise) tag('🎓 ' + d.experience_requise, 'rgba(91,141,239,0.12)', 'var(--blue)');
-  if (d.vie_en_refuge) tag('🏠 Refuge: ' + d.vie_en_refuge, 'rgba(196,154,26,0.12)', 'var(--amber)');
-  if (d.besoins_medicaux && d.besoins_medicaux !== 'aucun') tag('🩺 ' + d.besoins_medicaux, 'rgba(201,112,74,0.12)', 'var(--rose)');
+  // Photo
+  var photoUrl = item.photo_url || '';
+  document.getElementById('editPhotoUrl').value = photoUrl;
+  aperçuPhoto(photoUrl);
 
-  // Fonction ligne
-  function ligne(label, val) {
-    if (val === null || val === undefined) return '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(45,74,62,0.06)"><span style="font-size:0.78rem;color:var(--smoke)">' + label + '</span><span style="font-size:0.78rem;font-weight:700;color:var(--smoke);opacity:0.5">—</span></div>';
-    var valStr = val === true ? '✅ oui' : val === false ? '❌ non' : val;
-    return '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(45,74,62,0.06)"><span style="font-size:0.78rem;color:var(--dust)">' + label + '</span><span style="font-size:0.78rem;font-weight:700;color:var(--forest)">' + valStr + '</span></div>';
-  }
+  // Textes
+  document.getElementById('editDescription').value = d.description || item.description || '';
+  document.getElementById('editHistoire').value    = d.histoire || item.histoire || '';
 
   // Morphologie
-  document.getElementById('detailMorpho').innerHTML =
-    ligne('Gabarit', d.gabarit) +
-    ligne('Poids', d.poids_kg ? d.poids_kg + ' kg' : null) +
-    ligne('Pelage', d.pelage) +
-    ligne('Couleur', d.couleur) +
-    ligne('Mobilité', d.mobilite) +
-    ligne('Date arrivée', item.date_arrivee_refuge);
+  selVal('editGabarit', d.gabarit);
+  document.getElementById('editPoids').value = d.poids_kg || '';
+  selVal('editPelage', d.pelage);
+  document.getElementById('editCouleur').value = d.couleur || '';
+  selVal('editMobilite', d.mobilite);
 
   // Comportement
-  document.getElementById('detailComportement').innerHTML =
-    ligne('Énergie', d.energie) +
-    ligne('Lien humain', d.lien_humain) +
-    ligne('Réactivité inconnus', d.reactivite_inconnus) +
-    ligne('Supporte solitude', d.supporte_solitude) +
-    ligne('Vie en refuge', d.vie_en_refuge) +
-    ligne('Expérience requise', d.experience_requise);
+  selVal('editEnergie', d.energie);
+  selVal('editLienHumain', d.lien_humain);
+  selVal('editReactivite', d.reactivite_inconnus);
+  selVal('editSolitude', d.supporte_solitude);
+  selVal('editVieRefuge', d.vie_en_refuge);
+  selVal('editExperience', d.experience_requise);
 
   // Compatibilités
-  document.getElementById('detailCompat').innerHTML =
-    ligne('Enfants < 13 ans', d.compat_enfants_moins13 !== undefined ? d.compat_enfants_moins13 : null) +
-    ligne('Ados 13+', d.compat_ados_plus13 !== undefined ? d.compat_ados_plus13 : null) +
-    ligne('Chiens', d.compat_chiens !== undefined ? d.compat_chiens : null) +
-    ligne('Chats', d.compat_chats !== undefined ? d.compat_chats : null);
+  selVal('editCompatEnfants', d.compat_enfants_moins13 !== undefined && d.compat_enfants_moins13 !== null ? String(d.compat_enfants_moins13) : '');
+  selVal('editCompatAdos',    d.compat_ados_plus13    !== undefined && d.compat_ados_plus13    !== null ? String(d.compat_ados_plus13)    : '');
+  selVal('editCompatChiens',  d.compat_chiens         !== undefined && d.compat_chiens         !== null ? String(d.compat_chiens)         : '');
+  selVal('editCompatChats',   d.compat_chats          !== undefined && d.compat_chats          !== null ? String(d.compat_chats)          : '');
 
   // Santé
-  document.getElementById('detailSante').innerHTML =
-    ligne('Vaccination', d.vaccination) +
-    ligne('Stérilisation', d.sterilisation) +
-    ligne('Identification', d.identification) +
-    ligne('Antiparasitaire', d.antiparasitaire) +
-    ligne('Besoins médicaux', d.besoins_medicaux);
+  selVal('editVaccination',     d.vaccination);
+  selVal('editSterilisation',   d.sterilisation);
+  selVal('editIdentification',  d.identification);
+  selVal('editAntiparasitaire', d.antiparasitaire);
+  selVal('editBesoins',         d.besoins_medicaux);
+  selVal('editHandicap',        d.handicap !== undefined && d.handicap !== null ? String(d.handicap) : '');
 
-  // Champs null — alerte si beaucoup de données manquantes
-  var champsImportants = { 'Race': d.race, 'Sexe': d.sexe || item.sexe, 'Âge': d.age_annees || item.age_annees, 'Énergie': d.energie, 'Expérience': d.experience_requise, 'Compat chiens': d.compat_chiens, 'Compat chats': d.compat_chats, 'Vaccination': d.vaccination, 'Stérilisation': d.sterilisation };
-  var nulls = Object.entries(champsImportants).filter(function(e) { return e[1] === null || e[1] === undefined; }).map(function(e) { return e[0]; });
+  // Champs null — alerte
+  var champsImportants = { 'Race': item.race || d.race, 'Sexe': item.sexe || d.sexe, 'Âge': item.age_annees || d.age_annees, 'Énergie': d.energie, 'Expérience': d.experience_requise, 'Compat chiens': d.compat_chiens, 'Compat chats': d.compat_chats, 'Vaccination': d.vaccination, 'Stérilisation': d.sterilisation };
+  var nulls = Object.entries(champsImportants).filter(function(e) { return e[1] === null || e[1] === undefined || e[1] === ''; }).map(function(e) { return e[0]; });
   var nullsWrap = document.getElementById('detailNullsWrap');
-  if (nulls.length > 0) {
-    nullsWrap.style.display = 'block';
-    document.getElementById('detailNulls').textContent = nulls.join(', ') + ' — ces informations n\'étaient pas présentes sur la fiche du refuge.';
-  } else {
-    nullsWrap.style.display = 'none';
-  }
+  if (nulls.length > 0) { nullsWrap.style.display = 'block'; document.getElementById('detailNulls').textContent = nulls.join(', '); }
+  else { nullsWrap.style.display = 'none'; }
 
-  // Pré-remplir la date d'arrivée si déjà connue
+  // Date arrivée + preview Enfin Moi
   var dateInput = document.getElementById('detailDateArrivee');
   if (dateInput) {
     dateInput.value = item.date_arrivee_refuge || '';
-    // Calcul preview Enfin Moi en temps réel
     function mettreAJourEnfinMoi() {
-      var dateVal = dateInput.value;
-      var preview = document.getElementById('detailEnfinMoiPreview');
-      var especeL = (item.espece || '').toLowerCase();
-      var age = parseFloat(item.age_annees || d.age_annees || 0);
-      var besoins = d.besoins_medicaux;
-      var vieRefuge = d.vie_en_refuge;
-      var enfinMoi = false;
-      var raison = '';
-      if (dateVal) {
-        var mois = (new Date() - new Date(dateVal)) / (1000*60*60*24*30);
-        if (mois >= 12) { enfinMoi = true; raison = Math.round(mois) + ' mois au refuge'; }
-      }
+      var dateVal   = dateInput.value;
+      var especeL   = (document.getElementById('editEspece').value || '').toLowerCase();
+      var age       = parseFloat(document.getElementById('editAge').value || 0);
+      var besoins   = document.getElementById('editBesoins').value;
+      var vieRefuge = document.getElementById('editVieRefuge').value;
+      var handicap  = document.getElementById('editHandicap').value;
+      var preview   = document.getElementById('detailEnfinMoiPreview');
+      var enfinMoi  = false; var raison = '';
+      if (dateVal) { var mois = (new Date() - new Date(dateVal)) / (1000*60*60*24*30); if (mois >= 12) { enfinMoi = true; raison = Math.round(mois) + ' mois au refuge'; } }
       if (!enfinMoi && especeL === 'chien' && age >= 8)  { enfinMoi = true; raison = 'chien senior (' + age + ' ans)'; }
       if (!enfinMoi && especeL === 'chat'  && age >= 10) { enfinMoi = true; raison = 'chat senior (' + age + ' ans)'; }
-      if (!enfinMoi && (vieRefuge === 'Difficilement' || vieRefuge === 'Tres difficilement' || vieRefuge === 'Très difficilement')) { enfinMoi = true; raison = 'supporte mal la vie en refuge'; }
-      if (!enfinMoi && besoins === 'lourds')   { enfinMoi = true; raison = 'besoins médicaux lourds'; }
-      if (!enfinMoi && d.handicap === true)    { enfinMoi = true; raison = 'handicap mentionné'; }
+      if (!enfinMoi && (vieRefuge === 'Difficilement' || vieRefuge === 'Tres difficilement')) { enfinMoi = true; raison = 'supporte mal la vie en refuge'; }
+      if (!enfinMoi && besoins  === 'lourds')  { enfinMoi = true; raison = 'besoins médicaux lourds'; }
+      if (!enfinMoi && handicap === 'true')    { enfinMoi = true; raison = 'handicap mentionné'; }
       if (preview) {
         preview.style.display = 'flex';
-        if (enfinMoi) {
-          preview.textContent = '✨ Enfin Moi — ' + raison;
-          preview.style.background = 'rgba(212,168,67,0.15)';
-          preview.style.color = 'var(--amber)';
-          preview.style.border = '1px solid rgba(212,168,67,0.3)';
-        } else {
-          preview.textContent = 'Statut standard';
-          preview.style.background = 'rgba(74,124,89,0.1)';
-          preview.style.color = 'var(--moss)';
-          preview.style.border = '1px solid rgba(74,124,89,0.2)';
-        }
+        if (enfinMoi) { preview.textContent = '✨ Enfin Moi — ' + raison; preview.style.background = 'rgba(212,168,67,0.15)'; preview.style.color = 'var(--amber)'; preview.style.border = '1px solid rgba(212,168,67,0.3)'; }
+        else          { preview.textContent = 'Statut standard'; preview.style.background = 'rgba(74,124,89,0.1)'; preview.style.color = 'var(--moss)'; preview.style.border = '1px solid rgba(74,124,89,0.2)'; }
       }
     }
     dateInput.addEventListener('change', mettreAJourEnfinMoi);
-    mettreAJourEnfinMoi(); // calcul initial
+    ['editEspece','editAge','editBesoins','editVieRefuge','editHandicap'].forEach(function(id) {
+      var el = document.getElementById(id); if (el) el.addEventListener('change', mettreAJourEnfinMoi);
+    });
+    mettreAJourEnfinMoi();
   }
 
-  // Boutons valider / refuser — passer la date saisie à validerScraping
+  // Boutons
   document.getElementById('detailBtnValider').onclick = function() {
     var dateVal = document.getElementById('detailDateArrivee') ? document.getElementById('detailDateArrivee').value : '';
     fermerDetailScraping();
