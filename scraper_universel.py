@@ -41,7 +41,8 @@ REFUGE_EMAIL = os.environ.get("REFUGE_EMAIL", "")
 REFUGE_VILLE = os.environ.get("REFUGE_VILLE", "")
 REFUGE_SITE  = os.environ.get("REFUGE_SITE", "")
 REFUGE_TEL   = os.environ.get("REFUGE_TEL", "")
-REFUGE_ID    = os.environ.get("REFUGE_ID", "")   # UUID Supabase — prioritaire sur recherche par nom
+REFUGE_ID           = os.environ.get("REFUGE_ID", "")            # UUID Supabase — prioritaire sur recherche par nom
+REFUGE_URL_ADOPTION = os.environ.get("REFUGE_URL_ADOPTION", "")  # URL directe page animaux — court-circuite la découverte
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
@@ -124,6 +125,38 @@ def lien_est_fiche_animal(href, texte, domaine_base):
     has_keyword = any(kw in href_lower for kw in KEYWORDS_ADOPTION)
     has_slug = bool(re.search(r'/[a-z0-9-]{4,}/?$', href_lower))
     return has_keyword or has_slug
+
+
+def collecter_fiches_depuis_page(page_adoption_url, site_url):
+    """
+    Collecte les fiches animaux depuis une URL de listing connue.
+    Gère la pagination automatiquement.
+    """
+    domaine = urlparse(site_url).netloc
+    fiches_urls = set()
+
+    def scraper_page(url):
+        soup = get_soup(url)
+        if not soup:
+            return
+        for a in soup.find_all("a", href=True):
+            href = urljoin(site_url, a["href"])
+            if lien_est_fiche_animal(href, a.get_text(), domaine) and href != url:
+                fiches_urls.add(href)
+        # Pagination
+        for a in soup.find_all("a", href=True):
+            href_pag = urljoin(site_url, a["href"])
+            if re.search(r'[/?&]page[=/]?\d+', href_pag) and domaine in href_pag and href_pag not in fiches_urls:
+                soup2 = get_soup(href_pag)
+                if soup2:
+                    for a2 in soup2.find_all("a", href=True):
+                        href2 = urljoin(site_url, a2["href"])
+                        if lien_est_fiche_animal(href2, a2.get_text(), domaine) and href2 != href_pag:
+                            fiches_urls.add(href2)
+
+    scraper_page(page_adoption_url)
+    print(f"  → {len(fiches_urls)} fiche(s) trouvée(s) sur {page_adoption_url}")
+    return list(fiches_urls)
 
 
 def decouvrir_pages_adoption(site_url):
@@ -540,7 +573,11 @@ def main():
                 print("  ✗ Impossible de créer le refuge — arrêt"); return
 
     # ── Découverte des fiches
-    fiches_urls = decouvrir_pages_adoption(REFUGE_SITE)
+    if REFUGE_URL_ADOPTION:
+        print(f"\n🎯 URL adoption fournie directement : {REFUGE_URL_ADOPTION}")
+        fiches_urls = collecter_fiches_depuis_page(REFUGE_URL_ADOPTION, REFUGE_SITE)
+    else:
+        fiches_urls = decouvrir_pages_adoption(REFUGE_SITE)
     if not fiches_urls:
         print("\n✗ Aucune fiche d'animal trouvée."); return
 
