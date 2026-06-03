@@ -2,14 +2,18 @@ name: Scraping refuges
 
 on:
   schedule:
-    - cron: '0 6 * * 1'   # Tous les lundis à 6h du matin
-  workflow_dispatch:        # Lancement manuel depuis GitHub ou le superadmin
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
     inputs:
+      refuge_id:
+        description: 'UUID Supabase du refuge (prioritaire)'
+        required: false
+        default: ''
       refuge_nom:
         description: 'Nom du refuge'
         required: true
       refuge_site:
-        description: 'URL du site du refuge (ex: https://www.spa-messigny.fr)'
+        description: 'URL du site du refuge'
         required: true
       refuge_email:
         description: 'Email du refuge (optionnel)'
@@ -19,14 +23,11 @@ on:
         description: 'Ville du refuge (optionnel)'
         required: false
         default: ''
-      refuge_tel:
-        description: 'Téléphone du refuge (optionnel)'
-        required: false
-        default: ''
 
 jobs:
   scrape:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -40,14 +41,15 @@ jobs:
         run: pip install requests beautifulsoup4 anthropic
 
       - name: Run scraper universel
+        timeout-minutes: 40
         env:
-          ANTHROPIC_API_KEY:        ${{ secrets.ANTHROPIC_API_KEY }}
-          SUPABASE_URL:             ${{ secrets.SUPABASE_URL }}
+          ANTHROPIC_API_KEY:         ${{ secrets.ANTHROPIC_API_KEY }}
+          SUPABASE_URL:              ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          RESEND_API_KEY:           ${{ secrets.RESEND_API_KEY }}
-          REFUGE_NOM:               ${{ github.event.inputs.refuge_nom }}
-          REFUGE_SITE:              ${{ github.event.inputs.refuge_site }}
-          REFUGE_EMAIL:             ${{ github.event.inputs.refuge_email }}
-          REFUGE_VILLE:             ${{ github.event.inputs.refuge_ville }}
-          REFUGE_TEL:               ${{ github.event.inputs.refuge_tel }}
+          RESEND_API_KEY:            ${{ secrets.RESEND_API_KEY }}
+          REFUGE_ID:                 ${{ github.event.inputs.refuge_id }}
+          REFUGE_NOM:                ${{ github.event.inputs.refuge_nom }}
+          REFUGE_SITE:               ${{ github.event.inputs.refuge_site }}
+          REFUGE_EMAIL:              ${{ github.event.inputs.refuge_email }}
+          REFUGE_VILLE:              ${{ github.event.inputs.refuge_ville }}
         run: python scraper_universel.py
