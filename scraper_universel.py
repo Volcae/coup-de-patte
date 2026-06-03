@@ -211,7 +211,7 @@ Si aucune URL de fiche individuelle n'est trouvée, réponds : {{"urls": []}}"""
 
     try:
         msg = claude_client.messages.create(
-            model="claude-sonnet-4-20250514",
+            model="claude-sonnet-4-6",
             max_tokens=1000,
             messages=[{"role": "user", "content": prompt}]
         )
@@ -315,7 +315,7 @@ def analyser_fiche_claude(texte, url):
     prompt = PROMPT_EXTRACTION.format(texte=texte)
     try:
         msg = claude_client.messages.create(
-            model="claude-sonnet-4-20250514",
+            model="claude-sonnet-4-6",
             max_tokens=1500,
             messages=[{"role": "user", "content": prompt}]
         )
