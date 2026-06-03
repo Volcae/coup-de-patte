@@ -1247,7 +1247,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   async function chargerRefugesPourScraping() {
     var sb = getSupabase();
-    var { data: refs } = await sb.from('Refuge').select('id, nom, ville').order('nom');
+    var { data: refs } = await sb.from('Refuge').select('id, nom, ville, email, site_web').order('nom');
     var sel = document.getElementById('scrapingRefugeSelect');
     if (!sel || !refs) return;
     sel.innerHTML = '<option value="">— Choisir un refuge —</option>';
@@ -1255,6 +1255,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       var opt = document.createElement('option');
       opt.value = r.id;
       opt.textContent = r.nom + (r.ville ? ' (' + r.ville + ')' : '');
+      opt.dataset.nom   = r.nom      || '';
+      opt.dataset.site  = r.site_web || '';
+      opt.dataset.email = r.email    || '';
+      opt.dataset.ville = r.ville    || '';
       sel.appendChild(opt);
     });
   }
@@ -1287,13 +1291,24 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     var tokenInput = document.getElementById('githubTokenInput');
     var GITHUB_TOKEN = tokenInput ? tokenInput.value.trim() : '';
     if (!GITHUB_TOKEN) { showToast('Entre ton GitHub Token avant de lancer le scraping'); return; }
+    var opt = sel.options[sel.selectedIndex];
+    var refugeSite  = opt.dataset.site  || '';
+    var refugeEmail = opt.dataset.email || '';
+    var refugeVille = opt.dataset.ville || '';
+    var refugeNom   = opt.dataset.nom   || opt.textContent.replace(/ \(.*\)$/, '');
+    if (!refugeSite) {
+      showToast('⚠️ Ce refuge n\'a pas d\'URL de site — ajoute-la dans la fiche refuge avant de scraper');
+      var status = document.getElementById('scrapingStatus');
+      if (status) { status.textContent = '⚠️ URL du site manquante'; status.style.color = 'var(--rose)'; }
+      return;
+    }
     var status = document.getElementById('scrapingStatus');
     if (status) { status.textContent = 'Déclenchement en cours…'; status.style.color = 'var(--amber)'; }
     var GITHUB_REPO = 'Volcae/coup-de-patte';
     var res = await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/actions/workflows/scraping.yml/dispatches', {
       method: 'POST',
       headers: { 'Authorization': 'Bearer ' + GITHUB_TOKEN, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ref: 'main', inputs: { refuge_nom: sel.options[sel.selectedIndex].textContent.replace(/ \(.*\)$/, ''), refuge_email: '', refuge_site: '' } })
+      body: JSON.stringify({ ref: 'main', inputs: { refuge_nom: refugeNom, refuge_site: refugeSite, refuge_email: refugeEmail, refuge_ville: refugeVille } })
     });
     if (res.status === 204) {
       if (status) { status.textContent = '✅ Scraping lancé ! Les animaux apparaîtront dans la file d\'attente dans quelques minutes.'; status.style.color = 'var(--moss)'; }
