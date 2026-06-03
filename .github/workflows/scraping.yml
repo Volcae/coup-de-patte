@@ -1,62 +1,53 @@
-name: Scraping IA — Coup de Patte
+name: Scraping refuges
 
 on:
-  workflow_dispatch:
+  schedule:
+    - cron: '0 6 * * 1'   # Tous les lundis à 6h du matin
+  workflow_dispatch:        # Lancement manuel depuis GitHub ou le superadmin
     inputs:
       refuge_nom:
         description: 'Nom du refuge'
         required: true
-        type: string
+      refuge_site:
+        description: 'URL du site du refuge (ex: https://www.spa-messigny.fr)'
+        required: true
       refuge_email:
-        description: 'Email du refuge (laisser vide pour extraction auto)'
+        description: 'Email du refuge (optionnel)'
         required: false
-        type: string
         default: ''
       refuge_ville:
-        description: 'Ville du refuge'
+        description: 'Ville du refuge (optionnel)'
         required: false
-        type: string
         default: ''
-      refuge_site:
-        description: 'URL du site du refuge'
-        required: false
-        type: string
-        default: 'https://www.spa-messigny.fr'
       refuge_tel:
-        description: 'Telephone du refuge'
+        description: 'Téléphone du refuge (optionnel)'
         required: false
-        type: string
         default: ''
 
 jobs:
-  scraping:
+  scrape:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v4
         with:
           python-version: '3.11'
 
       - name: Install dependencies
         run: pip install requests beautifulsoup4 anthropic
 
-      - name: Run scraper
+      - name: Run scraper universel
         env:
-          REFUGE_NOM: ${{ github.event.inputs.refuge_nom }}
-          REFUGE_EMAIL: ${{ github.event.inputs.refuge_email }}
-          REFUGE_VILLE: ${{ github.event.inputs.refuge_ville }}
-          REFUGE_SITE: ${{ github.event.inputs.refuge_site }}
-          REFUGE_TEL: ${{ github.event.inputs.refuge_tel }}
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          ANTHROPIC_API_KEY:        ${{ secrets.ANTHROPIC_API_KEY }}
+          SUPABASE_URL:             ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
-        run: python scraper_spa_messigny.py
+          RESEND_API_KEY:           ${{ secrets.RESEND_API_KEY }}
+          REFUGE_NOM:               ${{ github.event.inputs.refuge_nom }}
+          REFUGE_SITE:              ${{ github.event.inputs.refuge_site }}
+          REFUGE_EMAIL:             ${{ github.event.inputs.refuge_email }}
+          REFUGE_VILLE:             ${{ github.event.inputs.refuge_ville }}
+          REFUGE_TEL:               ${{ github.event.inputs.refuge_tel }}
+        run: python scraper_universel.py
