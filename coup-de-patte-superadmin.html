@@ -1992,9 +1992,10 @@ document.getElementById('scrapingDetailModal').addEventListener('click', functio
         <input id="eaPhotoUrl" class="ea-input" type="text" placeholder="https://..." oninput="eaAperçuPhoto(this.value)" style="flex:1">
         <button onclick="eaAperçuPhoto(document.getElementById('eaPhotoUrl').value)" style="padding:6px 12px;background:var(--sage);color:var(--forest);border:none;border-radius:8px;font-size:0.75rem;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif">Aperçu</button>
       </div>
-      <label class="ea-label">🎯 Cadrage de la photo</label>
-      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-        <select id="eaPhotoPosition" class="ea-select" style="width:auto;flex:1" onchange="eaAperçuPhoto(document.getElementById('eaPhotoUrl').value)">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:2px">
+        <div>
+          <label class="ea-label">🎯 Cadrage — Grande photo (fiche)</label>
+          <select id="eaPhotoPosition" class="ea-select" onchange="eaAperçuPhoto(document.getElementById('eaPhotoUrl').value)">
           <option value="center center">Centre (défaut)</option>
           <option value="center top">Haut</option>
           <option value="center bottom">Bas</option>
@@ -2006,9 +2007,26 @@ document.getElementById('scrapingDetailModal').addEventListener('click', functio
           <option value="80% center">Légèrement à droite</option>
           <option value="center 20%">Légèrement en haut</option>
           <option value="center 80%">Légèrement en bas</option>
-        </select>
-        <span style="font-size:0.72rem;color:var(--dust)">L'aperçu à gauche reflète le cadrage</span>
+          </select>
+        </div>
+        <div>
+          <label class="ea-label">🖼 Cadrage — Vignette (matchs, suggestions)</label>
+          <select id="eaPhotoPositionVignette" class="ea-select">
+          <option value="center center">Centre (défaut)</option>
+          <option value="center top">Haut</option>
+          <option value="center bottom">Bas</option>
+          <option value="left center">Gauche</option>
+          <option value="right center">Droite</option>
+          <option value="top left">Coin haut gauche</option>
+          <option value="top right">Coin haut droite</option>
+          <option value="20% center">Légèrement à gauche</option>
+          <option value="80% center">Légèrement à droite</option>
+          <option value="center 20%">Légèrement en haut</option>
+          <option value="center 80%">Légèrement en bas</option>
+          </select>
+        </div>
       </div>
+      <p style="font-size:0.68rem;color:var(--dust);margin:6px 0 0">L'aperçu à gauche reflète le cadrage grande photo</p>
     </div>
 
     <!-- Description / Histoire -->
@@ -2103,7 +2121,8 @@ function ouvrirEditAnimal(a) {
   eaSelVal('eaSexe', a.sexe);
   document.getElementById('eaAge').value         = a.age_annees || '';
   document.getElementById('eaPhotoUrl').value    = a.photo_url || '';
-  eaSelVal('eaPhotoPosition', a.photo_position || 'center center');
+  eaSelVal('eaPhotoPosition',        a.photo_position         || 'center center');
+  eaSelVal('eaPhotoPositionVignette', a.photo_position_vignette || 'center center');
   eaAperçuPhoto(a.photo_url || '');
   document.getElementById('eaDescription').value = a.description || '';
   document.getElementById('eaHistoire').value    = a.histoire || '';
@@ -2165,7 +2184,8 @@ async function sauvegarderAnimal() {
     age_annees:             getVal('eaAge') ? parseFloat(getVal('eaAge')) : null,
     photo_url:              getVal('eaPhotoUrl'),
     photo:                  getVal('eaPhotoUrl'),
-    photo_position:         getVal('eaPhotoPosition') || 'center center',
+    photo_position:          getVal('eaPhotoPosition')        || 'center center',
+    photo_position_vignette: getVal('eaPhotoPositionVignette') || 'center center',
     description:            getVal('eaDescription'),
     histoire:               getVal('eaHistoire'),
     gabarit:                getVal('eaGabarit'),

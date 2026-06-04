@@ -541,14 +541,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       if (!a) return;
       var emoji = a.espece && a.espece.toLowerCase() === 'chat' ? '🐱' : '🐕';
     var photoHtml = a.photo_url
-      ? '<img src="' + a.photo_url + '" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:inherit" onerror="this.remove()">'
+      ? '<img src="' + a.photo_url + '" style="width:100%;height:100%;object-fit:cover;object-position:' + (a.photo_position_vignette || 'center center') + ';position:absolute;inset:0;border-radius:inherit" onerror="this.remove()">'
       : '';
       var age = a.age_annees ? a.age_annees + ' an' + (a.age_annees > 1 ? 's' : '') : '';
       var ville = a.refuge ? a.refuge.ville : '';
       grid.insertAdjacentHTML('beforeend',
         '<div class="liked-card" data-animal-id="' + a.id + '" onclick="window.location.href=\'coup-de-patte-fiche.html?id=' + a.id + '\'">' +
         '<div class="liked-img" style="' + (a.photo_url ? 'background:#e0d8cf' : 'background:linear-gradient(160deg,var(--mint),var(--sage))') + '">' +
-        (a.photo_url ? '<img src="' + a.photo_url + '" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" onerror="this.style.display=\'none\'">' : '<span>' + emoji + '</span>') +
+        (a.photo_url ? '<img src="' + a.photo_url + '" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:' + (a.photo_position_vignette || 'center center') + '" onerror="this.style.display=\'none\'">' : '<span>' + emoji + '</span>') +
         '</div>' +
         '<div class="liked-score"><span style="font-family:Fraunces,serif;font-size:0.9rem;font-weight:700;color:var(--moss);background:var(--paper);border:1.5px solid var(--border);border-radius:8px;padding:4px 10px;box-shadow:0 3px 10px rgba(45,74,62,0.1)">' + (m.score_global || 0) + '%</span></div>' +
         '<div class="liked-body"><div class="liked-name">' + a.nom + '</div>' +
@@ -731,7 +731,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     if (animal.enfin_moi) tags += '<span class="mctag mctag-gold">✨ Enfin Moi ?</span>';
     if (animal.permis_requis) tags += '<span class="mctag" style="background:rgba(201,112,74,0.15);color:#c9704a">📋 Permis requis</span>';
     var imgContent = animal.photo_url
-      ? '<img src="' + animal.photo_url + '" alt="' + animal.nom + '" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" onerror="this.style.display=\'none\'">' 
+      ? '<img src="' + animal.photo_url + '" alt="' + animal.nom + '" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:' + (animal.photo_position_vignette || 'center center') + '" onerror="this.style.display=\'none\'">' 
       : '<span>' + emoji + '</span>';
     var imgBg = animal.photo_url ? 'background:#e0d8cf' : 'background:linear-gradient(160deg,var(--mint),var(--sage))';
     return '<div class="match-card' + enfinClass + '" data-animal-id="' + animal.id + '" onclick="window.location.href=\'coup-de-patte-fiche.html?id=' + animal.id + '\'">' + enfin + '<div class="mc-inner"><div class="mc-img" style="' + imgBg + ';overflow:hidden;font-size:3rem;display:flex;align-items:center;justify-content:center;position:relative">' + imgContent + (ville ? '<div class="mc-loc">📍 ' + ville + '</div>' : '') + '</div><div class="mc-score"><span class="mc-score-n" style="color:' + label.color + '">' + score + '%</span></div><div class="mc-body"><div class="mc-name">' + animal.nom + '</div><div class="mc-meta">' + (animal.race || animal.espece) + ' · ' + age + ' · ' + sexe + '</div><div style="font-size:0.7rem;font-weight:700;color:' + label.color + ';margin:4px 0">' + label.label + '</div><div class="mc-tags">' + tags + '</div><div class="mc-actions"><button class="mc-btn-like" onclick="event.stopPropagation();likeCard(this)"><span style="filter:brightness(0) invert(1)">🐾</span> J\'aime</button><button class="mc-btn-info" onclick="event.stopPropagation();contacterDepuisMatch(this)" data-animal-id="' + animal.id + '" data-refuge-id="' + (animal.refuge ? animal.refuge.id : '') + '">📞</button><button class="mc-btn-info" onclick="event.stopPropagation();window.location.href=\'coup-de-patte-fiche.html?id=' + animal.id + '\'">ℹ</button></div></div></div></div>';

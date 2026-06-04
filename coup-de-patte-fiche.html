@@ -36,7 +36,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 /* Photo injectée par JS dans hero-img-clip */
 .hero-img img.hero-photo{
   position:absolute;inset:0;width:100%;height:100%;
-  object-fit:cover;object-position:center center;z-index:1;
+  object-fit:cover;object-position:center center;z-index:1;transition:object-position 0.3s ease;
 }
 /* Fondu bas */
 .hero-img::before{
@@ -443,7 +443,7 @@ window.addEventListener('load', async function() {
 
   // ─── SUGGESTIONS ───
   var { data: suggestions } = await sb.from('Animal')
-    .select('id, nom, espece, race, age_annees, sexe, enfin_moi, date_arrivee_refuge, photo_url, refuge:Refuge(ville)')
+    .select('id, nom, espece, race, age_annees, sexe, enfin_moi, date_arrivee_refuge, photo_url, photo_position, photo_position_vignette, refuge:Refuge(ville)')
     .eq('disponible', true)
     .neq('id', window.animalId)
     .limit(3);
@@ -459,7 +459,7 @@ window.addEventListener('load', async function() {
       var mois = s.date_arrivee_refuge ? Math.round((new Date() - new Date(s.date_arrivee_refuge)) / (1000*60*60*24*30)) : 0;
       var imgBg = s.photo_url ? 'background:#b8b0a6' : 'background:linear-gradient(160deg,var(--mint),var(--sage))';
       var imgContent = s.photo_url
-        ? '<img src="' + s.photo_url + '" alt="' + s.nom + '" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" onerror="this.style.display=\'none\'">'
+        ? '<img src="' + s.photo_url + '" alt="' + s.nom + '" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:' + (s.photo_position_vignette || s.photo_position || 'center center') + '" onerror="this.style.display=\'none\'">'
         : em;
       grid.insertAdjacentHTML('beforeend',
         '<div class="sug-card' + (s.enfin_moi ? ' enfin' : '') + '" onclick="window.location.href=\'coup-de-patte-fiche.html?id=' + s.id + '\'">' +
