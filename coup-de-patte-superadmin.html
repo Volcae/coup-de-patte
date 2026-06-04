@@ -2033,7 +2033,7 @@ function eaAperçuPhoto(url) {
   var el = document.getElementById('eaPhoto');
   if (!el) return;
   if (url && url.startsWith('http')) {
-    el.innerHTML = '<img src="' + url + '" style="width:100%;height:100%;object-fit:cover" onerror="this.parentElement.innerHTML='🐾'">';
+    el.innerHTML = '<img src="' + url + '" style="width:100%;height:100%;object-fit:cover" onerror="this.parentElement.innerHTML=&quot;🐾&quot;">';
   } else {
     var esp = (document.getElementById('eaEspece') || {}).value || '';
     el.innerHTML = esp === 'chat' ? '🐱' : '🐕';
