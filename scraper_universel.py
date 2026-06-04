@@ -305,6 +305,7 @@ Réponds UNIQUEMENT en JSON valide, sans commentaire ni balise markdown :
   "besoins_medicaux": "aucun" ou "legers" ou "lourds" ou null,
   "vie_en_refuge": "Tres bien" ou "Bien" ou "Moyennement bien" ou "Difficilement" ou "Tres difficilement" ou null,
   "handicap": true si un handicap physique ou sensoriel est explicitement mentionné (aveugle, sourd, amputé, paralysé, etc.), false sinon. Ne pas confondre avec besoins médicaux,
+  "permis_requis": true si la fiche mentionne explicitement "chien de catégorie", "permis obligatoire", "permis de détention", "type 1", "type 2", "chien dangereux" ou toute obligation légale de permis. false sinon,
   "date_arrivee_refuge": "YYYY-MM-DD si mentionnée sinon null",
   "histoire": "origine en une phrase si mentionnée : abandon, saisie, sauvetage, etc. Sinon null",
   "description": "texte de présentation de l'animal, rédigé positivement, max 300 mots. Synthèse du texte brut."
@@ -512,6 +513,7 @@ def envoyer_supabase(analyse, photo_url, source_url, refuge_id, existing_id=None
         "photo_url":        photo_url or "",
         "source_url":       source_url,
         "statut":           "en_attente",
+        "permis_requis":     analyse.get("permis_requis", False),
         "donnees_extraites": json.dumps(analyse, ensure_ascii=False),
         "commentaire":      (f"MISE À JOUR — {where} ID: {existing_id}") if existing_id else None
     }

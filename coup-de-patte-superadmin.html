@@ -1854,7 +1854,7 @@ function ouvrirDetailScraping(item) {
   selVal('editAntiparasitaire', d.antiparasitaire);
   selVal('editBesoins',         d.besoins_medicaux);
   selVal('editHandicap',        d.handicap !== undefined && d.handicap !== null ? String(d.handicap) : '');
-  selVal('editPermis',          item.permis_requis !== undefined && item.permis_requis !== null ? String(item.permis_requis) : 'false');
+  selVal('editPermis',          item.permis_requis !== undefined && item.permis_requis !== null ? String(item.permis_requis) : (d.permis_requis !== undefined ? String(d.permis_requis) : 'false'));
 
   // Champs null — alerte
   var champsImportants = { 'Race': item.race || d.race, 'Sexe': item.sexe || d.sexe, 'Âge': item.age_annees || d.age_annees, 'Énergie': d.energie, 'Expérience': d.experience_requise, 'Compat chiens': d.compat_chiens, 'Compat chats': d.compat_chats, 'Vaccination': d.vaccination, 'Stérilisation': d.sterilisation };
