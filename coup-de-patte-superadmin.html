@@ -1082,7 +1082,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
 
     // Animaux
-    var animRes = await sb.from('Animal').select('id, nom, espece, race, enfin_moi, statut, description, refuge:Refuge(nom)').order('nom');
+    var animRes = await sb.from('Animal').select('id, nom, espece, race, age_annees, sexe, poids_kg, gabarit, pelage, couleur, description, histoire, photo_url, photo_position, photo_position_vignette, refuge, date_arrivee_refuge, disponible, enfin_moi, raison_enfin_moi, vie_en_refuge, supporte_solitude, energie, lien_humain, reactivite_inconnus, experience_requise, compat_enfants_moins13, compat_ados_plus13, compat_chiens, compat_chats, vaccination, sterilisation, identification, antiparasitaire, besoins_medicaux, mobilite, statut, permis_requis, handicap, source_url, refuge:Refuge(nom)').order('nom');
     var animaux = animRes.data || [];
     var nbDispo = animaux.filter(function(a) { return !a.statut || a.statut === 'disponible'; }).length;
     var nbEnfin = animaux.filter(function(a) { return a.enfin_moi; }).length;
@@ -2217,8 +2217,8 @@ async function sauvegarderAnimal() {
     disponible:             getVal('eaStatut') === 'disponible'
   };
 
-  // Supprimer les null pour ne pas écraser inutilement
-  Object.keys(payload).forEach(function(k) { if (payload[k] === null) delete payload[k]; });
+  // Supprimer les null et undefined pour ne pas écraser les données existantes
+  Object.keys(payload).forEach(function(k) { if (payload[k] === null || payload[k] === undefined) delete payload[k]; });
 
   var { data: updateData, error } = await getSupabase().from('Animal').update(payload).eq('id', _editAnimalId).select();
   console.log('Update result — data:', updateData, '| error:', error);
