@@ -2160,7 +2160,7 @@ async function sauvegarderAnimal() {
   } else {
     status.textContent = '✓ Sauvegardé !';
     status.style.color = 'var(--moss)';
-    showToast('✅ Fiche de ' + (payload.nom || 'l'animal') + ' mise à jour');
+    showToast('✅ Fiche de ' + (payload.nom || "l'animal") + ' mise à jour');
     setTimeout(fermerEditAnimal, 1200);
   }
 }
