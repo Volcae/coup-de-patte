@@ -2220,11 +2220,16 @@ async function sauvegarderAnimal() {
   // Supprimer les null pour ne pas écraser inutilement
   Object.keys(payload).forEach(function(k) { if (payload[k] === null) delete payload[k]; });
 
-  var { error } = await getSupabase().from('Animal').update(payload).eq('id', _editAnimalId);
+  var { data: updateData, error } = await getSupabase().from('Animal').update(payload).eq('id', _editAnimalId).select();
+  console.log('Update result — data:', updateData, '| error:', error);
   if (error) {
     console.error('Erreur sauvegarderAnimal:', error);
-    status.textContent = '✗ ' + (error.message || 'Erreur inconnue');
+    status.textContent = '✗ ' + (error.message || error.code || JSON.stringify(error));
     status.style.color = 'var(--rose)';
+  } else if (!updateData || updateData.length === 0) {
+    status.textContent = '✗ Aucune ligne modifiée — vérifier la policy RLS';
+    status.style.color = 'var(--rose)';
+    console.warn('Update sans erreur mais 0 ligne modifiée — RLS probablement bloquant');
   } else {
     status.textContent = '✓ Sauvegardé !';
     status.style.color = 'var(--moss)';
