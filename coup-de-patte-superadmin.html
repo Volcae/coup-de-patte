@@ -2208,6 +2208,21 @@ async function sauvegarderAnimal() {
     status.textContent = '✓ Sauvegardé !';
     status.style.color = 'var(--moss)';
     showToast('✅ Fiche de ' + (payload.nom || "l'animal") + ' mise à jour');
+    // Mettre à jour animauxItems en mémoire pour refléter les changements immédiatement
+    if (window.animauxItems && window.animauxItems[_editAnimalId]) {
+      Object.assign(window.animauxItems[_editAnimalId], payload);
+    }
+    // Mettre à jour la colonne Permis dans le tableau sans recharger
+    var rows = document.querySelectorAll('#tbody-animaux tr');
+    rows.forEach(function(row) {
+      var btn = row.querySelector('button[onclick*="' + _editAnimalId + '"]');
+      if (btn) {
+        var permisCell = row.cells[5];
+        if (permisCell) permisCell.innerHTML = payload.permis_requis
+          ? '<span style="font-size:0.7rem;background:rgba(201,112,74,0.12);color:#c9704a;padding:2px 8px;border-radius:50px;font-weight:700">📋 Requis</span>'
+          : '–';
+      }
+    });
     setTimeout(fermerEditAnimal, 1200);
   }
 }
