@@ -360,7 +360,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </div>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Animal</th><th>Refuge</th><th>Espèce</th><th>Statut</th><th>Enfin Moi ?</th></tr></thead>
+          <thead><tr><th>Animal</th><th>Refuge</th><th>Espèce</th><th>Statut</th><th>Enfin Moi ?</th><th>Permis</th><th></th></tr></thead>
           <tbody id="tbody-animaux"><tr><td colspan="5" style="text-align:center;padding:20px;color:var(--dust)">Chargement…</td></tr></tbody>
         </table>
       </div>
@@ -1075,7 +1075,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           '<td style="font-size:0.78rem;color:var(--dust)">' + (a.refuge ? a.refuge.nom : '–') + '</td>' +
           '<td style="font-size:0.78rem">' + (a.espece || '–') + '</td>' +
           '<td><span style="font-size:0.72rem;padding:2px 8px;border-radius:50px;background:var(--ivory);color:var(--dust)">' + (a.statut || 'disponible') + '</span></td>' +
-          '<td>' + (a.enfin_moi ? '✨' : '–') + '</td>';
+          '<td>' + (a.enfin_moi ? '✨' : '–') + '</td>' +
+          '<td>' + (a.permis_requis ? '<span style="font-size:0.7rem;background:rgba(201,112,74,0.12);color:#c9704a;padding:2px 8px;border-radius:50px;font-weight:700">📋 Requis</span>' : '–') + '</td>' +
+          '<td><button onclick="ouvrirEditAnimal(' + JSON.stringify(a).replace(/'/g,"\'") + ')" style="padding:5px 12px;background:var(--forest);color:var(--ivory);border:none;border-radius:50px;font-size:0.72rem;font-weight:700;cursor:pointer;font-family:Nunito,sans-serif">✏️ Modifier</button></td>';
         tAnim.appendChild(row);
       });
     }
@@ -1919,5 +1921,251 @@ document.getElementById('scrapingDetailModal').addEventListener('click', functio
 });
 </script>
 
+
+<!-- ══════════ MODALE ÉDITION ANIMAL ══════════ -->
+<style>
+.ea-input { width:100%;padding:7px 11px;border:1.5px solid var(--border);border-radius:8px;font-family:'Nunito',sans-serif;font-size:0.83rem;background:var(--paper);color:var(--forest);box-sizing:border-box; }
+.ea-input:focus { outline:none;border-color:var(--moss); }
+.ea-select { width:100%;padding:7px 11px;border:1.5px solid var(--border);border-radius:8px;font-family:'Nunito',sans-serif;font-size:0.83rem;background:var(--paper);color:var(--forest); }
+.ea-label { font-size:0.68rem;font-weight:700;color:var(--dust);text-transform:uppercase;letter-spacing:0.4px;display:block;margin-bottom:3px;margin-top:10px; }
+</style>
+
+<div id="editAnimalModal" style="display:none;position:fixed;inset:0;background:rgba(45,74,62,0.5);backdrop-filter:blur(6px);z-index:900;align-items:flex-start;justify-content:center;padding:24px;overflow-y:auto">
+  <div style="background:var(--paper);border-radius:28px;border:1.5px solid var(--border);box-shadow:0 24px 64px rgba(45,74,62,0.2);width:100%;max-width:820px;margin:auto">
+
+    <!-- Header -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:22px 28px;border-bottom:1px solid var(--border)">
+      <p style="font-family:'Fraunces',serif;font-size:1.1rem;font-weight:700;font-style:italic;color:var(--forest);margin:0" id="editAnimalHeader">Modifier la fiche</p>
+      <button onclick="fermerEditAnimal()" style="background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--dust)">✕</button>
+    </div>
+
+    <!-- Photo + infos de base -->
+    <div style="display:flex;gap:20px;padding:20px 28px;border-bottom:1px solid var(--border);align-items:flex-start">
+      <div style="flex-shrink:0;text-align:center">
+        <div id="eaPhoto" style="width:100px;height:100px;border-radius:14px;overflow:hidden;background:linear-gradient(135deg,var(--mint),var(--sage));display:flex;align-items:center;justify-content:center;font-size:2.5rem;margin-bottom:6px"></div>
+        <button onclick="document.getElementById('eaPhotoUrl').value='';eaAperçuPhoto('')" style="font-size:0.65rem;color:var(--rose);background:none;border:1px solid var(--rose);border-radius:50px;padding:2px 8px;cursor:pointer;font-family:'Nunito',sans-serif;font-weight:700">🗑 Supprimer photo</button>
+      </div>
+      <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div style="grid-column:1/-1"><label class="ea-label">Nom</label><input id="eaNom" class="ea-input" type="text"></div>
+        <div><label class="ea-label">Espèce</label>
+          <select id="eaEspece" class="ea-select"><option value="">—</option><option value="chien">Chien</option><option value="chat">Chat</option><option value="lapin">Lapin</option><option value="nac">NAC</option></select></div>
+        <div><label class="ea-label">Race</label><input id="eaRace" class="ea-input" type="text"></div>
+        <div><label class="ea-label">Sexe</label>
+          <select id="eaSexe" class="ea-select"><option value="">—</option><option value="male">Mâle</option><option value="femelle">Femelle</option></select></div>
+        <div><label class="ea-label">Âge (années)</label><input id="eaAge" class="ea-input" type="number" min="0" max="30" step="0.5"></div>
+      </div>
+    </div>
+
+    <!-- URL Photo -->
+    <div style="padding:12px 28px;border-bottom:1px solid var(--border)">
+      <label class="ea-label">🖼 URL de la photo</label>
+      <div style="display:flex;gap:8px">
+        <input id="eaPhotoUrl" class="ea-input" type="text" placeholder="https://..." oninput="eaAperçuPhoto(this.value)" style="flex:1">
+        <button onclick="eaAperçuPhoto(document.getElementById('eaPhotoUrl').value)" style="padding:6px 12px;background:var(--sage);color:var(--forest);border:none;border-radius:8px;font-size:0.75rem;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif">Aperçu</button>
+      </div>
+    </div>
+
+    <!-- Description / Histoire -->
+    <div style="padding:14px 28px;border-bottom:1px solid var(--border)">
+      <label class="ea-label">Description</label>
+      <textarea id="eaDescription" class="ea-input" rows="4" style="resize:vertical"></textarea>
+      <label class="ea-label">Histoire / origine</label>
+      <textarea id="eaHistoire" class="ea-input" rows="2" style="resize:vertical"></textarea>
+    </div>
+
+    <!-- Grille champs -->
+    <div style="padding:16px 28px;display:grid;grid-template-columns:1fr 1fr;gap:20px;border-bottom:1px solid var(--border)">
+      <div>
+        <p style="font-size:0.72rem;font-weight:700;color:var(--dust);text-transform:uppercase;letter-spacing:0.5px;margin:0 0 4px">🐾 Morphologie</p>
+        <label class="ea-label">Gabarit</label><select id="eaGabarit" class="ea-select"><option value="">—</option><option value="petit">Petit</option><option value="moyen">Moyen</option><option value="grand">Grand</option></select>
+        <label class="ea-label">Poids (kg)</label><input id="eaPoids" class="ea-input" type="number" min="0" step="0.1">
+        <label class="ea-label">Pelage</label><select id="eaPelage" class="ea-select"><option value="">—</option><option value="court">Court</option><option value="mi-long">Mi-long</option><option value="long">Long</option></select>
+        <label class="ea-label">Couleur</label><input id="eaCouleur" class="ea-input" type="text">
+        <label class="ea-label">Mobilité</label><select id="eaMobilite" class="ea-select"><option value="">—</option><option value="normale">Normale</option><option value="reduite">Réduite</option><option value="tres_reduite">Très réduite</option></select>
+        <label class="ea-label">Date d'arrivée au refuge</label><input id="eaDateArrivee" class="ea-input" type="date">
+      </div>
+      <div>
+        <p style="font-size:0.72rem;font-weight:700;color:var(--dust);text-transform:uppercase;letter-spacing:0.5px;margin:0 0 4px">⚡ Comportement</p>
+        <label class="ea-label">Énergie</label><select id="eaEnergie" class="ea-select"><option value="">—</option><option value="faible">Faible</option><option value="moyen">Moyen</option><option value="eleve">Élevé</option></select>
+        <label class="ea-label">Lien humain</label><select id="eaLienHumain" class="ea-select"><option value="">—</option><option value="faible">Faible</option><option value="moyen">Moyen</option><option value="fort">Fort</option></select>
+        <label class="ea-label">Réactivité inconnus</label><select id="eaReactivite" class="ea-select"><option value="">—</option><option value="faible">Faible</option><option value="moyen">Moyen</option><option value="forte">Forte</option></select>
+        <label class="ea-label">Supporte solitude</label><select id="eaSolitude" class="ea-select"><option value="">—</option><option value="bien">Bien</option><option value="moyen">Moyen</option><option value="mal">Mal</option></select>
+        <label class="ea-label">Vie en refuge</label><select id="eaVieRefuge" class="ea-select"><option value="">—</option><option value="Tres bien">Très bien</option><option value="Bien">Bien</option><option value="Moyennement bien">Moyennement bien</option><option value="Difficilement">Difficilement</option><option value="Tres difficilement">Très difficilement</option></select>
+        <label class="ea-label">Expérience requise</label><select id="eaExperience" class="ea-select"><option value="">—</option><option value="debutant">Débutant</option><option value="intermediaire">Intermédiaire</option><option value="experimente">Expérimenté</option></select>
+      </div>
+      <div>
+        <p style="font-size:0.72rem;font-weight:700;color:var(--dust);text-transform:uppercase;letter-spacing:0.5px;margin:0 0 4px">🤝 Compatibilités</p>
+        <label class="ea-label">Enfants &lt; 13 ans</label><select id="eaCompatEnfants" class="ea-select"><option value="">—</option><option value="true">✅ Oui</option><option value="false">❌ Non</option></select>
+        <label class="ea-label">Ados 13+</label><select id="eaCompatAdos" class="ea-select"><option value="">—</option><option value="true">✅ Oui</option><option value="false">❌ Non</option></select>
+        <label class="ea-label">Chiens</label><select id="eaCompatChiens" class="ea-select"><option value="">—</option><option value="true">✅ Oui</option><option value="false">❌ Non</option></select>
+        <label class="ea-label">Chats</label><select id="eaCompatChats" class="ea-select"><option value="">—</option><option value="true">✅ Oui</option><option value="false">❌ Non</option></select>
+      </div>
+      <div>
+        <p style="font-size:0.72rem;font-weight:700;color:var(--dust);text-transform:uppercase;letter-spacing:0.5px;margin:0 0 4px">💉 Santé & statut</p>
+        <label class="ea-label">Vaccination</label><select id="eaVaccination" class="ea-select"><option value="">—</option><option value="oui">Oui</option><option value="non">Non</option></select>
+        <label class="ea-label">Stérilisation</label><select id="eaSterilisation" class="ea-select"><option value="">—</option><option value="oui">Oui</option><option value="non">Non</option></select>
+        <label class="ea-label">Identification</label><select id="eaIdentification" class="ea-select"><option value="">—</option><option value="oui">Oui</option><option value="non">Non</option></select>
+        <label class="ea-label">Antiparasitaire</label><select id="eaAntiparasitaire" class="ea-select"><option value="">—</option><option value="oui">Oui</option><option value="non">Non</option></select>
+        <label class="ea-label">Besoins médicaux</label><select id="eaBesoins" class="ea-select"><option value="">—</option><option value="aucun">Aucun</option><option value="legers">Légers</option><option value="lourds">Lourds</option></select>
+        <label class="ea-label">Handicap</label><select id="eaHandicap" class="ea-select"><option value="">—</option><option value="true">Oui</option><option value="false">Non</option></select>
+        <label class="ea-label" style="color:var(--rose)">📋 Permis de détention requis</label><select id="eaPermis" class="ea-select"><option value="false">Non</option><option value="true">Oui — chien de catégorie</option></select>
+        <label class="ea-label">Statut</label><select id="eaStatut" class="ea-select"><option value="disponible">Disponible</option><option value="reserve">Réservé</option><option value="adopte">Adopté</option><option value="indisponible">Indisponible</option></select>
+        <label class="ea-label">Enfin Moi ?</label><select id="eaEnfinMoi" class="ea-select"><option value="false">Non</option><option value="true">Oui</option></select>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div style="padding:18px 28px;display:flex;gap:10px;align-items:center">
+      <button onclick="sauvegarderAnimal()" style="padding:11px 28px;background:var(--moss);color:var(--ivory);border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.88rem;font-weight:700;cursor:pointer">💾 Sauvegarder</button>
+      <button onclick="fermerEditAnimal()" style="padding:11px 20px;background:transparent;border:1.5px solid var(--border);color:var(--dust);border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.88rem;font-weight:700;cursor:pointer">Annuler</button>
+      <span style="margin-left:auto;font-size:0.72rem;color:var(--dust)" id="eaSaveStatus"></span>
+    </div>
+
+  </div>
+</div>
+
+<script>
+var _editAnimalId = null;
+
+function eaAperçuPhoto(url) {
+  var el = document.getElementById('eaPhoto');
+  if (!el) return;
+  if (url && url.startsWith('http')) {
+    el.innerHTML = '<img src="' + url + '" style="width:100%;height:100%;object-fit:cover" onerror="this.parentElement.innerHTML='🐾'">';
+  } else {
+    var esp = (document.getElementById('eaEspece') || {}).value || '';
+    el.innerHTML = esp === 'chat' ? '🐱' : '🐕';
+  }
+}
+
+function eaSelVal(id, val) {
+  var el = document.getElementById(id);
+  if (!el || val === null || val === undefined) return;
+  var s = String(val);
+  for (var i = 0; i < el.options.length; i++) {
+    if (el.options[i].value === s) { el.selectedIndex = i; return; }
+  }
+}
+
+function ouvrirEditAnimal(a) {
+  _editAnimalId = a.id;
+  document.getElementById('editAnimalHeader').textContent = 'Modifier — ' + (a.nom || 'Sans nom');
+  document.getElementById('eaNom').value         = a.nom || '';
+  eaSelVal('eaEspece', a.espece);
+  document.getElementById('eaRace').value        = a.race || '';
+  eaSelVal('eaSexe', a.sexe);
+  document.getElementById('eaAge').value         = a.age_annees || '';
+  document.getElementById('eaPhotoUrl').value    = a.photo_url || '';
+  eaAperçuPhoto(a.photo_url || '');
+  document.getElementById('eaDescription').value = a.description || '';
+  document.getElementById('eaHistoire').value    = a.histoire || '';
+  eaSelVal('eaGabarit', a.gabarit);
+  document.getElementById('eaPoids').value       = a.poids_kg || '';
+  eaSelVal('eaPelage', a.pelage);
+  document.getElementById('eaCouleur').value     = a.couleur || '';
+  eaSelVal('eaMobilite', a.mobilite);
+  document.getElementById('eaDateArrivee').value = a.date_arrivee_refuge || '';
+  eaSelVal('eaEnergie', a.energie);
+  eaSelVal('eaLienHumain', a.lien_humain);
+  eaSelVal('eaReactivite', a.reactivite_inconnus);
+  eaSelVal('eaSolitude', a.supporte_solitude);
+  eaSelVal('eaVieRefuge', a.vie_en_refuge);
+  eaSelVal('eaExperience', a.experience_requise);
+  eaSelVal('eaCompatEnfants', a.compat_enfants_moins13 !== null && a.compat_enfants_moins13 !== undefined ? String(a.compat_enfants_moins13) : '');
+  eaSelVal('eaCompatAdos',    a.compat_ados_plus13    !== null && a.compat_ados_plus13    !== undefined ? String(a.compat_ados_plus13)    : '');
+  eaSelVal('eaCompatChiens',  a.compat_chiens         !== null && a.compat_chiens         !== undefined ? String(a.compat_chiens)         : '');
+  eaSelVal('eaCompatChats',   a.compat_chats          !== null && a.compat_chats          !== undefined ? String(a.compat_chats)          : '');
+  eaSelVal('eaVaccination',   a.vaccination);
+  eaSelVal('eaSterilisation', a.sterilisation);
+  eaSelVal('eaIdentification',a.identification);
+  eaSelVal('eaAntiparasitaire',a.antiparasitaire);
+  eaSelVal('eaBesoins',       a.besoins_medicaux);
+  eaSelVal('eaHandicap',      a.handicap !== null && a.handicap !== undefined ? String(a.handicap) : '');
+  eaSelVal('eaPermis',        a.permis_requis !== null && a.permis_requis !== undefined ? String(a.permis_requis) : 'false');
+  eaSelVal('eaStatut',        a.statut || 'disponible');
+  eaSelVal('eaEnfinMoi',      a.enfin_moi !== null && a.enfin_moi !== undefined ? String(a.enfin_moi) : 'false');
+  document.getElementById('eaSaveStatus').textContent = '';
+  document.getElementById('editAnimalModal').style.display = 'flex';
+  setTimeout(function() { document.getElementById('editAnimalModal').scrollTop = 0; }, 50);
+}
+
+function fermerEditAnimal() {
+  document.getElementById('editAnimalModal').style.display = 'none';
+  _editAnimalId = null;
+}
+
+function getBool(id) {
+  var v = (document.getElementById(id) || {}).value;
+  return v === 'true' ? true : v === 'false' ? false : null;
+}
+function getVal(id) {
+  var v = (document.getElementById(id) || {}).value;
+  return v && v.trim() ? v.trim() : null;
+}
+
+async function sauvegarderAnimal() {
+  if (!_editAnimalId) return;
+  var status = document.getElementById('eaSaveStatus');
+  status.textContent = 'Sauvegarde…';
+  status.style.color = 'var(--amber)';
+
+  var payload = {
+    nom:                    getVal('eaNom'),
+    espece:                 getVal('eaEspece'),
+    race:                   getVal('eaRace'),
+    sexe:                   getVal('eaSexe'),
+    age_annees:             getVal('eaAge') ? parseFloat(getVal('eaAge')) : null,
+    photo_url:              getVal('eaPhotoUrl'),
+    photo:                  getVal('eaPhotoUrl'),
+    description:            getVal('eaDescription'),
+    histoire:               getVal('eaHistoire'),
+    gabarit:                getVal('eaGabarit'),
+    poids_kg:               getVal('eaPoids') ? parseFloat(getVal('eaPoids')) : null,
+    pelage:                 getVal('eaPelage'),
+    couleur:                getVal('eaCouleur'),
+    mobilite:               getVal('eaMobilite'),
+    date_arrivee_refuge:    getVal('eaDateArrivee'),
+    energie:                getVal('eaEnergie'),
+    lien_humain:            getVal('eaLienHumain'),
+    reactivite_inconnus:    getVal('eaReactivite'),
+    supporte_solitude:      getVal('eaSolitude'),
+    vie_en_refuge:          getVal('eaVieRefuge'),
+    experience_requise:     getVal('eaExperience'),
+    compat_enfants_moins13: getBool('eaCompatEnfants'),
+    compat_ados_plus13:     getBool('eaCompatAdos'),
+    compat_chiens:          getBool('eaCompatChiens'),
+    compat_chats:           getBool('eaCompatChats'),
+    vaccination:            getVal('eaVaccination'),
+    sterilisation:          getVal('eaSterilisation'),
+    identification:         getVal('eaIdentification'),
+    antiparasitaire:        getVal('eaAntiparasitaire'),
+    besoins_medicaux:       getVal('eaBesoins'),
+    handicap:               getBool('eaHandicap'),
+    permis_requis:          getBool('eaPermis'),
+    statut:                 getVal('eaStatut') || 'disponible',
+    enfin_moi:              getBool('eaEnfinMoi'),
+    disponible:             getVal('eaStatut') === 'disponible'
+  };
+
+  // Supprimer les null pour ne pas écraser inutilement
+  Object.keys(payload).forEach(function(k) { if (payload[k] === null) delete payload[k]; });
+
+  var sb = getSupabase();
+  var { error } = await sb.from('Animal').update(payload).eq('id', _editAnimalId);
+  if (error) {
+    status.textContent = '✗ Erreur : ' + error.message;
+    status.style.color = 'var(--rose)';
+  } else {
+    status.textContent = '✓ Sauvegardé !';
+    status.style.color = 'var(--moss)';
+    showToast('✅ Fiche de ' + (payload.nom || 'l'animal') + ' mise à jour');
+    setTimeout(fermerEditAnimal, 1200);
+  }
+}
+
+document.getElementById('editAnimalModal').addEventListener('click', function(e) {
+  if (e.target === this) fermerEditAnimal();
+});
+</script>
 </body>
 </html>
