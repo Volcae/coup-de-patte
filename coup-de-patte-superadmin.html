@@ -195,15 +195,31 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
   <!-- Supabase SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
+    var SUPABASE_URL = 'https://mbqsaaxaglcemdxmfvkc.supabase.co';
+    var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1icXNhYXhhZ2xjZW1keG1mdmtjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MjAwMTQsImV4cCI6MjA5MzQ5NjAxNH0.lGK0LL5h-4N4DqMVy2Q_SKJgnzuy7BPQJEtSsc8plfk';
+    // Service role key — saisie au login et stockée en sessionStorage (jamais dans le code)
+    var SUPABASE_SERVICE_KEY = sessionStorage.getItem('cdp_srk') || '';
+
     var _supabaseClient = null;
+    var _supabaseAdminClient = null;
+
     function getSupabase() {
       if (!_supabaseClient) {
-        _supabaseClient = window.supabase.createClient(
-          'https://mbqsaaxaglcemdxmfvkc.supabase.co',
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1icXNhYXhhZ2xjZW1keG1mdmtjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MjAwMTQsImV4cCI6MjA5MzQ5NjAxNH0.lGK0LL5h-4N4DqMVy2Q_SKJgnzuy7BPQJEtSsc8plfk'
-        );
+        _supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       }
       return _supabaseClient;
+    }
+
+    // Client admin avec service role — bypass RLS pour les opérations superadmin
+    function getSupabaseAdmin() {
+      var key = sessionStorage.getItem('cdp_srk') || SUPABASE_SERVICE_KEY;
+      if (!key) { showToast('⚠️ Service role key manquante — reconnecte-toi'); return getSupabase(); }
+      if (!_supabaseAdminClient) {
+        _supabaseAdminClient = window.supabase.createClient(SUPABASE_URL, key, {
+          auth: { autoRefreshToken: false, persistSession: false }
+        });
+      }
+      return _supabaseAdminClient;
     }
   </script>
 
@@ -249,7 +265,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
   <div class="nav-right">
     <span class="nav-name">👤 Fondateur</span>
-    <button class="nav-logout" onclick="getSupabase().auth.signOut().then(()=>window.location.reload())">Déconnexion</button>
+    <button class="nav-logout" onclick="getSupabase().auth.signOut().then(()=>{ sessionStorage.removeItem('cdp_srk'); window.location.reload(); })">Déconnexion</button>
   </div>
 </nav>
 
@@ -868,7 +884,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   async function retirerAnimalMaint(id, btn) {
     btn.disabled = true; btn.textContent = '…';
-    var { error } = await getSupabase().from('Animal').update({ disponible: false, retrait_auto_date: null }).eq('id', id);
+    var { error } = await getSupabaseAdmin().from('Animal').update({ disponible: false, retrait_auto_date: null }).eq('id', id);
     if (error) { showToast('Erreur : ' + error.message); btn.disabled = false; btn.textContent = 'Retirer'; return; }
     btn.closest('div').remove(); showToast('Animal retiré ✅');
   }
@@ -882,13 +898,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   async function confirmerAdoptionMaint(id, btn) {
     btn.disabled = true; btn.textContent = '…';
-    var { error } = await getSupabase().from('Animal').update({ disponible: false, statut: 'adopte_cdp' }).eq('id', id);
+    var { error } = await getSupabaseAdmin().from('Animal').update({ disponible: false, statut: 'adopte_cdp' }).eq('id', id);
     if (error) { showToast('Erreur : ' + error.message); btn.disabled = false; return; }
     btn.closest('div').remove(); showToast('Fiche retirée ✅');
   }
 
   async function ignorerAdoptionMaint(id, btn) {
-    var { error } = await getSupabase().from('Animal').update({ statut: 'disponible' }).eq('id', id);
+    var { error } = await getSupabaseAdmin().from('Animal').update({ statut: 'disponible' }).eq('id', id);
     if (error) { showToast('Erreur : ' + error.message); return; }
     btn.closest('div').remove(); showToast('Adoption ignorée');
   }
@@ -899,7 +915,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     if (!toDelete || toDelete.length === 0) { showToast('Aucun animal à supprimer'); return; }
     if (!confirm('Supprimer définitivement ' + toDelete.length + ' animal(s) indisponible(s) depuis plus de 6 mois ?\n\nCette action est irréversible.')) return;
     var ids = toDelete.map(function(a) { return a.id; });
-    var { error } = await getSupabase().from('Animal').delete().in('id', ids);
+    var { error } = await getSupabaseAdmin().from('Animal').delete().in('id', ids);
     if (error) { showToast('Erreur : ' + error.message); return; }
     var el = document.getElementById('nettoyageResult');
     if (el) el.textContent = toDelete.length + ' animal(s) supprimé(s) ✅';
@@ -986,8 +1002,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         '<h2 style="font-family:Fraunces,serif;font-size:1.5rem;font-style:italic;color:var(--forest);margin-bottom:4px">Super Admin</h2>' +
         '<p style="color:var(--dust);font-size:0.82rem;margin-bottom:24px">Accès réservé à l\'équipe Coup de Patte</p>' +
         '<input id="adminEmail" type="email" placeholder="contact@coup-de-patte.fr" style="width:100%;padding:12px 16px;border-radius:12px;border:1.5px solid var(--border);background:var(--ivory);font-family:Nunito,sans-serif;font-size:0.88rem;outline:none;margin-bottom:12px;box-sizing:border-box">' +
-        '<input id="adminPwd" type="password" placeholder="Mot de passe" style="width:100%;padding:12px 16px;border-radius:12px;border:1.5px solid var(--border);background:var(--ivory);font-family:Nunito,sans-serif;font-size:0.88rem;outline:none;margin-bottom:16px;box-sizing:border-box">' +
-        '<div id="adminError" style="color:var(--rose);font-size:0.8rem;text-align:center;margin-bottom:12px;display:none">Email ou mot de passe incorrect.</div>';
+        '<input id="adminPwd" type="password" placeholder="Mot de passe" style="width:100%;padding:12px 16px;border-radius:12px;border:1.5px solid var(--border);background:var(--ivory);font-family:Nunito,sans-serif;font-size:0.88rem;outline:none;margin-bottom:12px;box-sizing:border-box">' +
+        '<input id="adminSrk" type="password" placeholder="Service Role Key (Supabase)" style="width:100%;padding:12px 16px;border-radius:12px;border:1.5px solid var(--border);background:var(--ivory);font-family:Nunito,sans-serif;font-size:0.88rem;outline:none;margin-bottom:16px;box-sizing:border-box">' +
+        '<p style="font-size:0.72rem;color:var(--dust);margin:-10px 0 16px;text-align:left">🔑 Supabase → Settings → API → service_role</p>' +
+        '<div id="adminError" style="color:var(--rose);font-size:0.8rem;text-align:center;margin-bottom:12px;display:none">Email, mot de passe ou clé incorrects.</div>';
       var btnLogin = document.createElement('button');
       btnLogin.textContent = '🔒 Accéder';
       btnLogin.style.cssText = 'width:100%;padding:13px;background:linear-gradient(135deg,var(--moss),var(--forest));color:white;border:none;border-radius:50px;font-family:Nunito,sans-serif;font-size:0.92rem;font-weight:700;cursor:pointer';
@@ -1004,6 +1022,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         var sb2 = window.supabase.createClient('https://mbqsaaxaglcemdxmfvkc.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1icXNhYXhhZ2xjZW1keG1mdmtjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MjAwMTQsImV4cCI6MjA5MzQ5NjAxNH0.lGK0LL5h-4N4DqMVy2Q_SKJgnzuy7BPQJEtSsc8plfk');
         var { error } = await sb2.auth.signInWithPassword({ email: email, password: pwd });
         if (error) { document.getElementById('adminError').style.display = 'block'; return; }
+        // Stocker la service role key en sessionStorage (disparaît à la fermeture du navigateur)
+        var srk = document.getElementById('adminSrk') ? document.getElementById('adminSrk').value.trim() : '';
+        if (!srk) { document.getElementById('adminError').style.display = 'block'; document.getElementById('adminError').textContent = 'La Service Role Key est requise.'; return; }
+        sessionStorage.setItem('cdp_srk', srk);
         window.location.reload();
       };
       document.addEventListener('keydown', function(e) { if (e.key === 'Enter') window.adminLogin && window.adminLogin(); });
@@ -1513,7 +1535,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     // Nettoyer les null explicites pour ne pas écraser de données existantes
     Object.keys(payload).forEach(function(k) { if (payload[k] === null) delete payload[k]; });
 
-    var { error: insertError } = await sb.from('Animal').insert([payload]);
+    var { error: insertError } = await getSupabaseAdmin().from('Animal').insert([payload]);
     if (insertError) { showToast('Erreur insertion : ' + insertError.message); return; }
     await sb.from('ScrapingQueue').update({ statut: 'valide' }).eq('id', itemId);
     var card = document.querySelector('[data-item-id="' + itemId + '"]');
@@ -1958,12 +1980,29 @@ document.getElementById('scrapingDetailModal').addEventListener('click', functio
       </div>
     </div>
 
-    <!-- URL Photo -->
+    <!-- URL Photo + cadrage -->
     <div style="padding:12px 28px;border-bottom:1px solid var(--border)">
       <label class="ea-label">🖼 URL de la photo</label>
-      <div style="display:flex;gap:8px">
+      <div style="display:flex;gap:8px;margin-bottom:8px">
         <input id="eaPhotoUrl" class="ea-input" type="text" placeholder="https://..." oninput="eaAperçuPhoto(this.value)" style="flex:1">
         <button onclick="eaAperçuPhoto(document.getElementById('eaPhotoUrl').value)" style="padding:6px 12px;background:var(--sage);color:var(--forest);border:none;border-radius:8px;font-size:0.75rem;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif">Aperçu</button>
+      </div>
+      <label class="ea-label">🎯 Cadrage de la photo</label>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <select id="eaPhotoPosition" class="ea-select" style="width:auto;flex:1" onchange="eaAperçuPhoto(document.getElementById('eaPhotoUrl').value)">
+          <option value="center center">Centre (défaut)</option>
+          <option value="center top">Haut</option>
+          <option value="center bottom">Bas</option>
+          <option value="left center">Gauche</option>
+          <option value="right center">Droite</option>
+          <option value="top left">Coin haut gauche</option>
+          <option value="top right">Coin haut droite</option>
+          <option value="20% center">Légèrement à gauche</option>
+          <option value="80% center">Légèrement à droite</option>
+          <option value="center 20%">Légèrement en haut</option>
+          <option value="center 80%">Légèrement en bas</option>
+        </select>
+        <span style="font-size:0.72rem;color:var(--dust)">L'aperçu à gauche reflète le cadrage</span>
       </div>
     </div>
 
@@ -2032,8 +2071,9 @@ var _editAnimalId = null;
 function eaAperçuPhoto(url) {
   var el = document.getElementById('eaPhoto');
   if (!el) return;
+  var pos = (document.getElementById('eaPhotoPosition') || {}).value || 'center center';
   if (url && url.startsWith('http')) {
-    el.innerHTML = '<img src="' + url + '" style="width:100%;height:100%;object-fit:cover" onerror="this.parentElement.innerHTML=&quot;🐾&quot;">';
+    el.innerHTML = '<img src="' + url + '" style="width:100%;height:100%;object-fit:cover;object-position:' + pos + '" onerror="this.parentElement.innerHTML=&quot;🐾&quot;">';
   } else {
     var esp = (document.getElementById('eaEspece') || {}).value || '';
     el.innerHTML = esp === 'chat' ? '🐱' : '🐕';
@@ -2058,6 +2098,7 @@ function ouvrirEditAnimal(a) {
   eaSelVal('eaSexe', a.sexe);
   document.getElementById('eaAge').value         = a.age_annees || '';
   document.getElementById('eaPhotoUrl').value    = a.photo_url || '';
+  eaSelVal('eaPhotoPosition', a.photo_position || 'center center');
   eaAperçuPhoto(a.photo_url || '');
   document.getElementById('eaDescription').value = a.description || '';
   document.getElementById('eaHistoire').value    = a.histoire || '';
@@ -2119,6 +2160,7 @@ async function sauvegarderAnimal() {
     age_annees:             getVal('eaAge') ? parseFloat(getVal('eaAge')) : null,
     photo_url:              getVal('eaPhotoUrl'),
     photo:                  getVal('eaPhotoUrl'),
+    photo_position:         getVal('eaPhotoPosition') || 'center center',
     description:            getVal('eaDescription'),
     histoire:               getVal('eaHistoire'),
     gabarit:                getVal('eaGabarit'),
@@ -2152,10 +2194,11 @@ async function sauvegarderAnimal() {
   // Supprimer les null pour ne pas écraser inutilement
   Object.keys(payload).forEach(function(k) { if (payload[k] === null) delete payload[k]; });
 
-  var sb = getSupabase();
+  var sb = getSupabaseAdmin();
   var { error } = await sb.from('Animal').update(payload).eq('id', _editAnimalId);
   if (error) {
-    status.textContent = '✗ Erreur : ' + error.message;
+    console.error('Erreur sauvegarderAnimal:', error);
+    status.textContent = '✗ ' + (error.message || error.code || JSON.stringify(error));
     status.style.color = 'var(--rose)';
   } else {
     status.textContent = '✓ Sauvegardé !';
