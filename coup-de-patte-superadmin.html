@@ -197,12 +197,9 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
   <script>
     var SUPABASE_URL = 'https://mbqsaaxaglcemdxmfvkc.supabase.co';
     var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1icXNhYXhhZ2xjZW1keG1mdmtjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MjAwMTQsImV4cCI6MjA5MzQ5NjAxNH0.lGK0LL5h-4N4DqMVy2Q_SKJgnzuy7BPQJEtSsc8plfk';
-    // Service role key — saisie au login et stockée en sessionStorage (jamais dans le code)
-    var SUPABASE_SERVICE_KEY = sessionStorage.getItem('cdp_srk') || '';
+    var EDGE_FN_URL = SUPABASE_URL + '/functions/v1/admin-update-animal';
 
     var _supabaseClient = null;
-    var _supabaseAdminClient = null;
-
     function getSupabase() {
       if (!_supabaseClient) {
         _supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -210,16 +207,22 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
       return _supabaseClient;
     }
 
-    // Client admin avec service role — bypass RLS pour les opérations superadmin
-    function getSupabaseAdmin() {
-      var key = sessionStorage.getItem('cdp_srk') || SUPABASE_SERVICE_KEY;
-      if (!key) { showToast('⚠️ Service role key manquante — reconnecte-toi'); return getSupabase(); }
-      if (!_supabaseAdminClient) {
-        _supabaseAdminClient = window.supabase.createClient(SUPABASE_URL, key, {
-          auth: { autoRefreshToken: false, persistSession: false }
-        });
-      }
-      return _supabaseAdminClient;
+    // Appel admin via Edge Function — service role key reste côté serveur
+    async function callAdmin(action, id, payload) {
+      var session = (await getSupabase().auth.getSession()).data.session;
+      if (!session) { showToast('Session expirée — reconnecte-toi'); return { error: { message: 'Non authentifié' } }; }
+      var res = await fetch(EDGE_FN_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + session.access_token,
+          'apikey': SUPABASE_ANON_KEY
+        },
+        body: JSON.stringify({ action: action, id: id || null, payload: payload || {} })
+      });
+      var data = await res.json();
+      if (!res.ok) return { error: { message: data.error || 'Erreur ' + res.status } };
+      return { data: data.data, error: null };
     }
   </script>
 
@@ -265,7 +268,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
   <div class="nav-right">
     <span class="nav-name">👤 Fondateur</span>
-    <button class="nav-logout" onclick="getSupabase().auth.signOut().then(()=>{ sessionStorage.removeItem('cdp_srk'); window.location.reload(); })">Déconnexion</button>
+    <button class="nav-logout" onclick="getSupabase().auth.signOut().then(()=>window.location.reload())">Déconnexion</button>
   </div>
 </nav>
 
@@ -884,7 +887,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   async function retirerAnimalMaint(id, btn) {
     btn.disabled = true; btn.textContent = '…';
-    var { error } = await getSupabaseAdmin().from('Animal').update({ disponible: false, retrait_auto_date: null }).eq('id', id);
+    var { error } = await callAdmin('update_animal', id, { disponible: false, retrait_auto_date: null });
     if (error) { showToast('Erreur : ' + error.message); btn.disabled = false; btn.textContent = 'Retirer'; return; }
     btn.closest('div').remove(); showToast('Animal retiré ✅');
   }
@@ -898,13 +901,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   async function confirmerAdoptionMaint(id, btn) {
     btn.disabled = true; btn.textContent = '…';
-    var { error } = await getSupabaseAdmin().from('Animal').update({ disponible: false, statut: 'adopte_cdp' }).eq('id', id);
+    var { error } = await callAdmin('update_animal', id, { disponible: false, statut: 'adopte_cdp' });
     if (error) { showToast('Erreur : ' + error.message); btn.disabled = false; return; }
     btn.closest('div').remove(); showToast('Fiche retirée ✅');
   }
 
   async function ignorerAdoptionMaint(id, btn) {
-    var { error } = await getSupabaseAdmin().from('Animal').update({ statut: 'disponible' }).eq('id', id);
+    var { error } = await callAdmin('update_animal', id, { statut: 'disponible' });
     if (error) { showToast('Erreur : ' + error.message); return; }
     btn.closest('div').remove(); showToast('Adoption ignorée');
   }
@@ -915,7 +918,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     if (!toDelete || toDelete.length === 0) { showToast('Aucun animal à supprimer'); return; }
     if (!confirm('Supprimer définitivement ' + toDelete.length + ' animal(s) indisponible(s) depuis plus de 6 mois ?\n\nCette action est irréversible.')) return;
     var ids = toDelete.map(function(a) { return a.id; });
-    var { error } = await getSupabaseAdmin().from('Animal').delete().in('id', ids);
+    var { error } = await Promise.all(ids.map(function(id) { return callAdmin('delete_animal', id, {}); }));
     if (error) { showToast('Erreur : ' + error.message); return; }
     var el = document.getElementById('nettoyageResult');
     if (el) el.textContent = toDelete.length + ' animal(s) supprimé(s) ✅';
@@ -1003,8 +1006,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         '<p style="color:var(--dust);font-size:0.82rem;margin-bottom:24px">Accès réservé à l\'équipe Coup de Patte</p>' +
         '<input id="adminEmail" type="email" placeholder="contact@coup-de-patte.fr" style="width:100%;padding:12px 16px;border-radius:12px;border:1.5px solid var(--border);background:var(--ivory);font-family:Nunito,sans-serif;font-size:0.88rem;outline:none;margin-bottom:12px;box-sizing:border-box">' +
         '<input id="adminPwd" type="password" placeholder="Mot de passe" style="width:100%;padding:12px 16px;border-radius:12px;border:1.5px solid var(--border);background:var(--ivory);font-family:Nunito,sans-serif;font-size:0.88rem;outline:none;margin-bottom:12px;box-sizing:border-box">' +
-        '<input id="adminSrk" type="password" placeholder="Service Role Key (Supabase)" style="width:100%;padding:12px 16px;border-radius:12px;border:1.5px solid var(--border);background:var(--ivory);font-family:Nunito,sans-serif;font-size:0.88rem;outline:none;margin-bottom:16px;box-sizing:border-box">' +
-        '<p style="font-size:0.72rem;color:var(--dust);margin:-10px 0 16px;text-align:left">🔑 Supabase → Settings → API → service_role</p>' +
         '<div id="adminError" style="color:var(--rose);font-size:0.8rem;text-align:center;margin-bottom:12px;display:none">Email, mot de passe ou clé incorrects.</div>';
       var btnLogin = document.createElement('button');
       btnLogin.textContent = '🔒 Accéder';
@@ -1020,26 +1021,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         errEl.style.display = 'none';
         var email = document.getElementById('adminEmail').value.trim();
         var pwd   = document.getElementById('adminPwd').value;
-        var srk   = document.getElementById('adminSrk') ? document.getElementById('adminSrk').value.trim() : '';
-
-        // Validations avant tout appel réseau
         if (email !== 'contact@coup-de-patte.fr') {
           errEl.textContent = 'Email incorrect.'; errEl.style.display = 'block'; return;
         }
         if (!pwd) {
           errEl.textContent = 'Mot de passe requis.'; errEl.style.display = 'block'; return;
         }
-        if (!srk) {
-          errEl.textContent = 'Service Role Key requise (Supabase → Settings → API).'; errEl.style.display = 'block'; return;
-        }
-
         var sb2 = window.supabase.createClient('https://mbqsaaxaglcemdxmfvkc.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1icXNhYXhhZ2xjZW1keG1mdmtjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MjAwMTQsImV4cCI6MjA5MzQ5NjAxNH0.lGK0LL5h-4N4DqMVy2Q_SKJgnzuy7BPQJEtSsc8plfk');
         var { error } = await sb2.auth.signInWithPassword({ email: email, password: pwd });
         if (error) {
           errEl.textContent = 'Email ou mot de passe incorrect.'; errEl.style.display = 'block'; return;
         }
-        // Stocker la service role key en sessionStorage (disparaît à la fermeture du navigateur)
-        sessionStorage.setItem('cdp_srk', srk);
         window.location.reload();
       };
       document.addEventListener('keydown', function(e) { if (e.key === 'Enter') window.adminLogin && window.adminLogin(); });
@@ -1549,9 +1541,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     // Nettoyer les null explicites pour ne pas écraser de données existantes
     Object.keys(payload).forEach(function(k) { if (payload[k] === null) delete payload[k]; });
 
-    var { error: insertError } = await getSupabaseAdmin().from('Animal').insert([payload]);
+    var { error: insertError } = await callAdmin('validate_scraping', null, { scrapingId: itemId, animalPayload: payload });
     if (insertError) { showToast('Erreur insertion : ' + insertError.message); return; }
-    await sb.from('ScrapingQueue').update({ statut: 'valide' }).eq('id', itemId);
     var card = document.querySelector('[data-item-id="' + itemId + '"]');
     if (card) { card.style.opacity = '0'; card.style.transform = 'scale(0.95)'; card.style.transition = 'all 0.3s'; setTimeout(function() { card.remove(); }, 300); }
     showToast('✅ Animal publié sur Coup de Patte !');
@@ -1564,7 +1555,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     var sb = getSupabase();
     var update = { statut: 'refuse' };
     if (raison) update.commentaire = raison;
-    await sb.from('ScrapingQueue').update(update).eq('id', itemId);
+    await callAdmin('refuse_scraping', null, { scrapingId: itemId, extra: update });
     var card = document.querySelector('[data-item-id="' + itemId + '"]');
     if (card) { card.style.opacity = '0'; card.style.transition = 'opacity 0.3s'; setTimeout(function() { card.remove(); }, 300); }
     showToast('Animal refusé');
@@ -2208,11 +2199,10 @@ async function sauvegarderAnimal() {
   // Supprimer les null pour ne pas écraser inutilement
   Object.keys(payload).forEach(function(k) { if (payload[k] === null) delete payload[k]; });
 
-  var sb = getSupabaseAdmin();
-  var { error } = await sb.from('Animal').update(payload).eq('id', _editAnimalId);
+  var { error } = await callAdmin('update_animal', _editAnimalId, payload);
   if (error) {
     console.error('Erreur sauvegarderAnimal:', error);
-    status.textContent = '✗ ' + (error.message || error.code || JSON.stringify(error));
+    status.textContent = '✗ ' + (error.message || 'Erreur inconnue');
     status.style.color = 'var(--rose)';
   } else {
     status.textContent = '✓ Sauvegardé !';
