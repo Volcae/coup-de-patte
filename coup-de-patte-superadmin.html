@@ -1068,7 +1068,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     var tAnim = document.getElementById('tbody-animaux');
     if (tAnim) {
       tAnim.innerHTML = animaux.length === 0 ? '<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--dust)">Aucun animal.</td></tr>' : '';
+      window.animauxItems = {};
       animaux.slice(0, 50).forEach(function(a) {
+        window.animauxItems[a.id] = a;
         var row = document.createElement('tr');
         row.innerHTML =
           '<td><strong>' + (a.nom || '–') + '</strong></td>' +
@@ -1077,7 +1079,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           '<td><span style="font-size:0.72rem;padding:2px 8px;border-radius:50px;background:var(--ivory);color:var(--dust)">' + (a.statut || 'disponible') + '</span></td>' +
           '<td>' + (a.enfin_moi ? '✨' : '–') + '</td>' +
           '<td>' + (a.permis_requis ? '<span style="font-size:0.7rem;background:rgba(201,112,74,0.12);color:#c9704a;padding:2px 8px;border-radius:50px;font-weight:700">📋 Requis</span>' : '–') + '</td>' +
-          '<td><button onclick="ouvrirEditAnimal(' + JSON.stringify(a).replace(/'/g,"\'") + ')" style="padding:5px 12px;background:var(--forest);color:var(--ivory);border:none;border-radius:50px;font-size:0.72rem;font-weight:700;cursor:pointer;font-family:Nunito,sans-serif">✏️ Modifier</button></td>';
+          '<td><button onclick="ouvrirEditAnimal(animauxItems[\'' + a.id + '\'])" style="padding:5px 12px;background:var(--forest);color:var(--ivory);border:none;border-radius:50px;font-size:0.72rem;font-weight:700;cursor:pointer;font-family:Nunito,sans-serif">✏️ Modifier</button></td>';
         tAnim.appendChild(row);
       });
     }
