@@ -887,7 +887,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   async function retirerAnimalMaint(id, btn) {
     btn.disabled = true; btn.textContent = '…';
-    var { error } = await callAdmin('update_animal', id, { disponible: false, retrait_auto_date: null });
+    var { error } = await getSupabase().from('Animal').update({ disponible: false, retrait_auto_date: null }).eq('id', id);
     if (error) { showToast('Erreur : ' + error.message); btn.disabled = false; btn.textContent = 'Retirer'; return; }
     btn.closest('div').remove(); showToast('Animal retiré ✅');
   }
@@ -901,13 +901,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   async function confirmerAdoptionMaint(id, btn) {
     btn.disabled = true; btn.textContent = '…';
-    var { error } = await callAdmin('update_animal', id, { disponible: false, statut: 'adopte_cdp' });
+    var { error } = await getSupabase().from('Animal').update({ disponible: false, statut: 'adopte_cdp' }).eq('id', id);
     if (error) { showToast('Erreur : ' + error.message); btn.disabled = false; return; }
     btn.closest('div').remove(); showToast('Fiche retirée ✅');
   }
 
   async function ignorerAdoptionMaint(id, btn) {
-    var { error } = await callAdmin('update_animal', id, { statut: 'disponible' });
+    var { error } = await getSupabase().from('Animal').update({ statut: 'disponible' }).eq('id', id);
     if (error) { showToast('Erreur : ' + error.message); return; }
     btn.closest('div').remove(); showToast('Adoption ignorée');
   }
@@ -918,7 +918,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     if (!toDelete || toDelete.length === 0) { showToast('Aucun animal à supprimer'); return; }
     if (!confirm('Supprimer définitivement ' + toDelete.length + ' animal(s) indisponible(s) depuis plus de 6 mois ?\n\nCette action est irréversible.')) return;
     var ids = toDelete.map(function(a) { return a.id; });
-    var { error } = await Promise.all(ids.map(function(id) { return callAdmin('delete_animal', id, {}); }));
+    var { error } = await getSupabase().from('Animal').delete().in('id', ids);
     if (error) { showToast('Erreur : ' + error.message); return; }
     var el = document.getElementById('nettoyageResult');
     if (el) el.textContent = toDelete.length + ' animal(s) supprimé(s) ✅';
@@ -1541,8 +1541,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     // Nettoyer les null explicites pour ne pas écraser de données existantes
     Object.keys(payload).forEach(function(k) { if (payload[k] === null) delete payload[k]; });
 
-    var { error: insertError } = await callAdmin('validate_scraping', null, { scrapingId: itemId, animalPayload: payload });
+    var { error: insertError } = await getSupabase().from('Animal').insert([payload]);
     if (insertError) { showToast('Erreur insertion : ' + insertError.message); return; }
+    await getSupabase().from('ScrapingQueue').update({ statut: 'valide' }).eq('id', itemId);
     var card = document.querySelector('[data-item-id="' + itemId + '"]');
     if (card) { card.style.opacity = '0'; card.style.transform = 'scale(0.95)'; card.style.transition = 'all 0.3s'; setTimeout(function() { card.remove(); }, 300); }
     showToast('✅ Animal publié sur Coup de Patte !');
@@ -1555,7 +1556,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     var sb = getSupabase();
     var update = { statut: 'refuse' };
     if (raison) update.commentaire = raison;
-    await callAdmin('refuse_scraping', null, { scrapingId: itemId, extra: update });
+    await getSupabase().from('ScrapingQueue').update(update).eq('id', itemId);
     var card = document.querySelector('[data-item-id="' + itemId + '"]');
     if (card) { card.style.opacity = '0'; card.style.transition = 'opacity 0.3s'; setTimeout(function() { card.remove(); }, 300); }
     showToast('Animal refusé');
@@ -2219,7 +2220,7 @@ async function sauvegarderAnimal() {
   // Supprimer les null pour ne pas écraser inutilement
   Object.keys(payload).forEach(function(k) { if (payload[k] === null) delete payload[k]; });
 
-  var { error } = await callAdmin('update_animal', _editAnimalId, payload);
+  var { error } = await getSupabase().from('Animal').update(payload).eq('id', _editAnimalId);
   if (error) {
     console.error('Erreur sauvegarderAnimal:', error);
     status.textContent = '✗ ' + (error.message || 'Erreur inconnue');
