@@ -472,6 +472,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <span class="q-hint">Optionnel · Ce texte sera visible par les refuges sur votre profil</span>
           <textarea placeholder="Ex : Je cherche un compagnon calme pour mes soirées et mes weekends en forêt…" style="width:100%;min-height:88px;padding:13px 16px;border-radius:14px;border:1.5px solid var(--border);background:var(--ivory);color:var(--forest);font-family:'Nunito',sans-serif;font-size:0.85rem;font-weight:500;resize:vertical;outline:none;transition:border-color 0.2s;line-height:1.6" onfocus="this.style.borderColor='var(--moss)'" onblur="this.style.borderColor='var(--border)'"></textarea>
         </div>
+        <!-- Permis de détention -->
+        <div class="q-divider"></div>
+        <div class="question">
+          <span class="q-label">📋 Avez-vous un permis de détention pour chien de catégorie ?</span>
+          <span class="q-hint">Optionnel · Nécessaire pour adopter certains chiens (type 1 ou 2)</span>
+          <div style="display:flex;align-items:center;gap:14px;margin-top:10px">
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:0.88rem;font-weight:600;color:var(--forest)">
+              <input type="checkbox" id="checkPermis" onchange="answers.a_permis=this.checked; document.getElementById('permisLabel').style.display=this.checked?'inline-block':'none'" style="width:18px;height:18px;accent-color:var(--moss);cursor:pointer">
+              Oui, je détiens un permis valide
+            </label>
+            <span id="permisLabel" style="display:none;font-size:0.75rem;font-weight:700;background:rgba(74,124,89,0.12);color:var(--moss);padding:3px 10px;border-radius:50px">✓ Permis validé</span>
+          </div>
+        </div>
+
         <!-- Résumé -->
         <div style="background:var(--mint-lt);border-radius:18px;padding:18px 20px;border:1.5px solid var(--border)">
           <p style="font-family:'Fraunces',serif;font-size:0.9rem;font-style:italic;font-weight:600;color:var(--forest);margin-bottom:12px">📋 Récapitulatif de votre profil</p>
@@ -989,6 +1003,7 @@ async function saveProfilToSupabase() {
       situation_travail: a.q16 || null,
       temps_dedie: a.q17 || null,
       distance_max_km: a.q18 === '30min' ? 30 : a.q18 === '1h' ? 60 : a.q18 === '2h' ? 120 : a.q18 === '2h+' ? 200 : null,
+      a_permis: answers.a_permis || false,
       profil_complete: true,
       date_completion: new Date().toISOString()
     };

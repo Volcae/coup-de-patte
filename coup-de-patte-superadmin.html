@@ -1438,6 +1438,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     var editAntiparasitaire=getEdit('editAntiparasitaire');
     var editBesoins      = getEdit('editBesoins');
     var editHandicap     = getBoolEdit('editHandicap');
+    var editPermis       = getBoolEdit('editPermis');
 
     // Calculer enfin_moi
     var dateArrivee = dateArriveeParam || item.date_arrivee_refuge || null;
@@ -1501,7 +1502,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       sterilisation:          editSterilisation || d.sterilisation || null,
       identification:         editIdentification|| d.identification|| null,
       antiparasitaire:        editAntiparasitaire||d.antiparasitaire||null,
-      besoins_medicaux:       editBesoins       || d.besoins_medicaux || null
+      besoins_medicaux:       editBesoins       || d.besoins_medicaux || null,
+      permis_requis:          editPermis !== null ? editPermis : (item.permis_requis || false)
     };
 
     // Nettoyer les null explicites pour ne pas écraser de données existantes
@@ -1735,6 +1737,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <select id="editBesoins" class="edit-select"><option value="">—</option><option value="aucun">Aucun</option><option value="legers">Légers</option><option value="lourds">Lourds</option></select></div>
         <div class="edit-row"><label class="edit-label">Handicap</label>
           <select id="editHandicap" class="edit-select"><option value="">—</option><option value="true">Oui</option><option value="false">Non</option></select></div>
+        <div class="edit-row"><label class="edit-label">📋 Permis de détention requis</label>
+          <select id="editPermis" class="edit-select"><option value="false">Non</option><option value="true">Oui — chien de catégorie</option></select></div>
       </div>
 
     </div>
@@ -1850,6 +1854,7 @@ function ouvrirDetailScraping(item) {
   selVal('editAntiparasitaire', d.antiparasitaire);
   selVal('editBesoins',         d.besoins_medicaux);
   selVal('editHandicap',        d.handicap !== undefined && d.handicap !== null ? String(d.handicap) : '');
+  selVal('editPermis',          item.permis_requis !== undefined && item.permis_requis !== null ? String(item.permis_requis) : 'false');
 
   // Champs null — alerte
   var champsImportants = { 'Race': item.race || d.race, 'Sexe': item.sexe || d.sexe, 'Âge': item.age_annees || d.age_annees, 'Énergie': d.energie, 'Expérience': d.experience_requise, 'Compat chiens': d.compat_chiens, 'Compat chats': d.compat_chats, 'Vaccination': d.vaccination, 'Stérilisation': d.sterilisation };

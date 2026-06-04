@@ -729,6 +729,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     if (animal.compat_chats) tags += '<span class="mctag">🐱 Chats ok</span>';
     if (animal.compat_chiens) tags += '<span class="mctag">🐶 Chiens ok</span>';
     if (animal.enfin_moi) tags += '<span class="mctag mctag-gold">✨ Enfin Moi ?</span>';
+    if (animal.permis_requis) tags += '<span class="mctag" style="background:rgba(201,112,74,0.15);color:#c9704a">📋 Permis requis</span>';
     var imgContent = animal.photo_url
       ? '<img src="' + animal.photo_url + '" alt="' + animal.nom + '" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" onerror="this.style.display=\'none\'">' 
       : '<span>' + emoji + '</span>';
@@ -777,6 +778,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         if (profil.enfants_foyer && profil.enfants_foyer.includes('moins13') && animal.compat_enfants_moins13 === false) return false;
         // Escaliers
         if (animal.mobilite && animal.mobilite.includes('plain_pied') && profil.etage_ascenseur === 'non') return false;
+        // Permis de détention : exclure si requis et adoptant n'a pas le permis
+        if (animal.permis_requis && !profil.a_permis) return false;
         return true;
       })
       .map(function(animal) {
