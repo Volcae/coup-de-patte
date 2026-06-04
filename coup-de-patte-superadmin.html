@@ -1016,15 +1016,29 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       document.body.appendChild(loginDiv);
 
       window.adminLogin = async function() {
-        var email = document.getElementById('adminEmail').value;
-        var pwd = document.getElementById('adminPwd').value;
-        if (email !== 'contact@coup-de-patte.fr') { document.getElementById('adminError').style.display = 'block'; return; }
+        var errEl = document.getElementById('adminError');
+        errEl.style.display = 'none';
+        var email = document.getElementById('adminEmail').value.trim();
+        var pwd   = document.getElementById('adminPwd').value;
+        var srk   = document.getElementById('adminSrk') ? document.getElementById('adminSrk').value.trim() : '';
+
+        // Validations avant tout appel réseau
+        if (email !== 'contact@coup-de-patte.fr') {
+          errEl.textContent = 'Email incorrect.'; errEl.style.display = 'block'; return;
+        }
+        if (!pwd) {
+          errEl.textContent = 'Mot de passe requis.'; errEl.style.display = 'block'; return;
+        }
+        if (!srk) {
+          errEl.textContent = 'Service Role Key requise (Supabase → Settings → API).'; errEl.style.display = 'block'; return;
+        }
+
         var sb2 = window.supabase.createClient('https://mbqsaaxaglcemdxmfvkc.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1icXNhYXhhZ2xjZW1keG1mdmtjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MjAwMTQsImV4cCI6MjA5MzQ5NjAxNH0.lGK0LL5h-4N4DqMVy2Q_SKJgnzuy7BPQJEtSsc8plfk');
         var { error } = await sb2.auth.signInWithPassword({ email: email, password: pwd });
-        if (error) { document.getElementById('adminError').style.display = 'block'; return; }
+        if (error) {
+          errEl.textContent = 'Email ou mot de passe incorrect.'; errEl.style.display = 'block'; return;
+        }
         // Stocker la service role key en sessionStorage (disparaît à la fermeture du navigateur)
-        var srk = document.getElementById('adminSrk') ? document.getElementById('adminSrk').value.trim() : '';
-        if (!srk) { document.getElementById('adminError').style.display = 'block'; document.getElementById('adminError').textContent = 'La Service Role Key est requise.'; return; }
         sessionStorage.setItem('cdp_srk', srk);
         window.location.reload();
       };
