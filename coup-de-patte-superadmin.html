@@ -1446,7 +1446,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     var editRace         = getEdit('editRace');
     var editSexe         = getEdit('editSexe');
     var editAge          = getEdit('editAge') ? parseFloat(getEdit('editAge')) : null;
-    var editPhotoUrl     = getEdit('editPhotoUrl');
+    var editPhotoUrl              = getEdit('editPhotoUrl');
+    var editPhotoPosition         = getEdit('editPhotoPosition') || 'center center';
+    var editPhotoPositionVignette = getEdit('editPhotoPositionVignette') || 'center center';
     var editDescription  = getEdit('editDescription');
     var editHistoire     = getEdit('editHistoire');
     var editGabarit      = getEdit('editGabarit');
@@ -1503,6 +1505,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       description:            editDescription  || d.description || item.description || null,
       histoire:               editHistoire     || d.histoire || null,
       photo_url:              photoVal,
+      photo_position:         editPhotoPosition,
+      photo_position_vignette: editPhotoPositionVignette,
       photo:                  photoVal,
       source_url:             item.source_url || null,
       date_arrivee_refuge:    dateArrivee || null,
@@ -1685,12 +1689,42 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </div>
     </div>
 
-    <!-- URL Photo éditable -->
+    <!-- URL Photo + cadrage -->
     <div style="padding:12px 28px;border-bottom:1px solid var(--border);background:rgba(91,141,239,0.04)">
       <label class="edit-label">🖼 URL de la photo</label>
-      <div style="display:flex;gap:8px;align-items:center">
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
         <input id="editPhotoUrl" class="edit-input" type="text" placeholder="https://..." oninput="aperçuPhoto(this.value)" style="flex:1">
         <button onclick="aperçuPhoto(document.getElementById('editPhotoUrl').value)" style="padding:6px 12px;background:var(--sage);color:var(--forest);border:none;border-radius:8px;font-size:0.75rem;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif">Aperçu</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div>
+          <label class="edit-label">🎯 Cadrage — Grande photo (fiche)</label>
+          <select id="editPhotoPosition" class="edit-input" style="padding:6px 10px" onchange="aperçuPhoto(document.getElementById('editPhotoUrl').value)">
+            <option value="center center">Centre (défaut)</option>
+            <option value="center top">Haut</option>
+            <option value="center bottom">Bas</option>
+            <option value="left center">Gauche</option>
+            <option value="right center">Droite</option>
+            <option value="20% center">Légèrement à gauche</option>
+            <option value="80% center">Légèrement à droite</option>
+            <option value="center 20%">Légèrement en haut</option>
+            <option value="center 80%">Légèrement en bas</option>
+          </select>
+        </div>
+        <div>
+          <label class="edit-label">🖼 Cadrage — Vignette (matchs)</label>
+          <select id="editPhotoPositionVignette" class="edit-input" style="padding:6px 10px">
+            <option value="center center">Centre (défaut)</option>
+            <option value="center top">Haut</option>
+            <option value="center bottom">Bas</option>
+            <option value="left center">Gauche</option>
+            <option value="right center">Droite</option>
+            <option value="20% center">Légèrement à gauche</option>
+            <option value="80% center">Légèrement à droite</option>
+            <option value="center 20%">Légèrement en haut</option>
+            <option value="center 80%">Légèrement en bas</option>
+          </select>
+        </div>
       </div>
     </div>
 
@@ -1806,8 +1840,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 function aperçuPhoto(url) {
   var photoEl = document.getElementById('detailPhoto');
   if (!photoEl) return;
+  var pos = (document.getElementById('editPhotoPosition') || document.getElementById('eaPhotoPosition') || {}).value || 'center center';
   if (url && url.startsWith('http')) {
-    photoEl.innerHTML = '<img src="' + url + '" style="width:100%;height:100%;object-fit:cover" onerror="this.parentElement.innerHTML=&quot;🐾&quot;">';
+    photoEl.innerHTML = '<img src="' + url + '" style="width:100%;height:100%;object-fit:cover;object-position:' + pos + '" onerror="this.parentElement.innerHTML=&quot;🐾&quot;">';
   } else {
     var espece = document.getElementById('editEspece') ? document.getElementById('editEspece').value : '';
     photoEl.innerHTML = espece === 'chat' ? '🐱' : '🐕';
@@ -1852,6 +1887,10 @@ function ouvrirDetailScraping(item) {
   // Photo
   var photoUrl = item.photo_url || '';
   document.getElementById('editPhotoUrl').value = photoUrl;
+  var posEl = document.getElementById('editPhotoPosition');
+  var posVigEl = document.getElementById('editPhotoPositionVignette');
+  if (posEl) posEl.value = item.photo_position || 'center center';
+  if (posVigEl) posVigEl.value = item.photo_position_vignette || 'center center';
   aperçuPhoto(photoUrl);
 
   // Textes
