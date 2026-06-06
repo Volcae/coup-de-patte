@@ -2324,7 +2324,7 @@ var CONFIG_KEY = 'matching_params';
 
 async function chargerParametresAlgo() {
   var sb = getSupabase();
-  var { data } = await sb.from('Config').select('valeur').eq('cle', CONFIG_KEY).single();
+  var { data } = await sb.from('Config').select('valeur').eq('cle', CONFIG_KEY).maybeSingle();
   if (!data) return;
   try {
     var p = typeof data.valeur === 'string' ? JSON.parse(data.valeur) : data.valeur;

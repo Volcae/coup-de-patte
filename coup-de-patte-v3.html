@@ -729,7 +729,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   // Charger les paramètres algo depuis Supabase
   async function chargerParamsAlgo() {
     try {
-      var { data } = await getSupabase().from('Config').select('valeur').eq('cle', 'matching_params').single();
+      var { data } = await getSupabase().from('Config').select('valeur').eq('cle', 'matching_params').maybeSingle();
       if (data) {
         window._algoParams = typeof data.valeur === 'string' ? JSON.parse(data.valeur) : data.valeur;
       }
