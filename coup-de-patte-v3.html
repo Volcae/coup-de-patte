@@ -715,14 +715,35 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     else if (mode === 'sedentaire' && energie === 'moyen') scores.mode_vie = 50;
     else if (mode === 'sedentaire' && energie === 'eleve') scores.mode_vie = 20; // incompatibilité forte
     else scores.mode_vie = 60;
-    var global = Math.round(scores.logement*0.30 + scores.foyer*0.25 + scores.disponibilite*0.20 + scores.experience*0.15 + scores.mode_vie*0.10);
+    // Utiliser les pondérations configurées dans le superadmin (ou valeurs par défaut)
+    var wp = window._algoParams || {};
+    var wLog  = (wp.w_logement !== undefined ? wp.w_logement : 30) / 100;
+    var wFoy  = (wp.w_foyer    !== undefined ? wp.w_foyer    : 25) / 100;
+    var wDis  = (wp.w_dispo    !== undefined ? wp.w_dispo    : 20) / 100;
+    var wExp  = (wp.w_exp      !== undefined ? wp.w_exp      : 15) / 100;
+    var wMod  = (wp.w_mode     !== undefined ? wp.w_mode     : 10) / 100;
+    var global = Math.round(scores.logement*wLog + scores.foyer*wFoy + scores.disponibilite*wDis + scores.experience*wExp + scores.mode_vie*wMod);
     return { global, scores };
   }
 
+  // Charger les paramètres algo depuis Supabase
+  async function chargerParamsAlgo() {
+    try {
+      var { data } = await getSupabase().from('Config').select('valeur').eq('cle', 'matching_params').single();
+      if (data) {
+        window._algoParams = typeof data.valeur === 'string' ? JSON.parse(data.valeur) : data.valeur;
+      }
+    } catch(e) {}
+  }
+
   function getLabelScore(score) {
-    if (score >= 85) return { label: 'Coup de Patte idéal', color: 'var(--moss)' };
-    if (score >= 70) return { label: 'Belle rencontre', color: 'var(--blue)' };
-    if (score >= 55) return { label: "On s'apprivoise ?", color: "var(--amber)" };
+    var p = window._algoParams || {};
+    var ideal = p.seuil_ideal !== undefined ? p.seuil_ideal : 85;
+    var belle = p.seuil_belle !== undefined ? p.seuil_belle : 70;
+    var appri = p.seuil_appri !== undefined ? p.seuil_appri : 55;
+    if (score >= ideal) return { label: 'Coup de Patte idéal', color: 'var(--moss)' };
+    if (score >= belle) return { label: 'Belle rencontre', color: 'var(--blue)' };
+    if (score >= appri) return { label: "On s'apprivoise ?", color: "var(--amber)" };
     return { label: 'Faible compatibilité', color: 'var(--rose)' };
   }
 
@@ -764,6 +785,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     var { data: { session } } = await sb.auth.getSession();
     if (!session) { window.location.href = 'coup-de-patte-login.html'; return; }
     var userId = session.user.id;
+    await chargerParamsAlgo();
     var profilResult = await sb.from('ProfilAdoptant').select('*').eq('utilisateur', userId);
     var profil = profilResult.data && profilResult.data.length > 0 ? profilResult.data[0] : null;
     // Filtre espèce selon profil adoptant
