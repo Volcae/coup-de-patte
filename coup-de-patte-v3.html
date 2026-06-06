@@ -674,10 +674,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   function calculerScore(profil, animal) {
     var scores = { logement: 50, foyer: 100, disponibilite: 50, experience: 100, mode_vie: 50 };
-    if (animal.gabarit) {
-      var g = animal.gabarit.toLowerCase();
-      if (profil.type_logement === 'maison') scores.logement = 100;
-      else if (profil.type_logement === 'appart') {
+    if (animal.gabarit || animal.type_logement_compatible) {
+      var g = animal.gabarit ? animal.gabarit.toLowerCase() : 'moyen';
+      // Si l'animal a une restriction de logement explicite
+      if (animal.type_logement_compatible === 'maison_uniquement' && profil.type_logement === 'appart') {
+        scores.logement = 10; // Très mauvais match
+      } else if (profil.type_logement === 'maison') {
+        scores.logement = 100;
+      } else if (profil.type_logement === 'appart') {
         if (g === 'petit') scores.logement = 100;
         else if (g === 'moyen') scores.logement = 70;
         else scores.logement = 30;
@@ -701,10 +705,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     else scores.experience = 40;
     var mode = profil.temps_dedie || 'modere';
     var energie = animal.energie || 'moyen';
+    // Correspondance mode de vie / énergie animal
     if ((mode === 'actif' || mode === 'sportif') && energie === 'eleve') scores.mode_vie = 100;
+    else if ((mode === 'actif' || mode === 'sportif') && energie === 'moyen') scores.mode_vie = 80;
     else if (mode === 'modere' && energie === 'moyen') scores.mode_vie = 100;
+    else if (mode === 'modere' && energie === 'faible') scores.mode_vie = 80;
+    else if (mode === 'modere' && energie === 'eleve') scores.mode_vie = 50;
     else if (mode === 'sedentaire' && energie === 'faible') scores.mode_vie = 100;
-    else scores.mode_vie = 50;
+    else if (mode === 'sedentaire' && energie === 'moyen') scores.mode_vie = 50;
+    else if (mode === 'sedentaire' && energie === 'eleve') scores.mode_vie = 20; // incompatibilité forte
+    else scores.mode_vie = 60;
     var global = Math.round(scores.logement*0.30 + scores.foyer*0.25 + scores.disponibilite*0.20 + scores.experience*0.15 + scores.mode_vie*0.10);
     return { global, scores };
   }
@@ -730,6 +740,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     if (animal.compat_chiens) tags += '<span class="mctag">🐶 Chiens ok</span>';
     if (animal.enfin_moi) tags += '<span class="mctag mctag-gold">✨ Enfin Moi ?</span>';
     if (animal.permis_requis) tags += '<span class="mctag" style="background:rgba(201,112,74,0.15);color:#c9704a">📋 Permis requis</span>';
+    if (animal.exterieur_requis) tags += '<span class="mctag" style="background:rgba(74,124,89,0.15);color:var(--moss)">🌿 Jardin requis</span>';
+    if (animal.type_logement_compatible === 'maison_uniquement') tags += '<span class="mctag" style="background:rgba(74,124,89,0.12);color:var(--moss)">🏠 Maison uniquement</span>';
     var imgContent = animal.photo_url
       ? '<img src="' + animal.photo_url + '" alt="' + animal.nom + '" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:' + (animal.photo_position_vignette || 'center center') + '" onerror="this.style.display=\'none\'">' 
       : '<span>' + emoji + '</span>';
@@ -780,6 +792,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         if (animal.mobilite && animal.mobilite.includes('plain_pied') && profil.etage_ascenseur === 'non') return false;
         // Permis de détention : exclure si requis et adoptant n'a pas le permis
         if (animal.permis_requis && !profil.a_permis) return false;
+        // Extérieur requis : exclure si animal a besoin jardin et adoptant n'en a pas
+        if (animal.exterieur_requis === true && (!profil.exterieur || profil.type_exterieur === 'aucun')) return false;
         return true;
       })
       .map(function(animal) {

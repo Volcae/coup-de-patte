@@ -546,8 +546,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <label class="form-label">Compatibilités</label>
         <div class="opt-group">
           <div class="opt" id="optEnfants" onclick="this.classList.toggle('on')">👶 Enfants &lt; 13 ans</div>
+          <div class="opt" id="optAdos" onclick="this.classList.toggle('on')">🧒 Ados 13+</div>
           <div class="opt" id="optChats2" onclick="this.classList.toggle('on')">🐱 Chats</div>
           <div class="opt" id="optChiens2" onclick="this.classList.toggle('on')">🐶 Chiens</div>
+          <div class="opt" id="optPermis" onclick="this.classList.toggle('on')">📋 Permis requis</div>
         </div>
       </div>
       <div class="form-group">
@@ -560,6 +562,54 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <option value="aucun">Aucun</option>
           <option value="legers">Légers</option>
           <option value="lourds">Lourds</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Lien humain</label>
+        <select class="form-select" id="fieldLienHumain">
+          <option value="">– Non renseigné</option>
+          <option value="faible">Peu demandeur de contact</option>
+          <option value="moyen">Équilibré</option>
+          <option value="fort">Très attaché / pot de colle</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Supporte la solitude</label>
+        <select class="form-select" id="fieldSolitude">
+          <option value="">– Non renseigné</option>
+          <option value="bien">Bien — calme et autonome</option>
+          <option value="moyen">Moyennement</option>
+          <option value="mal">Mal — anxieux / destructeur</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Pelage</label>
+        <select class="form-select" id="fieldPelage">
+          <option value="">– Non renseigné</option>
+          <option value="court">Court</option>
+          <option value="mi-long">Mi-long</option>
+          <option value="long">Long</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Couleur principale</label>
+        <input class="form-input" type="text" id="fieldCouleur" placeholder="Ex : roux, noir et blanc…">
+      </div>
+      <div class="form-group">
+        <label class="form-label">🏠 Logement compatible</label>
+        <select class="form-select" id="fieldLogement">
+          <option value="">– Non renseigné</option>
+          <option value="les deux">Appartement et maison</option>
+          <option value="appart_ok">Appartement ok</option>
+          <option value="maison_uniquement">Maison uniquement</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">🌿 Extérieur requis</label>
+        <select class="form-select" id="fieldExterieur">
+          <option value="">– Non renseigné</option>
+          <option value="false">Non — appartement ok</option>
+          <option value="true">Oui — jardin nécessaire</option>
         </select>
       </div>
       <div class="form-group form-full">
@@ -1159,7 +1209,7 @@ function openModal() {
   document.getElementById('fieldAge').value = '';
   document.getElementById('fieldDesc').value = '';
   document.getElementById('fieldDate').value = new Date().toISOString().split('T')[0];
-  ['optEnfants','optChats2','optChiens2'].forEach(id => document.getElementById(id).classList.remove('on'));
+  ['optEnfants','optAdos','optChats2','optChiens2','optPermis'].forEach(id => document.getElementById(id).classList.remove('on'));
   document.getElementById('animalModal').classList.add('open');
 }
 
@@ -1183,8 +1233,16 @@ function openEditModal(animalId) {
   document.getElementById('fieldDesc').value = a.description || '';
   document.getElementById('fieldDate').value = a.date_arrivee ? a.date_arrivee.split('T')[0] : '';
   document.getElementById('optEnfants').classList.toggle('on', !!a.compat_enfants_moins13);
+  document.getElementById('optAdos').classList.toggle('on', a.compat_ados_plus13 !== false);
   document.getElementById('optChats2').classList.toggle('on', !!a.compat_chats);
   document.getElementById('optChiens2').classList.toggle('on', !!a.compat_chiens);
+  document.getElementById('optPermis').classList.toggle('on', !!a.permis_requis);
+  var fLH = document.getElementById('fieldLienHumain'); if (fLH) fLH.value = a.lien_humain || '';
+  var fSol = document.getElementById('fieldSolitude'); if (fSol) fSol.value = a.supporte_solitude || '';
+  var fPel = document.getElementById('fieldPelage'); if (fPel) fPel.value = a.pelage || '';
+  var fCol = document.getElementById('fieldCouleur'); if (fCol) fCol.value = a.couleur || '';
+  var fLog = document.getElementById('fieldLogement'); if (fLog) fLog.value = a.type_logement_compatible || '';
+  var fExt = document.getElementById('fieldExterieur'); if (fExt) fExt.value = a.exterieur_requis !== null && a.exterieur_requis !== undefined ? String(a.exterieur_requis) : '';
   // Pré-remplir mobilite
   document.querySelectorAll('#fieldMobilite button').forEach(function(btn) {
     btn.classList.remove('on');
@@ -1282,7 +1340,15 @@ async function saveAnimal() {
     vaccination: document.getElementById('fieldVaccination') ? (document.getElementById('fieldVaccination').value || null) : null,
     sterilisation: document.getElementById('fieldSterilisation') ? (document.getElementById('fieldSterilisation').value || null) : null,
     identification: document.getElementById('fieldIdentification') ? (document.getElementById('fieldIdentification').value || null) : null,
-    antiparasitaire: document.getElementById('fieldAntiparasitaire') ? (document.getElementById('fieldAntiparasitaire').value || null) : null
+    antiparasitaire: document.getElementById('fieldAntiparasitaire') ? (document.getElementById('fieldAntiparasitaire').value || null) : null,
+    compat_ados_plus13: document.getElementById('optAdos') ? document.getElementById('optAdos').classList.contains('on') : null,
+    permis_requis: document.getElementById('optPermis') ? document.getElementById('optPermis').classList.contains('on') : false,
+    lien_humain: document.getElementById('fieldLienHumain') ? (document.getElementById('fieldLienHumain').value || null) : null,
+    supporte_solitude: document.getElementById('fieldSolitude') ? (document.getElementById('fieldSolitude').value || null) : null,
+    pelage: document.getElementById('fieldPelage') ? (document.getElementById('fieldPelage').value || null) : null,
+    couleur: document.getElementById('fieldCouleur') ? (document.getElementById('fieldCouleur').value.trim() || null) : null,
+    type_logement_compatible: document.getElementById('fieldLogement') ? (document.getElementById('fieldLogement').value || null) : null,
+    exterieur_requis: document.getElementById('fieldExterieur') ? (document.getElementById('fieldExterieur').value === 'true' ? true : document.getElementById('fieldExterieur').value === 'false' ? false : null) : null
   };
 
   var sb = getSupabase();

@@ -1473,6 +1473,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     var editBesoins      = getEdit('editBesoins');
     var editHandicap     = getBoolEdit('editHandicap');
     var editPermis       = getBoolEdit('editPermis');
+    var editLogement     = getEdit('editLogement');
+    var editExterieur    = getBoolEdit('editExterieur');
 
     // Calculer enfin_moi
     var dateArrivee = dateArriveeParam || item.date_arrivee_refuge || null;
@@ -1538,8 +1540,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       sterilisation:          editSterilisation || d.sterilisation || null,
       identification:         editIdentification|| d.identification|| null,
       antiparasitaire:        editAntiparasitaire||d.antiparasitaire||null,
-      besoins_medicaux:       editBesoins       || d.besoins_medicaux || null,
-      permis_requis:          editPermis !== null ? editPermis : (item.permis_requis || false)
+      besoins_medicaux:           editBesoins    || d.besoins_medicaux || null,
+      permis_requis:              editPermis !== null ? editPermis : (item.permis_requis || false),
+      type_logement_compatible:   editLogement   || d.type_logement_compatible || null,
+      exterieur_requis:           editExterieur !== null ? editExterieur : (d.exterieur_requis !== undefined ? d.exterieur_requis : null)
     };
 
     // Nettoyer les null explicites pour ne pas écraser de données existantes
@@ -1786,6 +1790,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <select id="editCompatChiens" class="edit-select"><option value="">—</option><option value="true">✅ Oui</option><option value="false">❌ Non</option></select></div>
         <div class="edit-row"><label class="edit-label">Chats</label>
           <select id="editCompatChats" class="edit-select"><option value="">—</option><option value="true">✅ Oui</option><option value="false">❌ Non</option></select></div>
+        <div class="edit-row"><label class="edit-label">🏠 Logement compatible</label>
+          <select id="editLogement" class="edit-select"><option value="">—</option><option value="les deux">Appartement et maison</option><option value="appart_ok">Appartement ok</option><option value="maison_uniquement">Maison uniquement</option></select></div>
+        <div class="edit-row"><label class="edit-label">🌿 Extérieur requis</label>
+          <select id="editExterieur" class="edit-select"><option value="">—</option><option value="false">Non — appartement ok</option><option value="true">Oui — jardin nécessaire</option></select></div>
       </div>
 
       <!-- Santé -->
@@ -1926,6 +1934,8 @@ function ouvrirDetailScraping(item) {
   selVal('editBesoins',         d.besoins_medicaux);
   selVal('editHandicap',        d.handicap !== undefined && d.handicap !== null ? String(d.handicap) : '');
   selVal('editPermis',          item.permis_requis !== undefined && item.permis_requis !== null ? String(item.permis_requis) : (d.permis_requis !== undefined ? String(d.permis_requis) : 'false'));
+  selVal('editLogement',        item.type_logement_compatible || d.type_logement_compatible || '');
+  selVal('editExterieur',       item.exterieur_requis !== undefined && item.exterieur_requis !== null ? String(item.exterieur_requis) : (d.exterieur_requis !== undefined ? String(d.exterieur_requis) : ''));
 
   // Champs null — alerte
   var champsImportants = { 'Race': item.race || d.race, 'Sexe': item.sexe || d.sexe, 'Âge': item.age_annees || d.age_annees, 'Énergie': d.energie, 'Expérience': d.experience_requise, 'Compat chiens': d.compat_chiens, 'Compat chats': d.compat_chats, 'Vaccination': d.vaccination, 'Stérilisation': d.sterilisation };
@@ -2103,6 +2113,8 @@ document.getElementById('scrapingDetailModal').addEventListener('click', functio
         <label class="ea-label">Ados 13+</label><select id="eaCompatAdos" class="ea-select"><option value="">—</option><option value="true">✅ Oui</option><option value="false">❌ Non</option></select>
         <label class="ea-label">Chiens</label><select id="eaCompatChiens" class="ea-select"><option value="">—</option><option value="true">✅ Oui</option><option value="false">❌ Non</option></select>
         <label class="ea-label">Chats</label><select id="eaCompatChats" class="ea-select"><option value="">—</option><option value="true">✅ Oui</option><option value="false">❌ Non</option></select>
+        <label class="ea-label">🏠 Logement compatible</label><select id="eaLogement" class="ea-select"><option value="">—</option><option value="les deux">Appartement et maison</option><option value="appart_ok">Appartement ok</option><option value="maison_uniquement">Maison uniquement</option></select>
+        <label class="ea-label">🌿 Extérieur requis</label><select id="eaExterieur" class="ea-select"><option value="">—</option><option value="false">Non — appartement ok</option><option value="true">Oui — jardin nécessaire</option></select>
       </div>
       <div>
         <p style="font-size:0.72rem;font-weight:700;color:var(--dust);text-transform:uppercase;letter-spacing:0.5px;margin:0 0 4px">💉 Santé & statut</p>
@@ -2181,7 +2193,9 @@ function ouvrirEditAnimal(a) {
   eaSelVal('eaCompatEnfants', a.compat_enfants_moins13 !== null && a.compat_enfants_moins13 !== undefined ? String(a.compat_enfants_moins13) : '');
   eaSelVal('eaCompatAdos',    a.compat_ados_plus13    !== null && a.compat_ados_plus13    !== undefined ? String(a.compat_ados_plus13)    : '');
   eaSelVal('eaCompatChiens',  a.compat_chiens         !== null && a.compat_chiens         !== undefined ? String(a.compat_chiens)         : '');
-  eaSelVal('eaCompatChats',   a.compat_chats          !== null && a.compat_chats          !== undefined ? String(a.compat_chats)          : '');
+  eaSelVal('eaCompatChats',   a.compat_chats !== null && a.compat_chats !== undefined ? String(a.compat_chats) : '');
+  eaSelVal('eaLogement',      a.type_logement_compatible || '');
+  eaSelVal('eaExterieur',     a.exterieur_requis !== null && a.exterieur_requis !== undefined ? String(a.exterieur_requis) : '');
   eaSelVal('eaVaccination',   a.vaccination);
   eaSelVal('eaSterilisation', a.sterilisation);
   eaSelVal('eaIdentification',a.identification);
@@ -2250,7 +2264,9 @@ async function sauvegarderAnimal() {
     antiparasitaire:        getVal('eaAntiparasitaire'),
     besoins_medicaux:       getVal('eaBesoins'),
     handicap:               getBool('eaHandicap'),
-    permis_requis:          getBool('eaPermis'),
+    permis_requis:              getBool('eaPermis'),
+    type_logement_compatible:   getVal('eaLogement'),
+    exterieur_requis:           getBool('eaExterieur'),
     statut:                 getVal('eaStatut') || 'disponible',
     enfin_moi:              getBool('eaEnfinMoi'),
     disponible:             getVal('eaStatut') === 'disponible'
