@@ -226,7 +226,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   var { data: refuges, error } = await getSupabase()
     .from('Refuge')
     .select('id, nom, ville, site_web, email, telephone, description')
-    .eq('valide_par_admin', true)
     .order('nom');
 
   if (error || !refuges || refuges.length === 0) {
