@@ -31,7 +31,7 @@ on:
 jobs:
   scrape:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 60
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -45,7 +45,7 @@ jobs:
         run: pip install requests beautifulsoup4 anthropic
 
       - name: Run scraper universel
-        timeout-minutes: 40
+        timeout-minutes: 45
         env:
           ANTHROPIC_API_KEY:          ${{ secrets.ANTHROPIC_API_KEY }}
           SUPABASE_URL:               ${{ secrets.SUPABASE_URL }}
@@ -58,3 +58,11 @@ jobs:
           REFUGE_EMAIL:               ${{ github.event.inputs.refuge_email }}
           REFUGE_VILLE:               ${{ github.event.inputs.refuge_ville }}
         run: python scraper_universel.py
+
+      - name: Normaliser les races
+        timeout-minutes: 10
+        env:
+          ANTHROPIC_API_KEY:          ${{ secrets.ANTHROPIC_API_KEY }}
+          SUPABASE_URL:               ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY:  ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: python normaliser_races.py
