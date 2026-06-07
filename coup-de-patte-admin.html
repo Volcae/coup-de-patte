@@ -1223,7 +1223,20 @@ function openEditModal(animalId) {
   document.getElementById('fieldId').value = a.id;
   document.getElementById('fieldNom').value = a.nom || '';
   document.getElementById('fieldEspece').value = a.espece || 'chien';
-  document.getElementById('fieldRace').value = a.race || '';
+  // Gérer le format croisé
+  var raceVal = a.race || '';
+  var croiseMatch = raceVal.match(/^Croisé (.+)$/);
+  if (croiseMatch) {
+    document.getElementById('fieldCroise').checked = true;
+    toggleCroise(document.getElementById('fieldCroise'));
+    var races = croiseMatch[1].split(' / ');
+    selectedRacesAdmin = races;
+    renderRacesBadges();
+    document.getElementById('fieldRace').value = '';
+  } else {
+    document.getElementById('fieldCroise').checked = false;
+    document.getElementById('fieldRace').value = raceVal;
+  }
   document.getElementById('fieldAge').value = a.age_annees || '';
   document.getElementById('fieldSexe').value = a.sexe || 'male';
   document.getElementById('fieldGabarit').value = a.gabarit || 'moyen';
@@ -1750,7 +1763,7 @@ function removeRaceAdmin(race) {
 
 function getRaceValue() {
   var croise = document.getElementById('fieldCroise').checked;
-  if (croise && selectedRacesAdmin.length > 0) return 'Croisé ' + selectedRacesAdmin.join('/');
+  if (croise && selectedRacesAdmin.length > 0) return 'Croisé ' + selectedRacesAdmin.join(' / ');
   return document.getElementById('fieldRace').value.trim() || null;
 }
 

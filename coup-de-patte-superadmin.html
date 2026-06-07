@@ -1454,7 +1454,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     var editNom          = getEdit('editNom');
     var editEspece       = getEdit('editEspece');
     var editRace              = getEdit('editRace');
-    var editRaceNormalisee    = getEdit('editRaceNormalisee');
+    var editRaceNormalisee    = getRaceFinale('editRaceNormalisee', 'croiseScraping1', 'croiseScraping2');
     var editSexe         = getEdit('editSexe');
     var editAge          = getEdit('editAge') ? parseFloat(getEdit('editAge')) : null;
     var editPhotoUrl              = getEdit('editPhotoUrl');
@@ -1691,7 +1691,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
         <div class="edit-row">
           <label class="edit-label">Race normalisée ✦</label>
-          <select id="editRaceNormalisee" class="edit-select" onchange="autoRemplirRaceScraping(this.value)">
+          <select id="editRaceNormalisee" class="edit-select" onchange="onChangeRaceScrapingNorm(this.value)">
           <option value="">— Race non précisée</option>
           <optgroup label="🐶 Chiens">
           <option value="Affenpinscher">Affenpinscher</option>
@@ -1926,6 +1926,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           </optgroup><optgroup label="Autre"><option value="Croisé">Croisé / Mélange</option><option value="Inconnu">Race inconnue</option></optgroup>
           </select>
         </div>
+        <div class="edit-row" id="croiseScraping1Wrap" style="display:none">
+          <label class="edit-label">Race 1 du croisé</label>
+          <select id="croiseScraping1" class="edit-select"></select>
+        </div>
+        <div class="edit-row" id="croiseScraping2Wrap" style="display:none">
+          <label class="edit-label">Race 2 du croisé</label>
+          <select id="croiseScraping2" class="edit-select"></select>
+        </div>
         <div class="edit-row">
           <label class="edit-label">Sexe</label>
           <select id="editSexe" class="edit-select">
@@ -2138,7 +2146,23 @@ function ouvrirDetailScraping(item) {
   selVal('editEspece', item.espece || d.espece);
   document.getElementById('editRace').value        = item.race || d.race || '';
   var raceNormEl = document.getElementById('editRaceNormalisee');
-  if (raceNormEl) { raceNormEl.value = item.race || d.race || ''; }
+  if (raceNormEl) {
+    var raceVal = item.race || d.race || '';
+    // Détecter si c'est un croisé avec 2 races
+    var croiseMatch = raceVal.match(/^Croisé (.+) \/ (.+)$/);
+    if (croiseMatch) {
+      raceNormEl.value = 'Croisé';
+      onChangeRaceScrapingNorm('Croisé');
+      setTimeout(function() {
+        var s1 = document.getElementById('croiseScraping1');
+        var s2 = document.getElementById('croiseScraping2');
+        if (s1) s1.value = croiseMatch[1];
+        if (s2) s2.value = croiseMatch[2];
+      }, 50);
+    } else {
+      raceNormEl.value = raceVal;
+    }
+  }
   selVal('editSexe', item.sexe || d.sexe);
   document.getElementById('editAge').value         = item.age_annees || d.age_annees || '';
 
@@ -2279,7 +2303,7 @@ document.getElementById('scrapingDetailModal').addEventListener('click', functio
         <div><label class="ea-label">Espèce</label>
           <select id="eaEspece" class="ea-select"><option value="">—</option><option value="chien">Chien</option><option value="chat">Chat</option><option value="lapin">Lapin</option><option value="nac">NAC</option></select></div>
         <div><label class="ea-label">Race extraite</label><input id="eaRace" class="ea-input" type="text" readonly style="background:rgba(143,143,143,0.08);color:var(--dust);cursor:default"></div>
-        <div><label class="ea-label">Race normalisée ✦</label><select id="eaRaceNormalisee" class="ea-select" onchange="autoRemplirRaceAnimal(this.value)">
+        <div><label class="ea-label">Race normalisée ✦</label><select id="eaRaceNormalisee" class="ea-select" onchange="onChangeRaceAnimalNorm(this.value)">
 <option value="">— Race non précisée</option>
 <optgroup label="🐶 Chiens">
 <option value="Affenpinscher">Affenpinscher</option>
@@ -2517,7 +2541,10 @@ document.getElementById('scrapingDetailModal').addEventListener('click', functio
 <option value="Croisé">Croisé / Mélange</option>
 <option value="Inconnu">Race inconnue</option>
 </optgroup>
-</select></div>
+</select>
+<div id="croiseAnimal1Wrap" style="display:none;margin-top:6px"><label class="ea-label">Race 1 du croisé</label><select id="croiseAnimal1" class="ea-select"></select></div>
+<div id="croiseAnimal2Wrap" style="display:none;margin-top:6px"><label class="ea-label">Race 2 du croisé</label><select id="croiseAnimal2" class="ea-select"></select></div>
+</div>
         <div><label class="ea-label">Sexe</label>
           <select id="eaSexe" class="ea-select"><option value="">—</option><option value="male">Mâle</option><option value="femelle">Femelle</option></select></div>
         <div><label class="ea-label">Âge (années)</label><input id="eaAge" class="ea-input" type="number" min="0" max="30" step="0.5"></div>
@@ -2660,7 +2687,22 @@ function ouvrirEditAnimal(a) {
   eaSelVal('eaEspece', a.espece);
   document.getElementById('eaRace').value        = a.race || '';
   var eaRNorm = document.getElementById('eaRaceNormalisee');
-  if (eaRNorm) eaRNorm.value = a.race || '';
+  if (eaRNorm) {
+    var raceValEa = a.race || '';
+    var croiseMatchEa = raceValEa.match(/^Croisé (.+) \/ (.+)$/);
+    if (croiseMatchEa) {
+      eaRNorm.value = 'Croisé';
+      onChangeRaceAnimalNorm('Croisé');
+      setTimeout(function() {
+        var s1 = document.getElementById('croiseAnimal1');
+        var s2 = document.getElementById('croiseAnimal2');
+        if (s1) s1.value = croiseMatchEa[1];
+        if (s2) s2.value = croiseMatchEa[2];
+      }, 50);
+    } else {
+      eaRNorm.value = raceValEa;
+    }
+  }
   eaSelVal('eaSexe', a.sexe);
   document.getElementById('eaAge').value         = a.age_annees || '';
   document.getElementById('eaPhotoUrl').value    = a.photo_url || '';
@@ -2724,7 +2766,7 @@ async function sauvegarderAnimal() {
   var payload = {
     nom:                    getVal('eaNom'),
     espece:                 getVal('eaEspece'),
-    race:                   getVal('eaRaceNormalisee') || getVal('eaRace'),
+    race:                   getRaceFinale('eaRaceNormalisee', 'croiseAnimal1', 'croiseAnimal2') || getVal('eaRace'),
     sexe:                   getVal('eaSexe'),
     age_annees:             getVal('eaAge') ? parseFloat(getVal('eaAge')) : null,
     photo_url:              getVal('eaPhotoUrl'),
@@ -3042,6 +3084,61 @@ function getRaceData(raceName) {
   if (!raceName || !breedData) return null;
   var all = (breedData.chien || []).concat(breedData.chat || []);
   return all.find(function(b) { return b.name === raceName; }) || null;
+}
+
+// Générer les options races pour les selects croisé
+function getRacesOptions(excludeName) {
+  if (!breedData) return '';
+  var all = (breedData.chien || []).concat(breedData.chat || []);
+  var opts = '<option value="">— Choisir une race</option>';
+  all.forEach(function(b) {
+    if (b.name !== excludeName && b.name !== 'Croisé' && b.name !== 'Inconnu') {
+      opts += '<option value="' + b.name + '">' + b.name + '</option>';
+    }
+  });
+  return opts;
+}
+
+function onChangeRaceScrapingNorm(val) {
+  var w1 = document.getElementById('croiseScraping1Wrap');
+  var w2 = document.getElementById('croiseScraping2Wrap');
+  var s1 = document.getElementById('croiseScraping1');
+  var s2 = document.getElementById('croiseScraping2');
+  if (val === 'Croisé') {
+    if (w1) { w1.style.display = ''; s1.innerHTML = getRacesOptions(); }
+    if (w2) { w2.style.display = ''; s2.innerHTML = getRacesOptions(); }
+  } else {
+    if (w1) w1.style.display = 'none';
+    if (w2) w2.style.display = 'none';
+    autoRemplirRaceScraping(val);
+  }
+}
+
+function onChangeRaceAnimalNorm(val) {
+  var w1 = document.getElementById('croiseAnimal1Wrap');
+  var w2 = document.getElementById('croiseAnimal2Wrap');
+  var s1 = document.getElementById('croiseAnimal1');
+  var s2 = document.getElementById('croiseAnimal2');
+  if (val === 'Croisé') {
+    if (w1) { w1.style.display = ''; s1.innerHTML = getRacesOptions(); }
+    if (w2) { w2.style.display = ''; s2.innerHTML = getRacesOptions(); }
+  } else {
+    if (w1) w1.style.display = 'none';
+    if (w2) w2.style.display = 'none';
+    autoRemplirRaceAnimal(val);
+  }
+}
+
+function getRaceFinale(selectNormId, croise1Id, croise2Id) {
+  var val = (document.getElementById(selectNormId) || {}).value || '';
+  if (val === 'Croisé') {
+    var r1 = (document.getElementById(croise1Id) || {}).value || '';
+    var r2 = (document.getElementById(croise2Id) || {}).value || '';
+    if (r1 && r2) return 'Croisé ' + r1 + ' / ' + r2;
+    if (r1) return 'Croisé ' + r1;
+    return 'Croisé';
+  }
+  return val;
 }
 
 function autoRemplirRaceScraping(raceName) {
