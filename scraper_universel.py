@@ -681,6 +681,7 @@ def main():
         if not texte or len(texte) < 50:
             print("  ⏭ Fiche vide ou inaccessible — ignorée")
             ignores += 1
+            time.sleep(2)  # Pause même en cas d'échec pour éviter le rate limiting
             continue
 
         # Analyse Claude
@@ -689,6 +690,7 @@ def main():
         if not analyse.get("nom") and not analyse.get("espece"):
             print("  ⏭ Claude n'a pas trouvé d'animal dans cette page — ignorée")
             ignores += 1
+            time.sleep(2)
             continue
 
         nom = analyse.get("nom", "?")
@@ -702,7 +704,7 @@ def main():
         if ok:
             succes += 1
 
-        time.sleep(1.5)  # Pause pour ne pas surcharger le site du refuge
+        time.sleep(3)  # Pause plus longue pour ne pas surcharger le site du refuge
 
     # ── Résumé
     print(f"\n{'=' * 45}")
