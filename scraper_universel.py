@@ -77,7 +77,7 @@ claude_client = anthropic.Anthropic(api_key=ANTHROPIC_KEY)
 # UTILITAIRES HTTP
 # ══════════════════════════════════════════════
 
-def get_soup(url, timeout=15):
+def get_soup(url, timeout=20):
     try:
         r = requests.get(url, headers=HEADERS, timeout=timeout)
         r.raise_for_status()
@@ -285,7 +285,7 @@ RÈGLE ABSOLUE : tu n'extrais QUE ce qui est écrit mot pour mot dans le texte.
 Réponds UNIQUEMENT en JSON valide, sans commentaire ni balise markdown :
 {{
   "nom": "prénom de l'animal si écrit dans le texte, sinon null",
-  "espece": "chien" si chien/canin écrit, "chat" si chat/félin écrit, "lapin" si lapin écrit, "nac" sinon. null si aucun,
+  "espece": "chien" si chien/canin écrit OU si la race est clairement une race de chien (Malinois, Spitz, Husky, Berger, Labrador, etc.). "chat" si chat/félin écrit OU si la race est clairement une race de chat (Européen, Maine Coon, Siamois, etc.). "lapin" si lapin écrit. "nac" sinon. null si vraiment impossible à déterminer,
   "race": "copie exacte de la race telle qu'écrite dans le texte. Accepte les variantes orthographiques (border, Border Collie, border collie → Border Collie). null si aucune race mentionnée",
   "sexe": "male" si mâle/male écrit, "femelle" si femelle écrit. null sinon,
   "sterilisation": "oui" si stérilisé/castré écrit, "non" si non stérilisé écrit. null sinon,
@@ -686,13 +686,22 @@ def main():
 
         # Analyse Claude
         print("  🤖 Analyse Claude...")
-        print(f"  📄 Texte extrait ({len(texte)} chars): {texte[:150].replace(chr(10), ' ')}")
         analyse = analyser_fiche_claude(texte, url)
-        if not analyse.get("nom") and not analyse.get("espece"):
+        if not analyse.get("nom") and not analyse.get("espece") and not analyse.get("race"):
             print("  ⏭ Claude n'a pas trouvé d'animal dans cette page — ignorée")
             ignores += 1
             time.sleep(2)
             continue
+
+        # Si pas de nom, extraire depuis l'URL (/produit/tokyo/ → Tokyo)
+        if not analyse.get("nom"):
+            import re as _re
+            m = _re.search(r'/produit/([^/]+)/?$', url)
+            if m:
+                slug = m.group(1).replace('-', ' ').replace('_', ' ')
+                # Nettoyer les suffixes numériques (rex-2 → Rex)
+                slug = _re.sub(r'\s+\d+$', '', slug)
+                analyse["nom"] = slug.title()
 
         nom = analyse.get("nom", "?")
         espece = analyse.get("espece", "?")
