@@ -46,8 +46,8 @@ ALIASES = {
     "Croisé Springer Spaniel": "Croisé Springer Spaniel",
     "Croisé Beauceron":       "Croisé Beauceron",
 }
-TOUTES_RACES_ETENDUES = TOUTES_RACES + list(ALIASES.keys())
 TOUTES_RACES = RACES_CHIEN + RACES_CHAT + RACES_GENERIQUES + ["Croisé", "Inconnu"]
+TOUTES_RACES_ETENDUES = TOUTES_RACES + list(ALIASES.keys())
 
 claude_client = None
 
