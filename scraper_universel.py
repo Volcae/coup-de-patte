@@ -270,47 +270,52 @@ Si aucune URL de fiche individuelle n'est trouvée, réponds : {{"urls": []}}"""
 # ÉTAPE 2 — EXTRACTION CLAUDE POUR CHAQUE FICHE
 # ══════════════════════════════════════════════
 
-PROMPT_EXTRACTION = """Voici le texte extrait de la fiche d'adoption d'un animal sur le site d'un refuge.
+PROMPT_EXTRACTION = """Tu es un extracteur de données strict pour une plateforme d'adoption animale.
+
+Voici le texte d'une fiche d'adoption d'un refuge :
 
 {texte}
 
-Extrais uniquement les informations EXPLICITEMENT présentes dans ce texte.
-Règle absolue : si une information n'est pas mentionnée, mets null. Ne déduis rien, n'invente rien.
+RÈGLE ABSOLUE : tu n'extrais QUE ce qui est écrit mot pour mot dans le texte.
+- Si ce n'est pas écrit, c'est null. Sans exception.
+- Tu n'interprètes pas, tu ne déduis pas, tu ne complètes pas.
+- Tu ne te bases pas sur la race, la photo, l'âge ou tes connaissances pour remplir un champ.
+- Un champ vaut mieux null que faux.
 
 Réponds UNIQUEMENT en JSON valide, sans commentaire ni balise markdown :
 {{
-  "nom": "prénom de l'animal ou null",
-  "espece": "chien" ou "chat" ou "lapin" ou "nac" ou null,
-  "race": "race exacte si mentionnée, sinon null",
-  "sexe": "male" ou "femelle" ou null,
-  "sterilisation": "oui" ou "non" ou null,
-  "identification": "oui" ou "non" ou null,
-  "vaccination": "oui" ou "non" ou null,
-  "antiparasitaire": "oui" ou "non" ou null,
-  "age_annees": nombre entier (arrondi) si age ou date de naissance présent sinon null,
-  "poids_kg": nombre décimal si mentionné sinon null,
-  "gabarit": "petit" ou "moyen" ou "grand" ou null,
-  "pelage": "court" ou "mi-long" ou "long" ou null,
-  "couleur": "couleur principale si mentionnée" ou null,
-  "energie": null si rien n'est mentionné explicitement sur le niveau d'activité. "faible" uniquement si des mots comme calme, tranquille, peu actif, casanier, discret sont présents. "moyen" si joueur, actif sans excès, équilibré. "eleve" uniquement si sportif, très actif, a besoin de beaucoup d'exercice, énergique, dynamique sont explicitement mentionnés. Ne pas déduire depuis la race ou la taille,
-  "lien_humain": déduit de la description comportementale : "faible" si distant/indépendant/craintif, "fort" si très attaché/pot de colle/cherche contact, "moyen" sinon. null si aucune info comportementale,
-  "reactivite_inconnus": "faible" ou "moyen" ou "forte" ou null,
-  "supporte_solitude": déduit du comportement en refuge et de la description : "mal" si anxieux/destructeur/aboie/mâche quand seul ou vie en refuge difficile, "bien" si calme/autonome/indépendant, "moyen" sinon. null si aucune info,
-  "mobilite": "normale" si pas de mention particulière. "reduite" si arthrose, problème articulaire, raideur, éviter escaliers mentionné. "tres_reduite" si paralysie partielle ou grave handicap locomoteur. null si aucune info,
-  "compat_enfants_moins13": RÈGLES STRICTES : false si "pas d'enfants", "sans enfants", "sans jeunes enfants", "déconseillé enfants" ou similaire est explicitement mentionné. true si "ok enfants", "compatible enfants", "aime les enfants" mentionné. null si rien n'est précisé (ne pas supposer),
-  "compat_ados_plus13": false uniquement si "pas d'enfants" sans précision d'âge (alors même règle que moins13). Si "ok ados" ou "ok enfants plus grands" : true. Si "ok enfants" sans limite d'âge : true. null si rien n'est précisé,
-  "compat_chiens": false si "sans chien", "pas de congénères", "seul chien" mentionné. true si "ok chiens", "vit avec chiens", "aime les chiens" mentionné. null si rien n'est précisé,
-  "compat_chats": false si "sans chat", "pas de chats", "prédateur chats" mentionné. true si "ok chats", "vit avec chats" mentionné. null si rien n'est précisé,
-  "experience_requise": "debutant" ou "intermediaire" ou "experimente" ou null,
-  "besoins_medicaux": "aucun" ou "legers" ou "lourds" ou null,
-  "vie_en_refuge": "Tres bien" ou "Bien" ou "Moyennement bien" ou "Difficilement" ou "Tres difficilement" ou null,
-  "type_logement_compatible": "maison_uniquement" si la fiche mentionne explicitement besoin d'un jardin, grand espace, maison avec terrain, ne convient pas en appartement. "appart_ok" si appartement est mentionné comme acceptable. "les deux" si les deux sont mentionnés ou aucune restriction. null si aucune info,
-  "exterieur_requis": true si la fiche mentionne explicitement besoin d'un jardin, extérieur, espace vert, ou que l'appartement est déconseillé pour des raisons d'espace/activité. false si appartement explicitement ok. null si aucune info,
-  "handicap": true si un handicap physique ou sensoriel est explicitement mentionné (aveugle, sourd, amputé, paralysé, etc.), false sinon. Ne pas confondre avec besoins médicaux,
-  "permis_requis": true si la fiche mentionne explicitement "chien de catégorie", "permis obligatoire", "permis de détention", "type 1", "type 2", "chien dangereux" ou toute obligation légale de permis. false sinon,
-  "date_arrivee_refuge": "YYYY-MM-DD si mentionnée sinon null",
-  "histoire": "origine en une phrase si mentionnée : abandon, saisie, sauvetage, etc. Sinon null",
-  "description": "texte de présentation de l'animal, rédigé positivement, max 300 mots. Synthèse du texte brut."
+  "nom": "prénom de l'animal si écrit dans le texte, sinon null",
+  "espece": "chien" si chien/canin écrit, "chat" si chat/félin écrit, "lapin" si lapin écrit, "nac" sinon. null si aucun,
+  "race": "copie exacte de la race telle qu'écrite dans le texte. Accepte les variantes orthographiques (border, Border Collie, border collie → Border Collie). null si aucune race mentionnée",
+  "sexe": "male" si mâle/male écrit, "femelle" si femelle écrit. null sinon,
+  "sterilisation": "oui" si stérilisé/castré écrit, "non" si non stérilisé écrit. null sinon,
+  "identification": "oui" si pucé/tatoué/identifié écrit, "non" si non identifié écrit. null sinon,
+  "vaccination": "oui" si vacciné/à jour vaccins écrit, "non" si non vacciné écrit. null sinon,
+  "antiparasitaire": "oui" si traité antiparasitaire/vermifugé écrit. null sinon,
+  "age_annees": calcule l'âge en années entières si une date de naissance ou un âge est écrit. null sinon,
+  "poids_kg": nombre si un poids en kg est écrit. null sinon,
+  "gabarit": "petit" si petit/petite taille écrit, "moyen" si taille moyenne écrit, "grand" si grande taille/grand gabarit écrit. null sinon. NE PAS déduire depuis la race,
+  "pelage": "court" si poil court écrit, "mi-long" si mi-long écrit, "long" si poil long écrit. null sinon. NE PAS déduire depuis la race,
+  "couleur": couleur si écrite dans le texte. null sinon,
+  "energie": null SAUF si un de ces mots exacts est présent — "faible" : calme, tranquille, peu actif, casanier. "moyen" : actif, joueur, équilibré. "eleve" : très actif, sportif, énergique, dynamique, a besoin de sport. NE PAS déduire,
+  "lien_humain": null SAUF si écrit — "fort" : pot de colle, très affectueux, cherche contact, collé à son maître. "faible" : craintif, distant, indépendant, méfiant. "moyen" : affectueux sans excès. NE PAS déduire,
+  "reactivite_inconnus": null SAUF si écrit — "forte" : réactif, aboie sur inconnus, méfiant. "faible" : sociable, ami avec tout le monde. "moyen" : se réchauffe progressivement,
+  "supporte_solitude": null SAUF si écrit — "mal" : anxieux, destructeur seul, aboie, angoisse séparation. "bien" : autonome, calme seul. "moyen" : quelques heures ok,
+  "mobilite": null SAUF si écrit — "reduite" : arthrose, problème articulaire, éviter escaliers. "tres_reduite" : paralysie, handicap locomoteur grave,
+  "compat_enfants_moins13": null par défaut. true SEULEMENT si "ok enfants", "aime les enfants", "compatible enfants" écrit. false SEULEMENT si "sans enfants", "pas d'enfants", "déconseillé enfants" écrit,
+  "compat_ados_plus13": null par défaut. true si "ok enfants" ou "ok ados" écrit. false si "sans enfants" sans précision d'âge écrit,
+  "compat_chiens": null par défaut. true SEULEMENT si "ok congénères", "ok chiens", "vit avec chiens" écrit. false SEULEMENT si "sans congénères", "sans chien", "seul chien" écrit,
+  "compat_chats": null par défaut. true SEULEMENT si "ok chats", "vit avec chats" écrit. false SEULEMENT si "sans chat", "pas de chats" écrit,
+  "experience_requise": null SAUF si écrit — "experimente" : expérience obligatoire, maître expérimenté. "intermediaire" : quelques bases, pas débutant. "debutant" : convient à tous,
+  "besoins_medicaux": null SAUF si écrit — "lourds" : traitement long terme, opération, suivi vétérinaire régulier. "legers" : traitement ponctuel. "aucun" : en bonne santé, aucun soin particulier,
+  "vie_en_refuge": null SAUF si écrit ou clairement décrit — "Tres bien" : épanoui, heureux au refuge. "Bien" : s'adapte bien. "Moyennement bien" : peut mieux faire. "Difficilement" : stressé, mal à l'aise. "Tres difficilement" : souffre vraiment,
+  "type_logement_compatible": null SAUF si écrit — "maison_uniquement" : besoin jardin, ne convient pas appartement. "appart_ok" : appartement accepté, convient en appartement. "les deux" : les deux mentionnés,
+  "exterieur_requis": null SAUF si écrit — true : besoin jardin/extérieur explicitement mentionné. false : appartement ok explicitement mentionné,
+  "handicap": true SEULEMENT si aveugle, sourd, amputé, paralysé ou handicap physique/sensoriel écrit. false sinon,
+  "permis_requis": true SEULEMENT si "chien de catégorie", "permis obligatoire", "permis de détention", "type 1", "type 2" écrit. false sinon,
+  "date_arrivee_refuge": "YYYY-MM-DD" si une date d'arrivée au refuge est écrite. null sinon,
+  "histoire": une phrase MAX si l'origine est écrite (abandon, saisie, trouvé, errant). null sinon,
+  "description": résumé positif du texte en 2-4 phrases MAX. Uniquement ce qui est écrit. Pas d'invention.
 }}"""
 
 
@@ -500,37 +505,106 @@ def verifier_animal_existant(source_url):
 
 def envoyer_supabase(analyse, photo_url, source_url, refuge_id, existing_id=None, where=None):
     """
-    Envoie dans ScrapingQueue uniquement les colonnes qui existent dans cette table.
-    Tous les champs détaillés (compat, santé, comportement...) sont stockés
-    dans donnees_extraites (JSONB) et transférés vers Animal lors de la validation.
+    Publie directement dans la table Animal.
+    Les champs non trouvés par Claude restent null — pas de valeur inventée.
     """
+    def clean_bool(val):
+        """Convertit les strings booléennes en bool Python."""
+        if val is True or val == "true": return True
+        if val is False or val == "false": return False
+        return None
+
     payload = {
-        "refuge":           refuge_id,
-        "nom":              analyse.get("nom"),
-        "espece":           analyse.get("espece"),
-        "race":             analyse.get("race"),
-        "age_annees":       analyse.get("age_annees"),
-        "sexe":             analyse.get("sexe"),
-        "description":      analyse.get("description"),
-        "photo_url":        photo_url or "",
-        "source_url":       source_url,
-        "statut":           "en_attente",
-        "permis_requis":              analyse.get("permis_requis", False),
-        "type_logement_compatible":   analyse.get("type_logement_compatible"),
-        "exterieur_requis":           analyse.get("exterieur_requis"),
-        "donnees_extraites": json.dumps(analyse, ensure_ascii=False),
-        "commentaire":      (f"MISE À JOUR — {where} ID: {existing_id}") if existing_id else None
+        "refuge":                   refuge_id,
+        "nom":                      analyse.get("nom"),
+        "espece":                   analyse.get("espece"),
+        "race":                     analyse.get("race"),
+        "age_annees":               analyse.get("age_annees"),
+        "sexe":                     analyse.get("sexe"),
+        "poids_kg":                 analyse.get("poids_kg"),
+        "gabarit":                  analyse.get("gabarit"),
+        "pelage":                   analyse.get("pelage"),
+        "couleur":                  analyse.get("couleur"),
+        "description":              analyse.get("description"),
+        "histoire":                 analyse.get("histoire"),
+        "photo_url":                photo_url or "",
+        "photo":                    photo_url or "",
+        "source_url":               source_url,
+        "disponible":               True,
+        "statut":                   "disponible",
+        "date_arrivee_refuge":      analyse.get("date_arrivee_refuge"),
+        "energie":                  analyse.get("energie"),
+        "lien_humain":              analyse.get("lien_humain"),
+        "reactivite_inconnus":      analyse.get("reactivite_inconnus"),
+        "supporte_solitude":        analyse.get("supporte_solitude"),
+        "mobilite":                 analyse.get("mobilite"),
+        "vie_en_refuge":            analyse.get("vie_en_refuge"),
+        "experience_requise":       analyse.get("experience_requise"),
+        "besoins_medicaux":         analyse.get("besoins_medicaux"),
+        "compat_enfants_moins13":   clean_bool(analyse.get("compat_enfants_moins13")),
+        "compat_ados_plus13":       clean_bool(analyse.get("compat_ados_plus13")),
+        "compat_chiens":            clean_bool(analyse.get("compat_chiens")),
+        "compat_chats":             clean_bool(analyse.get("compat_chats")),
+        "vaccination":              analyse.get("vaccination"),
+        "sterilisation":            analyse.get("sterilisation"),
+        "identification":           analyse.get("identification"),
+        "antiparasitaire":          analyse.get("antiparasitaire"),
+        "handicap":                 clean_bool(analyse.get("handicap")),
+        "permis_requis":            clean_bool(analyse.get("permis_requis")) or False,
+        "type_logement_compatible": analyse.get("type_logement_compatible"),
+        "exterieur_requis":         clean_bool(analyse.get("exterieur_requis")),
     }
-    # Supprimer les valeurs None pour éviter d'écraser des champs existants avec null
+
+    # Calcul Enfin Moi automatique
+    age = analyse.get("age_annees") or 0
+    espece = (analyse.get("espece") or "").lower()
+    enfin_moi = False
+    raison = ""
+    if analyse.get("date_arrivee_refuge"):
+        try:
+            from datetime import date
+            arrivee = date.fromisoformat(analyse["date_arrivee_refuge"])
+            mois = (date.today() - arrivee).days / 30
+            if mois >= 12:
+                enfin_moi = True
+                raison = f"{int(mois)} mois au refuge"
+        except: pass
+    if not enfin_moi and espece == "chien" and age >= 8:
+        enfin_moi = True; raison = f"chien senior ({age} ans)"
+    if not enfin_moi and espece == "chat" and age >= 10:
+        enfin_moi = True; raison = f"chat senior ({age} ans)"
+    if not enfin_moi and analyse.get("besoins_medicaux") == "lourds":
+        enfin_moi = True; raison = "besoins médicaux lourds"
+    if not enfin_moi and analyse.get("vie_en_refuge") in ["Difficilement", "Tres difficilement"]:
+        enfin_moi = True; raison = "vie en refuge difficile"
+    if not enfin_moi and analyse.get("handicap") is True:
+        enfin_moi = True; raison = "handicap mentionné"
+    payload["enfin_moi"] = enfin_moi
+    if raison: payload["raison_enfin_moi"] = raison
+
+    # Supprimer les valeurs None
     payload = {k: v for k, v in payload.items() if v is not None}
 
-    r = requests.post(f"{SUPABASE_URL}/rest/v1/ScrapingQueue", headers=sb_headers(), json=payload)
+    # Mise à jour si l'animal existe déjà dans Animal
+    if where == "animal" and existing_id:
+        r = requests.patch(
+            f"{SUPABASE_URL}/rest/v1/Animal?id=eq.{existing_id}",
+            headers=sb_headers(), json=payload
+        )
+        if r.status_code in [200, 201, 204]:
+            print(f"  ✓ {analyse.get('nom', '?')} → Animal (mis à jour)")
+            return True
+        else:
+            print(f"  ✗ Erreur update Animal: {r.status_code} — {r.text[:100]}")
+            return False
+
+    # Insertion directe dans Animal
+    r = requests.post(f"{SUPABASE_URL}/rest/v1/Animal", headers=sb_headers(), json=payload)
     if r.status_code in [200, 201]:
-        mode = "mise à jour" if existing_id else "nouveau"
-        print(f"  ✓ {analyse.get('nom', '?')} → ScrapingQueue ({mode})")
+        print(f"  ✓ {analyse.get('nom', '?')} → Animal (publié automatiquement)")
         return True
     else:
-        print(f"  ✗ Erreur ScrapingQueue: {r.status_code} — {r.text[:100]}")
+        print(f"  ✗ Erreur Animal: {r.status_code} — {r.text[:100]}")
         return False
 
 
