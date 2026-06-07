@@ -428,7 +428,39 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     // Re-sort and re-render
     var sorted = allMatchs.slice();
     if (sortType === 'score') {
-      sorted.sort(function(a, b) { return b.score - a.score; });
+      sorted.sort(function(a, b) {
+        if (a.animal.enfin_moi && !b.animal.enfin_moi) return -1;
+        if (!a.animal.enfin_moi && b.animal.enfin_moi) return 1;
+        return b.score - a.score;
+      });
+      var matchsSorted = sorted;
+
+      // Ajouter les animaux de la race souhaitée même si score bas
+      var racesVoulues = profil && profil.races_souhaitees
+        ? profil.races_souhaitees.split(',').map(function(r) { return r.trim().toLowerCase(); }).filter(function(r) { return r && r !== 'peu-importe'; })
+        : [];
+      if (racesVoulues.length > 0) {
+        var idsPresents = new Set(matchsSorted.map(function(m) { return m.animal.id; }));
+        var extraRace = animaux
+          .filter(function(animal) {
+            if (idsPresents.has(animal.id)) return false;
+            if (aimeIds.has(animal.id)) return false;
+            var raceAnimal = (animal.race || '').toLowerCase();
+            return racesVoulues.some(function(r) {
+              return raceAnimal === r || raceAnimal.startsWith(r) || r.startsWith(raceAnimal.split(' ')[0]);
+            });
+          })
+          .map(function(animal) { return { animal: animal, score: calculerScore(profil, animal), raceMatch: true }; })
+          .sort(function(a, b) {
+            if (a.animal.enfin_moi && !b.animal.enfin_moi) return -1;
+            if (!a.animal.enfin_moi && b.animal.enfin_moi) return 1;
+            return b.score - a.score;
+          });
+        // Insérer après les Enfin Moi
+        var idxInsert = matchsSorted.findIndex(function(m) { return !m.animal.enfin_moi; });
+        if (idxInsert === -1) idxInsert = matchsSorted.length;
+        matchsSorted = matchsSorted.slice(0, idxInsert).concat(extraRace).concat(matchsSorted.slice(idxInsert));
+      }
     } else if (sortType === 'nom_asc') {
       sorted.sort(function(a, b) { return (a.animal && b.animal) ? a.animal.nom.localeCompare(b.animal.nom, 'fr') : 0; });
     } else if (sortType === 'nom_desc') {
@@ -444,7 +476,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     var grid = document.getElementById('matches-grid');
     if (!grid) return;
     grid.innerHTML = '';
-    sorted.forEach(function(m) {
+    matchsSorted.forEach(function(m) {
       if (m.animal) grid.insertAdjacentHTML('beforeend', renderMatchCard(m.animal, m.score));
     });
   }
@@ -822,7 +854,36 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         var result = profil ? calculerScore(profil, animal) : { global: 0 };
         return { animal: animal, score: result.global };
       }).filter(function(m) { return !aimeIds.has(m.animal.id); })
-      .sort(function(a, b) { return b.score - a.score; });
+      .sort(function(a, b) {
+        // Enfin Moi toujours en premier, puis score décroissant
+        if (a.animal.enfin_moi && !b.animal.enfin_moi) return -1;
+        if (!a.animal.enfin_moi && b.animal.enfin_moi) return 1;
+        return b.score - a.score;
+      });
+
+    // Ajouter les animaux de la race souhaitée (même si score bas) — après Enfin Moi
+    var racesVoulues = profil.races_souhaitees ? profil.races_souhaitees.split(',').map(function(r) { return r.trim().toLowerCase(); }) : [];
+    if (racesVoulues.length > 0 && !racesVoulues.includes('peu-importe')) {
+      var idsDejaPresents = new Set(matchsSorted.map(function(m) { return m.animal.id; }));
+      var animauxRace = animauxFiltres
+        .filter(function(animal) {
+          if (idsDejaPresents.has(animal.id)) return false;
+          var raceAnimal = (animal.race || '').toLowerCase();
+          return racesVoulues.some(function(r) { return raceAnimal.includes(r) || r.includes(raceAnimal.split(' ')[0]); });
+        })
+        .map(function(animal) {
+          return { animal: animal, score: calculerScore(profil, animal), raceMatch: true };
+        })
+        .sort(function(a, b) {
+          if (a.animal.enfin_moi && !b.animal.enfin_moi) return -1;
+          if (!a.animal.enfin_moi && b.animal.enfin_moi) return 1;
+          return b.score - a.score;
+        });
+      // Insérer après les Enfin Moi du tri principal
+      var idxInsert = matchsSorted.findIndex(function(m) { return !m.animal.enfin_moi; });
+      if (idxInsert === -1) idxInsert = matchsSorted.length;
+      matchsSorted.splice.apply(matchsSorted, [idxInsert, 0].concat(animauxRace));
+    }
     var { data: authUser } = await sb.auth.getUser();
     var meta = authUser && authUser.user ? authUser.user.user_metadata || {} : {};
     var prenom = meta.prenom || meta.first_name || meta.name || (authUser.user ? authUser.user.email.split('@')[0] : '');
