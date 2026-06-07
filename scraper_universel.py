@@ -292,7 +292,7 @@ Réponds UNIQUEMENT en JSON valide, sans commentaire ni balise markdown :
   "gabarit": "petit" ou "moyen" ou "grand" ou null,
   "pelage": "court" ou "mi-long" ou "long" ou null,
   "couleur": "couleur principale si mentionnée" ou null,
-  "energie": "faible" ou "moyen" ou "eleve" ou null,
+  "energie": null si rien n'est mentionné explicitement sur le niveau d'activité. "faible" uniquement si des mots comme calme, tranquille, peu actif, casanier, discret sont présents. "moyen" si joueur, actif sans excès, équilibré. "eleve" uniquement si sportif, très actif, a besoin de beaucoup d'exercice, énergique, dynamique sont explicitement mentionnés. Ne pas déduire depuis la race ou la taille,
   "lien_humain": déduit de la description comportementale : "faible" si distant/indépendant/craintif, "fort" si très attaché/pot de colle/cherche contact, "moyen" sinon. null si aucune info comportementale,
   "reactivite_inconnus": "faible" ou "moyen" ou "forte" ou null,
   "supporte_solitude": déduit du comportement en refuge et de la description : "mal" si anxieux/destructeur/aboie/mâche quand seul ou vie en refuge difficile, "bien" si calme/autonome/indépendant, "moyen" sinon. null si aucune info,
