@@ -13,10 +13,10 @@ on:
         description: 'Nom du refuge'
         required: true
       refuge_site:
-        description: 'URL du site (ex: https://www.spa-messigny.fr)'
+        description: 'URL du site du refuge'
         required: true
       refuge_url_adoption:
-        description: 'URL directe de la page animaux (ex: https://www.spa-messigny.fr/adoption-animaux/)'
+        description: 'URL directe de la page animaux'
         required: false
         default: ''
       refuge_email:
@@ -37,7 +37,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
