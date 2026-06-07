@@ -216,5 +216,92 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
   <div class="footer-copy">© 2025 Coup de Patte · Projet indépendant</div>
 </footer>
+<script>
+(async function() {
+  var grid = document.getElementById('refugesGrid');
+  var countEl = document.getElementById('refugesCount');
+  var heroCount = document.getElementById('heroRefugesCount');
+
+  // Charger les refuges depuis Supabase
+  var { data: refuges, error } = await getSupabase()
+    .from('Refuge')
+    .select('id, nom, ville, site_web, email, telephone, description')
+    .eq('valide_par_admin', true)
+    .order('nom');
+
+  if (error || !refuges || refuges.length === 0) {
+    grid.innerHTML = '<div style="text-align:center;padding:40px;color:var(--dust)">Aucun refuge trouvé pour le moment. 🐾</div>';
+    if (countEl) countEl.textContent = '0 refuge';
+    return;
+  }
+
+  // Compter les animaux par refuge
+  var { data: animaux } = await getSupabase()
+    .from('Animal')
+    .select('refuge')
+    .eq('disponible', true);
+
+  var countParRefuge = {};
+  if (animaux) {
+    animaux.forEach(function(a) {
+      var id = typeof a.refuge === 'object' ? a.refuge : a.refuge;
+      countParRefuge[id] = (countParRefuge[id] || 0) + 1;
+    });
+  }
+
+  if (countEl) countEl.textContent = refuges.length + ' refuge' + (refuges.length > 1 ? 's' : '');
+  if (heroCount) heroCount.textContent = refuges.length + ' refuge' + (refuges.length > 1 ? 's' : '') + ' inscrit' + (refuges.length > 1 ? 's' : '') + ' sur Coup de Patte';
+
+  // Pagination
+  var grid_el = document.getElementById('refugesGrid');
+  var searchInput = document.querySelector('.search-input');
+  var allRefuges = refuges;
+  var PAGE_SIZE = 12;
+  var currentPage = 1;
+
+  function renderPage(list, page) {
+    var start = (page - 1) * PAGE_SIZE;
+    var slice = list.slice(start, start + PAGE_SIZE);
+    grid_el.innerHTML = slice.map(function(r) {
+      var nbAnimaux = countParRefuge[r.id] || 0;
+      var initiales = (r.nom || '?').split(' ').map(function(w) { return w[0]; }).slice(0, 2).join('').toUpperCase();
+      return '<div class="refuge-card" onclick="allerRefuge(\'' + r.id + '\')" style="cursor:pointer">' +
+        '<div class="refuge-avatar">' + initiales + '</div>' +
+        '<div class="refuge-info">' +
+          '<h3 class="refuge-name">' + (r.nom || 'Refuge') + '</h3>' +
+          (r.ville ? '<p class="refuge-location">📍 ' + r.ville + '</p>' : '') +
+          '<div class="refuge-stats">' +
+            '<span class="refuge-stat">' + nbAnimaux + ' animal' + (nbAnimaux > 1 ? 'aux' : '') + ' disponible' + (nbAnimaux > 1 ? 's' : '') + '</span>' +
+          '</div>' +
+          (r.site_web ? '<a href="' + r.site_web + '" target="_blank" onclick="event.stopPropagation()" style="font-size:0.72rem;color:var(--moss);text-decoration:none;font-weight:600">Voir le site →</a>' : '') +
+        '</div>' +
+      '</div>';
+    }).join('');
+    if (countEl) countEl.textContent = list.length + ' refuge' + (list.length > 1 ? 's' : '');
+  }
+
+  renderPage(allRefuges, 1);
+
+  // Recherche en temps réel
+  if (searchInput) {
+    searchInput.addEventListener('input', function() {
+      var q = this.value.toLowerCase().trim();
+      var filtered = !q ? allRefuges : allRefuges.filter(function(r) {
+        return (r.nom || '').toLowerCase().includes(q) || (r.ville || '').toLowerCase().includes(q);
+      });
+      currentPage = 1;
+      renderPage(filtered, 1);
+    });
+  }
+
+  // Masquer pagination statique
+  var pag = document.querySelector('.pagination');
+  if (pag) pag.style.display = 'none';
+
+  window.allerRefuge = function(id) {
+    window.location.href = 'coup-de-patte-refuge.html?id=' + id;
+  };
+})();
+</script>
 </body>
 </html>
