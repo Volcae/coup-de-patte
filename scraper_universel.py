@@ -686,6 +686,7 @@ def main():
 
         # Analyse Claude
         print("  🤖 Analyse Claude...")
+        print(f"  📄 Texte extrait ({len(texte)} chars): {texte[:150].replace(chr(10), ' ')}")
         analyse = analyser_fiche_claude(texte, url)
         if not analyse.get("nom") and not analyse.get("espece"):
             print("  ⏭ Claude n'a pas trouvé d'animal dans cette page — ignorée")
