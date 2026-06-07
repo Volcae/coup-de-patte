@@ -251,6 +251,16 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
         if (typeof chargerRefugesPourScraping === 'function') chargerRefugesPourScraping();
       }, 200);
     }
+    if (id === 'adoptants') {
+      setTimeout(function() {
+        if (typeof chargerStatsAdoptants === 'function') chargerStatsAdoptants();
+      }, 200);
+    }
+    if (id === 'animaux') {
+      setTimeout(function() {
+        if (typeof chargerAnimaux === 'function') chargerAnimaux();
+      }, 200);
+    }
   }
 </script>
 </head>
@@ -1093,6 +1103,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     set('animauxAdoptes', nbAdopt); set('animauxIncomplets', nbIncomp);
     set('subAnimaux', animaux.length + ' animaux au total');
     set('enfinTotal', nbEnfin); set('enfinAdoptesMois', nbAdopt);
+  }
+
+  async function chargerAnimaux() {
+    var sb = getSupabase();
     var tAnim = document.getElementById('tbody-animaux');
     if (tAnim) {
       tAnim.innerHTML = animaux.length === 0 ? '<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--dust)">Aucun animal.</td></tr>' : '';
@@ -1101,7 +1115,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         window.animauxItems[a.id] = a;
         var row = document.createElement('tr');
         row.innerHTML =
-          '<td><a href="coup-de-patte-fiche.html?id=' + a.id + '" target="_blank" style="color:var(--forest);font-weight:700;text-decoration:none" onmouseover="this.style.textDecoration=\'underline\'" onmouseout="this.style.textDecoration=\'none\'">' + (a.nom || '–') + ' ↗</a></td>' +
+          '<td><strong>' + (a.nom || '–') + '</strong></td>' +
           '<td style="font-size:0.78rem;color:var(--dust)">' + (a.refuge ? a.refuge.nom : '–') + '</td>' +
           '<td style="font-size:0.78rem">' + (a.espece || '–') + '</td>' +
           '<td><span style="font-size:0.72rem;padding:2px 8px;border-radius:50px;background:var(--ivory);color:var(--dust)">' + (a.statut || 'disponible') + '</span></td>' +
@@ -1112,7 +1126,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       });
     }
 
-    // Adoptants — tableau de bord statistique
+    // Adoptants — chargement initial
+    chargerStatsAdoptants();
+  }
+
+  async function chargerStatsAdoptants() {
+    var sb = getSupabase();
     var profRes = await sb.from('ProfilAdoptant').select('*').order('created_at', { ascending: false });
     var profils = profRes.data || [];
 
