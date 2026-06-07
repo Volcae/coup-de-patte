@@ -227,6 +227,16 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
   </script>
 
 <script>
+  async function deconnecter() {
+    try {
+      await getSupabase().auth.signOut();
+    } catch(e) {
+      console.warn('signOut error:', e);
+    } finally {
+      window.location.href = window.location.href.split('?')[0];
+    }
+  }
+
   function showSectionFn(id, el) {
     document.querySelectorAll('.section').forEach(function(s) { s.classList.remove('active'); });
     var target = document.getElementById('section-' + id);
@@ -251,16 +261,6 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
         if (typeof chargerRefugesPourScraping === 'function') chargerRefugesPourScraping();
       }, 200);
     }
-    if (id === 'adoptants') {
-      setTimeout(function() {
-        if (typeof chargerStatsAdoptants === 'function') chargerStatsAdoptants();
-      }, 200);
-    }
-    if (id === 'animaux') {
-      setTimeout(function() {
-        if (typeof chargerAnimaux === 'function') chargerAnimaux();
-      }, 200);
-    }
   }
 </script>
 </head>
@@ -278,7 +278,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
   <div class="nav-right">
     <span class="nav-name">👤 Fondateur</span>
-    <button class="nav-logout" onclick="getSupabase().auth.signOut().then(()=>window.location.reload())">Déconnexion</button>
+    <button class="nav-logout" onclick="deconnecter()">Déconnexion</button>
   </div>
 </nav>
 
@@ -1103,10 +1103,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     set('animauxAdoptes', nbAdopt); set('animauxIncomplets', nbIncomp);
     set('subAnimaux', animaux.length + ' animaux au total');
     set('enfinTotal', nbEnfin); set('enfinAdoptesMois', nbAdopt);
-  }
-
-  async function chargerAnimaux() {
-    var sb = getSupabase();
     var tAnim = document.getElementById('tbody-animaux');
     if (tAnim) {
       tAnim.innerHTML = animaux.length === 0 ? '<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--dust)">Aucun animal.</td></tr>' : '';
@@ -1126,12 +1122,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       });
     }
 
-    // Adoptants — chargement initial
-    chargerStatsAdoptants();
-  }
-
-  async function chargerStatsAdoptants() {
-    var sb = getSupabase();
+    // Adoptants — tableau de bord statistique
     var profRes = await sb.from('ProfilAdoptant').select('*').order('created_at', { ascending: false });
     var profils = profRes.data || [];
 
