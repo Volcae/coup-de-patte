@@ -228,7 +228,6 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
 
 <script>
   function showSectionFn(id, el) {
-    if (id === 'algorithme' || id === 'enfin') { setTimeout(chargerParametresAlgo, 100); }
     document.querySelectorAll('.section').forEach(function(s) { s.classList.remove('active'); });
     var target = document.getElementById('section-' + id);
     if (target) target.classList.add('active');
@@ -538,29 +537,29 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <p class="algo-title">⚖️ Pondérations des critères</p>
           <p style="font-size:0.75rem;color:var(--dust);margin-bottom:16px;font-style:italic">Le total doit être égal à 100%.</p>
 
-          <div class="weight-row"><span class="weight-icon">🏠</span><span class="weight-name">Logement</span><input type="range" id="sliderLogement" class="weight-slider" min="0" max="50" value="30" oninput="updateWeight(this,'w1')"><span class="weight-val" id="w1">30%</span></div>
-          <div class="weight-row"><span class="weight-icon">👨‍👩‍👧</span><span class="weight-name">Foyer</span><input type="range" id="sliderFoyer" class="weight-slider" min="0" max="50" value="25" oninput="updateWeight(this,'w2')"><span class="weight-val" id="w2">25%</span></div>
-          <div class="weight-row"><span class="weight-icon">⏰</span><span class="weight-name">Disponibilité</span><input type="range" id="sliderDispo" class="weight-slider" min="0" max="50" value="20" oninput="updateWeight(this,'w3')"><span class="weight-val" id="w3">20%</span></div>
-          <div class="weight-row"><span class="weight-icon">🎓</span><span class="weight-name">Expérience</span><input type="range" id="sliderExp" class="weight-slider" min="0" max="50" value="15" oninput="updateWeight(this,'w4')"><span class="weight-val" id="w4">15%</span></div>
-          <div class="weight-row"><span class="weight-icon">🏃</span><span class="weight-name">Mode de vie</span><input type="range" id="sliderMode" class="weight-slider" min="0" max="50" value="10" oninput="updateWeight(this,'w5')"><span class="weight-val" id="w5">10%</span></div>
+          <div class="weight-row"><span class="weight-icon">🏠</span><span class="weight-name">Logement</span><input type="range" class="weight-slider" min="0" max="50" value="30" oninput="updateWeight(this,'w1')"><span class="weight-val" id="w1">30%</span></div>
+          <div class="weight-row"><span class="weight-icon">👨‍👩‍👧</span><span class="weight-name">Foyer</span><input type="range" class="weight-slider" min="0" max="50" value="25" oninput="updateWeight(this,'w2')"><span class="weight-val" id="w2">25%</span></div>
+          <div class="weight-row"><span class="weight-icon">⏰</span><span class="weight-name">Disponibilité</span><input type="range" class="weight-slider" min="0" max="50" value="20" oninput="updateWeight(this,'w3')"><span class="weight-val" id="w3">20%</span></div>
+          <div class="weight-row"><span class="weight-icon">🎓</span><span class="weight-name">Expérience</span><input type="range" class="weight-slider" min="0" max="50" value="15" oninput="updateWeight(this,'w4')"><span class="weight-val" id="w4">15%</span></div>
+          <div class="weight-row"><span class="weight-icon">🏃</span><span class="weight-name">Mode de vie</span><input type="range" class="weight-slider" min="0" max="50" value="10" oninput="updateWeight(this,'w5')"><span class="weight-val" id="w5">10%</span></div>
 
           <div class="weight-total">
             <span class="weight-total-label">Total des pondérations</span>
             <span class="weight-total-val ok" id="weightTotal">100%</span>
           </div>
-          <button class="save-btn" onclick="sauvegarderPonderations()">Sauvegarder les pondérations</button>
+          <button class="save-btn" onclick="showToast('Pondérations sauvegardées ✅')">Sauvegarder les pondérations</button>
         </div>
 
         <div class="algo-card">
           <p class="algo-title">🎯 Seuils d'affichage</p>
           <p style="font-size:0.75rem;color:var(--dust);margin-bottom:16px;font-style:italic">Score minimum pour qu'un animal soit affiché à un adoptant.</p>
 
-          <div class="threshold-row"><span class="threshold-label">Score minimum affiché</span><input class="threshold-input" id="seuilMin" type="number" value="40" min="0" max="100"><span class="threshold-unit">%</span></div>
-          <div class="threshold-row"><span class="threshold-label">Seuil "Coup de Patte idéal"</span><input class="threshold-input" id="seuilIdeal" type="number" value="85" min="0" max="100"><span class="threshold-unit">%</span></div>
-          <div class="threshold-row"><span class="threshold-label">Seuil "Belle rencontre"</span><input class="threshold-input" id="seuilBelle" type="number" value="70" min="0" max="100"><span class="threshold-unit">%</span></div>
-          <div class="threshold-row"><span class="threshold-label">Seuil "On s'apprivoise ?"</span><input class="threshold-input" id="seuilAppri" type="number" value="55" min="0" max="100"><span class="threshold-unit">%</span></div>
-          <div class="threshold-row"><span class="threshold-label">Score min. Enfin Moi ? affiché</span><input class="threshold-input" id="seuilEnfinMoiMin" type="number" value="50" min="0" max="100"><span class="threshold-unit">%</span></div>
-          <button class="save-btn" onclick="sauvegarderSeuils()">Sauvegarder les seuils</button>
+          <div class="threshold-row"><span class="threshold-label">Score minimum affiché</span><input class="threshold-input" type="number" value="40" min="0" max="100"><span class="threshold-unit">%</span></div>
+          <div class="threshold-row"><span class="threshold-label">Seuil "Coup de Patte idéal"</span><input class="threshold-input" type="number" value="85" min="0" max="100"><span class="threshold-unit">%</span></div>
+          <div class="threshold-row"><span class="threshold-label">Seuil "Belle rencontre"</span><input class="threshold-input" type="number" value="70" min="0" max="100"><span class="threshold-unit">%</span></div>
+          <div class="threshold-row"><span class="threshold-label">Seuil "On s'apprivoise ?"</span><input class="threshold-input" type="number" value="55" min="0" max="100"><span class="threshold-unit">%</span></div>
+          <div class="threshold-row"><span class="threshold-label">Score min. Enfin Moi ? affiché</span><input class="threshold-input" type="number" value="50" min="0" max="100"><span class="threshold-unit">%</span></div>
+          <button class="save-btn" onclick="showToast('Seuils sauvegardés ✅')">Sauvegarder les seuils</button>
         </div>
       </div>
     </div>
@@ -578,17 +577,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
           <div class="threshold-row">
             <span class="threshold-label">⏰ Durée en refuge (mois)</span>
-            <input class="threshold-input" id="emMois" type="number" value="12" min="1" max="36">
+            <input class="threshold-input" type="number" value="12" min="1" max="36">
             <span class="threshold-unit">mois minimum</span>
           </div>
           <div class="threshold-row">
             <span class="threshold-label">🌿 Âge senior, Chiens</span>
-            <input class="threshold-input" id="emChien" type="number" value="8" min="1" max="20">
+            <input class="threshold-input" type="number" value="8" min="1" max="20">
             <span class="threshold-unit">ans et plus</span>
           </div>
           <div class="threshold-row">
             <span class="threshold-label">🌿 Âge senior, Chats</span>
-            <input class="threshold-input" id="emChat" type="number" value="10" min="1" max="25">
+            <input class="threshold-input" type="number" value="10" min="1" max="25">
             <span class="threshold-unit">ans et plus</span>
           </div>
           <div class="threshold-row">
@@ -613,7 +612,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             </div>
           </div>
 
-          <button class="save-btn" style="max-width:280px;margin-top:24px" onclick="sauvegarderSeuilsEnfinMoi()">Sauvegarder les seuils</button>
+          <button class="save-btn" style="max-width:280px;margin-top:24px" onclick="showToast('Seuils Enfin Moi ? sauvegardés ✅')">Sauvegarder les seuils</button>
         </div>
       </div>
     </div>
@@ -1102,7 +1101,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         window.animauxItems[a.id] = a;
         var row = document.createElement('tr');
         row.innerHTML =
-          '<td><strong>' + (a.nom || '–') + '</strong></td>' +
+          '<td><a href="coup-de-patte-fiche.html?id=' + a.id + '" target="_blank" style="color:var(--forest);font-weight:700;text-decoration:none" onmouseover="this.style.textDecoration=\'underline\'" onmouseout="this.style.textDecoration=\'none\'">' + (a.nom || '–') + ' ↗</a></td>' +
           '<td style="font-size:0.78rem;color:var(--dust)">' + (a.refuge ? a.refuge.nom : '–') + '</td>' +
           '<td style="font-size:0.78rem">' + (a.espece || '–') + '</td>' +
           '<td><span style="font-size:0.72rem;padding:2px 8px;border-radius:50px;background:var(--ivory);color:var(--dust)">' + (a.statut || 'disponible') + '</span></td>' +
@@ -2312,86 +2311,6 @@ async function sauvegarderAnimal() {
 document.getElementById('editAnimalModal').addEventListener('click', function(e) {
   if (e.target === this) fermerEditAnimal();
 });
-</script>
-
-<script>
-// ══════════════════════════════════════════
-// PARAMÈTRES ALGORITHME — Supabase Config
-// ══════════════════════════════════════════
-
-// Clé unique pour stocker les paramètres dans la table Config
-var CONFIG_KEY = 'matching_params';
-
-async function chargerParametresAlgo() {
-  var sb = getSupabase();
-  var { data } = await sb.from('Config').select('valeur').eq('cle', CONFIG_KEY).maybeSingle();
-  if (!data) return;
-  try {
-    var p = typeof data.valeur === 'string' ? JSON.parse(data.valeur) : data.valeur;
-    // Pondérations
-    if (p.w_logement !== undefined) { var sl = document.getElementById('sliderLogement'); if(sl){sl.value=p.w_logement; updateWeight(sl,'w1');} }
-    if (p.w_foyer    !== undefined) { var sl = document.getElementById('sliderFoyer');    if(sl){sl.value=p.w_foyer;    updateWeight(sl,'w2');} }
-    if (p.w_dispo    !== undefined) { var sl = document.getElementById('sliderDispo');    if(sl){sl.value=p.w_dispo;    updateWeight(sl,'w3');} }
-    if (p.w_exp      !== undefined) { var sl = document.getElementById('sliderExp');      if(sl){sl.value=p.w_exp;      updateWeight(sl,'w4');} }
-    if (p.w_mode     !== undefined) { var sl = document.getElementById('sliderMode');     if(sl){sl.value=p.w_mode;     updateWeight(sl,'w5');} }
-    // Seuils affichage
-    if (p.seuil_min       !== undefined) { var el=document.getElementById('seuilMin');       if(el) el.value=p.seuil_min; }
-    if (p.seuil_ideal     !== undefined) { var el=document.getElementById('seuilIdeal');     if(el) el.value=p.seuil_ideal; }
-    if (p.seuil_belle     !== undefined) { var el=document.getElementById('seuilBelle');     if(el) el.value=p.seuil_belle; }
-    if (p.seuil_appri     !== undefined) { var el=document.getElementById('seuilAppri');     if(el) el.value=p.seuil_appri; }
-    if (p.seuil_enfin_min !== undefined) { var el=document.getElementById('seuilEnfinMoiMin'); if(el) el.value=p.seuil_enfin_min; }
-    // Seuils Enfin Moi
-    if (p.em_mois  !== undefined) { var el=document.getElementById('emMois');  if(el) el.value=p.em_mois; }
-    if (p.em_chien !== undefined) { var el=document.getElementById('emChien'); if(el) el.value=p.em_chien; }
-    if (p.em_chat  !== undefined) { var el=document.getElementById('emChat');  if(el) el.value=p.em_chat; }
-    console.log('✓ Paramètres algo chargés depuis Supabase');
-  } catch(e) { console.warn('Erreur chargement paramètres algo:', e); }
-}
-
-function lireParametresActuels() {
-  return {
-    w_logement:    parseInt(document.getElementById('sliderLogement')?.value || 30),
-    w_foyer:       parseInt(document.getElementById('sliderFoyer')?.value    || 25),
-    w_dispo:       parseInt(document.getElementById('sliderDispo')?.value    || 20),
-    w_exp:         parseInt(document.getElementById('sliderExp')?.value      || 15),
-    w_mode:        parseInt(document.getElementById('sliderMode')?.value     || 10),
-    seuil_min:     parseInt(document.getElementById('seuilMin')?.value       || 40),
-    seuil_ideal:   parseInt(document.getElementById('seuilIdeal')?.value     || 85),
-    seuil_belle:   parseInt(document.getElementById('seuilBelle')?.value     || 70),
-    seuil_appri:   parseInt(document.getElementById('seuilAppri')?.value     || 55),
-    seuil_enfin_min: parseInt(document.getElementById('seuilEnfinMoiMin')?.value || 50),
-    em_mois:       parseInt(document.getElementById('emMois')?.value         || 12),
-    em_chien:      parseInt(document.getElementById('emChien')?.value        || 8),
-    em_chat:       parseInt(document.getElementById('emChat')?.value         || 10),
-    em_refuge:     document.getElementById('refugeToggle')?.checked ?? true,
-    em_medical:    document.getElementById('medToggle')?.checked ?? true,
-    em_handicap:   document.getElementById('handToggle')?.checked ?? true,
-  };
-}
-
-async function sauvegarderPonderations() {
-  var params = lireParametresActuels();
-  var total = params.w_logement + params.w_foyer + params.w_dispo + params.w_exp + params.w_mode;
-  if (total !== 100) { showToast('⚠️ Le total doit être égal à 100% (actuellement ' + total + '%)'); return; }
-  await sauvegarderParams(params, 'Pondérations sauvegardées ✅');
-}
-
-async function sauvegarderSeuils() {
-  var params = lireParametresActuels();
-  await sauvegarderParams(params, 'Seuils sauvegardés ✅');
-}
-
-async function sauvegarderSeuilsEnfinMoi() {
-  var params = lireParametresActuels();
-  await sauvegarderParams(params, 'Seuils Enfin Moi ? sauvegardés ✅');
-}
-
-async function sauvegarderParams(params, msg) {
-  var sb = getSupabase();
-  var { error } = await sb.from('Config').upsert({ cle: CONFIG_KEY, valeur: JSON.stringify(params) }, { onConflict: 'cle' });
-  if (error) { showToast('✗ Erreur sauvegarde : ' + error.message); }
-  else { showToast(msg); console.log('✓ Paramètres algo sauvegardés'); }
-}
 </script>
 </body>
 </html>
