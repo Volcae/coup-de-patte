@@ -1691,7 +1691,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
         <div class="edit-row">
           <label class="edit-label">Race normalisée ✦</label>
-          <select id="editRaceNormalisee" class="edit-select">
+          <select id="editRaceNormalisee" class="edit-select" onchange="autoRemplirRaceScraping(this.value)">
           <option value="">— Race non précisée</option>
           <optgroup label="🐶 Chiens">
           <option value="Affenpinscher">Affenpinscher</option>
@@ -1748,8 +1748,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <option value="Cane Corso">Cane Corso</option>
           <option value="Cavalier King Charles">Cavalier King Charles</option>
           <option value="Chien Courant Suisse">Chien Courant Suisse</option>
-          <option value="Chien d\">Chien d\</option>
-          <option value="Chien d\">Chien d\</option>
+          <option value="Chien d’Eau Portugais">Chien d’Eau Portugais</option>
+          <option value="Chien d’Eau Romagnol">Chien d’Eau Romagnol</option>
           <option value="Chien de Berger Corse">Chien de Berger Corse</option>
           <option value="Chien de Berger Yougoslave">Chien de Berger Yougoslave</option>
           <option value="Chien de Montagne des Pyrénées (Patou)">Chien de Montagne des Pyrénées (Patou)</option>
@@ -2279,7 +2279,7 @@ document.getElementById('scrapingDetailModal').addEventListener('click', functio
         <div><label class="ea-label">Espèce</label>
           <select id="eaEspece" class="ea-select"><option value="">—</option><option value="chien">Chien</option><option value="chat">Chat</option><option value="lapin">Lapin</option><option value="nac">NAC</option></select></div>
         <div><label class="ea-label">Race extraite</label><input id="eaRace" class="ea-input" type="text" readonly style="background:rgba(143,143,143,0.08);color:var(--dust);cursor:default"></div>
-        <div><label class="ea-label">Race normalisée ✦</label><select id="eaRaceNormalisee" class="ea-select">
+        <div><label class="ea-label">Race normalisée ✦</label><select id="eaRaceNormalisee" class="ea-select" onchange="autoRemplirRaceAnimal(this.value)">
 <option value="">— Race non précisée</option>
 <optgroup label="🐶 Chiens">
 <option value="Affenpinscher">Affenpinscher</option>
@@ -2802,6 +2802,279 @@ async function sauvegarderAnimal() {
 document.getElementById('editAnimalModal').addEventListener('click', function(e) {
   if (e.target === this) fermerEditAnimal();
 });
+
+var breedData = {
+  chien:[
+    {name:'Affenpinscher',gabarit:'Petit',pelage:'long'},
+    {name:'Airedale Terrier',gabarit:'Moyen',pelage:'long'},
+    {name:'Akita Américain',gabarit:'Grand',pelage:'long'},
+    {name:'Akita Inu',gabarit:'Grand',pelage:'long'},
+    {name:'Alaskan Malamute',gabarit:'Grand',pelage:'long'},
+    {name:'American Staffordshire Terrier',gabarit:'Moyen',pelage:'court'},
+    {name:'Apparence Loup (Saarloos / Tchécoslovaque)',gabarit:'Grand',pelage:'long'},
+    {name:'Azawakh',gabarit:'Grand',pelage:'court'},
+    {name:'Barbet',gabarit:'Moyen',pelage:'long'},
+    {name:'Basenji',gabarit:'Moyen',pelage:'court'},
+    {name:'Basset Artésien Normand',gabarit:'Petit',pelage:'court'},
+    {name:'Basset Fauve de Bretagne',gabarit:'Petit',pelage:'mi-long'},
+    {name:'Basset Hound',gabarit:'Moyen',pelage:'court'},
+    {name:'Beagle',gabarit:'Moyen',pelage:'court'},
+    {name:'Beagle Harrier',gabarit:'Moyen',pelage:'court'},
+    {name:'Berger Allemand',gabarit:'Grand',pelage:'variable'},
+    {name:'Berger Australien',gabarit:'Moyen',pelage:'long'},
+    {name:'Berger Belge Groenendael',gabarit:'Grand',pelage:'long'},
+    {name:'Berger Belge Laekenois',gabarit:'Grand',pelage:'long'},
+    {name:'Berger Belge Malinois',gabarit:'Grand',pelage:'court'},
+    {name:'Berger Belge Tervueren',gabarit:'Grand',pelage:'long'},
+    {name:'Berger Blanc Suisse',gabarit:'Grand',pelage:'long'},
+    {name:'Berger de Brie (Briard)',gabarit:'Grand',pelage:'long'},
+    {name:'Berger de Picardie',gabarit:'Grand',pelage:'mi-long'},
+    {name:'Berger des Pyrénées',gabarit:'Moyen',pelage:'long'},
+    {name:'Berger des Shetland',gabarit:'Petit',pelage:'long'},
+    {name:'Bichon Frisé',gabarit:'Petit',pelage:'long'},
+    {name:'Bichon Havanais',gabarit:'Petit',pelage:'long'},
+    {name:'Bloodhound (Chien de Saint-Hubert)',gabarit:'Grand',pelage:'court'},
+    {name:'Bobtail (Old English Sheepdog)',gabarit:'Grand',pelage:'long'},
+    {name:'Bolonais',gabarit:'Petit',pelage:'long'},
+    {name:'Border Collie',gabarit:'Moyen',pelage:'long'},
+    {name:'Border Terrier',gabarit:'Petit',pelage:'mi-long'},
+    {name:'Bouledogue Français',gabarit:'Petit',pelage:'court'},
+    {name:'Bouvier Australien',gabarit:'Moyen',pelage:'court'},
+    {name:'Bouvier Bernois',gabarit:'Grand',pelage:'long'},
+    {name:'Bouvier des Flandres',gabarit:'Grand',pelage:'long'},
+    {name:'Boxer',gabarit:'Grand',pelage:'court'},
+    {name:'Braque Allemand',gabarit:'Grand',pelage:'court'},
+    {name:'Braque de Weimar (Weimaraner)',gabarit:'Grand',pelage:'court'},
+    {name:'Braque du Bourbonnais',gabarit:'Moyen',pelage:'court'},
+    {name:'Braque Français',gabarit:'Grand',pelage:'court'},
+    {name:'Braque Hongrois (Vizsla)',gabarit:'Moyen',pelage:'court'},
+    {name:'Bull Terrier',gabarit:'Moyen',pelage:'court'},
+    {name:'Bulldog Anglais',gabarit:'Moyen',pelage:'court'},
+    {name:'Bullmastiff',gabarit:'Grand',pelage:'court'},
+    {name:'Cairn Terrier',gabarit:'Petit',pelage:'mi-long'},
+    {name:'Caniche (Toy)',gabarit:'Petit',pelage:'long'},
+    {name:'Caniche (Nain)',gabarit:'Petit',pelage:'long'},
+    {name:'Caniche (Moyen)',gabarit:'Moyen',pelage:'long'},
+    {name:'Caniche (Grand)',gabarit:'Grand',pelage:'long'},
+    {name:'Cane Corso',gabarit:'Grand',pelage:'court'},
+    {name:'Cavalier King Charles',gabarit:'Petit',pelage:'long'},
+    {name:'Chien Courant Suisse',gabarit:'Moyen',pelage:'court'},
+    {name:'Chien d’Eau Portugais',gabarit:'Moyen',pelage:'long'},
+    {name:'Chien d’Eau Romagnol',gabarit:'Moyen',pelage:'long'},
+    {name:'Chien de Berger Corse',gabarit:'Moyen',pelage:'mi-long'},
+    {name:'Chien de Berger Yougoslave',gabarit:'Grand',pelage:'long'},
+    {name:'Chien de Montagne des Pyrénées (Patou)',gabarit:'Grand',pelage:'long'},
+    {name:'Chien de Rhodésie (Ridgeback)',gabarit:'Grand',pelage:'court'},
+    {name:'Chihuahua (poil court)',gabarit:'Petit',pelage:'court'},
+    {name:'Chihuahua (poil long)',gabarit:'Petit',pelage:'long'},
+    {name:'Chow-Chow',gabarit:'Moyen',pelage:'long'},
+    {name:'Clumber Spaniel',gabarit:'Moyen',pelage:'long'},
+    {name:'Cocker Américain',gabarit:'Moyen',pelage:'long'},
+    {name:'Cocker Anglais',gabarit:'Moyen',pelage:'long'},
+    {name:'Colley Rough (à poil long)',gabarit:'Grand',pelage:'long'},
+    {name:'Colley Smooth (à poil court)',gabarit:'Grand',pelage:'court'},
+    {name:'Dalmatien',gabarit:'Grand',pelage:'court'},
+    {name:'Dobermann',gabarit:'Grand',pelage:'court'},
+    {name:'Dogue Allemand (Great Dane)',gabarit:'Grand',pelage:'court'},
+    {name:'Dogue Argentin',gabarit:'Grand',pelage:'court'},
+    {name:'Dogue de Bordeaux',gabarit:'Grand',pelage:'court'},
+    {name:'Épagneul Bleu de Picardie',gabarit:'Moyen',pelage:'long'},
+    {name:'Épagneul Breton',gabarit:'Moyen',pelage:'mi-long'},
+    {name:'Épagneul Japonais',gabarit:'Petit',pelage:'long'},
+    {name:'Épagneul Papillon',gabarit:'Petit',pelage:'long'},
+    {name:'Eurasier',gabarit:'Moyen',pelage:'long'},
+    {name:'Field Spaniel',gabarit:'Moyen',pelage:'long'},
+    {name:'Flat Coated Retriever',gabarit:'Grand',pelage:'long'},
+    {name:'Fox Terrier (poil dur)',gabarit:'Petit',pelage:'mi-long'},
+    {name:'Fox Terrier (poil lisse)',gabarit:'Petit',pelage:'court'},
+    {name:'Golden Retriever',gabarit:'Grand',pelage:'long'},
+    {name:'Grand Basset Griffon Vendéen',gabarit:'Moyen',pelage:'mi-long'},
+    {name:'Grand Bleu de Gascogne',gabarit:'Grand',pelage:'court'},
+    {name:'Grand Danois',gabarit:'Grand',pelage:'court'},
+    {name:'Greyhound',gabarit:'Grand',pelage:'court'},
+    {name:'Griffon Belge',gabarit:'Petit',pelage:'long'},
+    {name:'Griffon Bruxellois',gabarit:'Petit',pelage:'long'},
+    {name:'Griffon Fauve de Bretagne',gabarit:'Moyen',pelage:'mi-long'},
+    {name:'Griffon Korthals',gabarit:'Grand',pelage:'mi-long'},
+    {name:'Husky Sibérien',gabarit:'Moyen',pelage:'long'},
+    {name:'Irish Setter',gabarit:'Grand',pelage:'long'},
+    {name:'Irish Terrier',gabarit:'Moyen',pelage:'mi-long'},
+    {name:'Irish Water Spaniel',gabarit:'Grand',pelage:'long'},
+    {name:'Jack Russell Terrier',gabarit:'Petit',pelage:'variable'},
+    {name:'Jack Russell (poil dur)',gabarit:'Petit',pelage:'mi-long'},
+    {name:'Jagdterrier',gabarit:'Petit',pelage:'variable'},
+    {name:'Kai Ken',gabarit:'Moyen',pelage:'mi-long'},
+    {name:'Keeshond (Loulou de Poméranie Grand)',gabarit:'Moyen',pelage:'long'},
+    {name:'Kerry Blue Terrier',gabarit:'Moyen',pelage:'long'},
+    {name:'King Charles Spaniel',gabarit:'Petit',pelage:'long'},
+    {name:'Labrador Retriever',gabarit:'Grand',pelage:'court'},
+    {name:'Lagotto Romagnolo',gabarit:'Moyen',pelage:'long'},
+    {name:'Lakeland Terrier',gabarit:'Petit',pelage:'mi-long'},
+    {name:'Leonberg',gabarit:'Grand',pelage:'long'},
+    {name:'Lévrier Afghan',gabarit:'Grand',pelage:'long'},
+    {name:'Lévrier Écossais (Deerhound)',gabarit:'Grand',pelage:'mi-long'},
+    {name:'Lévrier Irlandais (Irish Wolfhound)',gabarit:'Grand',pelage:'mi-long'},
+    {name:'Lévrier Italien',gabarit:'Petit',pelage:'court'},
+    {name:'Lévrier Persan (Saluki)',gabarit:'Grand',pelage:'variable'},
+    {name:'Lhassa Apso',gabarit:'Petit',pelage:'long'},
+    {name:'Löwchen (Petit Chien Lion)',gabarit:'Petit',pelage:'long'},
+    {name:'Malinois',gabarit:'Grand',pelage:'court'},
+    {name:'Maltais',gabarit:'Petit',pelage:'long'},
+    {name:'Manchester Terrier',gabarit:'Moyen',pelage:'court'},
+    {name:'Mastiff',gabarit:'Grand',pelage:'court'},
+    {name:'Mâtin de Naples',gabarit:'Grand',pelage:'court'},
+    {name:'Mâtin Espagnol',gabarit:'Grand',pelage:'court'},
+    {name:'Mudi',gabarit:'Moyen',pelage:'long'},
+    {name:'Norwich Terrier',gabarit:'Petit',pelage:'mi-long'},
+    {name:'Pékinois',gabarit:'Petit',pelage:'long'},
+    {name:'Petit Basset Griffon Vendéen',gabarit:'Petit',pelage:'mi-long'},
+    {name:'Petit Chien Courant Suisse',gabarit:'Petit',pelage:'court'},
+    {name:'Pinscher Moyen',gabarit:'Moyen',pelage:'court'},
+    {name:'Pinscher Nain',gabarit:'Petit',pelage:'court'},
+    {name:'Pointer',gabarit:'Grand',pelage:'court'},
+    {name:'Pomeranian (Spitz Nain)',gabarit:'Petit',pelage:'long'},
+    {name:'Porcelaine',gabarit:'Moyen',pelage:'court'},
+    {name:'Puli',gabarit:'Moyen',pelage:'long'},
+    {name:'Pumi',gabarit:'Moyen',pelage:'long'},
+    {name:'Retriever de la Baie de Chesapeake',gabarit:'Grand',pelage:'court'},
+    {name:'Rottweiler',gabarit:'Grand',pelage:'court'},
+    {name:'Saint-Bernard',gabarit:'Grand',pelage:'long'},
+    {name:'Samoyède',gabarit:'Grand',pelage:'long'},
+    {name:'Schipperke',gabarit:'Petit',pelage:'long'},
+    {name:'Schnauzer Géant',gabarit:'Grand',pelage:'mi-long'},
+    {name:'Schnauzer Moyen',gabarit:'Moyen',pelage:'mi-long'},
+    {name:'Schnauzer Nain',gabarit:'Petit',pelage:'mi-long'},
+    {name:'Scottish Terrier',gabarit:'Petit',pelage:'mi-long'},
+    {name:'Sealyham Terrier',gabarit:'Petit',pelage:'long'},
+    {name:'Setter Anglais',gabarit:'Grand',pelage:'long'},
+    {name:'Setter Gordon',gabarit:'Grand',pelage:'long'},
+    {name:'Setter Irlandais Rouge et Blanc',gabarit:'Grand',pelage:'long'},
+    {name:'Shiba Inu',gabarit:'Petit',pelage:'court'},
+    {name:'Shih Tzu',gabarit:'Petit',pelage:'long'},
+    {name:'Siberian Husky',gabarit:'Moyen',pelage:'long'},
+    {name:'Skye Terrier',gabarit:'Petit',pelage:'long'},
+    {name:'Sloughi',gabarit:'Grand',pelage:'court'},
+    {name:'Soft Coated Wheaten Terrier',gabarit:'Moyen',pelage:'long'},
+    {name:'Spitz Finlandais',gabarit:'Moyen',pelage:'long'},
+    {name:'Spitz Japonais',gabarit:'Petit',pelage:'long'},
+    {name:'Springer Anglais',gabarit:'Moyen',pelage:'long'},
+    {name:'Staffordshire Bull Terrier',gabarit:'Moyen',pelage:'court'},
+    {name:'Sussex Spaniel',gabarit:'Moyen',pelage:'long'},
+    {name:'Teckel (poil court)',gabarit:'Petit',pelage:'court'},
+    {name:'Teckel (poil dur)',gabarit:'Petit',pelage:'mi-long'},
+    {name:'Teckel (poil long)',gabarit:'Petit',pelage:'long'},
+    {name:'Terre-Neuve',gabarit:'Grand',pelage:'long'},
+    {name:'Terrier Noir Russe',gabarit:'Grand',pelage:'long'},
+    {name:'Tervueren',gabarit:'Grand',pelage:'long'},
+    {name:'Tibetan Mastiff (Dogue du Tibet)',gabarit:'Grand',pelage:'long'},
+    {name:'Tibetan Spaniel',gabarit:'Petit',pelage:'long'},
+    {name:'Tibetan Terrier',gabarit:'Moyen',pelage:'long'},
+    {name:'Tosa',gabarit:'Grand',pelage:'court'},
+    {name:'Welsh Corgi Cardigan',gabarit:'Petit',pelage:'mi-long'},
+    {name:'Welsh Corgi Pembroke',gabarit:'Petit',pelage:'mi-long'},
+    {name:'Welsh Springer Spaniel',gabarit:'Moyen',pelage:'long'},
+    {name:'Welsh Terrier',gabarit:'Moyen',pelage:'mi-long'},
+    {name:'West Highland White Terrier',gabarit:'Petit',pelage:'long'},
+    {name:'Whippet',gabarit:'Moyen',pelage:'court'},
+    {name:'Yorkshire Terrier',gabarit:'Petit',pelage:'long'},
+  ],
+  chat:[
+    {name:'Abyssin',gabarit:'Moyen',pelage:'court'},
+    {name:'Balinais',gabarit:'Moyen',pelage:'long'},
+    {name:'Bengal',gabarit:'Moyen',pelage:'court'},
+    {name:'Birman',gabarit:'Moyen',pelage:'long'},
+    {name:'Bleu Russe',gabarit:'Moyen',pelage:'court'},
+    {name:'Bombay',gabarit:'Moyen',pelage:'court'},
+    {name:'British Longhair',gabarit:'Moyen',pelage:'long'},
+    {name:'British Shorthair',gabarit:'Moyen',pelage:'court'},
+    {name:'Burmese',gabarit:'Moyen',pelage:'court'},
+    {name:'Burmilla',gabarit:'Moyen',pelage:'court'},
+    {name:'Californian Spangled',gabarit:'Moyen',pelage:'court'},
+    {name:'Chantilly Tiffany',gabarit:'Moyen',pelage:'long'},
+    {name:'Chartreux',gabarit:'Moyen',pelage:'court'},
+    {name:'Chausie',gabarit:'Grand',pelage:'court'},
+    {name:'Cornish Rex',gabarit:'Moyen',pelage:'court'},
+    {name:'Cymric',gabarit:'Moyen',pelage:'long'},
+    {name:'Devon Rex',gabarit:'Petit',pelage:'court'},
+    {name:'Donskoy (Chat Nu Russe)',gabarit:'Moyen',pelage:'aucun'},
+    {name:'Européen (chat européen)',gabarit:'Moyen',pelage:'court'},
+    {name:'Exotic Shorthair',gabarit:'Moyen',pelage:'court'},
+    {name:'Havana',gabarit:'Moyen',pelage:'court'},
+    {name:'Highland Fold',gabarit:'Moyen',pelage:'long'},
+    {name:'Khao Manee',gabarit:'Moyen',pelage:'court'},
+    {name:'Korat',gabarit:'Moyen',pelage:'court'},
+    {name:'Laperm',gabarit:'Moyen',pelage:'long'},
+    {name:'Maine Coon',gabarit:'Grand',pelage:'long'},
+    {name:'Manx',gabarit:'Moyen',pelage:'court'},
+    {name:'Mau Égyptien',gabarit:'Moyen',pelage:'court'},
+    {name:'Munchkin',gabarit:'Petit',pelage:'variable'},
+    {name:'Nebelung',gabarit:'Moyen',pelage:'long'},
+    {name:'Norvégien',gabarit:'Grand',pelage:'long'},
+    {name:'Ocicat',gabarit:'Moyen',pelage:'court'},
+    {name:'Oriental Longhair',gabarit:'Moyen',pelage:'long'},
+    {name:'Oriental Shorthair',gabarit:'Moyen',pelage:'court'},
+    {name:'Persan',gabarit:'Moyen',pelage:'long'},
+    {name:'Peterbald',gabarit:'Moyen',pelage:'aucun'},
+    {name:'Pixie-Bob',gabarit:'Grand',pelage:'mi-long'},
+    {name:'Ragamuffin',gabarit:'Grand',pelage:'long'},
+    {name:'Ragdoll',gabarit:'Grand',pelage:'long'},
+    {name:'Sacré de Birmanie',gabarit:'Moyen',pelage:'long'},
+    {name:'Savannah',gabarit:'Grand',pelage:'court'},
+    {name:'Scottish Fold',gabarit:'Moyen',pelage:'court'},
+    {name:'Selkirk Rex',gabarit:'Moyen',pelage:'long'},
+    {name:'Serengeti',gabarit:'Moyen',pelage:'court'},
+    {name:'Siamois',gabarit:'Moyen',pelage:'court'},
+    {name:'Sibérien',gabarit:'Grand',pelage:'long'},
+    {name:'Singapura',gabarit:'Petit',pelage:'court'},
+    {name:'Snowshoe',gabarit:'Moyen',pelage:'court'},
+    {name:'Somali',gabarit:'Moyen',pelage:'long'},
+    {name:'Sphynx',gabarit:'Moyen',pelage:'aucun'},
+    {name:'Thai',gabarit:'Moyen',pelage:'court'},
+    {name:'Tiffanie',gabarit:'Moyen',pelage:'long'},
+    {name:'Tonkinois',gabarit:'Moyen',pelage:'court'},
+    {name:'Turc de Van',gabarit:'Grand',pelage:'mi-long'},
+    {name:'Turkish Angora',gabarit:'Moyen',pelage:'long'},
+    {name:'York Chocolat',gabarit:'Moyen',pelage:'long'},
+  ]
+};
+
+function getRaceData(raceName) {
+  if (!raceName || !breedData) return null;
+  var all = (breedData.chien || []).concat(breedData.chat || []);
+  return all.find(function(b) { return b.name === raceName; }) || null;
+}
+
+function autoRemplirRaceScraping(raceName) {
+  var data = getRaceData(raceName);
+  if (!data) return;
+  // Gabarit
+  var gabaritEl = document.getElementById('editGabarit');
+  if (gabaritEl && data.gabarit) {
+    var g = data.gabarit.toLowerCase();
+    gabaritEl.value = g === 'petit' ? 'petit' : g === 'moyen' ? 'moyen' : g === 'grand' ? 'grand' : '';
+  }
+  // Pelage
+  var pelageEl = document.getElementById('editPelage');
+  if (pelageEl && data.pelage && data.pelage !== 'variable') {
+    var p = data.pelage.toLowerCase();
+    pelageEl.value = p === 'court' ? 'court' : p === 'mi-long' ? 'mi-long' : p === 'long' ? 'long' : '';
+  }
+}
+
+function autoRemplirRaceAnimal(raceName) {
+  var data = getRaceData(raceName);
+  if (!data) return;
+  var gabaritEl = document.getElementById('eaGabarit');
+  if (gabaritEl && data.gabarit) {
+    var g = data.gabarit.toLowerCase();
+    gabaritEl.value = g === 'petit' ? 'petit' : g === 'moyen' ? 'moyen' : g === 'grand' ? 'grand' : '';
+  }
+  var pelageEl = document.getElementById('eaPelage');
+  if (pelageEl && data.pelage && data.pelage !== 'variable') {
+    var p = data.pelage.toLowerCase();
+    pelageEl.value = p === 'court' ? 'court' : p === 'mi-long' ? 'mi-long' : p === 'long' ? 'long' : '';
+  }
+}
 </script>
 </body>
 </html>
