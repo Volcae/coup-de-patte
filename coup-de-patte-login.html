@@ -440,6 +440,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <input class="field-input" type="url" id="site-refuge" placeholder="www.monrefuge.fr">
           </div>
 
+          <div class="field-group">
+            <label class="field-label">Page des animaux à adopter <span style="color:var(--smoke);font-weight:400">(optionnel)</span></label>
+            <input class="field-input" type="url" id="url-adoption-refuge" placeholder="www.monrefuge.fr/nos-animaux/">
+            <div style="font-size:0.72rem;color:var(--smoke);margin-top:4px">Si votre site a une page dédiée aux animaux, indiquez-la pour améliorer l'import automatique</div>
+          </div>
+
           <div class="section-divider">Compte administrateur</div>
 
           <div class="field-group">
@@ -632,7 +638,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           nom: nomEl.value,
           ville: document.getElementById('ville-refuge')?.value || '',
           code_postal: document.getElementById('cp-refuge')?.value || '',
-          site_web: (function(){ var s=(document.getElementById('site-refuge')?.value||'').trim(); s=s.replace(/\[([^\]]+)\]\([^)]+\)/g,'$1'); s=s.replace(/^https?:\/\//i,''); return s; })(),
+          site_web: (function(){ var s=(document.getElementById('site-refuge')?.value||'').trim(); s=s.replace(/\[([^\]]+)\]\([^)]+\)/g,'$1'); if(s && !s.match(/^https?:\/\//i)) s='https://'+s; return s; })(),
           role: 'refuge',
           est_adoptant: false,
           est_refuge: true,
@@ -649,9 +655,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         nom: nomEl.value,
         ville: document.getElementById('ville-refuge')?.value || '',
         code_postal: document.getElementById('cp-refuge')?.value || '',
-        site_web: (function(){ var s=(document.getElementById('site-refuge')?.value||'').trim(); s=s.replace(/\[([^\]]+)\]\([^)]+\)/g,'$1'); s=s.replace(/^https?:\/\//i,''); return s; })(),
+        site_web: (function(){ var s=(document.getElementById('site-refuge')?.value||'').trim(); s=s.replace(/\[([^\]]+)\]\([^)]+\)/g,'$1'); if(s && !s.match(/^https?:\/\//i)) s='https://'+s; return s; })(),
         email: emailEl.value,
         utilisateur: userId,
+        url_adoption: (document.getElementById('url-adoption-refuge')?.value||'').trim() || null,
         est_partenaire: false,
         });
       if (refugeError) console.error('Erreur création refuge:', refugeError);
