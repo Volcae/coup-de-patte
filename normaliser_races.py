@@ -28,6 +28,9 @@ RACES_GENERIQUES = [
 # Aliases — noms alternatifs courants en refuge → nom officiel dans la liste
 ALIASES = {
     "Malinois":               "Berger Belge Malinois",
+    "Chihuahua (poil court)": "Chihuahua",
+    "Chihuahua (poil long)":  "Chihuahua",
+    "Eurasier":               "Eurasier",
     "Tervueren":              "Berger Belge Tervueren",
     "Groenendael":            "Berger Belge Groenendael",
     "Husky de Sibérie":       "Siberian Husky",
