@@ -77,7 +77,7 @@ def charger_animaux_a_normaliser():
         print(f"✗ Erreur chargement: {r.status_code}")
         return []
     animaux = r.json()
-    a_normaliser = [a for a in animaux if a.get("race") and a["race"] not in TOUTES_RACES_ETENDUES]
+    a_normaliser = [a for a in animaux if a.get("race") and a["race"] not in TOUTES_RACES]
     print(f"→ {len(animaux)} animaux au total, {len(a_normaliser)} à normaliser")
     return a_normaliser
 
