@@ -3218,5 +3218,92 @@ async function chargerScrapingLog() {
     '</tr></thead><tbody>' + rows + '</tbody></table>';
 }
 </script>
+<script>
+var CONFIG_KEY = 'matching_params';
+
+async function chargerParametresAlgo() {
+  var sb = getSupabase();
+  var { data } = await sb.from('Config').select('valeur').eq('cle', CONFIG_KEY).maybeSingle();
+  if (!data) return;
+  try {
+    var p = typeof data.valeur === 'string' ? JSON.parse(data.valeur) : data.valeur;
+    var setSlider = function(id, val, wid) { var s=document.getElementById(id); if(s&&val!==undefined){s.value=val;updateWeight(s,wid);} };
+    setSlider('sliderLogement', p.w_logement, 'w1');
+    setSlider('sliderFoyer',    p.w_foyer,    'w2');
+    setSlider('sliderDispo',    p.w_dispo,    'w3');
+    setSlider('sliderExp',      p.w_exp,      'w4');
+    setSlider('sliderMode',     p.w_mode,     'w5');
+    var sv = function(id,v){var e=document.getElementById(id);if(e&&v!==undefined)e.value=v;};
+    sv('seuilMin',p.seuil_min); sv('seuilIdeal',p.seuil_ideal);
+    sv('seuilBelle',p.seuil_belle); sv('seuilAppri',p.seuil_appri);
+    sv('emMois',p.em_mois); sv('emChien',p.em_chien); sv('emChat',p.em_chat);
+    console.log('Paramètres algo chargés');
+  } catch(e) { console.warn('Erreur chargement algo:', e); }
+}
+
+function lireParametresActuels() {
+  var g = function(id,def){ var e=document.getElementById(id); return e ? parseInt(e.value)||def : def; };
+  return {
+    w_logement:g('sliderLogement',30), w_foyer:g('sliderFoyer',25),
+    w_dispo:g('sliderDispo',20), w_exp:g('sliderExp',15), w_mode:g('sliderMode',10),
+    seuil_min:g('seuilMin',40), seuil_ideal:g('seuilIdeal',85),
+    seuil_belle:g('seuilBelle',70), seuil_appri:g('seuilAppri',55),
+    em_mois:g('emMois',12), em_chien:g('emChien',8), em_chat:g('emChat',10),
+  };
+}
+
+async function sauvegarderParams(params, msg) {
+  var sb = getSupabase();
+  var { error } = await sb.from('Config').upsert({ cle: CONFIG_KEY, valeur: JSON.stringify(params) }, { onConflict: 'cle' });
+  if (error) { showToast('Erreur : ' + error.message); }
+  else { showToast(msg); }
+}
+
+async function sauvegarderPonderations() {
+  var params = lireParametresActuels();
+  var total = params.w_logement + params.w_foyer + params.w_dispo + params.w_exp + params.w_mode;
+  if (total !== 100) { showToast('Le total doit être 100% (actuellement ' + total + '%)'); return; }
+  await sauvegarderParams(params, 'Pondérations sauvegardées ✅');
+}
+
+async function sauvegarderSeuils() {
+  await sauvegarderParams(lireParametresActuels(), 'Seuils sauvegardés ✅');
+}
+
+async function sauvegarderSeuilsEnfinMoi() {
+  await sauvegarderParams(lireParametresActuels(), 'Seuils Enfin Moi sauvegardés ✅');
+}
+
+async function chargerScrapingLog() {
+  var sb = getSupabase();
+  var { data: logs, error } = await sb.from('ScrapingLog').select('*').order('created_at', { ascending: false }).limit(20);
+  var el = document.getElementById('scrapingLogTable');
+  if (!el) return;
+  if (error || !logs || logs.length === 0) {
+    el.innerHTML = '<p style="color:var(--dust);font-style:italic">Aucun scraping enregistr\u00e9 pour l\'instant.</p>';
+    return;
+  }
+  var rows = logs.map(function(log) {
+    var date = new Date(log.created_at).toLocaleString('fr-FR', { day:'2-digit', month:'2-digit', year:'2-digit', hour:'2-digit', minute:'2-digit' });
+    var sc = log.statut === 'ok' ? 'var(--moss)' : log.statut === 'partiel' ? 'var(--amber)' : 'var(--rose)';
+    var se = log.statut === 'ok' ? '\u2705' : log.statut === 'partiel' ? '\u26a0\ufe0f' : '\u274c';
+    return '<tr style="border-bottom:1px solid var(--border)">' +
+      '<td style="padding:10px 8px;color:var(--dust)">' + date + '</td>' +
+      '<td style="padding:10px 8px;font-weight:600;color:var(--forest)">' + (log.refuge_nom||'\u2013') + '</td>' +
+      '<td style="padding:10px 8px;text-align:center"><span style="color:' + sc + ';font-weight:700">' + se + ' ' + log.statut + '</span></td>' +
+      '<td style="padding:10px 8px;text-align:center;color:var(--moss);font-weight:700">' + (log.succes||0) + '</td>' +
+      '<td style="padding:10px 8px;text-align:center;color:var(--rose)">' + (log.supprimes||0) + '</td>' +
+      '<td style="padding:10px 8px;text-align:center;color:var(--dust)">' + (log.ignores||0) + '</td>' +
+      '<td style="padding:10px 8px;text-align:center;color:var(--dust)">' + (log.duree_secondes||0) + 's</td>' +
+      '</tr>';
+  }).join('');
+  el.innerHTML = '<table style="width:100%;border-collapse:collapse">' +
+    '<thead><tr style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.5px;color:var(--smoke)">' +
+    '<th style="padding:6px 8px;text-align:left">Date</th><th style="padding:6px 8px;text-align:left">Refuge</th>' +
+    '<th style="padding:6px 8px;text-align:center">Statut</th><th style="padding:6px 8px;text-align:center">Publi\u00e9s</th>' +
+    '<th style="padding:6px 8px;text-align:center">Supprim\u00e9s</th><th style="padding:6px 8px;text-align:center">Ignor\u00e9s</th>' +
+    '<th style="padding:6px 8px;text-align:center">Dur\u00e9e</th></tr></thead><tbody>' + rows + '</tbody></table>';
+}
+</script>
 </body>
 </html>
