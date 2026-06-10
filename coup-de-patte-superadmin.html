@@ -3187,7 +3187,7 @@ async function chargerScrapingLog() {
   var el = document.getElementById('scrapingLogTable');
   if (!el) return;
   if (error || !logs || logs.length === 0) {
-    el.innerHTML = '<p style="color:var(--dust);font-style:italic">Aucun scraping enregistré pour l'instant.</p>';
+    el.innerHTML = '<p style="color:var(--dust);font-style:italic">Aucun scraping enregistr\u00e9 pour l\'instant.</p>';
     return;
   }
 
