@@ -69,6 +69,13 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 /* CARTE REFUGE */
 .refuge-card{background:var(--paper);border-radius:24px;border:1.5px solid var(--border);overflow:hidden;cursor:pointer;transition:transform 0.22s cubic-bezier(0.34,1.56,0.64,1),box-shadow 0.2s;position:relative}
 .refuge-card:hover{transform:translateY(-5px);box-shadow:0 14px 36px rgba(45,74,62,0.12)}
+.refuge-card{display:flex;align-items:flex-start;gap:14px;padding:20px}
+.refuge-avatar{flex-shrink:0;width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,var(--moss),var(--forest));color:var(--ivory);font-family:'Fraunces',serif;font-size:1.1rem;font-weight:700;display:flex;align-items:center;justify-content:center}
+.refuge-info{flex:1;min-width:0}
+.refuge-name{font-family:'Fraunces',serif;font-size:1rem;font-weight:700;font-style:italic;color:var(--forest);margin:0 0 4px;line-height:1.3}
+.refuge-location{font-size:0.78rem;color:var(--dust);margin:0 0 6px;display:flex;align-items:center;gap:4px}
+.refuge-stats{margin-bottom:6px}
+.refuge-stat{font-size:0.75rem;font-weight:600;color:var(--moss);background:var(--mint-lt);padding:3px 10px;border-radius:50px}
 .refuge-card.featured{grid-column:span 2}
 
 .rc-banner{height:140px;display:flex;align-items:center;justify-content:center;font-size:4rem;position:relative}
