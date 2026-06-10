@@ -277,7 +277,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           '<h3 class="refuge-name">' + (r.nom || 'Refuge') + '</h3>' +
           (r.ville ? '<p class="refuge-location">📍 ' + r.ville + '</p>' : '') +
           '<div class="refuge-stats">' +
-            '<span class="refuge-stat">' + nbAnimaux + ' animal' + (nbAnimaux > 1 ? 'aux' : '') + ' disponible' + (nbAnimaux > 1 ? 's' : '') + '</span>' +
+            '<span class="refuge-stat">' + nbAnimaux + ' ' + (nbAnimaux > 1 ? 'animaux' : 'animal') + ' disponible' + (nbAnimaux > 1 ? 's' : '') + '</span>' +
           '</div>' +
           (r.site_web ? '<a href="' + r.site_web + '" target="_blank" onclick="event.stopPropagation()" style="font-size:0.72rem;color:var(--moss);text-decoration:none;font-weight:600">Voir le site →</a>' : '') +
         '</div>' +
