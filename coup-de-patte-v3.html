@@ -585,7 +585,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         '<div class="liked-score"><span style="font-family:Fraunces,serif;font-size:0.9rem;font-weight:700;color:var(--moss);background:var(--paper);border:1.5px solid var(--border);border-radius:8px;padding:4px 10px;box-shadow:0 3px 10px rgba(45,74,62,0.1)">' + (m.score_global || 0) + '%</span></div>' +
         '<div class="liked-body"><div class="liked-name">' + a.nom + '</div>' +
         '<div class="liked-meta">' + (a.race || a.espece) + ' · ' + age + (ville ? ' · ' + ville : '') + '</div>' +
-        '<button class="liked-remove" onclick="event.stopPropagation();retirerJaime(\'' + m.id + '\',this)">✕ Retirer</button></div></div>'
+        (a.refuge && a.refuge.telephone ? '<div class="liked-tel" onclick="event.stopPropagation()"><a href="tel:' + a.refuge.telephone + '" style="color:var(--moss);font-size:0.75rem;font-weight:600;text-decoration:none">📞 ' + a.refuge.telephone + '</a></div>' : '') +
+        (a.refuge && a.refuge.email ? '<div class="liked-tel" onclick="event.stopPropagation()"><a href="mailto:' + a.refuge.email + '" style="color:var(--moss);font-size:0.75rem;font-weight:600;text-decoration:none">✉️ ' + a.refuge.email + '</a></div>' : '') +
+        '<div style="display:flex;gap:6px;margin-top:6px">' +
+        '<button class="liked-contact" onclick="event.stopPropagation();contacterDepuisJaime(\'' + a.id + '\',\'' + (a.refuge ? a.refuge.id : '') + '\',\'' + m.id + '\',this)" style="flex:1;padding:7px 10px;background:var(--moss);color:var(--ivory);border:none;border-radius:50px;font-family:Nunito,sans-serif;font-size:0.75rem;font-weight:700;cursor:pointer">Contacter le refuge</button>' +
+        '<button class="liked-remove" onclick="event.stopPropagation();retirerJaime(\'' + m.id + '\',this)" style="padding:7px 10px;background:transparent;border:1.5px solid var(--border);border-radius:50px;font-family:Nunito,sans-serif;font-size:0.75rem;font-weight:600;color:var(--dust);cursor:pointer">✕</button>' +
+        '</div></div></div>'
       );
     });
 
@@ -666,6 +671,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   }
 
   // Contacter depuis une card match
+  async function contacterDepuisJaime(animalId, refugeId, matchId, btn) {
+    var sb = getSupabase();
+    var { data: { session } } = await sb.auth.getSession();
+    if (!session) return;
+    // Marquer comme contacté dans Correspondre
+    await sb.from('Correspondre').update({ contacte: true }).eq('id', matchId);
+    // Feedback visuel sur le bouton
+    if (btn) { btn.textContent = '✓ Ajouté aux contacts'; btn.disabled = true; btn.style.opacity = '0.6'; }
+    // Recharger l'onglet contacts pour qu'il apparaisse
+    if (typeof loadContacts === 'function') loadContacts();
+    showToast('✅ Refuge ajouté à vos contacts');
+  }
+
   async function contacterDepuisMatch(btn) {
     var animalId = btn.dataset.animalId;
     var refugeId = btn.dataset.refugeId;
