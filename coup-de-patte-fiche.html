@@ -203,7 +203,16 @@ function getSupabase() {
 </script>
 
 <script>
+// Charger les paramètres algo depuis Supabase
+async function chargerParamsAlgo() {
+  try {
+    var { data } = await getSupabase().from('Config').select('valeur').eq('cle', 'matching_params').maybeSingle();
+    if (data) window._algoParams = typeof data.valeur === 'string' ? JSON.parse(data.valeur) : data.valeur;
+  } catch(e) {}
+}
+
 window.addEventListener('load', async function() {
+  await chargerParamsAlgo();
   var sb = getSupabase();
   var { data: { session } } = await sb.auth.getSession();
   if (!session) { window.location.href = 'coup-de-patte-login.html'; return; }
@@ -249,16 +258,6 @@ window.addEventListener('load', async function() {
   el = document.getElementById('metaGabarit'); if (el) el.textContent = animal.gabarit || '–';
 
   // Tags
-  // Badge permis — affiché séparément car obligation légale
-  var permisEl = document.getElementById('permisBadge');
-  if (permisEl) {
-    if (animal.permis_requis) {
-      permisEl.style.display = 'flex';
-    } else {
-      permisEl.style.display = 'none';
-    }
-  }
-
   var tagsEl = document.getElementById('animalTags');
   if (tagsEl) {
     var tags = [];
@@ -272,8 +271,6 @@ window.addEventListener('load', async function() {
     if (animal.identification) tags.push('🔖 Identifié(e)');
     if (animal.enfin_moi) tags.push('✨ Enfin Moi ?');
     if (animal.vie_en_refuge === 'Difficilement' || animal.vie_en_refuge === 'Très difficilement') tags.push('😟 Mal à l\'aise en refuge');
-    if (animal.exterieur_requis) tags.push('🌿 Jardin requis');
-    if (animal.type_logement_compatible === 'maison_uniquement') tags.push('🏠 Maison uniquement');
     tagsEl.innerHTML = tags.map(function(t) { return '<span class="tag">' + t + '</span>'; }).join('');
   }
 
@@ -387,11 +384,27 @@ window.addEventListener('load', async function() {
   }
 
   if (profil) {
+    // Charger les paramètres depuis Supabase Config
+    var p = window._algoParams || {};
+    var wLog = (p.w_logement !== undefined ? p.w_logement : 30) / 100;
+    var wFoy = (p.w_foyer    !== undefined ? p.w_foyer    : 25) / 100;
+    var wDis = (p.w_dispo    !== undefined ? p.w_dispo    : 20) / 100;
+    var wExp = (p.w_exp      !== undefined ? p.w_exp      : 15) / 100;
+    var wMod = (p.w_mode     !== undefined ? p.w_mode     : 10) / 100;
+
     var scores = {};
     // Logement
     var g = (animal.gabarit || '').toLowerCase();
     var logement = (profil.type_logement || '').toLowerCase();
-    scores.logement = logement === 'maison' ? 100 : (logement === 'appartement' || logement === 'appart') ? (g === 'petit' ? 100 : g === 'moyen' ? 65 : 20) : 60;
+    if (animal.type_logement_compatible === 'maison_uniquement' && (logement === 'appartement' || logement === 'appart')) {
+      scores.logement = 10;
+    } else if (logement === 'maison') {
+      scores.logement = 100;
+    } else if (logement === 'appartement' || logement === 'appart') {
+      scores.logement = g === 'petit' ? 100 : g === 'moyen' ? 70 : 30;
+    } else {
+      scores.logement = 60;
+    }
     // Foyer
     var foyer = 100;
     if (profil.enfants_foyer && profil.enfants_foyer.includes('moins13') && !animal.compat_enfants_moins13) foyer -= 50;
@@ -408,12 +421,24 @@ window.addEventListener('load', async function() {
     // Mode de vie
     var mode = profil.temps_dedie || 'modere';
     var energie = animal.energie || 'moyen';
-    scores.mode_vie = ((mode === 'actif' || mode === 'sportif') && energie === 'eleve') || (mode === 'modere' && energie === 'moyen') || (mode === 'sedentaire' && energie === 'faible') ? 100 : 50;
+    var modeVie = 60;
+    if ((mode === 'actif' || mode === 'sportif') && energie === 'eleve') modeVie = 100;
+    else if ((mode === 'actif' || mode === 'sportif') && energie === 'moyen') modeVie = 80;
+    else if (mode === 'modere' && energie === 'moyen') modeVie = 100;
+    else if (mode === 'modere' && energie === 'faible') modeVie = 80;
+    else if (mode === 'modere' && energie === 'eleve') modeVie = 50;
+    else if (mode === 'sedentaire' && energie === 'faible') modeVie = 100;
+    else if (mode === 'sedentaire' && energie === 'moyen') modeVie = 50;
+    else if (mode === 'sedentaire' && energie === 'eleve') modeVie = 20;
+    scores.mode_vie = modeVie;
 
-    var score = Math.min(100, Math.round(scores.logement*0.30 + scores.foyer*0.25 + scores.disponibilite*0.20 + scores.experience*0.15 + scores.mode_vie*0.10));
+    var score = Math.min(100, Math.round(scores.logement*wLog + scores.foyer*wFoy + scores.disponibilite*wDis + scores.experience*wExp + scores.mode_vie*wMod));
     var colors = { 85: 'var(--moss)', 70: 'var(--blue)', 55: 'var(--amber)', 0: 'var(--rose)' };
     var labels = { 85: 'Coup de Patte idéal', 70: 'Belle rencontre', 55: "On s'apprivoise ?", 0: 'Faible compatibilité' };
-    var threshold = score >= 85 ? 85 : score >= 70 ? 70 : score >= 55 ? 55 : 0;
+    var ideal = p.seuil_ideal !== undefined ? p.seuil_ideal : 85;
+    var belle = p.seuil_belle !== undefined ? p.seuil_belle : 70;
+    var appri = p.seuil_appri !== undefined ? p.seuil_appri : 55;
+    var threshold = score >= ideal ? ideal : score >= belle ? belle : score >= appri ? appri : 0;
     var color = colors[threshold];
 
     // Badge hero
@@ -541,14 +566,6 @@ window.addEventListener('load', async function() {
       <span id="metaGabarit">–</span>
     </div>
     <div class="animal-tags" id="animalTags"></div>
-    <!-- Badge permis — obligation légale -->
-    <div id="permisBadge" style="display:none;margin-top:12px;align-items:center;gap:10px;padding:10px 16px;background:rgba(201,112,74,0.1);border:1.5px solid rgba(201,112,74,0.3);border-radius:14px">
-      <span style="font-size:1.2rem">📋</span>
-      <div>
-        <p style="font-size:0.78rem;font-weight:800;color:#c9704a;margin:0 0 2px">Permis de détention obligatoire</p>
-        <p style="font-size:0.72rem;color:var(--dust);margin:0">Ce chien est de catégorie, un permis légal est requis pour l'adopter.</p>
-      </div>
-    </div>
     <button onclick="ouvrirPartage()" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;padding:8px 16px;background:transparent;border:1.5px solid var(--border);border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.78rem;font-weight:700;color:var(--dust);cursor:pointer">&#x1F517; Partager cette fiche</button>
   </div>
 
