@@ -478,6 +478,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
       </div>
 
+      <!-- Historique des scrapings -->
+      <div class="dash-card" style="margin-bottom:24px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+          <p style="font-family:'Fraunces',serif;font-size:0.95rem;font-weight:700;color:var(--forest);margin:0">📋 Historique des scrapings</p>
+          <button onclick="chargerScrapingLog()" style="padding:6px 14px;background:var(--mint-lt);color:var(--forest);border:1.5px solid var(--border);border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer">↻ Actualiser</button>
+        </div>
+        <div id="scrapingLogTable" style="font-size:0.82rem;color:var(--dust)">Chargement...</div>
+      </div>
+
       <!-- Lancer un scraping -->
       <div class="dash-card" style="margin-bottom:24px">
         <p style="font-family:'Fraunces',serif;font-size:0.95rem;font-weight:700;color:var(--forest);margin:0 0 16px">🤖 Lancer un scraping</p>
