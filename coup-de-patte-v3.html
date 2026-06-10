@@ -904,9 +904,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
     var { data: authUser } = await sb.auth.getUser();
     var meta = authUser && authUser.user ? authUser.user.user_metadata || {} : {};
-    var prenom = meta.prenom || meta.first_name || meta.name || (authUser.user ? authUser.user.email.split('@')[0] : '');
-    var nom = meta.nom || meta.last_name || '';
-    var displayName = (prenom + (nom ? ' ' + nom.charAt(0) + '.' : '')).trim() || 'Mon profil';
+    var pseudo = meta.pseudo || meta.prenom || meta.first_name || meta.name || (authUser.user ? authUser.user.email.split('@')[0] : '');
+    var prenom = pseudo; // alias pour compatibilité
+    var displayName = pseudo || 'Mon profil';
     var pill = document.querySelector('.profile-pill');
     if (pill) pill.innerHTML = '👤 ' + displayName;
     var nameEl = document.querySelector('.profile-name');
@@ -927,7 +927,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     var sidebarSub = document.getElementById('sidebarSub');
     var sidebarTags = document.getElementById('sidebarTags');
     if (sidebarName) sidebarName.textContent = displayName;
-    if (sidebarAvatar) sidebarAvatar.textContent = prenom ? prenom.charAt(0).toUpperCase() : '👤';
+    if (sidebarAvatar) sidebarAvatar.textContent = pseudo ? pseudo.charAt(0).toUpperCase() : '👤';
 
     if (profil) {
       // Sous-titre

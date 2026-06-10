@@ -361,12 +361,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
           <div class="field-row">
             <div class="field-group">
-              <label class="field-label">Prénom</label>
-              <input class="field-input" type="text" id="prenom-adoptant" placeholder="Prénom">
-            </div>
-            <div class="field-group">
-              <label class="field-label">Nom</label>
-              <input class="field-input" type="text" id="nom-adoptant" placeholder="Martin">
+              <label class="field-label">Pseudonyme</label>
+              <input class="field-input" type="text" id="pseudo-adoptant" placeholder="Ex : Marie21, TigerLily…">
             </div>
           </div>
 
@@ -438,12 +434,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <div class="field-group">
             <label class="field-label">Site web du refuge (optionnel)</label>
             <input class="field-input" type="url" id="site-refuge" placeholder="www.monrefuge.fr">
-          </div>
-
-          <div class="field-group">
-            <label class="field-label">Page des animaux à adopter <span style="color:var(--smoke);font-weight:400">(optionnel)</span></label>
-            <input class="field-input" type="url" id="url-adoption-refuge" placeholder="www.monrefuge.fr/nos-animaux/">
-            <div style="font-size:0.72rem;color:var(--smoke);margin-top:4px">Si votre site a une page dédiée aux animaux, indiquez-la pour améliorer l'import automatique</div>
           </div>
 
           <div class="section-divider">Compte administrateur</div>
@@ -589,12 +579,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   async function handleRegister() {
     var cgu = document.getElementById('cgu-adoptant');
     if (!cgu || !cgu.checked) { showToast('⚠️ Veuillez accepter les conditions d\'utilisation'); return; }
-    var prenomEl = document.getElementById('prenom-adoptant');
-    var nomEl = document.getElementById('nom-adoptant');
+    var prenomEl = document.getElementById('pseudo-adoptant');
+    var nomEl = null;
     var emailEl = document.getElementById('email-inscription-adoptant');
     var passwordEl = document.getElementById('pwd-register');
-    if (!prenomEl || !nomEl || !emailEl || !passwordEl) { showToast('⚠️ Champs introuvables'); return; }
-    if (!prenomEl.value || !nomEl.value || !emailEl.value || !passwordEl.value) {
+    if (!prenomEl || !emailEl || !passwordEl) { showToast('⚠️ Champs introuvables'); return; }
+    if (!prenomEl.value || !emailEl.value || !passwordEl.value) {
       showToast('⚠️ Veuillez remplir tous les champs'); return;
     }
     if (passwordEl.value.length < 6) { showToast('⚠️ Le mot de passe doit faire au moins 6 caractères'); return; }
@@ -604,8 +594,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       password: passwordEl.value,
       options: {
         data: {
+          pseudo: prenomEl.value,
           prenom: prenomEl.value,
-          nom: nomEl.value,
           role: 'adoptant',
           est_adoptant: true,
           est_refuge: false,
@@ -635,10 +625,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       password: passwordEl.value,
       options: {
         data: {
-          nom: nomEl.value,
+          
           ville: document.getElementById('ville-refuge')?.value || '',
           code_postal: document.getElementById('cp-refuge')?.value || '',
-          site_web: (function(){ var s=(document.getElementById('site-refuge')?.value||'').trim(); s=s.replace(/\[([^\]]+)\]\([^)]+\)/g,'$1'); if(s && !s.match(/^https?:\/\//i)) s='https://'+s; return s; })(),
+          site_web: (function(){ var s=(document.getElementById('site-refuge')?.value||'').trim(); s=s.replace(/\[([^\]]+)\]\([^)]+\)/g,'$1'); s=s.replace(/^https?:\/\//i,''); return s; })(),
           role: 'refuge',
           est_adoptant: false,
           est_refuge: true,
@@ -652,13 +642,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     var userId = data.user ? data.user.id : null;
     if (userId) {
       var { error: refugeError } = await getSupabase().from('Refuge').insert({
-        nom: nomEl.value,
+        
         ville: document.getElementById('ville-refuge')?.value || '',
         code_postal: document.getElementById('cp-refuge')?.value || '',
-        site_web: (function(){ var s=(document.getElementById('site-refuge')?.value||'').trim(); s=s.replace(/\[([^\]]+)\]\([^)]+\)/g,'$1'); if(s && !s.match(/^https?:\/\//i)) s='https://'+s; return s; })(),
+        site_web: (function(){ var s=(document.getElementById('site-refuge')?.value||'').trim(); s=s.replace(/\[([^\]]+)\]\([^)]+\)/g,'$1'); s=s.replace(/^https?:\/\//i,''); return s; })(),
         email: emailEl.value,
         utilisateur: userId,
-        url_adoption: (document.getElementById('url-adoption-refuge')?.value||'').trim() || null,
         est_partenaire: false,
         });
       if (refugeError) console.error('Erreur création refuge:', refugeError);
@@ -706,10 +695,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
     
     // Inscription
-    async function signupUser(email, password, prenom, nom, role) {
+    async function signupUser(email, password, pseudo, nom, role) {
       var { data, error } = await getSupabase().auth.signUp({
         email, password,
-        options: { data: { prenom, nom, role, est_adoptant: role === 'adoptant', est_refuge: role === 'refuge', est_admin: false } }
+        options: { data: { pseudo, prenom: pseudo, role, est_adoptant: role === 'adoptant', est_refuge: role === 'refuge', est_admin: false } }
       });
       if (error) { alert('Erreur : ' + error.message); return; }
       if (role === 'adoptant') {

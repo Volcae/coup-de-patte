@@ -34,6 +34,10 @@ from urllib.parse import urljoin, urlparse
 SUPABASE_URL         = os.environ.get("SUPABASE_URL", "https://mbqsaaxaglcemdxmfvkc.supabase.co")
 SUPABASE_SERVICE_KEY = os.environ.get("SUPABASE_SERVICE_ROLE_KEY", "")
 ANTHROPIC_KEY        = os.environ.get("ANTHROPIC_API_KEY", "")
+
+# Mode multi-refuges : si REFUGE_ID et REFUGE_SITE ne sont pas fournis,
+# on scrape tous les refuges avec url_adoption dans Supabase
+MODE_AUTO = os.environ.get("MODE_AUTO", "false").lower() == "true" 
 RESEND_KEY           = os.environ.get("RESEND_API_KEY", "")
 
 REFUGE_NOM   = os.environ.get("REFUGE_NOM", "")
@@ -612,6 +616,122 @@ def envoyer_supabase(analyse, photo_url, source_url, refuge_id, existing_id=None
 # MAIN
 # ══════════════════════════════════════════════
 
+def envoyer_email_recap(refuge_nom, succes, supprimes, ignores, erreurs, duree):
+    """Envoie un email récapitulatif du scraping via Resend."""
+    if not RESEND_KEY:
+        return
+    statut_emoji = "✅" if erreurs == 0 else "⚠️" if succes > 0 else "❌"
+    statut_label = "Terminé sans erreur" if erreurs == 0 else "Terminé avec erreurs" if succes > 0 else "Échec"
+    html = f"""
+<div style="background:#F4F1E8;padding:32px;font-family:Arial,sans-serif;max-width:500px;margin:0 auto">
+  <div style="text-align:center;margin-bottom:20px">
+    <div style="width:48px;height:48px;background:#2D4A3E;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;display:inline-flex;align-items:center;justify-content:center;font-size:1.3rem;margin:0 auto 8px">🐾</div>
+    <p style="font-size:17px;font-weight:700;color:#2D4A3E;margin:0">Coup de Patte — Scraping</p>
+  </div>
+  <div style="background:#FDFCF8;border-radius:14px;padding:24px;margin-bottom:16px">
+    <h2 style="font-size:18px;color:#2D4A3E;margin:0 0 4px">{statut_emoji} {statut_label}</h2>
+    <p style="font-size:12px;color:#7A6E65;margin:0 0 16px">Refuge : <strong>{refuge_nom}</strong> · Durée : {duree}s</p>
+    <table style="width:100%;border-collapse:collapse;font-size:13px">
+      <tr style="background:#F4F1E8"><td style="padding:8px 12px;border-radius:8px 0 0 8px">✅ Publiés</td><td style="padding:8px 12px;font-weight:700;color:#4A7C59;border-radius:0 8px 8px 0">{succes}</td></tr>
+      <tr><td style="padding:8px 12px">🗑 Supprimés</td><td style="padding:8px 12px;font-weight:700;color:#C9704A">{supprimes}</td></tr>
+      <tr style="background:#F4F1E8"><td style="padding:8px 12px;border-radius:8px 0 0 8px">⏭ Ignorés</td><td style="padding:8px 12px;font-weight:700;color:#7A6E65;border-radius:0 8px 8px 0">{ignores}</td></tr>
+      <tr><td style="padding:8px 12px">❌ Erreurs</td><td style="padding:8px 12px;font-weight:700;color:#C9704A">{erreurs}</td></tr>
+    </table>
+  </div>
+  <div style="text-align:center;font-size:11px;color:#A89E96">
+    <p>© 2025 Coup de Patte · <a href="https://coup-de-patte.fr/coup-de-patte-superadmin.html" style="color:#4A7C59">Voir le superadmin</a></p>
+  </div>
+</div>"""
+    try:
+        requests.post(
+            "https://api.resend.com/emails",
+            headers={"Authorization": f"Bearer {RESEND_KEY}", "Content-Type": "application/json"},
+            json={
+                "from": "Coup de Patte <contact@coup-de-patte.fr>",
+                "to": ["contact@coup-de-patte.fr"],
+                "subject": f"{statut_emoji} Scraping {refuge_nom} — {succes} publiés, {supprimes} supprimés",
+                "html": html
+            },
+            timeout=10
+        )
+        print(f"  ✉️ Email récap envoyé")
+    except Exception as e:
+        print(f"  ⚠ Email non envoyé: {e}")
+
+
+def enregistrer_log(refuge_id, refuge_nom, succes, supprimes, ignores, erreurs, duree):
+    """Enregistre le résultat du scraping dans la table ScrapingLog."""
+    statut = "ok" if erreurs == 0 else "partiel" if succes > 0 else "erreur"
+    payload = {
+        "refuge_id": refuge_id,
+        "refuge_nom": refuge_nom,
+        "succes": succes,
+        "supprimes": supprimes,
+        "ignores": ignores,
+        "erreurs": erreurs,
+        "duree_secondes": int(duree),
+        "statut": statut,
+        "detail": f"{succes} publiés, {supprimes} supprimés, {ignores} ignorés, {erreurs} erreurs"
+    }
+    try:
+        r = requests.post(
+            f"{SUPABASE_URL}/rest/v1/ScrapingLog",
+            headers=sb_headers(),
+            json=payload
+        )
+        if r.status_code in [200, 201]:
+            print(f"  📋 Log enregistré")
+        else:
+            print(f"  ⚠ Log non enregistré: {r.status_code}")
+    except Exception as e:
+        print(f"  ⚠ Erreur log: {e}")
+
+
+def supprimer_animaux_disparus(refuge_id, urls_trouvees):
+    """Supprime les animaux dont la source_url n'est plus sur le site du refuge."""
+    # Récupérer tous les animaux du refuge avec source_url
+    r = requests.get(
+        f"{SUPABASE_URL}/rest/v1/Animal?select=id,nom,source_url&refuge=eq.{refuge_id}&source_url=not.is.null&disponible=eq.true",
+        headers=sb_headers()
+    )
+    if r.status_code != 200:
+        print(f"  ✗ Erreur récupération animaux: {r.status_code}")
+        return 0
+
+    animaux_en_base = r.json()
+    urls_trouvees_set = set(urls_trouvees)
+    supprimes = 0
+
+    for animal in animaux_en_base:
+        source_url = animal.get("source_url", "")
+        if source_url and source_url not in urls_trouvees_set:
+            nom = animal.get("nom") or "?"
+            animal_id = animal["id"]
+
+            # Supprimer les correspondances d'abord (FK)
+            requests.delete(
+                f"{SUPABASE_URL}/rest/v1/Correspondre?animal=eq.{animal_id}",
+                headers=sb_headers()
+            )
+            # Supprimer les signalements
+            requests.delete(
+                f"{SUPABASE_URL}/rest/v1/Signalisation?animal=eq.{animal_id}",
+                headers=sb_headers()
+            )
+            # Supprimer l'animal
+            r_del = requests.delete(
+                f"{SUPABASE_URL}/rest/v1/Animal?id=eq.{animal_id}",
+                headers=sb_headers()
+            )
+            if r_del.status_code in [200, 204]:
+                print(f"  🗑 {nom} supprimé (plus sur le site)")
+                supprimes += 1
+            else:
+                print(f"  ✗ Erreur suppression {nom}: {r_del.status_code}")
+
+    return supprimes
+
+
 def main():
     print("🐾 Coup de Patte — Scraper Universel")
     print("=" * 45)
@@ -625,6 +745,8 @@ def main():
         print("✗ SUPABASE_SERVICE_ROLE_KEY manquant"); return
     if not REFUGE_SITE:
         print("✗ REFUGE_SITE manquant"); return
+
+    debut = time.time()
 
     # ── Email du refuge
     email = REFUGE_EMAIL.strip() if REFUGE_EMAIL.strip() else None
@@ -716,12 +838,69 @@ def main():
 
         time.sleep(3)  # Pause plus longue pour ne pas surcharger le site du refuge
 
+    # ── Supprimer les animaux disparus du site
+    print(f"\n🗑 Nettoyage des animaux disparus...")
+    supprimes = supprimer_animaux_disparus(refuge_id, fiches_urls)
+
+    # ── Durée
+    duree = time.time() - debut
+
     # ── Résumé
     print(f"\n{'=' * 45}")
-    print(f"✅ Terminé — {succes} animal(aux) en file d'attente")
+    print(f"✅ Terminé — {succes} animal(aux) publié(s)")
     print(f"   {ignores} ignoré(s) (doublons ou pages vides)")
+    print(f"   {supprimes} supprimé(s) (plus sur le site)")
     print(f"   Refuge ID : {refuge_id}")
+    print(f"   Durée : {int(duree)}s")
+
+    # ── Email + log
+    nom_refuge = REFUGE_NOM or refuge_id or "Refuge"
+    enregistrer_log(refuge_id, nom_refuge, succes, supprimes, ignores, 0, duree)
+    envoyer_email_recap(nom_refuge, succes, supprimes, ignores, 0, int(duree))
+
+
+def scraper_tous_les_refuges():
+    """Mode automatique hebdomadaire — scrape tous les refuges avec url_adoption."""
+    print("🐾 Mode automatique — scraping de tous les refuges")
+    print("=" * 45)
+
+    r = requests.get(
+        f"{SUPABASE_URL}/rest/v1/Refuge?select=id,nom,site_web,url_adoption,email,ville&url_adoption=not.is.null&url_adoption=not.eq.",
+        headers=sb_headers()
+    )
+    if r.status_code != 200:
+        print(f"✗ Erreur chargement refuges: {r.status_code}"); return
+
+    refuges = r.json()
+    print(f"→ {len(refuges)} refuge(s) à scraper")
+
+    for refuge in refuges:
+        print(f"\n{'─' * 45}")
+        print(f"🏠 {refuge.get('nom', '?')} — {refuge.get('url_adoption', '')}")
+
+        # Injecter les variables d'environnement
+        os.environ["REFUGE_ID"]           = refuge["id"]
+        os.environ["REFUGE_NOM"]          = refuge.get("nom", "")
+        os.environ["REFUGE_SITE"]         = refuge.get("site_web", "")
+        os.environ["REFUGE_URL_ADOPTION"] = refuge.get("url_adoption", "")
+        os.environ["REFUGE_EMAIL"]        = refuge.get("email", "") or ""
+        os.environ["REFUGE_VILLE"]        = refuge.get("ville", "") or ""
+
+        # Recharger les variables globales
+        global REFUGE_ID, REFUGE_NOM, REFUGE_SITE, REFUGE_URL_ADOPTION, REFUGE_EMAIL, REFUGE_VILLE
+        REFUGE_ID           = refuge["id"]
+        REFUGE_NOM          = refuge.get("nom", "")
+        REFUGE_SITE         = refuge.get("site_web", "")
+        REFUGE_URL_ADOPTION = refuge.get("url_adoption", "")
+        REFUGE_EMAIL        = refuge.get("email", "") or ""
+        REFUGE_VILLE        = refuge.get("ville", "") or ""
+
+        main()
+        time.sleep(10)  # Pause entre chaque refuge
 
 
 if __name__ == "__main__":
-    main()
+    if MODE_AUTO:
+        scraper_tous_les_refuges()
+    else:
+        main()
