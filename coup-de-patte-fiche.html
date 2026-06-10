@@ -396,11 +396,11 @@ window.addEventListener('load', async function() {
     // Logement
     var g = (animal.gabarit || '').toLowerCase();
     var logement = (profil.type_logement || '').toLowerCase();
-    if (animal.type_logement_compatible === 'maison_uniquement' && (logement === 'appartement' || logement === 'appart')) {
+    if (animal.type_logement_compatible === 'maison_uniquement' && (logement === 'appart' || logement === 'appartement')) {
       scores.logement = 10;
     } else if (logement === 'maison') {
       scores.logement = 100;
-    } else if (logement === 'appartement' || logement === 'appart') {
+    } else if (logement === 'appart' || logement === 'appartement') {
       scores.logement = g === 'petit' ? 100 : g === 'moyen' ? 70 : 30;
     } else {
       scores.logement = 60;
@@ -413,7 +413,10 @@ window.addEventListener('load', async function() {
     scores.foyer = Math.max(0, foyer);
     // Disponibilité
     var h = typeof profil.heures_seul === 'number' ? profil.heures_seul : 3;
-    scores.disponibilite = h <= 2 ? 100 : h <= 4 ? 75 : h <= 6 ? 50 : 25;
+    if (h <= 1) scores.disponibilite = 100;
+    else if (h <= 3) scores.disponibilite = 80;
+    else if (h <= 6) scores.disponibilite = 50;
+    else scores.disponibilite = 20;
     // Expérience
     var req = animal.experience_requise || 'debutant';
     var exp = profil.experience_animale || 'jamais';
