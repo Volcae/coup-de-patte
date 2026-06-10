@@ -57,4 +57,6 @@ jobs:
           REFUGE_URL_ADOPTION:        ${{ github.event.inputs.refuge_url_adoption }}
           REFUGE_EMAIL:               ${{ github.event.inputs.refuge_email }}
           REFUGE_VILLE:               ${{ github.event.inputs.refuge_ville }}
+          # Mode auto si déclenché par le cron (pas de refuge_id fourni)
+          MODE_AUTO:                  ${{ github.event.inputs.refuge_id == '' && github.event_name == 'schedule' && 'true' || 'false' }}
         run: python scraper_universel.py
