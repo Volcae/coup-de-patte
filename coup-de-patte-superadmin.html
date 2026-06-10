@@ -255,6 +255,7 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
           if (typeof chargerMaintenance === 'function') chargerMaintenance(null, null);
       }, 200);
     }
+    if (id === 'algorithme' || id === 'enfin') { setTimeout(function() { if (typeof chargerParametresAlgo === 'function') chargerParametresAlgo(); }, 200); }
     if (id === 'scraping') {
       setTimeout(function() {
         if (typeof chargerScrapingQueue === 'function') chargerScrapingQueue();
@@ -465,14 +466,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     <!-- ══════════ SCRAPING ══════════ -->
     <div class="section" id="section-scraping">
-      <!-- Historique des scrapings -->
-      <div style="background:var(--paper);border-radius:20px;border:1.5px solid var(--border);padding:24px;margin-bottom:24px">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
-          <h3 style="font-family:'Fraunces',serif;font-size:1.1rem;font-weight:600;color:var(--forest);margin:0">📋 Historique des scrapings</h3>
-          <button onclick="chargerScrapingLog()" style="padding:6px 14px;background:var(--mint-lt);color:var(--forest);border:1.5px solid var(--border);border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer">↻ Actualiser</button>
-        </div>
-        <div id="scrapingLogTable" style="font-size:0.82rem;color:var(--dust)">Chargement...</div>
-      </div>
       <div class="page-hdr">
         <div><h1 class="page-title">Scraping IA</h1><p class="page-sub">Imports automatiques et file d'attente de validation</p></div>
         <div style="display:flex;align-items:center;gap:10px">
@@ -510,7 +503,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
         <div style="display:flex;flex-direction:column;gap:8px;width:100%;max-width:420px;margin-bottom:12px">
           <label style="font-size:0.72rem;font-weight:700;color:var(--dust);text-transform:uppercase;letter-spacing:0.5px">GitHub Token (scope : workflow)</label>
-          <input type="password" id="githubTokenInput" placeholder="ghp_xxxxxxxxxxxx" style="padding:9px 14px;border:1.5px solid var(--border);border-radius:12px;font-family:'Nunito',sans-serif;font-size:0.82rem;background:var(--ivory);color:var(--forest)">
+          <input type="text" id="githubTokenInput" autocomplete="off" placeholder="ghp_xxxxxxxxxxxx" style="padding:9px 14px;border:1.5px solid var(--border);border-radius:12px;font-family:'Nunito',sans-serif;font-size:0.82rem;background:var(--ivory);color:var(--forest)">
           <p style="font-size:0.68rem;color:var(--dust);margin:0">Non stocké — saisi à chaque utilisation.</p>
         </div>
         <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
@@ -556,29 +549,29 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <p class="algo-title">⚖️ Pondérations des critères</p>
           <p style="font-size:0.75rem;color:var(--dust);margin-bottom:16px;font-style:italic">Le total doit être égal à 100%.</p>
 
-          <div class="weight-row"><span class="weight-icon">🏠</span><span class="weight-name">Logement</span><input type="range" class="weight-slider" min="0" max="50" value="30" oninput="updateWeight(this,'w1')"><span class="weight-val" id="w1">30%</span></div>
-          <div class="weight-row"><span class="weight-icon">👨‍👩‍👧</span><span class="weight-name">Foyer</span><input type="range" class="weight-slider" min="0" max="50" value="25" oninput="updateWeight(this,'w2')"><span class="weight-val" id="w2">25%</span></div>
-          <div class="weight-row"><span class="weight-icon">⏰</span><span class="weight-name">Disponibilité</span><input type="range" class="weight-slider" min="0" max="50" value="20" oninput="updateWeight(this,'w3')"><span class="weight-val" id="w3">20%</span></div>
-          <div class="weight-row"><span class="weight-icon">🎓</span><span class="weight-name">Expérience</span><input type="range" class="weight-slider" min="0" max="50" value="15" oninput="updateWeight(this,'w4')"><span class="weight-val" id="w4">15%</span></div>
-          <div class="weight-row"><span class="weight-icon">🏃</span><span class="weight-name">Mode de vie</span><input type="range" class="weight-slider" min="0" max="50" value="10" oninput="updateWeight(this,'w5')"><span class="weight-val" id="w5">10%</span></div>
+          <div class="weight-row"><span class="weight-icon">🏠</span><span class="weight-name">Logement</span><input type="range" class="weight-slider" min="0" max="50" value="30" id="sliderLogement" oninput="updateWeight(this,'w1')"><span class="weight-val" id="w1">30%</span></div>
+          <div class="weight-row"><span class="weight-icon">👨‍👩‍👧</span><span class="weight-name">Foyer</span><input type="range" class="weight-slider" min="0" max="50" value="25" id="sliderFoyer" oninput="updateWeight(this,'w2')"><span class="weight-val" id="w2">25%</span></div>
+          <div class="weight-row"><span class="weight-icon">⏰</span><span class="weight-name">Disponibilité</span><input type="range" class="weight-slider" min="0" max="50" value="20" id="sliderDispo" oninput="updateWeight(this,'w3')"><span class="weight-val" id="w3">20%</span></div>
+          <div class="weight-row"><span class="weight-icon">🎓</span><span class="weight-name">Expérience</span><input type="range" class="weight-slider" min="0" max="50" value="15" id="sliderExp" oninput="updateWeight(this,'w4')"><span class="weight-val" id="w4">15%</span></div>
+          <div class="weight-row"><span class="weight-icon">🏃</span><span class="weight-name">Mode de vie</span><input type="range" class="weight-slider" min="0" max="50" value="10" id="sliderMode" oninput="updateWeight(this,'w5')"><span class="weight-val" id="w5">10%</span></div>
 
           <div class="weight-total">
             <span class="weight-total-label">Total des pondérations</span>
             <span class="weight-total-val ok" id="weightTotal">100%</span>
           </div>
-          <button class="save-btn" onclick="showToast('Pondérations sauvegardées ✅')">Sauvegarder les pondérations</button>
+          <button class="save-btn" onclick="sauvegarderPonderations()">Sauvegarder les pondérations</button>
         </div>
 
         <div class="algo-card">
           <p class="algo-title">🎯 Seuils d'affichage</p>
           <p style="font-size:0.75rem;color:var(--dust);margin-bottom:16px;font-style:italic">Score minimum pour qu'un animal soit affiché à un adoptant.</p>
 
-          <div class="threshold-row"><span class="threshold-label">Score minimum affiché</span><input class="threshold-input" type="number" value="40" min="0" max="100"><span class="threshold-unit">%</span></div>
-          <div class="threshold-row"><span class="threshold-label">Seuil "Coup de Patte idéal"</span><input class="threshold-input" type="number" value="85" min="0" max="100"><span class="threshold-unit">%</span></div>
-          <div class="threshold-row"><span class="threshold-label">Seuil "Belle rencontre"</span><input class="threshold-input" type="number" value="70" min="0" max="100"><span class="threshold-unit">%</span></div>
-          <div class="threshold-row"><span class="threshold-label">Seuil "On s'apprivoise ?"</span><input class="threshold-input" type="number" value="55" min="0" max="100"><span class="threshold-unit">%</span></div>
+          <div class="threshold-row"><span class="threshold-label">Score minimum affiché</span><input class="threshold-input" id="seuilMin" type="number" value="40" min="0" max="100"><span class="threshold-unit">%</span></div>
+          <div class="threshold-row"><span class="threshold-label">Seuil "Coup de Patte idéal"</span><input class="threshold-input" id="seuilIdeal" type="number" value="85" min="0" max="100"><span class="threshold-unit">%</span></div>
+          <div class="threshold-row"><span class="threshold-label">Seuil "Belle rencontre"</span><input class="threshold-input" id="seuilBelle" type="number" value="70" min="0" max="100"><span class="threshold-unit">%</span></div>
+          <div class="threshold-row"><span class="threshold-label">Seuil "On s'apprivoise ?"</span><input class="threshold-input" id="seuilAppri" type="number" value="55" min="0" max="100"><span class="threshold-unit">%</span></div>
           <div class="threshold-row"><span class="threshold-label">Score min. Enfin Moi ? affiché</span><input class="threshold-input" type="number" value="50" min="0" max="100"><span class="threshold-unit">%</span></div>
-          <button class="save-btn" onclick="showToast('Seuils sauvegardés ✅')">Sauvegarder les seuils</button>
+          <button class="save-btn" onclick="sauvegarderSeuils()">Sauvegarder les seuils</button>
         </div>
       </div>
     </div>
@@ -596,17 +589,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
           <div class="threshold-row">
             <span class="threshold-label">⏰ Durée en refuge (mois)</span>
-            <input class="threshold-input" type="number" value="12" min="1" max="36">
+            <input class="threshold-input" id="emMois" type="number" value="12" min="1" max="36">
             <span class="threshold-unit">mois minimum</span>
           </div>
           <div class="threshold-row">
             <span class="threshold-label">🌿 Âge senior, Chiens</span>
-            <input class="threshold-input" type="number" value="8" min="1" max="20">
+            <input class="threshold-input" id="emChien" type="number" value="8" min="1" max="20">
             <span class="threshold-unit">ans et plus</span>
           </div>
           <div class="threshold-row">
             <span class="threshold-label">🌿 Âge senior, Chats</span>
-            <input class="threshold-input" type="number" value="10" min="1" max="25">
+            <input class="threshold-input" id="emChat" type="number" value="10" min="1" max="25">
             <span class="threshold-unit">ans et plus</span>
           </div>
           <div class="threshold-row">
@@ -631,7 +624,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             </div>
           </div>
 
-          <button class="save-btn" style="max-width:280px;margin-top:24px" onclick="showToast('Seuils Enfin Moi ? sauvegardés ✅')">Sauvegarder les seuils</button>
+          <button class="save-btn" style="max-width:280px;margin-top:24px" onclick="sauvegarderSeuilsEnfinMoi()">Sauvegarder les seuils</button>
         </div>
       </div>
     </div>
