@@ -272,14 +272,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       card.onclick = (function(id){ return function(){ window.location.href='coup-de-patte-fiche.html?id='+id; }; })(a.id);
       var raisons = [];
       if (a.date_arrivee_refuge) {
-        var moisR = (new Date() - new Date(a.date_arrivee_refuge)) / (1000*60*60*24*30);
-        if (moisR >= 12) raisons.push('📅 +1 an en refuge');
+        var moisR = Math.round((new Date() - new Date(a.date_arrivee_refuge)) / (1000*60*60*24*30));
+        if (moisR >= 24) raisons.push('📅 +' + Math.floor(moisR/12) + ' ans en refuge');
+        else if (moisR >= 12) raisons.push('📅 +1 an en refuge');
       }
       var especeL = (a.espece || '').toLowerCase();
       if (especeL === 'chien' && a.age_annees >= 8) raisons.push('🌿 Senior (' + a.age_annees + ' ans)');
       if (especeL === 'chat' && a.age_annees >= 10) raisons.push('🌿 Senior (' + a.age_annees + ' ans)');
       if (a.besoins_medicaux === 'lourds') raisons.push('💛 Besoins médicaux lourds');
-      if (a.vie_en_refuge === 'Difficilement' || a.vie_en_refuge === 'Très difficilement') raisons.push('😟 Mal à l\'aise en refuge');
+      if (a.vie_en_refuge === 'Difficilement' || a.vie_en_refuge === 'Tres difficilement' || a.vie_en_refuge === 'Très difficilement') raisons.push('😟 Mal à l\'aise en refuge');
+      if (a.handicap) raisons.push('💙 Handicap');
       if (raisons.length === 0) raisons.push('✨ Animal en attente depuis longtemps');
       var raisonHtml = raisons.map(function(r) {
         return '<span style="display:inline-block;background:rgba(212,168,67,0.12);color:var(--amber);font-size:0.68rem;font-weight:700;padding:2px 8px;border-radius:50px;border:1px solid rgba(196,154,26,0.2);margin:2px 2px 0 0">' + r + '</span>';

@@ -65,6 +65,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 .hero-score-n{font-family:'Fraunces',serif;font-size:2.6rem;font-weight:700;color:var(--moss);line-height:1;display:block;letter-spacing:-1px}
 .hero-score-l{font-size:0.65rem;font-weight:700;color:var(--moss);display:block;margin-top:2px;letter-spacing:0.3px}
 .hero-loc{position:absolute;bottom:18px;left:52px;background:rgba(45,74,62,0.55);color:rgba(244,241,232,0.92);font-size:0.78rem;font-weight:600;padding:6px 14px;border-radius:50px;backdrop-filter:blur(8px);z-index:10}
+.hero-enfin-ribbon{position:absolute;bottom:18px;right:0;background:linear-gradient(135deg,#F5C77E,#D4A843);color:#2D4A3E;font-size:0.7rem;font-weight:700;padding:5px 16px 5px 12px;border-radius:50px 0 0 50px;box-shadow:-2px 2px 8px rgba(0,0,0,0.15);z-index:10;display:flex;align-items:center;gap:5px}
 
 /* CONTENT */
 .content{max-width:1060px;margin:0 auto;padding:52px 52px 80px;position:relative;z-index:1}
@@ -248,6 +249,46 @@ window.addEventListener('load', async function() {
   // Localisation
   var locEl = document.getElementById('animalLoc');
   if (locEl && animal.refuge) locEl.textContent = '📍 ' + animal.refuge.nom + (animal.refuge.ville ? ' · ' + animal.refuge.ville : '');
+
+  // Ruban Enfin Moi sur la photo hero
+  var ribbon = document.getElementById('enfinRibbon');
+  if (ribbon) {
+    if (animal.enfin_moi) {
+      ribbon.style.display = 'flex';
+      var raisons = [];
+      if (animal.raison_enfin_moi) {
+        raisons.push(animal.raison_enfin_moi);
+      } else {
+        if (animal.date_arrivee_refuge) {
+          var moisR = Math.round((new Date() - new Date(animal.date_arrivee_refuge)) / (1000*60*60*24*30));
+          if (moisR >= 12) raisons.push('📅 +' + Math.floor(moisR/12) + ' an' + (moisR >= 24 ? 's' : '') + ' en refuge');
+        }
+        var especeL = (animal.espece || '').toLowerCase();
+        if (especeL === 'chien' && animal.age_annees >= 8) raisons.push('🌿 Senior (' + animal.age_annees + ' ans)');
+        if (especeL === 'chat' && animal.age_annees >= 10) raisons.push('🌿 Senior (' + animal.age_annees + ' ans)');
+        if (animal.besoins_medicaux === 'lourds') raisons.push('💛 Besoins médicaux lourds');
+        if (animal.vie_en_refuge === 'Difficilement' || animal.vie_en_refuge === 'Tres difficilement') raisons.push('😟 Mal à l\'aise en refuge');
+        if (animal.handicap) raisons.push('💙 Handicap');
+        if (raisons.length === 0) raisons.push('✨ En attente depuis longtemps');
+      }
+      // Ruban : afficher la première raison uniquement
+      var raisonEl = document.getElementById('enfinRaisonText');
+      if (raisonEl) raisonEl.textContent = raisons[0];
+
+      // Badges sous les tags : afficher toutes les raisons
+      var enfinBadgesEl = document.getElementById('enfinMoiBadges');
+      if (enfinBadgesEl) {
+        enfinBadgesEl.innerHTML = raisons.map(function(r) {
+          return '<span style="display:inline-block;background:rgba(212,168,67,0.12);color:#c4981a;font-size:0.72rem;font-weight:700;padding:3px 10px;border-radius:50px;border:1px solid rgba(196,154,26,0.2);margin:2px 2px 0 0">' + r + '</span>';
+        }).join('');
+        enfinBadgesEl.style.display = 'block';
+      }
+    } else {
+      ribbon.style.display = 'none';
+      var enfinBadgesEl = document.getElementById('enfinMoiBadges');
+      if (enfinBadgesEl) enfinBadgesEl.style.display = 'none';
+    }
+  }
 
   // Nom & meta
   var el;
@@ -555,6 +596,10 @@ window.addEventListener('load', async function() {
     </div>
 
     <div class="hero-loc" id="animalLoc">📍 Chargement…</div>
+    <!-- Ruban Enfin Moi — affiché uniquement si enfin_moi = true -->
+    <div class="hero-enfin-ribbon" id="enfinRibbon" style="display:none">
+      <span>✨</span><span id="enfinRaisonText">Enfin Moi ?</span>
+    </div>
   </div>
 </div>
 
@@ -569,6 +614,8 @@ window.addEventListener('load', async function() {
       <span id="metaGabarit">–</span>
     </div>
     <div class="animal-tags" id="animalTags"></div>
+    <!-- Raisons Enfin Moi — affiché uniquement si enfin_moi = true -->
+    <div id="enfinMoiBadges" style="display:none;margin-top:6px"></div>
     <button onclick="ouvrirPartage()" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;padding:8px 16px;background:transparent;border:1.5px solid var(--border);border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.78rem;font-weight:700;color:var(--dust);cursor:pointer">&#x1F517; Partager cette fiche</button>
   </div>
 
