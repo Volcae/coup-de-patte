@@ -39,22 +39,23 @@ def sb_headers():
 
 
 def charger_animaux_sans_cadrage():
-    """Charge les animaux avec photo_url mais sans photo_position personnalisée."""
+    """Charge les animaux avec photo_url dont le cadrage est encore par défaut (center center)."""
     r = requests.get(
         f"{SUPABASE_URL}/rest/v1/Animal"
         f"?select=id,nom,espece,photo_url,photo_position,photo_position_vignette"
         f"&photo_url=not.is.null"
-        f"&photo_url=not.eq."
-        f"&disponible=eq.true"
-        f"&or=(photo_position.is.null,photo_position.eq.center center)",
+        f"&photo_url=neq."
+        f"&disponible=eq.true",
         headers=sb_headers()
     )
     if r.status_code != 200:
         print(f"✗ Erreur chargement: {r.status_code} — {r.text[:100]}")
         return []
     animaux = r.json()
-    print(f"→ {len(animaux)} animal(aux) à analyser")
-    return animaux
+    # Garder uniquement ceux dont le cadrage est encore par défaut
+    a_analyser = [a for a in animaux if not a.get('photo_position') or a.get('photo_position') in ('center center', 'center', None)]
+    print(f"→ {len(animaux)} animaux au total, {len(a_analyser)} à analyser (cadrage par défaut)")
+    return a_analyser
 
 
 def telecharger_image(url):
