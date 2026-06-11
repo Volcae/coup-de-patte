@@ -20,7 +20,16 @@ def sb_headers():
     return {
         "apikey": SUPABASE_SERVICE_KEY,
         "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}",
+        "Content-Type": "application/json",
     }
+
+def fetch_supabase(path):
+    url = f"{SUPABASE_URL}/rest/v1/{path}"
+    r = requests.get(url, headers=sb_headers())
+    if r.status_code != 200:
+        print(f"  ⚠ Erreur Supabase ({r.status_code}): {r.text[:100]}")
+        return []
+    return r.json()
 
 def url_entry(loc, priority="0.5", changefreq="weekly", lastmod=None):
     lm = f"\n    <lastmod>{lastmod or TODAY}</lastmod>" if lastmod else ""
@@ -51,11 +60,7 @@ def main():
     print(f"✓ {len(pages_statiques)} pages statiques")
 
     # ── Fiches animaux ──────────────────────────────
-    r = requests.get(
-        f"{SUPABASE_URL}/rest/v1/Animal?select=id,nom,updated_at&disponible=eq.true",
-        headers=sb_headers()
-    )
-    animaux = r.json() if r.status_code == 200 else []
+    animaux = fetch_supabase('Animal?select=id,nom,updated_at&disponible=eq.true')
     for a in animaux:
         lastmod = (a.get("updated_at") or TODAY)[:10]
         loc = f"{BASE_URL}/coup-de-patte-fiche.html?id={a['id']}"
@@ -63,11 +68,7 @@ def main():
     print(f"✓ {len(animaux)} fiches animaux")
 
     # ── Pages refuges ──────────────────────────────
-    r = requests.get(
-        f"{SUPABASE_URL}/rest/v1/Refuge?select=id,updated_at",
-        headers=sb_headers()
-    )
-    refuges = r.json() if r.status_code == 200 else []
+    refuges = fetch_supabase('Refuge?select=id,updated_at')
     for ref in refuges:
         lastmod = (ref.get("updated_at") or TODAY)[:10]
         loc = f"{BASE_URL}/coup-de-patte-refuge.html?id={ref['id']}"
