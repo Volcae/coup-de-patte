@@ -53,7 +53,7 @@ def charger_animaux_sans_cadrage():
         return []
     animaux = r.json()
     # Garder uniquement ceux dont le cadrage est encore par défaut
-    a_analyser = [a for a in animaux if not a.get('photo_position') or a.get('photo_position') in ('center center', 'center', None)]
+    a_analyser = [a for a in animaux if not a.get('photo_position') or a.get('photo_position') in ('center center', 'center', '50% 50%', None)]
     print(f"→ {len(animaux)} animaux au total, {len(a_analyser)} à analyser (cadrage par défaut)")
     return a_analyser
 
