@@ -171,6 +171,26 @@ footer{background:var(--forest);color:var(--ivory);padding:40px 52px 28px;positi
 .footer-links a{text-decoration:none;color:rgba(244,241,232,0.5);font-size:0.82rem;transition:color 0.2s}
 .footer-links a:hover{color:rgba(244,241,232,0.9)}
 .footer-copy{font-size:0.72rem;color:rgba(244,241,232,0.3)}
+
+/* ── Comparaison ── */
+.compare-bar{position:fixed;bottom:0;left:0;right:0;background:var(--forest);color:var(--ivory);padding:12px 20px;display:none;align-items:center;gap:12px;z-index:200;box-shadow:0 -4px 20px rgba(0,0,0,0.2)}
+.compare-bar.visible{display:flex}
+.compare-slot{width:52px;height:52px;border-radius:12px;background:rgba(255,255,255,0.15);border:2px dashed rgba(255,255,255,0.4);display:flex;align-items:center;justify-content:center;font-size:1.4rem;cursor:pointer;overflow:hidden;position:relative;flex-shrink:0}
+.compare-slot img{width:100%;height:100%;object-fit:cover}
+.compare-slot .cs-remove{position:absolute;inset:0;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;font-size:1rem;cursor:pointer}
+.compare-slot:hover .cs-remove{display:flex}
+.compare-btn{background:var(--sage);color:var(--forest);border:none;border-radius:50px;padding:10px 20px;font-family:'Nunito',sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer;white-space:nowrap}
+.compare-btn:disabled{opacity:0.5;cursor:not-allowed}
+.compare-modal{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:300;display:none;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto}
+.compare-modal.visible{display:flex}
+.compare-modal-inner{background:var(--paper);border-radius:24px;width:100%;max-width:960px;padding:28px;margin:auto}
+.compare-col{flex:1;min-width:0;border-radius:16px;border:1.5px solid var(--border);overflow:hidden}
+.compare-col-header{height:160px;position:relative;overflow:hidden;background:var(--mint)}
+.compare-col-header img{width:100%;height:100%;object-fit:cover}
+.compare-row{display:flex;border-bottom:1px solid var(--border);font-size:0.82rem}
+.compare-row-label{width:130px;flex-shrink:0;padding:8px 12px;font-weight:700;color:var(--dust);font-size:0.75rem;background:rgba(0,0,0,0.02);border-right:1px solid var(--border)}
+.compare-row-val{flex:1;padding:8px 12px;color:var(--forest)}
+.compare-row-val.highlight{background:rgba(74,124,89,0.08);font-weight:700;color:var(--moss)}
 </style>
   <!-- Supabase SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -817,7 +837,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       ? '<img src="' + animal.photo_url + '" alt="' + animal.nom + '" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:' + (animal.photo_position_vignette || 'center center') + '" onerror="this.style.display=\'none\'">' 
       : '<span>' + emoji + '</span>';
     var imgBg = animal.photo_url ? 'background:#e0d8cf' : 'background:linear-gradient(160deg,var(--mint),var(--sage))';
-    return '<div class="match-card' + enfinClass + '" data-animal-id="' + animal.id + '" onclick="window.location.href=\'coup-de-patte-fiche.html?id=' + animal.id + '\'">' + enfin + '<div class="mc-inner"><div class="mc-img" style="' + imgBg + ';overflow:hidden;font-size:3rem;display:flex;align-items:center;justify-content:center;position:relative">' + imgContent + (ville ? '<div class="mc-loc">📍 ' + ville + '</div>' : '') + '</div><div class="mc-score"><span class="mc-score-n" style="color:' + label.color + '">' + score + '%</span></div><div class="mc-body"><div class="mc-name">' + animal.nom + '</div><div class="mc-meta">' + (animal.race || animal.espece) + ' · ' + age + ' · ' + sexe + '</div><div style="font-size:0.7rem;font-weight:700;color:' + label.color + ';margin:4px 0">' + label.label + '</div><div class="mc-tags">' + tags + '</div><div class="mc-actions"><button class="mc-btn-like" onclick="event.stopPropagation();likeCard(this)"><span style="filter:brightness(0) invert(1)">🐾</span> J\'aime</button><button class="mc-btn-info" onclick="event.stopPropagation();contacterDepuisMatch(this)" data-animal-id="' + animal.id + '" data-refuge-id="' + (animal.refuge ? animal.refuge.id : '') + '">📞</button><button class="mc-btn-info" onclick="event.stopPropagation();window.location.href=\'coup-de-patte-fiche.html?id=' + animal.id + '\'">ℹ</button></div></div></div></div>';
+    return '<div class="match-card' + enfinClass + '" data-animal-id="' + animal.id + '" onclick="window.location.href=\'coup-de-patte-fiche.html?id=' + animal.id + '\'">' + enfin + '<div class="mc-inner"><div class="mc-img" style="' + imgBg + ';overflow:hidden;font-size:3rem;display:flex;align-items:center;justify-content:center;position:relative">' + imgContent + (ville ? '<div class="mc-loc">📍 ' + ville + '</div>' : '') + '</div><div class="mc-score"><span class="mc-score-n" style="color:' + label.color + '">' + score + '%</span></div><div class="mc-body"><div class="mc-name">' + animal.nom + '</div><div class="mc-meta">' + (animal.race || animal.espece) + ' · ' + age + ' · ' + sexe + '</div><div style="font-size:0.7rem;font-weight:700;color:' + label.color + ';margin:4px 0">' + label.label + '</div><div class="mc-tags">' + tags + '</div><div class="mc-actions"><button class="mc-btn-like" onclick="event.stopPropagation();likeCard(this)"><span style="filter:brightness(0) invert(1)">🐾</span> J\'aime</button><button class="mc-btn-info" onclick="event.stopPropagation();contacterDepuisMatch(this)" data-animal-id="' + animal.id + '" data-refuge-id="' + (animal.refuge ? animal.refuge.id : '') + '">📞</button><button class="mc-btn-info" title="Comparer" onclick="event.stopPropagation();ajouterComparaison(' + JSON.stringify(animal) + ',this)">⚖️</button><button class="mc-btn-info" onclick="event.stopPropagation();window.location.href=\'coup-de-patte-fiche.html?id=' + animal.id + '\'">ℹ</button></div></div></div></div>';
   }
 
   function displayMatchs() {
@@ -986,35 +1006,112 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     el = document.getElementById('navContactsCount'); if (el) el.textContent = nbContacts;
   });
 </script>
-<footer>
-  <div class="footer-logo">
-    <div style="width:36px;height:36px;background:rgba(244,241,232,0.15);border:1.5px solid rgba(244,241,232,0.2);border-radius:50% 50% 50% 50%/60% 60% 40% 40%;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-      <span style="font-size:1rem;filter:brightness(0) invert(1)">🐾</span>
-    </div>
-    Coup de Patte
-  </div>
-  <div class="footer-links">
-    <a href="coup-de-patte-refuges.html">Les refuges</a>
-    <a href="coup-de-patte-enfin-moi.html">✨ Enfin Moi ?</a>
-    <a href="coup-de-patte-apropos.html">À propos</a>
-    <a href="coup-de-patte-contact.html">Contact</a>
-    <a href="coup-de-patte-cgu.html">CGU</a>
-    <a href="coup-de-patte-apropos.html#don" style="color:var(--gold);font-weight:700;opacity:1">💛 Faire un don</a>
-  </div>
-  <div class="footer-copy">© 2025 Coup de Patte · Projet indépendant</div>
-</footer>
-<!-- Modale confirmation adoption V3 -->
-<div class="adoption-popup" id="adoptionPopupV3">
-  <div class="adoption-box" id="adoptionBoxV3">
-    <span class="adoption-emoji">🐾</span>
-    <div class="adoption-title" id="adoptionTitleV3">Confirmer votre adoption</div>
-    <p class="adoption-sub" id="adoptionSubV3"></p>
-    <div class="adoption-actions" id="adoptionActionsV3">
-      <button class="adoption-btn-yes" id="adoptionBtnOuiV3">🐾 Oui, confirmer mon adoption</button>
-      <button class="adoption-btn-no" onclick="document.getElementById('adoptionPopupV3').classList.remove('open')">Annuler</button>
-    </div>
-  </div>
-</div>
 
+<script>
+// ── Comparaison ──────────────────────────────────────────
+var compareAnimaux = [];
+
+function ajouterComparaison(animal, btn) {
+  if (!animal || !animal.id) return;
+  if (compareAnimaux.find(function(a) { return a.id === animal.id; })) {
+    showToast('Animal déjà dans la comparaison'); return;
+  }
+  if (compareAnimaux.length >= 3) {
+    showToast('Maximum 3 animaux à comparer'); return;
+  }
+  compareAnimaux.push(animal);
+  if (btn) { btn.style.background = 'var(--moss)'; btn.style.color = 'var(--ivory)'; }
+  mettreAJourBarre();
+}
+
+function retirerComparaison(idx) {
+  if (!compareAnimaux[idx]) return;
+  compareAnimaux.splice(idx, 1);
+  mettreAJourBarre();
+}
+
+function viderComparaison() {
+  compareAnimaux = [];
+  mettreAJourBarre();
+  document.querySelectorAll('.mc-btn-info').forEach(function(b) {
+    if (b.title === 'Comparer') { b.style.background = ''; b.style.color = ''; }
+  });
+}
+
+function mettreAJourBarre() {
+  var bar = document.getElementById('compareBar');
+  if (!bar) return;
+  bar.classList.toggle('visible', compareAnimaux.length > 0);
+  var btn = document.getElementById('compareBtnGo');
+  if (btn) btn.disabled = compareAnimaux.length < 2;
+  for (var i = 0; i < 3; i++) {
+    var slot = document.getElementById('cs' + i);
+    if (!slot) continue;
+    var a = compareAnimaux[i];
+    if (a) {
+      slot.innerHTML = (a.photo_url
+        ? '<img src="' + a.photo_url + '" style="width:100%;height:100%;object-fit:cover">'
+        : '<span>' + (a.espece === 'chat' ? '🐱' : '🐕') + '</span>') +
+        '<div class="cs-remove" onclick="event.stopPropagation();retirerComparaison(' + i + ')">✕</div>';
+      slot.style.border = '2px solid var(--sage)';
+    } else {
+      slot.innerHTML = '<span style="opacity:0.4">+</span>';
+      slot.style.border = '2px dashed rgba(255,255,255,0.4)';
+    }
+  }
+}
+
+function ouvrirComparaison() {
+  if (compareAnimaux.length < 2) return;
+  var modal = document.getElementById('compareModal');
+  var cc = document.getElementById('compareContent');
+  if (!modal || !cc) return;
+
+  var rows = [
+    {label:'Race', key:'race'},
+    {label:'Âge', key:'age_annees', fmt:function(v){return v?v+' an'+(v>1?'s':''):'–';}},
+    {label:'Sexe', key:'sexe', fmt:function(v){return v==='male'?'Mâle':v==='femelle'?'Femelle':'–';}},
+    {label:'Gabarit', key:'gabarit'},
+    {label:'Énergie', key:'energie'},
+    {label:'Enfants <13', key:'compat_enfants_moins13', fmt:function(v){return v===true?'✅ Oui':v===false?'❌ Non':'–';}},
+    {label:'Chiens', key:'compat_chiens', fmt:function(v){return v===true?'✅':v===false?'❌':'–';}},
+    {label:'Chats', key:'compat_chats', fmt:function(v){return v===true?'✅':v===false?'❌':'–';}},
+    {label:'Logement', key:'type_logement_compatible', fmt:function(v){return v==='maison_uniquement'?'🏠 Maison':v==='appart_ok'?'Appart ok':'–';}},
+    {label:'Jardin', key:'exterieur_requis', fmt:function(v){return v===true?'🌿 Requis':v===false?'Non':'–';}},
+    {label:'Expérience', key:'experience_requise'},
+    {label:'Solitude', key:'supporte_solitude'},
+    {label:'Lien humain', key:'lien_humain'},
+    {label:'Permis', key:'permis_requis', fmt:function(v){return v===true?'📋 Requis':'Non';}},
+  ];
+
+  cc.innerHTML = compareAnimaux.map(function(a) {
+    var pos = a.photo_position_vignette || 'center center';
+    var ph = a.photo_url
+      ? '<img src="' + a.photo_url + '" style="width:100%;height:100%;object-fit:cover;object-position:' + pos + '">'
+      : '<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:3rem">' + (a.espece==='chat'?'🐱':'🐕') + '</div>';
+    var rh = rows.map(function(r) {
+      var v = a[r.key]; var d = r.fmt ? r.fmt(v) : (v||'–');
+      return '<div class="compare-row"><div class="compare-row-label">' + r.label + '</div><div class="compare-row-val">' + d + '</div></div>';
+    }).join('');
+    return '<div class="compare-col">' +
+      '<div class="compare-col-header">' + ph + '</div>' +
+      '<div style="padding:12px 14px;border-bottom:1px solid var(--border)">' +
+        '<div style="font-family:Fraunces,serif;font-style:italic;font-size:1rem;font-weight:700;color:var(--forest)">' + a.nom + '</div>' +
+        '<div style="font-size:0.75rem;color:var(--dust)">' + (a.race||a.espece||'') + '</div>' +
+      '</div>' + rh +
+      '<div style="padding:12px 14px"><a href="coup-de-patte-fiche.html?id=' + a.id + '" style="display:block;text-align:center;background:var(--moss);color:var(--ivory);padding:10px;border-radius:50px;font-family:Nunito,sans-serif;font-size:0.82rem;font-weight:700;text-decoration:none">Voir la fiche</a></div>' +
+    '</div>';
+  }).join('');
+
+  modal.classList.add('visible');
+  document.body.style.overflow = 'hidden';
+}
+
+function fermerComparaison() {
+  var m = document.getElementById('compareModal');
+  if (m) m.classList.remove('visible');
+  document.body.style.overflow = '';
+}
+</script>
 </body>
 </html>
