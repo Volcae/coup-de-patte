@@ -2,8 +2,11 @@ name: Générer le sitemap
 
 on:
   schedule:
-    - cron: '0 8 * * 1'  # Chaque lundi à 8h (après le scraping à 6h)
+    - cron: '0 8 * * 1'
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   sitemap:
@@ -14,6 +17,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Python
         uses: actions/setup-python@v5
