@@ -1,0 +1,38 @@
+name: Générer le sitemap
+
+on:
+  schedule:
+    - cron: '0 8 * * 1'  # Chaque lundi à 8h (après le scraping à 6h)
+  workflow_dispatch:
+
+jobs:
+  sitemap:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Générer le sitemap
+        env:
+          SUPABASE_URL:               ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY:  ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: python generer_sitemap.py
+
+      - name: Committer le sitemap
+        run: |
+          git config user.name "Coup de Patte Bot"
+          git config user.email "contact@coup-de-patte.fr"
+          git add sitemap.xml
+          git diff --staged --quiet || git commit -m "🗺 Sitemap mis à jour — $(date +'%Y-%m-%d')"
+          git push
