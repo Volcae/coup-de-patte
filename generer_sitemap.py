@@ -60,17 +60,17 @@ def main():
     print(f"✓ {len(pages_statiques)} pages statiques")
 
     # ── Fiches animaux ──────────────────────────────
-    animaux = fetch_supabase('Animal?select=id,nom,updated_at&disponible=eq.true')
+    animaux = fetch_supabase('Animal?select=id,nom,created_at&disponible=eq.true')
     for a in animaux:
-        lastmod = (a.get("updated_at") or TODAY)[:10]
+        lastmod = (a.get("created_at") or TODAY)[:10]
         loc = f"{BASE_URL}/coup-de-patte-fiche.html?id={a['id']}"
         urls.append(url_entry(loc, "0.8", "weekly", lastmod))
     print(f"✓ {len(animaux)} fiches animaux")
 
     # ── Pages refuges ──────────────────────────────
-    refuges = fetch_supabase('Refuge?select=id,updated_at')
+    refuges = fetch_supabase('Refuge?select=id,created_at')
     for ref in refuges:
-        lastmod = (ref.get("updated_at") or TODAY)[:10]
+        lastmod = (ref.get("created_at") or TODAY)[:10]
         loc = f"{BASE_URL}/coup-de-patte-refuge.html?id={ref['id']}"
         urls.append(url_entry(loc, "0.7", "weekly", lastmod))
     print(f"✓ {len(refuges)} pages refuges")
