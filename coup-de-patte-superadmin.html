@@ -1063,7 +1063,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     var set = function(id, v) { var e = document.getElementById(id); if (e) e.textContent = v; };
 
     // Refuges
-    var refugesRes = await sb.from('Refuge').select('id, nom, email, ville, created_at, email_scraping_ok, site_web, email_invitation_envoye_le').order('created_at', { ascending: false });
+    var refugesRes = await sb.from('Refuge').select('id, nom, email, ville, created_at, email_scraping_ok, site_web, email_invitation_envoye_le, latitude, longitude').order('created_at', { ascending: false });
     var refuges = refugesRes.data || [];
     set('kpiRefuges', refuges.length);
     set('badgeRefuges', refuges.length);
@@ -1096,7 +1096,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               return '<button style="font-size:0.68rem;font-weight:700;cursor:pointer;padding:4px 10px;border-radius:50px;border:1.5px solid rgba(91,141,239,0.3);background:rgba(91,141,239,0.07);color:var(--blue);font-family:Nunito,sans-serif" onclick="envoyerInvitation(this)" data-id="' + r.id + '" data-nom="' + (r.nom||'').replace(/"/g,'') + '" data-email="' + (r.email||'') + '" data-site="' + (hasSite?'1':'0') + '">📧 Inviter</button>';
             }
           })() +
-          '<button class="row-btn row-btn-red" onclick="supprimerRefugeBtn(this)" data-id="' + r.id + '" data-nom="' + (r.nom || '').replace(/"/g, '') + '">✕</button>' +
+          '<button onclick="editerGPS(this)" data-id="' + r.id + '" data-lat="' + (r.latitude||'') + '" data-lng="' + (r.longitude||'') + '" data-nom="' + (r.nom||'').replace(/\"/g,'') + '" style="padding:4px 10px;border-radius:50px;font-size:0.7rem;font-weight:700;cursor:pointer;font-family:Nunito,sans-serif;border:1.5px solid ' + (r.latitude ? 'rgba(74,124,89,0.3);background:rgba(74,124,89,0.08);color:var(--moss)' : 'var(--border);background:var(--ivory);color:var(--dust)') + '">' + (r.latitude ? '📍 GPS ✓' : '📍 GPS') + '</button>' +
+          '<button class="row-btn row-btn-red" onclick="supprimerRefugeBtn(this)" data-id="' + r.id + '" data-nom="' + (r.nom || '').replace(/\"/g, '') + '">✕</button>' +
           '</div></td>';
         tRef.appendChild(card);
       });
@@ -3313,6 +3314,74 @@ async function chargerScrapingLog() {
     '<th style="padding:6px 8px;text-align:center">Supprim\u00e9s</th><th style="padding:6px 8px;text-align:center">Ignor\u00e9s</th>' +
     '<th style="padding:6px 8px;text-align:center">Dur\u00e9e</th></tr></thead><tbody>' + rows + '</tbody></table>';
 }
+</script>
+<!-- Modale GPS -->
+<div id="gpsModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:400;align-items:center;justify-content:center">
+  <div style="background:var(--paper);border-radius:20px;padding:28px;width:100%;max-width:400px;margin:20px;box-shadow:0 20px 60px rgba(0,0,0,0.2)">
+    <h3 style="font-family:'Fraunces',serif;font-size:1.1rem;font-weight:700;color:var(--forest);margin:0 0 6px" id="gpsModalTitle">Coordonnées GPS</h3>
+    <p style="font-size:0.78rem;color:var(--dust);margin:0 0 20px">Sur Google Maps : clic droit sur le lieu exact → <strong>"C'est ici"</strong> pour copier les coordonnées.</p>
+    <div style="display:flex;gap:10px;margin-bottom:12px">
+      <div style="flex:1">
+        <label style="display:block;font-size:0.75rem;font-weight:700;color:var(--forest);margin-bottom:4px">Latitude</label>
+        <input id="gpsLat" type="number" step="0.0001" placeholder="ex: 47.3856" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-family:'Nunito',sans-serif;font-size:0.88rem;background:var(--ivory);color:var(--forest);box-sizing:border-box">
+      </div>
+      <div style="flex:1">
+        <label style="display:block;font-size:0.75rem;font-weight:700;color:var(--forest);margin-bottom:4px">Longitude</label>
+        <input id="gpsLng" type="number" step="0.0001" placeholder="ex: 5.0089" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-family:'Nunito',sans-serif;font-size:0.88rem;background:var(--ivory);color:var(--forest);box-sizing:border-box">
+      </div>
+    </div>
+    <p style="font-size:0.72rem;color:var(--dust);margin:0 0 20px">Laissez vide pour utiliser la ville automatiquement.</p>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button onclick="fermerGPS()" style="padding:10px 18px;background:transparent;border:1.5px solid var(--border);border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.85rem;cursor:pointer;color:var(--dust)">Annuler</button>
+      <button onclick="sauvegarderGPS()" style="padding:10px 22px;background:linear-gradient(135deg,var(--moss),var(--forest));color:var(--ivory);border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer">💾 Sauvegarder</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var _gpsRefugeId = null;
+
+function editerGPS(btn) {
+  _gpsRefugeId = btn.getAttribute('data-id');
+  var nom = btn.getAttribute('data-nom') || 'ce refuge';
+  var lat = btn.getAttribute('data-lat') || '';
+  var lng = btn.getAttribute('data-lng') || '';
+  document.getElementById('gpsModalTitle').textContent = 'GPS — ' + nom;
+  document.getElementById('gpsLat').value = lat;
+  document.getElementById('gpsLng').value = lng;
+  var modal = document.getElementById('gpsModal');
+  modal.style.display = 'flex';
+}
+
+function fermerGPS() {
+  document.getElementById('gpsModal').style.display = 'none';
+  _gpsRefugeId = null;
+}
+
+async function sauvegarderGPS() {
+  if (!_gpsRefugeId) return;
+  var lat = document.getElementById('gpsLat').value;
+  var lng = document.getElementById('gpsLng').value;
+  var payload = {
+    latitude:  lat ? parseFloat(lat) : null,
+    longitude: lng ? parseFloat(lng) : null
+  };
+  var sb = getSupabase();
+  var { error } = await sb.from('Refuge').update(payload).eq('id', _gpsRefugeId);
+  if (error) {
+    showToast('✗ Erreur : ' + error.message);
+  } else {
+    showToast('📍 Coordonnées sauvegardées ✅');
+    fermerGPS();
+    // Recharger la liste
+    if (typeof chargerStats === 'function') chargerStats();
+  }
+}
+
+// Fermer en cliquant sur le fond
+document.getElementById('gpsModal').addEventListener('click', function(e) {
+  if (e.target === this) fermerGPS();
+});
 </script>
 </body>
 </html>

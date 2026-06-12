@@ -379,6 +379,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <div class="field-row"><span class="field-label">Téléphone</span><input class="form-input" style="width:100%" id="infoTel"></div>
           <div class="field-row"><span class="field-label">Email</span><input class="form-input" style="width:100%" id="infoEmail"></div>
           <div class="field-row"><span class="field-label">Site web</span><input class="form-input" style="width:100%" id="infoSite"></div>
+          <div class="field-row" style="gap:10px">
+            <div style="flex:1"><span class="field-label">Latitude</span><input class="form-input" style="width:100%" id="infoLat" type="number" step="0.0001" placeholder="ex: 47.3856"></div>
+            <div style="flex:1"><span class="field-label">Longitude</span><input class="form-input" style="width:100%" id="infoLng" type="number" step="0.0001" placeholder="ex: 5.0089"></div>
+          </div>
+          <div style="font-size:0.72rem;color:var(--dust);margin:-6px 0 8px;padding:0 4px">Coordonnées GPS pour la carte des refuges. Laissez vide pour utiliser la ville automatiquement. Trouvez les coordonnées sur <a href="https://www.google.fr/maps" target="_blank" style="color:var(--moss)">Google Maps</a> (clic droit → "C'est ici").</div>
           <div class="field-row" style="flex-direction:column;gap:10px">
             <span class="field-label">Horaires d'ouverture</span>
             <div id="horairesGrid">              <div style="display:grid;grid-template-columns:80px 1fr 1fr;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)">
@@ -882,6 +887,8 @@ window.addEventListener('load', async function() {
   document.getElementById('infoNom').value     = refuge.nom       || '';
   document.getElementById('infoAdresse').value = refuge.adresse   || '';
   document.getElementById('infoVille').value   = refuge.ville     || '';
+  if (document.getElementById('infoLat')) document.getElementById('infoLat').value = refuge.latitude  || '';
+  if (document.getElementById('infoLng')) document.getElementById('infoLng').value = refuge.longitude || '';
   document.getElementById('infoTel').value     = refuge.telephone || '';
   document.getElementById('infoEmail').value   = refuge.email     || '';
   document.getElementById('infoSite').value    = (refuge.site_web||'').replace(/\[([^\]]+)\]\([^)]+\)/g,'$1').replace(/^https?:\/\//i,'');
@@ -1555,6 +1562,8 @@ async function saveRefugeInfos() {
     nom: document.getElementById('infoNom').value.trim(),
     adresse: document.getElementById('infoAdresse').value.trim(),
     ville: document.getElementById('infoVille').value.trim(),
+    latitude:  document.getElementById('infoLat') && document.getElementById('infoLat').value ? parseFloat(document.getElementById('infoLat').value) : null,
+    longitude: document.getElementById('infoLng') && document.getElementById('infoLng').value ? parseFloat(document.getElementById('infoLng').value) : null,
     telephone: document.getElementById('infoTel').value.trim(),
     email: document.getElementById('infoEmail').value.trim(),
     site_web: (function() {
