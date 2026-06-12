@@ -13,6 +13,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link rel="icon" type="image/x-icon" href="favicon.ico?v=2">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Refuge · Coup de Patte</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{--forest:#2D4A3E;--moss:#4A7C59;--sage:#7AAD89;--mint:#C8E6C0;--mint-lt:#EBF5E8;--ivory:#F4F1E8;--paper:#FDFCF8;--gold:#D4A843;--amber:#C49A1A;--rose:#C9704A;--blue:#5B8DEF;--border:rgba(45,74,62,0.11);--dust:#7A6E65;--smoke:#A89E96;--shadow:0 8px 32px rgba(45,74,62,0.10);}
@@ -158,10 +159,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="iq-row"><div class="iq-icon">🌐</div><div><span class="iq-label">Site web</span><span class="iq-value" id="iqSite">–</span></div></div>
       </div>
       <div style="background:var(--paper);border-radius:22px;border:1.5px solid var(--border);overflow:hidden;box-shadow:var(--shadow)">
+        <!-- Carte Leaflet -->
+        <div id="refugeMapContainer" style="display:none;height:220px;width:100%"></div>
         <div class="map-footer">
           <div class="map-address"><strong id="refugeNomMap">–</strong><span id="refugeAdresseMap">–</span></div>
           <div class="map-actions">
-            <a href="#" target="_blank" class="map-btn map-btn-secondary" id="btnMaps">🗺 Maps</a>
+            <button onclick="toggleCarteRefuge()" class="map-btn map-btn-secondary" id="btnCarte" style="cursor:pointer;border:none">🗺 Voir la carte</button>
+            <a href="#" target="_blank" class="map-btn map-btn-secondary" id="btnMaps" style="font-size:0.75rem">↗ Google Maps</a>
             <span id="distanceRefuge" style="font-size:0.8rem;font-weight:700;color:var(--moss);padding:8px 14px;background:var(--mint-lt);border:1.5px solid rgba(74,124,89,0.2);border-radius:50px;white-space:nowrap">📍 Distance…</span>
           </div>
         </div>
@@ -275,6 +279,14 @@ window.addEventListener("load", async function() {
   var btnM = document.getElementById("btnMaps"); if (btnM) btnM.href = "https://maps.google.com/?q=" + adresseMap;
   // Distance depuis la position de l'utilisateur
   var distEl = document.getElementById('distanceRefuge');
+  // Init carte si coordonnées disponibles
+  if (refuge.latitude && refuge.longitude) {
+    initCarteRefuge(refuge.latitude, refuge.longitude, refuge.nom);
+  } else {
+    var btn = document.getElementById('btnCarte');
+    if (btn) btn.style.display = 'none';
+  }
+
   if (distEl && refuge.lat && refuge.lng) {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(function(pos) {
@@ -381,5 +393,56 @@ window.addEventListener("load", async function() {
   </div>
   <div class="footer-copy">© 2025 Coup de Patte · Projet indépendant</div>
 </footer>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+var _refugeMap = null;
+var _refugeCoords = null;
+var _carteVisible = false;
+
+function initCarteRefuge(lat, lng, nom) {
+  _refugeCoords = { lat: lat, lng: lng };
+  // Afficher le bouton carte seulement si on a des coords
+  var btn = document.getElementById('btnCarte');
+  if (btn) btn.style.display = '';
+}
+
+function toggleCarteRefuge() {
+  var container = document.getElementById('refugeMapContainer');
+  var btn = document.getElementById('btnCarte');
+  if (!container || !_refugeCoords) return;
+
+  _carteVisible = !_carteVisible;
+  container.style.display = _carteVisible ? 'block' : 'none';
+  if (btn) btn.textContent = _carteVisible ? '✕ Fermer la carte' : '🗺 Voir la carte';
+
+  if (_carteVisible && !_refugeMap) {
+    // Initialiser la carte
+    _refugeMap = L.map('refugeMapContainer').setView([_refugeCoords.lat, _refugeCoords.lng], 14);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>',
+      maxZoom: 18
+    }).addTo(_refugeMap);
+
+    // Marqueur personnalisé
+    var icon = L.divIcon({
+      html: '<div style="background:#2D4A3E;width:36px;height:36px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;box-shadow:0 3px 10px rgba(0,0,0,0.3);border:2px solid white"><span style="filter:brightness(0) invert(1)">🐾</span></div>',
+      className: '',
+      iconSize: [36, 36],
+      iconAnchor: [18, 36],
+      popupAnchor: [0, -38]
+    });
+
+    L.marker([_refugeCoords.lat, _refugeCoords.lng], { icon: icon })
+      .addTo(_refugeMap)
+      .bindPopup('<strong>' + (document.getElementById('refugeNomMap') ? document.getElementById('refugeNomMap').textContent : '') + '</strong>')
+      .openPopup();
+
+    // Forcer le recalcul de la taille (important pour les divs cachées)
+    setTimeout(function() { _refugeMap.invalidateSize(); }, 100);
+  } else if (_refugeMap) {
+    setTimeout(function() { _refugeMap.invalidateSize(); }, 100);
+  }
+}
+</script>
 </body>
 </html>
