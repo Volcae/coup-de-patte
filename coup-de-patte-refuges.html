@@ -13,6 +13,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link rel="icon" type="image/x-icon" href="favicon.ico?v=2">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Les Refuges, Coup de Patte</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -183,7 +184,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </div>
 
 <div class="content">
-  <div class="refuges-grid" id="refugesGrid">
+  <!-- Carte des refuges -->
+<div id="refugesMapWrap" style="border-radius:20px;overflow:hidden;border:1.5px solid var(--border);margin-bottom:28px;display:none">
+  <div id="refugesMap" style="height:380px;width:100%"></div>
+</div>
+
+<div class="refuges-grid" id="refugesGrid">
     <div style="text-align:center;padding:40px;color:var(--dust)">Chargement des refuges… 🐾</div>
   </div>
 
@@ -287,6 +293,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   }
 
   renderPage(allRefuges, 1);
+  afficherCarte(allRefuges);
 
   // Recherche en temps réel
   if (searchInput) {
@@ -308,6 +315,73 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     window.location.href = 'coup-de-patte-refuge.html?id=' + id;
   };
 })();
+</script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+var _map = null;
+var _markers = [];
+
+async function geocoderVille(ville) {
+  if (!ville) return null;
+  try {
+    var r = await fetch('https://nominatim.openstreetmap.org/search?q=' + encodeURIComponent(ville + ', France') + '&format=json&limit=1', {
+      headers: { 'Accept-Language': 'fr', 'User-Agent': 'CoupDePatte/1.0' }
+    });
+    var data = await r.json();
+    if (data && data.length > 0) return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
+  } catch(e) {}
+  return null;
+}
+
+async function afficherCarte(refuges) {
+  var wrap = document.getElementById('refugesMapWrap');
+  if (!wrap) return;
+  wrap.style.display = 'block';
+
+  if (!_map) {
+    _map = L.map('refugesMap').setView([46.8, 2.3], 6);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>',
+      maxZoom: 18
+    }).addTo(_map);
+  }
+
+  // Supprimer les anciens marqueurs
+  _markers.forEach(function(m) { _map.removeLayer(m); });
+  _markers = [];
+
+  // Icône personnalisée
+  var icon = L.divIcon({
+    html: '<div style="background:var(--forest);width:32px;height:32px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;display:flex;align-items:center;justify-content:center;font-size:1rem;box-shadow:0 3px 10px rgba(0,0,0,0.3);border:2px solid white">🐾</div>',
+    className: '',
+    iconSize: [32, 32],
+    iconAnchor: [16, 32],
+    popupAnchor: [0, -34]
+  });
+
+  var bounds = [];
+  for (var i = 0; i < refuges.length; i++) {
+    var r = refuges[i];
+    var coords = await geocoderVille(r.ville);
+    if (!coords) continue;
+    bounds.push([coords.lat, coords.lng]);
+    var nbA = countParRefuge[r.id] || 0;
+    var popup = '<div style="font-family:Nunito,sans-serif;min-width:160px">' +
+      '<div style="font-family:Fraunces,serif;font-style:italic;font-weight:700;color:var(--forest);font-size:0.95rem;margin-bottom:4px">' + r.nom + '</div>' +
+      '<div style="font-size:0.75rem;color:var(--dust);margin-bottom:8px">📍 ' + (r.ville || '') + '</div>' +
+      '<div style="font-size:0.75rem;font-weight:700;color:var(--moss);margin-bottom:10px">' + nbA + ' animal' + (nbA > 1 ? 'aux' : '') + ' disponible' + (nbA > 1 ? 's' : '') + '</div>' +
+      '<button onclick="window.allerRefuge(\'' + r.id + '\')" style="width:100%;padding:7px;background:var(--moss);color:white;border:none;border-radius:50px;font-family:Nunito,sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer">Voir le refuge →</button>' +
+      '</div>';
+    var marker = L.marker([coords.lat, coords.lng], { icon: icon })
+      .addTo(_map)
+      .bindPopup(popup);
+    _markers.push(marker);
+    await new Promise(function(res) { setTimeout(res, 300); }); // pause entre requêtes Nominatim
+  }
+
+  if (bounds.length > 1) _map.fitBounds(bounds, { padding: [40, 40] });
+  else if (bounds.length === 1) _map.setView(bounds[0], 10);
+}
 </script>
 </body>
 </html>
