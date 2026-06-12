@@ -498,9 +498,21 @@ window.addEventListener('load', async function() {
     else if (h <= 6) scores.disponibilite = 50;
     else scores.disponibilite = 20;
     // Expérience
-    var req = animal.experience_requise || 'debutant';
+    var req = animal.experience_requise;
     var exp = profil.experience_animale || 'jamais';
-    scores.experience = req === 'debutant' ? 100 : (req === 'intermediaire' && exp !== 'jamais') ? 100 : (req === 'experimente' && exp === 'adulte') ? 100 : 40;
+    if (!req) {
+      scores.experience = 100; // non précisé → pas d'impact
+    } else if (req === 'debutant') {
+      scores.experience = 100;
+    } else if (req === 'intermediaire') {
+      if (exp === 'adulte') scores.experience = 100;
+      else if (exp === 'enfance') scores.experience = 75;
+      else scores.experience = 40;
+    } else if (req === 'experimente') {
+      if (exp === 'adulte') scores.experience = 100;
+      else if (exp === 'enfance') scores.experience = 50;
+      else scores.experience = 20;
+    }
     // Mode de vie
     var mode = profil.temps_dedie || 'modere';
     var energie = animal.energie || 'moyen';
@@ -515,7 +527,36 @@ window.addEventListener('load', async function() {
     else if (mode === 'sedentaire' && energie === 'eleve') modeVie = 20;
     scores.mode_vie = modeVie;
 
-    var score = Math.min(100, Math.round(scores.logement*wLog + scores.foyer*wFoy + scores.disponibilite*wDis + scores.experience*wExp + scores.mode_vie*wMod));
+    var score = Math.round(scores.logement*wLog + scores.foyer*wFoy + scores.disponibilite*wDis + scores.experience*wExp + scores.mode_vie*wMod);
+
+    // Bonus race souhaitée
+    var racesVoulues = profil && profil.races_souhaitees
+      ? profil.races_souhaitees.split(',').map(function(r) { return r.trim().toLowerCase(); }).filter(function(r) { return r && r !== 'peu-importe'; })
+      : [];
+    if (racesVoulues.length > 0 && animal.race) {
+      var raceAnimal = animal.race.toLowerCase();
+      var raceMatch = racesVoulues.some(function(r) {
+        return raceAnimal === r || raceAnimal.startsWith(r) || r.startsWith(raceAnimal.split(' ')[0]);
+      });
+      if (raceMatch) score += 15;
+    }
+
+    // Bonus âge souhaité
+    var ageSouhaite = profil && profil.profil_animal_souhaite;
+    var ageAnimal = animal.age_annees || 0;
+    var especeA = (animal.espece || '').toLowerCase();
+    if (ageSouhaite && ageSouhaite !== 'peu_importe' && ageSouhaite !== 'peu-importe') {
+      var isChiot  = ageAnimal <= 1;
+      var isJeune  = ageAnimal > 1 && ageAnimal <= 3;
+      var isAdulte = ageAnimal > 3 && ageAnimal < (especeA === 'chat' ? 10 : 8);
+      var isSenior = especeA === 'chat' ? ageAnimal >= 10 : ageAnimal >= 8;
+      if ((ageSouhaite === 'chiot' || ageSouhaite === 'chaton') && isChiot) score += 10;
+      else if (ageSouhaite === 'jeune_adulte' && isJeune) score += 10;
+      else if (ageSouhaite === 'adulte' && isAdulte) score += 10;
+      else if (ageSouhaite === 'senior' && isSenior) score += 10;
+    }
+
+    score = Math.min(100, score);
     var colors = { 85: 'var(--moss)', 70: 'var(--blue)', 55: 'var(--amber)', 0: 'var(--rose)' };
     var labels = { 85: 'Coup de Patte idéal', 70: 'Belle rencontre', 55: "On s'apprivoise ?", 0: 'Faible compatibilité' };
     var ideal = p.seuil_ideal !== undefined ? p.seuil_ideal : 85;

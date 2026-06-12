@@ -778,11 +778,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   function calculerScore(profil, animal) {
     var scores = { logement: 50, foyer: 100, disponibilite: 50, experience: 100, mode_vie: 50 };
+
+    // ── Logement ──────────────────────────────────────────
     if (animal.gabarit || animal.type_logement_compatible) {
       var g = animal.gabarit ? animal.gabarit.toLowerCase() : 'moyen';
-      // Si l'animal a une restriction de logement explicite
       if (animal.type_logement_compatible === 'maison_uniquement' && profil.type_logement === 'appart') {
-        scores.logement = 10; // Très mauvais match
+        scores.logement = 10;
       } else if (profil.type_logement === 'maison') {
         scores.logement = 100;
       } else if (profil.type_logement === 'appart') {
@@ -791,25 +792,42 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         else scores.logement = 30;
       }
     }
+
+    // ── Foyer ─────────────────────────────────────────────
     var foyer = 100;
     if (profil.enfants_foyer && profil.enfants_foyer.includes('moins13') && !animal.compat_enfants_moins13) foyer -= 50;
     if (profil.animaux_foyer && profil.animaux_foyer.includes('chien') && !animal.compat_chiens) foyer -= 50;
     if (profil.animaux_foyer && profil.animaux_foyer.includes('chat') && !animal.compat_chats) foyer -= 50;
     scores.foyer = Math.max(0, foyer);
+
+    // ── Disponibilité ─────────────────────────────────────
     var h = profil.heures_seul || 3;
     if (h <= 1) scores.disponibilite = 100;
     else if (h <= 3) scores.disponibilite = 80;
     else if (h <= 6) scores.disponibilite = 50;
     else scores.disponibilite = 20;
+
+    // ── Expérience ────────────────────────────────────────
     var exp = profil.experience_animale || 'jamais';
-    var req = animal.experience_requise || 'debutant';
-    if (req === 'debutant') scores.experience = 100;
-    else if (req === 'intermediaire' && exp !== 'jamais') scores.experience = 100;
-    else if (req === 'experimente' && exp === 'adulte') scores.experience = 100;
-    else scores.experience = 40;
+    var req = animal.experience_requise;
+    if (!req) {
+      // Pas d'expérience requise précisée sur la fiche → pas d'impact
+      scores.experience = 100;
+    } else if (req === 'debutant') {
+      scores.experience = 100;
+    } else if (req === 'intermediaire') {
+      if (exp === 'adulte') scores.experience = 100;
+      else if (exp === 'enfance') scores.experience = 75;
+      else scores.experience = 40; // jamais
+    } else if (req === 'experimente') {
+      if (exp === 'adulte') scores.experience = 100;
+      else if (exp === 'enfance') scores.experience = 50;
+      else scores.experience = 20; // jamais
+    }
+
+    // ── Mode de vie / Énergie ─────────────────────────────
     var mode = profil.temps_dedie || 'modere';
     var energie = animal.energie || 'moyen';
-    // Correspondance mode de vie / énergie animal
     if ((mode === 'actif' || mode === 'sportif') && energie === 'eleve') scores.mode_vie = 100;
     else if ((mode === 'actif' || mode === 'sportif') && energie === 'moyen') scores.mode_vie = 80;
     else if (mode === 'modere' && energie === 'moyen') scores.mode_vie = 100;
@@ -817,17 +835,57 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     else if (mode === 'modere' && energie === 'eleve') scores.mode_vie = 50;
     else if (mode === 'sedentaire' && energie === 'faible') scores.mode_vie = 100;
     else if (mode === 'sedentaire' && energie === 'moyen') scores.mode_vie = 50;
-    else if (mode === 'sedentaire' && energie === 'eleve') scores.mode_vie = 20; // incompatibilité forte
+    else if (mode === 'sedentaire' && energie === 'eleve') scores.mode_vie = 20;
     else scores.mode_vie = 60;
-    // Utiliser les pondérations configurées dans le superadmin (ou valeurs par défaut)
-    var wp = window._algoParams || {};
-    var wLog  = (wp.w_logement !== undefined ? wp.w_logement : 30) / 100;
-    var wFoy  = (wp.w_foyer    !== undefined ? wp.w_foyer    : 25) / 100;
-    var wDis  = (wp.w_dispo    !== undefined ? wp.w_dispo    : 20) / 100;
-    var wExp  = (wp.w_exp      !== undefined ? wp.w_exp      : 15) / 100;
-    var wMod  = (wp.w_mode     !== undefined ? wp.w_mode     : 10) / 100;
-    var global = Math.round(scores.logement*wLog + scores.foyer*wFoy + scores.disponibilite*wDis + scores.experience*wExp + scores.mode_vie*wMod);
-    return { global, scores };
+
+    // ── Pondérations depuis superadmin ───────────────────
+    var wp  = window._algoParams || {};
+    var wLog = (wp.w_logement !== undefined ? wp.w_logement : 30) / 100;
+    var wFoy = (wp.w_foyer    !== undefined ? wp.w_foyer    : 25) / 100;
+    var wDis = (wp.w_dispo    !== undefined ? wp.w_dispo    : 20) / 100;
+    var wExp = (wp.w_exp      !== undefined ? wp.w_exp      : 15) / 100;
+    var wMod = (wp.w_mode     !== undefined ? wp.w_mode     : 10) / 100;
+
+    var global = Math.round(
+      scores.logement*wLog + scores.foyer*wFoy +
+      scores.disponibilite*wDis + scores.experience*wExp + scores.mode_vie*wMod
+    );
+
+    // ── BONUS race souhaitée ──────────────────────────────
+    var bonusRace = 0;
+    var racesVoulues = profil && profil.races_souhaitees
+      ? profil.races_souhaitees.split(',').map(function(r) { return r.trim().toLowerCase(); }).filter(function(r) { return r && r !== 'peu-importe'; })
+      : [];
+    if (racesVoulues.length > 0 && animal.race) {
+      var raceAnimal = animal.race.toLowerCase();
+      var match = racesVoulues.some(function(r) {
+        return raceAnimal === r || raceAnimal.startsWith(r) || r.startsWith(raceAnimal.split(' ')[0]);
+      });
+      if (match) bonusRace = 15;
+    }
+
+    // ── BONUS âge souhaité ────────────────────────────────
+    var bonusAge = 0;
+    var ageSouhaite = profil && profil.profil_animal_souhaite;
+    var ageAnimal = animal.age_annees || 0;
+    var espece = (animal.espece || '').toLowerCase();
+    if (ageSouhaite && ageSouhaite !== 'peu_importe' && ageSouhaite !== 'peu-importe') {
+      var isChiot  = ageAnimal <= 1;
+      var isJeune  = ageAnimal > 1 && ageAnimal <= 3;
+      var isAdulte = ageAnimal > 3 && ageAnimal < (espece === 'chat' ? 10 : 8);
+      var isSenior = espece === 'chat' ? ageAnimal >= 10 : ageAnimal >= 8;
+      var souhaiteMatch = (ageSouhaite === 'chiot' && isChiot) ||
+                          (ageSouhaite === 'chaton' && isChiot) ||
+                          (ageSouhaite === 'jeune_adulte' && isJeune) ||
+                          (ageSouhaite === 'adulte' && isAdulte) ||
+                          (ageSouhaite === 'senior' && isSenior);
+      if (souhaiteMatch) bonusAge = 10;
+    }
+
+    // Appliquer les bonus (plafonné à 100)
+    global = Math.min(100, global + bonusRace + bonusAge);
+
+    return { global, scores, bonusRace, bonusAge };
   }
 
   // Charger les paramètres algo depuis Supabase
