@@ -279,7 +279,6 @@ window.addEventListener("load", async function() {
   var btnM = document.getElementById("btnMaps"); if (btnM) btnM.href = "https://maps.google.com/?q=" + adresseMap;
   // Distance depuis la position de l'utilisateur
   var distEl = document.getElementById('distanceRefuge');
-  // Init carte si coordonnées disponibles
   if (refuge.latitude && refuge.longitude) {
     initCarteRefuge(refuge.latitude, refuge.longitude, refuge.nom);
   } else {
@@ -287,16 +286,16 @@ window.addEventListener("load", async function() {
     if (btn) btn.style.display = 'none';
   }
 
-  if (distEl && refuge.lat && refuge.lng) {
+  if (distEl && refuge.latitude && refuge.longitude) {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(function(pos) {
-        var dist = calculerDistance(pos.coords.latitude, pos.coords.longitude, refuge.lat, refuge.lng);
+        var dist = calculerDistance(pos.coords.latitude, pos.coords.longitude, refuge.latitude, refuge.longitude);
         distEl.textContent = '📍 À ' + dist + ' km de vous';
       }, function() {
-        distEl.textContent = '📍 Position non disponible';
+        distEl.textContent = '';
       });
     } else {
-      distEl.textContent = '📍 Géolocalisation non supportée';
+      distEl.textContent = '';
     }
   } else if (distEl) {
     distEl.textContent = '';
