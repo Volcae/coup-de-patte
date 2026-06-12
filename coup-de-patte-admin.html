@@ -379,11 +379,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <div class="field-row"><span class="field-label">Téléphone</span><input class="form-input" style="width:100%" id="infoTel"></div>
           <div class="field-row"><span class="field-label">Email</span><input class="form-input" style="width:100%" id="infoEmail"></div>
           <div class="field-row"><span class="field-label">Site web</span><input class="form-input" style="width:100%" id="infoSite"></div>
-          <div class="field-row" style="gap:10px">
-            <div style="flex:1"><span class="field-label">Latitude</span><input class="form-input" style="width:100%" id="infoLat" type="number" step="0.0001" placeholder="ex: 47.3856"></div>
-            <div style="flex:1"><span class="field-label">Longitude</span><input class="form-input" style="width:100%" id="infoLng" type="number" step="0.0001" placeholder="ex: 5.0089"></div>
+          <div class="field-row" style="flex-direction:column;gap:6px">
+            <span class="field-label">Coordonnées GPS (carte des refuges)</span>
+            <input class="form-input" id="infoCoordsRaw" type="text" placeholder="Coller depuis Google Maps : ex 47.260838, 4.927295" oninput="parserCoordsAdmin(this.value)" style="width:100%">
+            <div style="display:flex;gap:8px">
+              <input class="form-input" id="infoLat" type="number" step="0.000001" placeholder="Latitude" style="flex:1">
+              <input class="form-input" id="infoLng" type="number" step="0.000001" placeholder="Longitude" style="flex:1">
+            </div>
+            <div style="font-size:0.72rem;color:var(--dust)">Clic droit sur Google Maps → "C'est ici" → copiez et collez ci-dessus.</div>
           </div>
-          <div style="font-size:0.72rem;color:var(--dust);margin:-6px 0 8px;padding:0 4px">Coordonnées GPS pour la carte des refuges. Laissez vide pour utiliser la ville automatiquement. Trouvez les coordonnées sur <a href="https://www.google.fr/maps" target="_blank" style="color:var(--moss)">Google Maps</a> (clic droit → "C'est ici").</div>
           <div class="field-row" style="flex-direction:column;gap:10px">
             <span class="field-label">Horaires d'ouverture</span>
             <div id="horairesGrid">              <div style="display:grid;grid-template-columns:80px 1fr 1fr;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)">
@@ -889,6 +893,7 @@ window.addEventListener('load', async function() {
   document.getElementById('infoVille').value   = refuge.ville     || '';
   if (document.getElementById('infoLat')) document.getElementById('infoLat').value = refuge.latitude  || '';
   if (document.getElementById('infoLng')) document.getElementById('infoLng').value = refuge.longitude || '';
+  if (document.getElementById('infoCoordsRaw')) document.getElementById('infoCoordsRaw').value = (refuge.latitude && refuge.longitude) ? refuge.latitude + ', ' + refuge.longitude : '';
   document.getElementById('infoTel').value     = refuge.telephone || '';
   document.getElementById('infoEmail').value   = refuge.email     || '';
   document.getElementById('infoSite').value    = (refuge.site_web||'').replace(/\[([^\]]+)\]\([^)]+\)/g,'$1').replace(/^https?:\/\//i,'');
@@ -2145,6 +2150,21 @@ function copierTextePartage(id) {
   navigator.clipboard.writeText(el.textContent.trim()).then(function() { showToast("Texte copie !"); });
 }
 document.addEventListener("click", function(e) { var m = document.getElementById("partageAdminModal"); if (m && e.target === m) fermerPartageAdmin(); });
+
+function parserCoordsAdmin(val) {
+  if (!val) return;
+  var parts = val.split(/[,\s]+/).map(function(s) { return s.trim(); }).filter(Boolean);
+  if (parts.length >= 2) {
+    var lat = parseFloat(parts[0]);
+    var lng = parseFloat(parts[1]);
+    if (!isNaN(lat) && !isNaN(lng)) {
+      var el1 = document.getElementById('infoLat');
+      var el2 = document.getElementById('infoLng');
+      if (el1) el1.value = lat;
+      if (el2) el2.value = lng;
+    }
+  }
+}
 </script>
 <footer>
   <div class="footer-logo">
