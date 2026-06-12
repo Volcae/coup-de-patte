@@ -378,7 +378,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <div class="field-row"><span class="field-label">Ville</span><input class="form-input" style="width:100%" id="infoVille"></div>
           <div class="field-row"><span class="field-label">Téléphone</span><input class="form-input" style="width:100%" id="infoTel"></div>
           <div class="field-row"><span class="field-label">Email</span><input class="form-input" style="width:100%" id="infoEmail"></div>
-          <div class="field-row"><span class="field-label">Site web</span><input class="form-input" style="width:100%" id="infoSite"></div>
+          <div class="field-row"><span class="field-label">Site web</span><input class="form-input" style="width:100%" id="infoSite" placeholder="https://www.monrefuge.fr"></div>
+          <div class="field-row"><span class="field-label">Page des animaux à adopter</span><input class="form-input" style="width:100%" id="infoUrlAdoption" placeholder="https://www.monrefuge.fr/nos-animaux/"></div>
+          <div style="font-size:0.72rem;color:var(--dust);margin:-6px 0 8px;padding:0 4px">Si votre site a une page dédiée aux animaux, indiquez-la ici pour améliorer l’import automatique.</div>
           <div class="field-row" style="flex-direction:column;gap:6px">
             <span class="field-label">Coordonnées GPS (carte des refuges)</span>
             <input class="form-input" id="infoCoordsRaw" type="text" placeholder="Coller depuis Google Maps : ex 47.260838, 4.927295" oninput="parserCoordsAdmin(this.value)" style="width:100%">
@@ -896,7 +898,12 @@ window.addEventListener('load', async function() {
   if (document.getElementById('infoCoordsRaw')) document.getElementById('infoCoordsRaw').value = (refuge.latitude && refuge.longitude) ? refuge.latitude + ', ' + refuge.longitude : '';
   document.getElementById('infoTel').value     = refuge.telephone || '';
   document.getElementById('infoEmail').value   = refuge.email     || '';
-  document.getElementById('infoSite').value    = (refuge.site_web||'').replace(/\[([^\]]+)\]\([^)]+\)/g,'$1').replace(/^https?:\/\//i,'');
+  document.getElementById('infoSite').value    = (function(){
+    var s = (refuge.site_web||'').replace(/\[([^\]]+)\]\([^)]+\)/g,'$1');
+    if (s && !s.match(/^https?:\/\//i)) s = 'https://' + s;
+    return s;
+  })();
+  if (document.getElementById('infoUrlAdoption')) document.getElementById('infoUrlAdoption').value = refuge.url_adoption || '';
   loadHoraires(refuge.horaires);
   // Types animaux
   if (refuge.types_animaux) {
@@ -1573,9 +1580,14 @@ async function saveRefugeInfos() {
     email: document.getElementById('infoEmail').value.trim(),
     site_web: (function() {
       var s = document.getElementById('infoSite').value.trim();
-      s = s.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1'); // strip markdown
-      s = s.replace(/^https?:\/\//i, ''); // remove existing protocol
+      s = s.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
+      if (s && !s.match(/^https?:\/\//i)) s = 'https://' + s;
       return s;
+    })(),
+    url_adoption: (function() {
+      var u = document.getElementById('infoUrlAdoption') ? document.getElementById('infoUrlAdoption').value.trim() : '';
+      if (u && !u.match(/^https?:\/\//i)) u = 'https://' + u;
+      return u || null;
     })(),
     description: document.getElementById('infoDesc').value.trim(),
     horaires: JSON.stringify(getHoraires()),
