@@ -249,7 +249,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
   var allEnfinAnimaux = [];
-  var currentSort = 'attente';
+  var currentSort = 'match';
 
   function renderCards(animaux) {
     var grid = document.getElementById('animalsGrid') || document.querySelector('.em-grid');
@@ -327,9 +327,25 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       return (anciennete && moisR >= 12) || (senior && isSenior) || (besoins && isBesoins) || (malaise && isMalaise);
     });
 
-    result.sort(function(a, b) {
-      return new Date(a.date_arrivee_refuge || 0) - new Date(b.date_arrivee_refuge || 0);
-    });
+    // Appliquer le tri selon currentSort
+    if (currentSort === 'attente') {
+      // Plus longue attente en premier (date la plus ancienne)
+      result.sort(function(a, b) {
+        var da = a.date_arrivee_refuge ? new Date(a.date_arrivee_refuge) : new Date();
+        var db = b.date_arrivee_refuge ? new Date(b.date_arrivee_refuge) : new Date();
+        return da - db; // plus ancienne = plus longue attente
+      });
+    } else if (currentSort === 'match') {
+      // Meilleurs matchs en premier (score_global décroissant)
+      result.sort(function(a, b) {
+        return (b.score_global || 0) - (a.score_global || 0);
+      });
+    } else if (currentSort === 'age') {
+      // Plus vieux en premier
+      result.sort(function(a, b) {
+        return (b.age_annees || 0) - (a.age_annees || 0);
+      });
+    }
 
     renderCards(result);
   }
