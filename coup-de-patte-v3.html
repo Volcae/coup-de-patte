@@ -396,6 +396,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 
   var currentSort = 'score';
+  var profil = null;
+  var animaux = [];
+  var aimeIds = new Set();
 
   function toggleSortMenu(btn) {
     var menu = document.getElementById('sortMenu');
@@ -888,9 +891,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     var userId = session.user.id;
     await chargerParamsAlgo();
     var profilResult = await sb.from('ProfilAdoptant').select('*').eq('utilisateur', userId);
-    var profil = profilResult.data && profilResult.data.length > 0 ? profilResult.data[0] : null;
+    profil = profilResult.data && profilResult.data.length > 0 ? profilResult.data[0] : null;
     // Filtre espèce selon profil adoptant
-    var animauxQuery = sb.from('Animal').select('*, refuge:Refuge(*)').eq('disponible', true).or('retrait_auto_date.is.null,retrait_auto_date.gt.' + new Date().toISOString());
+    animauxQuery = sb.from('Animal').select('*, refuge:Refuge(*)').eq('disponible', true).or('retrait_auto_date.is.null,retrait_auto_date.gt.' + new Date().toISOString());
     if (profil && profil.animal_souhaite && profil.animal_souhaite !== 'indifferent' && profil.animal_souhaite !== 'les-deux') {
       animauxQuery = animauxQuery.eq('espece', profil.animal_souhaite);
     }
@@ -902,7 +905,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
     // Exclure les animaux déjà likés
     var { data: dejaAimes } = await sb.from('Correspondre').select('animal').eq('utilisateur', userId).eq('aime', true);
-    var aimeIds = new Set((dejaAimes || []).map(function(r) { return r.animal; }));
+    aimeIds = new Set((dejaAimes || []).map(function(r) { return r.animal; }));
 
     allMatchs = animaux
       .filter(function(animal) {
