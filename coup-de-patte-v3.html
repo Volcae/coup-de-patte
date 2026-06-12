@@ -462,11 +462,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     var matchsSorted = allMatchs.slice();
 
     if (sortType === 'score') {
-      // Ordre par défaut : Enfin Moi d'abord, puis score décroissant
+      // Ordre par défaut : tri par score décroissant, mais les Enfin Moi
+      // avec un bon score (>= seuil apprivoise) remontent en tête
+      var seuilEnfin = 70; // seuil "Belle rencontre" pour qu'un Enfin Moi remonte
       matchsSorted.sort(function(a, b) {
-        var ae = a.animal && a.animal.enfin_moi ? 1 : 0;
-        var be = b.animal && b.animal.enfin_moi ? 1 : 0;
-        return be - ae || b.score - a.score;
+        var aEnfin = a.animal && a.animal.enfin_moi && a.score >= seuilEnfin ? 1 : 0;
+        var bEnfin = b.animal && b.animal.enfin_moi && b.score >= seuilEnfin ? 1 : 0;
+        return bEnfin - aEnfin || b.score - a.score;
       });
 
       // Ajouter animaux race souhaitée si pas déjà présents
