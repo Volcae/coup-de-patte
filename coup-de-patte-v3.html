@@ -861,7 +861,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       var match = racesVoulues.some(function(r) {
         return raceAnimal === r || raceAnimal.startsWith(r) || r.startsWith(raceAnimal.split(' ')[0]);
       });
-      if (match) bonusRace = 15;
+      if (match) bonusRace = (window._algoParams && window._algoParams.bonus_race !== undefined) ? window._algoParams.bonus_race : 15;
     }
 
     // ── BONUS âge souhaité ────────────────────────────────
@@ -879,7 +879,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                           (ageSouhaite === 'jeune_adulte' && isJeune) ||
                           (ageSouhaite === 'adulte' && isAdulte) ||
                           (ageSouhaite === 'senior' && isSenior);
-      if (souhaiteMatch) bonusAge = 10;
+      if (souhaiteMatch) bonusAge = (window._algoParams && window._algoParams.bonus_age !== undefined) ? window._algoParams.bonus_age : 10;
     }
 
     // Appliquer les bonus (plafonné à 100)

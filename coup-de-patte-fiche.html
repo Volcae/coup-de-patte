@@ -538,7 +538,7 @@ window.addEventListener('load', async function() {
       var raceMatch = racesVoulues.some(function(r) {
         return raceAnimal === r || raceAnimal.startsWith(r) || r.startsWith(raceAnimal.split(' ')[0]);
       });
-      if (raceMatch) score += 15;
+      if (raceMatch) score += (window._algoParams && window._algoParams.bonus_race !== undefined) ? window._algoParams.bonus_race : 15;
     }
 
     // Bonus âge souhaité
@@ -550,10 +550,11 @@ window.addEventListener('load', async function() {
       var isJeune  = ageAnimal > 1 && ageAnimal <= 3;
       var isAdulte = ageAnimal > 3 && ageAnimal < (especeA === 'chat' ? 10 : 8);
       var isSenior = especeA === 'chat' ? ageAnimal >= 10 : ageAnimal >= 8;
-      if ((ageSouhaite === 'chiot' || ageSouhaite === 'chaton') && isChiot) score += 10;
-      else if (ageSouhaite === 'jeune_adulte' && isJeune) score += 10;
-      else if (ageSouhaite === 'adulte' && isAdulte) score += 10;
-      else if (ageSouhaite === 'senior' && isSenior) score += 10;
+      var bAge = (window._algoParams && window._algoParams.bonus_age !== undefined) ? window._algoParams.bonus_age : 10;
+      if ((ageSouhaite === 'chiot' || ageSouhaite === 'chaton') && isChiot) score += bAge;
+      else if (ageSouhaite === 'jeune_adulte' && isJeune) score += bAge;
+      else if (ageSouhaite === 'adulte' && isAdulte) score += bAge;
+      else if (ageSouhaite === 'senior' && isSenior) score += bAge;
     }
 
     score = Math.min(100, score);

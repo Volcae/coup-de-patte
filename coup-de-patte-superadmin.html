@@ -572,6 +572,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
 
         <div class="algo-card">
+          <p class="algo-title">⭐ Bonus de score</p>
+          <p style="font-size:0.75rem;color:var(--dust);margin-bottom:16px;font-style:italic">Points supplémentaires ajoutés après le calcul principal. Le score est plafonné à 100%.</p>
+
+          <div class="threshold-row"><span class="threshold-label">🐾 Bonus race souhaitée</span><input class="threshold-input" id="bonusRace" type="number" value="15" min="0" max="30"><span class="threshold-unit">pts</span></div>
+          <div class="threshold-row"><span class="threshold-label">🎂 Bonus âge souhaité</span><input class="threshold-input" id="bonusAge" type="number" value="10" min="0" max="25"><span class="threshold-unit">pts</span></div>
+          <button class="save-btn" onclick="sauvegarderBonus()">Sauvegarder les bonus</button>
+        </div>
+
+        <div class="algo-card">
           <p class="algo-title">🎯 Seuils d'affichage</p>
           <p style="font-size:0.75rem;color:var(--dust);margin-bottom:16px;font-style:italic">Score minimum pour qu'un animal soit affiché à un adoptant.</p>
 
@@ -3247,6 +3256,7 @@ async function chargerParametresAlgo() {
     sv('seuilMin',p.seuil_min); sv('seuilIdeal',p.seuil_ideal);
     sv('seuilBelle',p.seuil_belle); sv('seuilAppri',p.seuil_appri);
     sv('emMois',p.em_mois); sv('emChien',p.em_chien); sv('emChat',p.em_chat);
+    sv('bonusRace',p.bonus_race); sv('bonusAge',p.bonus_age);
     console.log('Paramètres algo chargés');
   } catch(e) { console.warn('Erreur chargement algo:', e); }
 }
@@ -3259,6 +3269,7 @@ function lireParametresActuels() {
     seuil_min:g('seuilMin',40), seuil_ideal:g('seuilIdeal',85),
     seuil_belle:g('seuilBelle',70), seuil_appri:g('seuilAppri',55),
     em_mois:g('emMois',12), em_chien:g('emChien',8), em_chat:g('emChat',10),
+    bonus_race:g('bonusRace',15), bonus_age:g('bonusAge',10),
   };
 }
 
@@ -3278,6 +3289,10 @@ async function sauvegarderPonderations() {
 
 async function sauvegarderSeuils() {
   await sauvegarderParams(lireParametresActuels(), 'Seuils sauvegardés ✅');
+}
+
+async function sauvegarderBonus() {
+  await sauvegarderParams(lireParametresActuels(), 'Bonus sauvegardés ✅');
 }
 
 async function sauvegarderSeuilsEnfinMoi() {
