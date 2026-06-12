@@ -265,9 +265,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <button class="sort-btn" onclick="toggleSortMenu(this)">↕ Trier</button>
           <div id="sortMenu" style="display:none;position:absolute;right:0;top:44px;background:var(--paper);border:1.5px solid var(--border);border-radius:16px;padding:8px;box-shadow:0 8px 24px rgba(45,74,62,0.15);z-index:100;min-width:200px">
             <div class="sort-option active" data-sort="score" onclick="applySort('score',this)">🎯 Score de compatibilité</div>
+            <div class="sort-option" data-sort="enfin" onclick="applySort('enfin',this)">✨ Enfin Moi ? en premier</div>
             <div class="sort-option" data-sort="nom_asc" onclick="applySort('nom_asc',this)">🔤 Nom A → Z</div>
             <div class="sort-option" data-sort="nom_desc" onclick="applySort('nom_desc',this)">🔤 Nom Z → A</div>
-            <div class="sort-option" data-sort="enfin" onclick="applySort('enfin',this)">✨ Enfin Moi ? en premier</div>
+            <div class="sort-option" data-sort="dist_asc" onclick="applySort('dist_asc',this)">📍 Les plus proches</div>
+            <div class="sort-option" data-sort="dist_desc" onclick="applySort('dist_desc',this)">📍 Les plus éloignés</div>
           </div>
         </div>
       </div>
@@ -410,6 +412,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }, 50);
   }
 
+  var _userLat = null, _userLng = null;
+
+  function calculerDistanceKm(lat1, lng1, lat2, lng2) {
+    var R = 6371;
+    var dLat = (lat2 - lat1) * Math.PI / 180;
+    var dLng = (lng2 - lng1) * Math.PI / 180;
+    var a = Math.sin(dLat/2)*Math.sin(dLat/2) + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)*Math.sin(dLng/2);
+    return Math.round(R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
+  }
+
   function applySort(sortType, el) {
     currentSort = sortType;
     document.querySelectorAll('.sort-option').forEach(function(o) { o.classList.remove('active'); });
@@ -417,25 +429,47 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     document.getElementById('sortMenu').style.display = 'none';
 
     var labels = {
-      'score': 'Triés par score de compatibilité',
-      'nom_asc': 'Triés par nom A → Z',
-      'nom_desc': 'Triés par nom Z → A',
-      'enfin': 'Enfin Moi ? en premier'
+      'score':     'Triés par score de compatibilité · Enfin Moi en tête',
+      'nom_asc':   'Triés par nom A → Z',
+      'nom_desc':  'Triés par nom Z → A',
+      'enfin':     'Enfin Moi ? en premier',
+      'dist_asc':  'Les plus proches en premier',
+      'dist_desc': 'Les plus éloignés en premier'
     };
     var labelEl = document.getElementById('sortLabel');
     if (labelEl) labelEl.textContent = (labels[sortType] || '') + ' · Basés sur votre profil';
 
-    // Re-sort and re-render
-    var sorted = allMatchs.slice();
-    if (sortType === 'score') {
-      sorted.sort(function(a, b) {
-        if (a.animal.enfin_moi && !b.animal.enfin_moi) return -1;
-        if (!a.animal.enfin_moi && b.animal.enfin_moi) return 1;
-        return b.score - a.score;
-      });
-      var matchsSorted = sorted;
+    // Tri distance : demander géolocalisation si pas encore fait
+    if ((sortType === 'dist_asc' || sortType === 'dist_desc') && !_userLat) {
+      if (!navigator.geolocation) {
+        showToast('📍 La géolocalisation n\'est pas supportée par votre navigateur');
+        return;
+      }
+      navigator.geolocation.getCurrentPosition(
+        function(pos) {
+          _userLat = pos.coords.latitude;
+          _userLng = pos.coords.longitude;
+          applySort(sortType, el);
+        },
+        function() {
+          showToast('📍 Activez la géolocalisation dans votre navigateur pour utiliser ce tri');
+        }
+      );
+      return;
+    }
 
-      // Ajouter les animaux de la race souhaitée même si score bas
+    // Re-sort
+    var matchsSorted = allMatchs.slice();
+
+    if (sortType === 'score') {
+      // Ordre par défaut : Enfin Moi d'abord, puis score décroissant
+      matchsSorted.sort(function(a, b) {
+        var ae = a.animal && a.animal.enfin_moi ? 1 : 0;
+        var be = b.animal && b.animal.enfin_moi ? 1 : 0;
+        return be - ae || b.score - a.score;
+      });
+
+      // Ajouter animaux race souhaitée si pas déjà présents
       var racesVoulues = profil && profil.races_souhaitees
         ? profil.races_souhaitees.split(',').map(function(r) { return r.trim().toLowerCase(); }).filter(function(r) { return r && r !== 'peu-importe'; })
         : [];
@@ -452,24 +486,39 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           })
           .map(function(animal) { return { animal: animal, score: calculerScore(profil, animal), raceMatch: true }; })
           .sort(function(a, b) {
-            if (a.animal.enfin_moi && !b.animal.enfin_moi) return -1;
-            if (!a.animal.enfin_moi && b.animal.enfin_moi) return 1;
-            return b.score - a.score;
+            var ae = a.animal && a.animal.enfin_moi ? 1 : 0;
+            var be = b.animal && b.animal.enfin_moi ? 1 : 0;
+            return be - ae || b.score - a.score;
           });
-        // Insérer après les Enfin Moi
         var idxInsert = matchsSorted.findIndex(function(m) { return !m.animal.enfin_moi; });
         if (idxInsert === -1) idxInsert = matchsSorted.length;
         matchsSorted = matchsSorted.slice(0, idxInsert).concat(extraRace).concat(matchsSorted.slice(idxInsert));
       }
+
     } else if (sortType === 'nom_asc') {
-      sorted.sort(function(a, b) { return (a.animal && b.animal) ? a.animal.nom.localeCompare(b.animal.nom, 'fr') : 0; });
+      matchsSorted.sort(function(a, b) { return (a.animal && b.animal) ? a.animal.nom.localeCompare(b.animal.nom, 'fr') : 0; });
+
     } else if (sortType === 'nom_desc') {
-      sorted.sort(function(a, b) { return (a.animal && b.animal) ? b.animal.nom.localeCompare(a.animal.nom, 'fr') : 0; });
+      matchsSorted.sort(function(a, b) { return (a.animal && b.animal) ? b.animal.nom.localeCompare(a.animal.nom, 'fr') : 0; });
+
     } else if (sortType === 'enfin') {
-      sorted.sort(function(a, b) {
+      matchsSorted.sort(function(a, b) {
         var ae = a.animal && a.animal.enfin_moi ? 1 : 0;
         var be = b.animal && b.animal.enfin_moi ? 1 : 0;
         return be - ae || b.score - a.score;
+      });
+
+    } else if (sortType === 'dist_asc' || sortType === 'dist_desc') {
+      matchsSorted.sort(function(a, b) {
+        var refugeA = a.animal && a.animal.refuge;
+        var refugeB = b.animal && b.animal.refuge;
+        var distA = (refugeA && refugeA.latitude && refugeA.longitude)
+          ? calculerDistanceKm(_userLat, _userLng, refugeA.latitude, refugeA.longitude)
+          : 99999;
+        var distB = (refugeB && refugeB.latitude && refugeB.longitude)
+          ? calculerDistanceKm(_userLat, _userLng, refugeB.latitude, refugeB.longitude)
+          : 99999;
+        return sortType === 'dist_asc' ? distA - distB : distB - distA;
       });
     }
 
