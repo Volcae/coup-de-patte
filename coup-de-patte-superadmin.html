@@ -3386,14 +3386,16 @@ async function sauvegarderGPS() {
     latitude:  lat ? parseFloat(lat) : null,
     longitude: lng ? parseFloat(lng) : null
   };
+  console.log('GPS payload:', payload, 'refuge:', _gpsRefugeId);
   var sb = getSupabase();
-  var { error } = await sb.from('Refuge').update(payload).eq('id', _gpsRefugeId);
+  var { data, error } = await sb.from('Refuge').update(payload).eq('id', _gpsRefugeId).select();
+  console.log('GPS result:', data, 'error:', error);
   if (error) {
     showToast('✗ Erreur : ' + error.message);
+    console.error('GPS error details:', error);
   } else {
     showToast('📍 Coordonnées sauvegardées ✅');
     fermerGPS();
-    // Recharger la liste
     if (typeof chargerStats === 'function') chargerStats();
   }
 }
