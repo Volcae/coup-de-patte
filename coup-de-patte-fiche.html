@@ -6,6 +6,19 @@
 <link rel="icon" type="image/x-icon" href="favicon.ico?v=2">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title id="pageTitle">Fiche animal · Coup de Patte</title>
+<meta name="description" id="metaDesc" content="Découvrez cette fiche d'adoption sur Coup de Patte, la plateforme qui connecte les animaux de refuges avec leur famille idéale.">
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Coup de Patte">
+<meta property="og:title" id="ogTitle" content="Fiche animal · Coup de Patte">
+<meta property="og:description" id="ogDesc" content="Découvrez cette fiche d'adoption sur Coup de Patte.">
+<meta property="og:image" id="ogImage" content="https://coup-de-patte.fr/og-default.jpg">
+<meta property="og:url" id="ogUrl" content="https://coup-de-patte.fr/coup-de-patte-fiche.html">
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" id="twTitle" content="Fiche animal · Coup de Patte">
+<meta name="twitter:description" id="twDesc" content="Découvrez cette fiche d'adoption sur Coup de Patte.">
+<meta name="twitter:image" id="twImage" content="https://coup-de-patte.fr/og-default.jpg">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{--forest:#2D4A3E;--moss:#4A7C59;--sage:#7AAD89;--mint:#C8E6C0;--mint-lt:#EBF5E8;--ivory:#F4F1E8;--paper:#FDFCF8;--bark:#6B4F3A;--gold:#D4A843;--amber:#C49A1A;--blush:#E8C49A;--rose:#C9704A;--blue:#5B8DEF;--border:rgba(45,74,62,0.11);--dust:#7A6E65;--smoke:#A89E96;--shadow:0 12px 48px rgba(45,74,62,0.12)}
@@ -225,7 +238,33 @@ window.addEventListener('load', async function() {
   var { data: animal } = await sb.from('Animal').select('*, refuge:Refuge(*)').eq('id', window.animalId).single();
   if (!animal) return;
 
-  document.title = (animal.nom || 'Animal') + ' · Coup de Patte';
+  var nomAnimal = animal.nom || 'Animal';
+  var espece = animal.espece === 'chat' ? 'chat' : 'chien';
+  var race = animal.race ? ' · ' + animal.race : '';
+  var ville = (animal.refuge && animal.refuge.ville) ? ' à ' + animal.refuge.ville : '';
+  var desc = animal.description
+    ? animal.description.substring(0, 160).replace(/[\r\n]+/g, ' ')
+    : (nomAnimal + ', ' + espece + race + ville + ' — à adopter sur Coup de Patte.');
+  var photoUrl = animal.photo_url || 'https://coup-de-patte.fr/og-default.jpg';
+  var pageUrl = 'https://coup-de-patte.fr/coup-de-patte-fiche.html?id=' + animal.id;
+  var ogTitleText = nomAnimal + race + ville + ' · Coup de Patte';
+
+  // Titre de la page
+  document.title = ogTitleText;
+
+  // Meta description
+  var md = document.getElementById('metaDesc'); if (md) md.content = desc;
+
+  // Open Graph
+  var ot = document.getElementById('ogTitle');   if (ot) ot.content = ogTitleText;
+  var od = document.getElementById('ogDesc');    if (od) od.content = desc;
+  var oi = document.getElementById('ogImage');   if (oi) oi.content = photoUrl;
+  var ou = document.getElementById('ogUrl');     if (ou) ou.content = pageUrl;
+
+  // Twitter Card
+  var tt = document.getElementById('twTitle');   if (tt) tt.content = ogTitleText;
+  var td = document.getElementById('twDesc');    if (td) td.content = desc;
+  var ti = document.getElementById('twImage');   if (ti) ti.content = photoUrl;
 
   // ─── PHOTO HERO ───
   var heroImg = document.getElementById('heroImg');
