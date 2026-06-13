@@ -410,7 +410,6 @@ async function afficherCarte(refuges) {
     var r = refuges[i];
     // Utiliser les coordonnées en base si disponibles, sinon géocoder la ville
     var coords = (r.latitude && r.longitude) ? { lat: r.latitude, lng: r.longitude } : await geocoderVille(r.ville);
-    console.log(r.nom, '→ coords:', coords, '| DB lat:', r.latitude, 'lng:', r.longitude);
     if (!coords) continue;
     bounds.push([coords.lat, coords.lng]);
     var nbA = (window.countParRefuge || {})[r.id] || 0;
