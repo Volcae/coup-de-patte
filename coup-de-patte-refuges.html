@@ -410,13 +410,14 @@ async function afficherCarte(refuges) {
     var r = refuges[i];
     // Utiliser les coordonnées en base si disponibles, sinon géocoder la ville
     var coords = (r.latitude && r.longitude) ? { lat: r.latitude, lng: r.longitude } : await geocoderVille(r.ville);
+    console.log(r.nom, '→ coords:', coords, '| DB lat:', r.latitude, 'lng:', r.longitude);
     if (!coords) continue;
     bounds.push([coords.lat, coords.lng]);
     var nbA = (window.countParRefuge || {})[r.id] || 0;
     var popup = '<div style="font-family:Nunito,sans-serif;min-width:160px">' +
       '<div style="font-family:Fraunces,serif;font-style:italic;font-weight:700;color:var(--forest);font-size:0.95rem;margin-bottom:4px">' + r.nom + '</div>' +
       '<div style="font-size:0.75rem;color:var(--dust);margin-bottom:8px">📍 ' + (r.ville || '') + '</div>' +
-      '<div style="font-size:0.75rem;font-weight:700;color:var(--moss);margin-bottom:10px">' + nbA + ' animal' + (nbA > 1 ? 'aux' : '') + ' disponible' + (nbA > 1 ? 's' : '') + '</div>' +
+      '<div style="font-size:0.75rem;font-weight:700;color:var(--moss);margin-bottom:10px">' + nbA + ' ' + (nbA > 1 ? 'animaux' : 'animal') + ' disponible' + (nbA > 1 ? 's' : '') + '</div>' +
       '<button onclick="window.allerRefuge(\'' + r.id + '\')" style="width:100%;padding:7px;background:var(--moss);color:white;border:none;border-radius:50px;font-family:Nunito,sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer">Voir le refuge →</button>' +
       '</div>';
     var marker = L.marker([coords.lat, coords.lng], { icon: icon })
