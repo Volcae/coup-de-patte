@@ -254,6 +254,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     .eq('disponible', true);
 
   var countParRefuge = window.countParRefuge = {};
+  var allRefuges = [];
   if (animaux) {
     animaux.forEach(function(a) {
       var id = typeof a.refuge === 'object' ? a.refuge : a.refuge;
@@ -267,7 +268,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   // Pagination
   var grid_el = document.getElementById('refugesGrid');
   var searchInput = document.querySelector('.search-input');
-  var allRefuges = refuges;
+  allRefuges = refuges;
   var PAGE_SIZE = 12;
   var currentPage = 1;
 
@@ -303,6 +304,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     });
     currentPage = 1;
     renderPage(filtered, 1);
+
+    // Centrer la carte sur le résultat si un seul refuge trouvé
+    if (_map && filtered.length === 1 && filtered[0].latitude && filtered[0].longitude) {
+      _map.setView([filtered[0].latitude, filtered[0].longitude], 12);
+    } else if (_map && filtered.length > 1) {
+      // Plusieurs résultats — fitBounds
+      var pts = filtered.filter(function(r) { return r.latitude && r.longitude; }).map(function(r) { return [r.latitude, r.longitude]; });
+      if (pts.length > 0) _map.fitBounds(pts, { padding: [40, 40] });
+    } else if (_map && !q) {
+      // Recherche vidée → vue France
+      _map.setView([46.8, 2.3], 6);
+    }
   };
   if (searchInput) {
     searchInput.addEventListener('input', function() { window.filterRefuges(this.value); });
