@@ -3478,9 +3478,8 @@ async function chargerTemplates() {
   }
 
   el.innerHTML = templates.map(function(t) {
-    var preview = (t.contenu || '').substring(0, 120).replace(/
-/g, ' ');
-    return '<div class="dash-card" style="cursor:pointer" onclick="ouvrirEditionTemplate('' + t.id + '')">' +
+    var preview = (t.contenu || '').substring(0, 120).replace(/\n/g, ' ');
+    return '<div class="dash-card" style="cursor:pointer" onclick="ouvrirEditionTemplate(\'' + t.id + '\')">' +
       '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">' +
         '<div style="flex:1">' +
           '<div style="font-family:'Fraunces',serif;font-weight:700;font-style:italic;color:var(--forest);margin-bottom:4px">' + (t.nom || 'Sans nom') + '</div>' +
@@ -3488,8 +3487,8 @@ async function chargerTemplates() {
           '<div style="font-size:0.75rem;color:var(--dust);line-height:1.5">' + preview + (preview.length >= 120 ? '…' : '') + '</div>' +
         '</div>' +
         '<div style="display:flex;gap:8px;flex-shrink:0">' +
-          '<button onclick="event.stopPropagation();copierTemplate('' + t.id + '')" style="padding:6px 12px;background:var(--mint-lt);color:var(--moss);border:1.5px solid rgba(74,124,89,0.2);border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.72rem;font-weight:700;cursor:pointer">📋 Copier</button>' +
-          '<button onclick="event.stopPropagation();ouvrirEditionTemplate('' + t.id + '')" style="padding:6px 12px;background:transparent;border:1.5px solid var(--border);border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.72rem;font-weight:600;color:var(--dust);cursor:pointer">✏️ Modifier</button>' +
+          '<button onclick="event.stopPropagation();copierTemplate(\'' + t.id + '\')" style="padding:6px 12px;background:var(--mint-lt);color:var(--moss);border:1.5px solid rgba(74,124,89,0.2);border-radius:50px;font-family:Nunito,sans-serif;font-size:0.72rem;font-weight:700;cursor:pointer">📋 Copier</button>' +
+          '<button onclick="event.stopPropagation();ouvrirEditionTemplate(\'' + t.id + '\')" style="padding:6px 12px;background:transparent;border:1.5px solid var(--border);border-radius:50px;font-family:Nunito,sans-serif;font-size:0.72rem;font-weight:600;color:var(--dust);cursor:pointer">✏️ Modifier</button>' +
         '</div>' +
       '</div>' +
     '</div>';
