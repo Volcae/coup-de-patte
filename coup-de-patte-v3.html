@@ -465,13 +465,23 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     var matchsSorted = allMatchs.slice();
 
     if (sortType === 'score') {
-      // Ordre par défaut : tri par score décroissant, mais les Enfin Moi
-      // avec un bon score (>= seuil apprivoise) remontent en tête
-      var seuilEnfin = 70; // seuil "Belle rencontre" pour qu'un Enfin Moi remonte
+      var seuilEnfin2 = (window._algoParams && window._algoParams.seuil_belle !== undefined) ? window._algoParams.seuil_belle : 70;
+      var racesVoulues2 = profil && profil.races_souhaitees
+        ? profil.races_souhaitees.split(',').map(function(r) { return r.trim().toLowerCase(); }).filter(function(r) { return r && r !== 'peu-importe'; })
+        : [];
+      function matchRace2(m) {
+        if (!racesVoulues2.length || !m.animal.race) return false;
+        var r = m.animal.race.toLowerCase();
+        return racesVoulues2.some(function(rv) { return r === rv || r.startsWith(rv) || rv.startsWith(r.split(' ')[0]); });
+      }
       matchsSorted.sort(function(a, b) {
-        var aEnfin = a.animal && a.animal.enfin_moi && a.score >= seuilEnfin ? 1 : 0;
-        var bEnfin = b.animal && b.animal.enfin_moi && b.score >= seuilEnfin ? 1 : 0;
-        return bEnfin - aEnfin || b.score - a.score;
+        var aRace  = matchRace2(a);
+        var bRace  = matchRace2(b);
+        var aEnfin = a.animal && a.animal.enfin_moi && a.score >= seuilEnfin2;
+        var bEnfin = b.animal && b.animal.enfin_moi && b.score >= seuilEnfin2;
+        var aTop = aEnfin && aRace ? 4 : aRace ? 3 : aEnfin ? 2 : 0;
+        var bTop = bEnfin && bRace ? 4 : bRace ? 3 : bEnfin ? 2 : 0;
+        return bTop - aTop || b.score - a.score;
       });
 
       // Ajouter animaux race souhaitée si pas déjà présents
@@ -985,38 +995,38 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         return { animal: animal, score: result.global };
       }).filter(function(m) { return !aimeIds.has(m.animal.id); })
       .sort(function(a, b) {
-        // Enfin Moi avec bon score en premier, puis score décroissant
-        var seuilEnfin = 70;
-        var aEnfin = a.animal && a.animal.enfin_moi && a.score >= seuilEnfin ? 1 : 0;
-        var bEnfin = b.animal && b.animal.enfin_moi && b.score >= seuilEnfin ? 1 : 0;
-        return bEnfin - aEnfin || b.score - a.score;
+        var wp = window._algoParams || {};
+        var seuilEnfin = wp.seuil_belle !== undefined ? wp.seuil_belle : 70;
+        var racesVoulues = profil && profil.races_souhaitees
+          ? profil.races_souhaitees.split(',').map(function(r) { return r.trim().toLowerCase(); }).filter(function(r) { return r && r !== 'peu-importe'; })
+          : [];
+
+        function matchRace(m) {
+          if (!racesVoulues.length || !m.animal.race) return false;
+          var r = m.animal.race.toLowerCase();
+          return racesVoulues.some(function(rv) { return r === rv || r.startsWith(rv) || rv.startsWith(r.split(' ')[0]); });
+        }
+
+        var aRace   = matchRace(a);
+        var bRace   = matchRace(b);
+        var aEnfin  = a.animal && a.animal.enfin_moi && a.score >= seuilEnfin;
+        var bEnfin  = b.animal && b.animal.enfin_moi && b.score >= seuilEnfin;
+
+        // Priorité 1 : Enfin Moi + bonne race
+        var aTop = aEnfin && aRace ? 4 : 0;
+        var bTop = bEnfin && bRace ? 4 : 0;
+        // Priorité 2 : race souhaitée (pas Enfin Moi)
+        if (!aTop) aTop = aRace ? 3 : 0;
+        if (!bTop) bTop = bRace ? 3 : 0;
+        // Priorité 3 : Enfin Moi autres races
+        if (!aTop) aTop = aEnfin ? 2 : 0;
+        if (!bTop) bTop = bEnfin ? 2 : 0;
+
+        return bTop - aTop || b.score - a.score;
       });
 
     var matchsSorted = allMatchs;
 
-    // Ajouter les animaux de la race souhaitée (même si score bas) — après Enfin Moi
-    var racesVoulues = profil.races_souhaitees ? profil.races_souhaitees.split(',').map(function(r) { return r.trim().toLowerCase(); }) : [];
-    if (racesVoulues.length > 0 && !racesVoulues.includes('peu-importe')) {
-      var idsDejaPresents = new Set(matchsSorted.map(function(m) { return m.animal.id; }));
-      var animauxRace = animaux
-        .filter(function(animal) {
-          if (idsDejaPresents.has(animal.id)) return false;
-          var raceAnimal = (animal.race || '').toLowerCase();
-          return racesVoulues.some(function(r) { return raceAnimal.includes(r) || r.includes(raceAnimal.split(' ')[0]); });
-        })
-        .map(function(animal) {
-          return { animal: animal, score: calculerScore(profil, animal), raceMatch: true };
-        })
-        .sort(function(a, b) {
-          if (a.animal.enfin_moi && !b.animal.enfin_moi) return -1;
-          if (!a.animal.enfin_moi && b.animal.enfin_moi) return 1;
-          return b.score - a.score;
-        });
-      // Insérer après les Enfin Moi du tri principal
-      var idxInsert = matchsSorted.findIndex(function(m) { return !m.animal.enfin_moi; });
-      if (idxInsert === -1) idxInsert = matchsSorted.length;
-      matchsSorted.splice.apply(matchsSorted, [idxInsert, 0].concat(animauxRace));
-    }
     var { data: authUser } = await sb.auth.getUser();
     var meta = authUser && authUser.user ? authUser.user.user_metadata || {} : {};
     var pseudo = meta.pseudo || meta.prenom || meta.first_name || meta.name || (authUser.user ? authUser.user.email.split('@')[0] : '');
