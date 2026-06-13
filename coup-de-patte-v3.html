@@ -985,11 +985,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         return { animal: animal, score: result.global };
       }).filter(function(m) { return !aimeIds.has(m.animal.id); })
       .sort(function(a, b) {
-        // Enfin Moi toujours en premier, puis score décroissant
-        if (a.animal.enfin_moi && !b.animal.enfin_moi) return -1;
-        if (!a.animal.enfin_moi && b.animal.enfin_moi) return 1;
-        return b.score - a.score;
+        // Enfin Moi avec bon score en premier, puis score décroissant
+        var seuilEnfin = 70;
+        var aEnfin = a.animal && a.animal.enfin_moi && a.score >= seuilEnfin ? 1 : 0;
+        var bEnfin = b.animal && b.animal.enfin_moi && b.score >= seuilEnfin ? 1 : 0;
+        return bEnfin - aEnfin || b.score - a.score;
       });
+
+    var matchsSorted = allMatchs;
 
     // Ajouter les animaux de la race souhaitée (même si score bas) — après Enfin Moi
     var racesVoulues = profil.races_souhaitees ? profil.races_souhaitees.split(',').map(function(r) { return r.trim().toLowerCase(); }) : [];
