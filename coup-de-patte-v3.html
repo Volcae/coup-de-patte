@@ -998,7 +998,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     var racesVoulues = profil.races_souhaitees ? profil.races_souhaitees.split(',').map(function(r) { return r.trim().toLowerCase(); }) : [];
     if (racesVoulues.length > 0 && !racesVoulues.includes('peu-importe')) {
       var idsDejaPresents = new Set(matchsSorted.map(function(m) { return m.animal.id; }));
-      var animauxRace = animauxFiltres
+      var animauxRace = animaux
         .filter(function(animal) {
           if (idsDejaPresents.has(animal.id)) return false;
           var raceAnimal = (animal.race || '').toLowerCase();
