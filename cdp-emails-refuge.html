@@ -36,7 +36,17 @@ header p{font-size:0.75rem;color:rgba(244,241,232,0.6);margin-top:2px}
 .tab-btns{display:flex;gap:0;border-bottom:1.5px solid var(--border)}
 .tab-btn{padding:10px 18px;font-family:'Nunito',sans-serif;font-size:0.75rem;font-weight:700;cursor:pointer;border:none;background:transparent;color:var(--dust);border-bottom:2px solid transparent;transition:all 0.2s}
 .tab-btn.active{color:var(--moss);border-bottom-color:var(--moss);background:rgba(74,124,89,0.04)}
+
+/* ── Mode édition admin ── */
+.btn-edit{padding:7px 14px;background:transparent;border:1.5px solid var(--border);border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.73rem;font-weight:700;color:var(--dust);cursor:pointer;transition:all 0.2s;display:none}
+.btn-edit:hover{border-color:var(--moss);color:var(--moss)}
+.btn-save{padding:7px 14px;background:var(--moss);color:var(--ivory);border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.73rem;font-weight:700;cursor:pointer;display:none}
+.admin-mode .btn-edit{display:inline-flex;align-items:center;gap:5px}
+.email-edit-area{width:100%;min-height:220px;padding:16px;font-family:'Nunito',sans-serif;font-size:0.78rem;line-height:1.8;color:var(--forest);background:var(--ivory);border:none;resize:vertical;box-sizing:border-box}
+.admin-bar{display:none;background:var(--forest);color:var(--ivory);padding:10px 24px;font-size:0.78rem;align-items:center;gap:12px;justify-content:space-between}
+.admin-bar.visible{display:flex}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -47,6 +57,11 @@ header p{font-size:0.75rem;color:rgba(244,241,232,0.6);margin-top:2px}
     <p>Templates prêts à copier-coller pour chaque situation</p>
   </div>
 </header>
+
+<div class="admin-bar" id="adminBar">
+  <span>🔑 Mode admin — vous pouvez modifier les emails</span>
+  <a href="coup-de-patte-superadmin.html" style="color:rgba(244,241,232,0.7);font-size:0.75rem">← Retour au superadmin</a>
+</div>
 
 <div class="container">
 
@@ -59,6 +74,8 @@ header p{font-size:0.75rem;color:rgba(244,241,232,0.6);margin-top:2px}
         <p>Envoyé après import des animaux. Le refuge a déjà un compte créé.</p>
       </div>
       <button class="btn-copy" onclick="copier('bienvenue', this)">📋 Copier</button>
+      <button class="btn-edit" id="edit-btn-bienvenue" onclick="toggleEdit('bienvenue')">✏️ Modifier</button>
+      <button class="btn-save" id="save-btn-bienvenue" onclick="sauvegarderEmail('bienvenue')">💾 Sauvegarder</button>
     </div>
     <div class="tab-btns">
       <button class="tab-btn active" onclick="showTab('bienvenue','rendu',this)">Aperçu</button>
@@ -117,6 +134,8 @@ coup-de-patte.fr</pre>
         <p>À envoyer manuellement aux associations sans présence web.</p>
       </div>
       <button class="btn-copy" onclick="copier('invitation', this)">📋 Copier</button>
+      <button class="btn-edit" id="edit-btn-invitation" onclick="toggleEdit('invitation')">✏️ Modifier</button>
+      <button class="btn-save" id="save-btn-invitation" onclick="sauvegarderEmail('invitation')">💾 Sauvegarder</button>
     </div>
     <div class="tab-btns">
       <button class="tab-btn active" onclick="showTab('invitation','rendu',this)">Aperçu</button>
@@ -167,6 +186,8 @@ coup-de-patte.fr</pre>
         <p>Court et naturel. À envoyer si le refuge n'a pas réagi au premier email.</p>
       </div>
       <button class="btn-copy" onclick="copier('relance', this)">📋 Copier</button>
+      <button class="btn-edit" id="edit-btn-relance" onclick="toggleEdit('relance')">✏️ Modifier</button>
+      <button class="btn-save" id="save-btn-relance" onclick="sauvegarderEmail('relance')">💾 Sauvegarder</button>
     </div>
     <div class="tab-btns">
       <button class="tab-btn active" onclick="showTab('relance','rendu',this)">Aperçu</button>
@@ -211,6 +232,8 @@ coup-de-patte.fr</pre>
         <p>Pour cibler les associations de Côte-d'Or. Ton et signature personnels.</p>
       </div>
       <button class="btn-copy" onclick="copier('prospection', this)">📋 Copier</button>
+      <button class="btn-edit" id="edit-btn-prospection" onclick="toggleEdit('prospection')">✏️ Modifier</button>
+      <button class="btn-save" id="save-btn-prospection" onclick="sauvegarderEmail('prospection')">💾 Sauvegarder</button>
     </div>
     <div class="tab-btns">
       <button class="tab-btn active" onclick="showTab('prospection','rendu',this)">Aperçu</button>
@@ -296,6 +319,88 @@ function copier(card, btn) {
     btn.classList.add('copied');
     setTimeout(function() { btn.textContent = '📋 Copier'; btn.classList.remove('copied'); }, 2000);
   });
+}
+</script>
+<script>
+var _sb = null;
+function getSB() {
+  if (!_sb) _sb = window.supabase.createClient('https://mbqsaaxaglcemdxmfvkc.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1icXNhYXhhZ2xjZW1keG1mdmtjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MjAwMTQsImV4cCI6MjA5MzQ5NjAxNH0.lGK0LL5h-4N4DqMVy2Q_SKJgnzuy7BPQJEtSsc8plfk');
+  return _sb;
+}
+
+var _isAdmin = false;
+var _editMode = {};
+
+window.addEventListener('load', async function() {
+  var { data: { session } } = await getSB().auth.getSession();
+  if (session && session.user && session.user.email === 'contact@coup-de-patte.fr') {
+    _isAdmin = true;
+    document.body.classList.add('admin-mode');
+    document.getElementById('adminBar').classList.add('visible');
+  }
+  // Charger les contenus depuis Supabase
+  var { data } = await getSB().from('EmailTemplate').select('*');
+  if (data) {
+    data.forEach(function(t) {
+      var el = document.getElementById(t.nom + '-content');
+      if (el) el.textContent = t.contenu;
+    });
+  }
+});
+
+function toggleEdit(id) {
+  var pre = document.getElementById(id + '-content');
+  var saveBtn = document.getElementById('save-btn-' + id);
+  var editBtn = document.getElementById('edit-btn-' + id);
+  if (!_editMode[id]) {
+    // Passer en mode édition
+    var val = pre.textContent;
+    var ta = document.createElement('textarea');
+    ta.className = 'email-edit-area';
+    ta.id = id + '-textarea';
+    ta.value = val;
+    pre.style.display = 'none';
+    pre.parentNode.insertBefore(ta, pre);
+    saveBtn.style.display = 'inline-flex';
+    editBtn.textContent = '✕ Annuler';
+    _editMode[id] = true;
+  } else {
+    // Annuler
+    var ta = document.getElementById(id + '-textarea');
+    if (ta) ta.remove();
+    pre.style.display = '';
+    saveBtn.style.display = 'none';
+    editBtn.textContent = '✏️ Modifier';
+    _editMode[id] = false;
+  }
+}
+
+async function sauvegarderEmail(id) {
+  var ta = document.getElementById(id + '-textarea');
+  if (!ta) return;
+  var contenu = ta.value;
+  var sb = getSB();
+  // Vérifier si existe déjà
+  var { data: existing } = await sb.from('EmailTemplate').select('id').eq('nom', id);
+  var error;
+  if (existing && existing.length > 0) {
+    ({ error } = await sb.from('EmailTemplate').update({ contenu: contenu, updated_at: new Date().toISOString() }).eq('nom', id));
+  } else {
+    ({ error } = await sb.from('EmailTemplate').insert({ nom: id, contenu: contenu }));
+  }
+  if (error) {
+    alert('Erreur : ' + error.message);
+    return;
+  }
+  // Mettre à jour le pre
+  var pre = document.getElementById(id + '-content');
+  pre.textContent = contenu;
+  ta.remove();
+  pre.style.display = '';
+  document.getElementById('save-btn-' + id).style.display = 'none';
+  document.getElementById('edit-btn-' + id).textContent = '✏️ Modifier';
+  _editMode[id] = false;
+  alert('✅ Email sauvegardé !');
 }
 </script>
 </body>

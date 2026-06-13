@@ -256,7 +256,6 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
       }, 200);
     }
     if (id === 'algorithme' || id === 'enfin') { setTimeout(function() { if (typeof chargerParametresAlgo === 'function') chargerParametresAlgo(); }, 200); }
-    if (id === 'templates') { setTimeout(function() { if (typeof chargerTemplates === 'function') chargerTemplates(); }, 200); }
     if (id === 'scraping') {
       setTimeout(function() {
         if (typeof chargerScrapingQueue === 'function') chargerScrapingQueue();
@@ -305,7 +304,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     <span class="sb-section">Communication</span>
     <a class="sb-item" onclick="showSectionFn('communication',this)"><span class="sb-icon">📣</span>Kit communication</a>
-    <a class="sb-item" onclick="showSectionFn('templates',this)"><span class="sb-icon">✉️</span>Modèles d'emails</a>
 
     <span class="sb-section">Système</span>
     <a class="sb-item" onclick="showSectionFn('maintenance',this)"><span class="sb-icon">🔧</span>Maintenance<span class="sb-badge sb-badge-red" id="badgeMaintenance">–</span></a>
@@ -841,48 +839,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </div>
     </div>
 
-  
-    <!-- SECTION TEMPLATES -->
-    <div class="section" id="section-templates">
-      <div class="page-hdr">
-        <div><h1 class="page-title">Modèles d'emails</h1><p class="page-sub">Créez et modifiez vos modèles d'emails de prospection</p></div>
-        <button onclick="ouvrirNouveauTemplate()" class="btn-primary">+ Nouveau modèle</button>
-      </div>
-
-      <div id="templatesListe" style="display:grid;gap:14px"></div>
-    </div>
-
-    <!-- Modale édition template -->
-    <div id="templateModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:400;align-items:flex-start;justify-content:center;overflow-y:auto;padding:20px">
-      <div style="background:var(--paper);border-radius:24px;padding:28px;width:100%;max-width:680px;margin:auto;box-shadow:0 20px 60px rgba(0,0,0,0.2)">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
-          <h3 style="font-family:'Fraunces',serif;font-size:1.1rem;font-weight:700;color:var(--forest);margin:0" id="templateModalTitle">Nouveau modèle</h3>
-          <button onclick="fermerTemplateModal()" style="background:transparent;border:none;font-size:1.4rem;cursor:pointer;color:var(--dust)">✕</button>
-        </div>
-        <div style="margin-bottom:14px">
-          <label style="display:block;font-size:0.75rem;font-weight:700;color:var(--forest);margin-bottom:4px">Nom du modèle</label>
-          <input id="tmplNom" type="text" placeholder="ex: Premier contact refuge" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-family:'Nunito',sans-serif;font-size:0.88rem;background:var(--ivory);color:var(--forest);box-sizing:border-box">
-        </div>
-        <div style="margin-bottom:14px">
-          <label style="display:block;font-size:0.75rem;font-weight:700;color:var(--forest);margin-bottom:4px">Sujet de l'email</label>
-          <input id="tmplSujet" type="text" placeholder="ex: Une vitrine gratuite pour vos animaux" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-family:'Nunito',sans-serif;font-size:0.88rem;background:var(--ivory);color:var(--forest);box-sizing:border-box">
-        </div>
-        <div style="margin-bottom:20px">
-          <label style="display:block;font-size:0.75rem;font-weight:700;color:var(--forest);margin-bottom:4px">Contenu de l'email</label>
-          <textarea id="tmplContenu" rows="12" placeholder="Bonjour,
-
-Nous avons découvert votre refuge..." style="width:100%;padding:12px;border:1.5px solid var(--border);border-radius:10px;font-family:'Nunito',sans-serif;font-size:0.85rem;background:var(--ivory);color:var(--forest);box-sizing:border-box;resize:vertical;line-height:1.6"></textarea>
-          <div style="font-size:0.7rem;color:var(--dust);margin-top:4px">Variables disponibles : <code style="background:var(--mint-lt);padding:1px 5px;border-radius:4px">{{nom_refuge}}</code> <code style="background:var(--mint-lt);padding:1px 5px;border-radius:4px">{{ville}}</code></div>
-        </div>
-        <div style="display:flex;gap:8px;justify-content:flex-end">
-          <button onclick="fermerTemplateModal()" style="padding:10px 18px;background:transparent;border:1.5px solid var(--border);border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.85rem;cursor:pointer;color:var(--dust)">Annuler</button>
-          <button onclick="supprimerTemplate()" id="tmplBtnSupprimer" style="display:none;padding:10px 18px;background:transparent;border:1.5px solid rgba(201,112,74,0.4);border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.85rem;cursor:pointer;color:var(--rose)">🗑 Supprimer</button>
-          <button onclick="sauvegarderTemplate()" style="padding:10px 22px;background:linear-gradient(135deg,var(--moss),var(--forest));color:var(--ivory);border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer">💾 Sauvegarder</button>
-        </div>
-      </div>
-    </div>
-
-</main>
+  </main>
 </div>
 
 <!-- TOAST -->
@@ -1405,7 +1362,7 @@ Nous avons découvert votre refuge..." style="width:100%;padding:12px;border:1.5
     var refugeVille = opt.dataset.ville || '';
     var refugeNom   = opt.dataset.nom   || opt.textContent.replace(/ \(.*\)$/, '');
     if (!refugeSite) {
-      showToast("⚠️ Ce refuge n'a pas d'URL de site — ajoute-la dans la fiche refuge avant de scraper");
+      showToast('⚠️ Ce refuge n\'a pas d\'URL de site — ajoute-la dans la fiche refuge avant de scraper');
       var status = document.getElementById('scrapingStatus');
       if (status) { status.textContent = '⚠️ URL du site manquante'; status.style.color = 'var(--rose)'; }
       return;
@@ -3461,111 +3418,6 @@ async function sauvegarderGPS() {
 // Fermer en cliquant sur le fond
 document.getElementById('gpsModal').addEventListener('click', function(e) {
   if (e.target === this) fermerGPS();
-});
-</script>
-<script>
-var _tmplEditId = null;
-
-async function chargerTemplates() {
-  var sb = getSupabase();
-  var { data: templates, error } = await sb.from('EmailTemplate').select('*').order('created_at', { ascending: false });
-  var el = document.getElementById('templatesListe');
-  if (!el) return;
-
-  if (!templates || templates.length === 0) {
-    el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--dust);font-style:italic">Aucun modèle encore. Créez votre premier modèle.</div>';
-    return;
-  }
-
-  el.innerHTML = templates.map(function(t) {
-    var preview = (t.contenu || '').substring(0, 120).replace(/\n/g, ' ');
-    return '<div class="dash-card" style="cursor:pointer" onclick="ouvrirEditionTemplate(\'' + t.id + '\')">' +
-      '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">' +
-        '<div style="flex:1">' +
-          '<div style="font-family:Fraunces,serif;font-weight:700;font-style:italic;color:var(--forest);margin-bottom:4px">' + (t.nom || 'Sans nom') + '</div>' +
-          (t.sujet ? '<div style="font-size:0.78rem;font-weight:600;color:var(--moss);margin-bottom:6px">Sujet : ' + t.sujet + '</div>' : '') +
-          '<div style="font-size:0.75rem;color:var(--dust);line-height:1.5">' + preview + (preview.length >= 120 ? '…' : '') + '</div>' +
-        '</div>' +
-        '<div style="display:flex;gap:8px;flex-shrink:0">' +
-          '<button onclick="event.stopPropagation();copierTemplate(\'' + t.id + '\')" style="padding:6px 12px;background:var(--mint-lt);color:var(--moss);border:1.5px solid rgba(74,124,89,0.2);border-radius:50px;font-family:Nunito,sans-serif;font-size:0.72rem;font-weight:700;cursor:pointer">📋 Copier</button>' +
-          '<button onclick="event.stopPropagation();ouvrirEditionTemplate(\'' + t.id + '\')" style="padding:6px 12px;background:transparent;border:1.5px solid var(--border);border-radius:50px;font-family:Nunito,sans-serif;font-size:0.72rem;font-weight:600;color:var(--dust);cursor:pointer">✏️ Modifier</button>' +
-        '</div>' +
-      '</div>' +
-    '</div>';
-  }).join('');
-}
-
-function ouvrirNouveauTemplate() {
-  _tmplEditId = null;
-  document.getElementById('templateModalTitle').textContent = 'Nouveau modèle';
-  document.getElementById('tmplNom').value = '';
-  document.getElementById('tmplSujet').value = '';
-  document.getElementById('tmplContenu').value = '';
-  document.getElementById('tmplBtnSupprimer').style.display = 'none';
-  document.getElementById('templateModal').style.display = 'flex';
-}
-
-async function ouvrirEditionTemplate(id) {
-  var sb = getSupabase();
-  var { data: t } = await sb.from('EmailTemplate').select('*').eq('id', id).single();
-  if (!t) return;
-  _tmplEditId = id;
-  document.getElementById('templateModalTitle').textContent = 'Modifier le modèle';
-  document.getElementById('tmplNom').value = t.nom || '';
-  document.getElementById('tmplSujet').value = t.sujet || '';
-  document.getElementById('tmplContenu').value = t.contenu || '';
-  document.getElementById('tmplBtnSupprimer').style.display = 'inline-flex';
-  document.getElementById('templateModal').style.display = 'flex';
-}
-
-function fermerTemplateModal() {
-  document.getElementById('templateModal').style.display = 'none';
-  _tmplEditId = null;
-}
-
-async function sauvegarderTemplate() {
-  var nom     = document.getElementById('tmplNom').value.trim();
-  var sujet   = document.getElementById('tmplSujet').value.trim();
-  var contenu = document.getElementById('tmplContenu').value.trim();
-  if (!nom) { alert('Le nom du modèle est requis'); return; }
-  var sb = getSupabase();
-  var payload = { nom, sujet, contenu, updated_at: new Date().toISOString() };
-  var error;
-  if (_tmplEditId) {
-    ({ error } = await sb.from('EmailTemplate').update(payload).eq('id', _tmplEditId));
-  } else {
-    ({ error } = await sb.from('EmailTemplate').insert(payload));
-  }
-  if (error) { showToast('✗ Erreur : ' + error.message); return; }
-  showToast('✅ Modèle sauvegardé');
-  fermerTemplateModal();
-  chargerTemplates();
-}
-
-async function supprimerTemplate() {
-  if (!_tmplEditId) return;
-  if (!confirm('Supprimer ce modèle ?')) return;
-  var sb = getSupabase();
-  var { error } = await sb.from('EmailTemplate').delete().eq('id', _tmplEditId);
-  if (error) { showToast('✗ Erreur : ' + error.message); return; }
-  showToast('🗑 Modèle supprimé');
-  fermerTemplateModal();
-  chargerTemplates();
-}
-
-async function copierTemplate(id) {
-  var sb = getSupabase();
-  var { data: t } = await sb.from('EmailTemplate').select('*').eq('id', id).single();
-  if (!t) return;
-  var texte = (t.sujet ? 'Sujet : ' + t.sujet + '\n\n' : '') + (t.contenu || '');
-  navigator.clipboard.writeText(texte).then(function() {
-    showToast('📋 Modèle copié dans le presse-papiers');
-  });
-}
-
-// Fermer modale en cliquant sur le fond
-document.getElementById('templateModal').addEventListener('click', function(e) {
-  if (e.target === this) fermerTemplateModal();
 });
 </script>
 </body>
