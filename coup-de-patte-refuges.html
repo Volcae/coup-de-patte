@@ -187,6 +187,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <div id="refugesMapWrap" style="border-radius:20px;overflow:hidden;border:1.5px solid var(--border);margin-bottom:28px;display:none">
   <div id="refugesMap" style="height:380px;width:100%"></div>
 </div>
+<div id="mapHint" style="display:none;font-size:0.75rem;color:var(--dust);text-align:center;margin:-20px 0 16px;font-style:italic">📍 Cliquez sur la carte pour indiquer votre position, puis utilisez les boutons de distance</div>
 
 <div class="refuges-grid" id="refugesGrid">
     <div style="text-align:center;padding:40px;color:var(--dust)">Chargement des refuges… 🐾</div>
@@ -386,6 +387,7 @@ async function afficherCarte(refuges) {
       attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>',
       maxZoom: 18
     }).addTo(_map);
+    if (typeof initClicCarte === 'function') initClicCarte();
   }
 
   // Supprimer les anciens marqueurs
@@ -429,8 +431,29 @@ async function afficherCarte(refuges) {
 var _userLatZ = null, _userLngZ = null;
 var _activeZoomBtn = null;
 
+function initClicCarte() {
+  if (!_map || _map._clicInit) return;
+  _map._clicInit = true;
+  var hint = document.getElementById('mapHint');
+  _map.on('click', function(e) {
+    _userLatZ = e.latlng.lat;
+    _userLngZ = e.latlng.lng;
+    if (window._userMarker) _map.removeLayer(window._userMarker);
+    window._userMarker = L.circleMarker([_userLatZ, _userLngZ], {
+      radius: 9, color: '#2D4A3E', fillColor: '#4A7C59', fillOpacity: 0.9, weight: 2
+    }).addTo(_map).bindPopup('📍 Votre position').openPopup();
+    if (hint) hint.textContent = '📍 Position définie — utilisez les boutons de distance pour zoomer';
+  });
+}
+
 function zoomCarte(km, btn) {
-  // Toggle — si on reclique le même bouton, réinitialiser
+  // Ouvrir la carte si pas encore visible
+  var wrap = document.getElementById('refugesMapWrap');
+  var hint = document.getElementById('mapHint');
+  if (wrap) wrap.style.display = 'block';
+  if (hint) hint.style.display = 'block';
+
+  // Toggle — reclique = réinitialiser
   if (_activeZoomBtn === btn) {
     btn.classList.remove('on');
     _activeZoomBtn = null;
@@ -441,44 +464,40 @@ function zoomCarte(km, btn) {
   btn.classList.add('on');
   _activeZoomBtn = btn;
 
-  if (!navigator.geolocation) {
-    alert('La g\u00e9olocalisation n\'est pas disponible sur votre navigateur.');
-    return;
+  var zoom = km === 30 ? 10 : km === 50 ? 9 : 8;
+
+  // Activer le clic carte si la carte existe
+  if (_map) {
+    initClicCarte();
+    setTimeout(function() { _map.invalidateSize(); }, 100);
   }
 
-  navigator.geolocation.getCurrentPosition(function(pos) {
-    _userLatZ = pos.coords.latitude;
-    _userLngZ = pos.coords.longitude;
-
-    // Zoom correspondant
-    var zoom = km === 30 ? 10 : km === 50 ? 9 : 8;
-
-    // S'assurer que la carte est visible
-    var wrap = document.getElementById('refugesMapWrap');
-    if (wrap) wrap.style.display = 'block';
-
-    if (!_map) {
-      _map = L.map('refugesMap').setView([_userLatZ, _userLngZ], zoom);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>',
-        maxZoom: 18
-      }).addTo(_map);
+  if (_userLatZ && _userLngZ) {
+    // Position déjà définie par clic → zoomer dessus
+    if (_map) _map.setView([_userLatZ, _userLngZ], zoom);
+  } else {
+    // Essayer géoloc en fallback
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        function(pos) {
+          _userLatZ = pos.coords.latitude;
+          _userLngZ = pos.coords.longitude;
+          if (window._userMarker && _map) _map.removeLayer(window._userMarker);
+          if (_map) {
+            window._userMarker = L.circleMarker([_userLatZ, _userLngZ], {
+              radius: 9, color: '#2D4A3E', fillColor: '#4A7C59', fillOpacity: 0.9, weight: 2
+            }).addTo(_map).bindPopup('📍 Votre position').openPopup();
+            _map.setView([_userLatZ, _userLngZ], zoom);
+          }
+        },
+        function() {
+          if (hint) hint.textContent = '📍 Cliquez sur la carte pour indiquer votre position';
+        }
+      );
     } else {
-      _map.setView([_userLatZ, _userLngZ], zoom);
-      setTimeout(function() { _map.invalidateSize(); }, 100);
+      if (hint) hint.textContent = '📍 Cliquez sur la carte pour indiquer votre position';
     }
-
-    // Marqueur position utilisateur
-    if (window._userMarker) _map.removeLayer(window._userMarker);
-    window._userMarker = L.circleMarker([_userLatZ, _userLngZ], {
-      radius: 8, color: '#4A7C59', fillColor: '#7AAD89', fillOpacity: 0.8, weight: 2
-    }).addTo(_map).bindPopup('Vous êtes ici');
-
-  }, function() {
-    alert('Activez la géolocalisation pour utiliser cette fonctionnalité.');
-    btn.classList.remove('on');
-    _activeZoomBtn = null;
-  });
+  }
 }
 </script>
 </body>
