@@ -775,8 +775,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       }
       await sb.from('Correspondre').insert({ utilisateur: session.user.id, animal: animalId, contacte: true, vu: true, score_global: scoreVal });
     }
-    if (refugeId) window.location.href = 'coup-de-patte-refuge.html?id=' + refugeId;
-    else window.location.href = 'coup-de-patte-fiche.html?id=' + animalId;
+    // Juste feedback visuel — pas de redirection
+    showToast('✅ Refuge ajouté à vos contacts');
+    if (typeof loadContacts === 'function') loadContacts();
   }
 
   // Load J'aime when tab is clicked - patch the original
