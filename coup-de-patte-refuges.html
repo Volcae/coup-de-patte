@@ -380,6 +380,8 @@ async function afficherCarte(refuges) {
   var wrap = document.getElementById('refugesMapWrap');
   if (!wrap) return;
   wrap.style.display = 'block';
+  var hint = document.getElementById('mapHint');
+  if (hint) hint.style.display = 'block';
 
   if (!_map) {
     _map = L.map('refugesMap').setView([46.8, 2.3], 6);
