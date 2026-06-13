@@ -219,6 +219,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <span class="filter-chip on" onclick="toggleFilter(this)">🌿 Senior</span>
     <span class="filter-chip on" onclick="toggleFilter(this)">💛 Besoins spéciaux</span>
     <span class="filter-chip on" onclick="toggleFilter(this)">😟 Refuge</span>
+    <span class="filter-chip on" onclick="toggleFilter(this)">💙 Handicap</span>
 
     <div class="filter-sep"></div>
     <span class="filter-label">Tri</span>
@@ -261,7 +262,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
     grid.innerHTML = '';
     var rc = document.getElementById('resultsCount');
-    if (rc) rc.textContent = animaux.length + ' animal' + (animaux.length > 1 ? 'aux' : '');
+    if (rc) rc.textContent = animaux.length + ' ' + (animaux.length > 1 ? 'animaux' : 'animal');
     animaux.forEach(function(a) {
       var emoji = a.espece && a.espece.toLowerCase() === 'chat' ? '🐱' : '🐕';
       var age = a.age_annees ? a.age_annees + ' an' + (a.age_annees > 1 ? 's' : '') : '';
@@ -303,7 +304,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   function appliquerFiltres() {
     var chips = document.querySelectorAll('.filter-chip');
-    var chiens = false, chats = false, anciennete = false, senior = false, besoins = false, malaise = false;
+    var chiens = false, chats = false, anciennete = false, senior = false, besoins = false, malaise = false, handicap = false;
     chips.forEach(function(c) {
       if (!c.classList.contains('on')) return;
       var t = c.textContent.trim();
@@ -313,18 +314,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       if (t.includes('Senior')) senior = true;
       if (t.includes('Besoins')) besoins = true;
       if (t.includes('Refuge')) malaise = true;
+      if (t.includes('Handicap')) handicap = true;
     });
 
     var result = allEnfinAnimaux.filter(function(a) {
       var especeL = (a.espece || '').toLowerCase();
       if (especeL === 'chien' && !chiens) return false;
       if (especeL === 'chat' && !chats) return false;
-      if (!anciennete && !senior && !besoins && !malaise) return true;
+      if (!anciennete && !senior && !besoins && !malaise && !handicap) return true;
       var moisR = a.date_arrivee_refuge ? (new Date() - new Date(a.date_arrivee_refuge)) / (1000*60*60*24*30) : 0;
       var isSenior = (especeL === 'chien' && a.age_annees >= 8) || (especeL === 'chat' && a.age_annees >= 10);
       var isBesoins = a.besoins_medicaux === 'lourds';
-      var isMalaise = a.vie_en_refuge === 'Difficilement' || a.vie_en_refuge === 'Très difficilement';
-      return (anciennete && moisR >= 12) || (senior && isSenior) || (besoins && isBesoins) || (malaise && isMalaise);
+      var isMalaise = a.vie_en_refuge === 'Difficilement' || a.vie_en_refuge === 'Tres difficilement' || a.vie_en_refuge === 'Très difficilement';
+      var isHandicap = a.handicap === true;
+      return (anciennete && moisR >= 12) || (senior && isSenior) || (besoins && isBesoins) || (malaise && isMalaise) || (handicap && isHandicap);
     });
 
     // Appliquer le tri selon currentSort
