@@ -3557,9 +3557,7 @@ async function copierTemplate(id) {
   var sb = getSupabase();
   var { data: t } = await sb.from('EmailTemplate').select('*').eq('id', id).single();
   if (!t) return;
-  var texte = (t.sujet ? 'Sujet : ' + t.sujet + '
-
-' : '') + (t.contenu || '');
+  var texte = (t.sujet ? 'Sujet : ' + t.sujet + '\n\n' : '') + (t.contenu || '');
   navigator.clipboard.writeText(texte).then(function() {
     showToast('📋 Modèle copié dans le presse-papiers');
   });
