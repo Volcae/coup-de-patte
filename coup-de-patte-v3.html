@@ -540,7 +540,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     var grid = document.getElementById('matches-grid');
     if (!grid) return;
     grid.innerHTML = '';
-    matchsSorted.forEach(function(m) {
+
+    // Séparer Enfin Moi (max 2 en tête) du reste
+    var wp = window._algoParams || {};
+    var seuilEM = wp.seuil_belle !== undefined ? wp.seuil_belle : 70;
+    var enfinMoiTop = matchsSorted.filter(function(m) { return m.animal && m.animal.enfin_moi && m.score >= seuilEM; }).slice(0, 2);
+    var enfinMoiTopIds = new Set(enfinMoiTop.map(function(m) { return m.animal.id; }));
+    var reste = matchsSorted.filter(function(m) { return m.animal && !enfinMoiTopIds.has(m.animal.id); });
+    var final = enfinMoiTop.concat(reste);
+
+    final.forEach(function(m) {
       if (m.animal) grid.insertAdjacentHTML('beforeend', renderMatchCard(m.animal, m.score));
     });
   }

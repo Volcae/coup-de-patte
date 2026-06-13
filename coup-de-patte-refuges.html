@@ -174,11 +174,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <!-- Barre de recherche -->
   <div class="search-bar">
-    <input class="search-input" type="text" placeholder="🔍 Ville, refuge, code postal…">
-    <span class="filter-chip on" onclick="this.classList.toggle('on')">🐶 Chiens</span>
-    <span class="filter-chip on" onclick="this.classList.toggle('on')">🐱 Chats</span>
-    <span class="filter-chip" onclick="this.classList.toggle('on')">✨ Enfin Moi ?</span>
-    <span class="filter-chip" onclick="this.classList.toggle('on')">📍 Moins de 50 km</span>
+    <input class="search-input" type="text" placeholder="🔍 Ville, refuge, code postal…" id="searchInput" oninput="filterRefuges(this.value)">
+    <span class="filter-chip" onclick="zoomCarte(30,this)">📍 30 km</span>
+    <span class="filter-chip" onclick="zoomCarte(50,this)">📍 50 km</span>
+    <span class="filter-chip" onclick="zoomCarte(100,this)">📍 100 km</span>
     <span class="results-count" id="refugesCount">Chargement…</span>
   </div>
 </div>
@@ -296,15 +295,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   afficherCarte(allRefuges);
 
   // Recherche en temps réel
-  if (searchInput) {
-    searchInput.addEventListener('input', function() {
-      var q = this.value.toLowerCase().trim();
-      var filtered = !q ? allRefuges : allRefuges.filter(function(r) {
-        return (r.nom || '').toLowerCase().includes(q) || (r.ville || '').toLowerCase().includes(q);
-      });
-      currentPage = 1;
-      renderPage(filtered, 1);
+  window.filterRefuges = function(val) {
+    var q = (val || '').toLowerCase().trim();
+    var filtered = !q ? allRefuges : allRefuges.filter(function(r) {
+      return (r.nom || '').toLowerCase().includes(q) || (r.ville || '').toLowerCase().includes(q);
     });
+    currentPage = 1;
+    renderPage(filtered, 1);
+  };
+  if (searchInput) {
+    searchInput.addEventListener('input', function() { window.filterRefuges(this.value); });
   }
 
   // Masquer pagination statique
@@ -424,6 +424,61 @@ async function afficherCarte(refuges) {
 
   if (bounds.length > 1) _map.fitBounds(bounds, { padding: [40, 40] });
   else if (bounds.length === 1) _map.setView(bounds[0], 10);
+}
+
+var _userLatZ = null, _userLngZ = null;
+var _activeZoomBtn = null;
+
+function zoomCarte(km, btn) {
+  // Toggle — si on reclique le même bouton, réinitialiser
+  if (_activeZoomBtn === btn) {
+    btn.classList.remove('on');
+    _activeZoomBtn = null;
+    if (_map) _map.setView([46.8, 2.3], 6);
+    return;
+  }
+  if (_activeZoomBtn) _activeZoomBtn.classList.remove('on');
+  btn.classList.add('on');
+  _activeZoomBtn = btn;
+
+  if (!navigator.geolocation) {
+    alert('La g\u00e9olocalisation n\'est pas disponible sur votre navigateur.');
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(function(pos) {
+    _userLatZ = pos.coords.latitude;
+    _userLngZ = pos.coords.longitude;
+
+    // Zoom correspondant
+    var zoom = km === 30 ? 10 : km === 50 ? 9 : 8;
+
+    // S'assurer que la carte est visible
+    var wrap = document.getElementById('refugesMapWrap');
+    if (wrap) wrap.style.display = 'block';
+
+    if (!_map) {
+      _map = L.map('refugesMap').setView([_userLatZ, _userLngZ], zoom);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>',
+        maxZoom: 18
+      }).addTo(_map);
+    } else {
+      _map.setView([_userLatZ, _userLngZ], zoom);
+      setTimeout(function() { _map.invalidateSize(); }, 100);
+    }
+
+    // Marqueur position utilisateur
+    if (window._userMarker) _map.removeLayer(window._userMarker);
+    window._userMarker = L.circleMarker([_userLatZ, _userLngZ], {
+      radius: 8, color: '#4A7C59', fillColor: '#7AAD89', fillOpacity: 0.8, weight: 2
+    }).addTo(_map).bindPopup('Vous êtes ici');
+
+  }, function() {
+    alert('Activez la géolocalisation pour utiliser cette fonctionnalité.');
+    btn.classList.remove('on');
+    _activeZoomBtn = null;
+  });
 }
 </script>
 </body>
