@@ -775,9 +775,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       }
       await sb.from('Correspondre').insert({ utilisateur: session.user.id, animal: animalId, contacte: true, vu: true, score_global: scoreVal });
     }
-    // Juste feedback visuel — pas de redirection
-    showToast('✅ Refuge ajouté à vos contacts');
+    // Feedback visuel sur le bouton
+    if (btn) { btn.textContent = '✅'; btn.style.color = 'var(--moss)'; setTimeout(function() { btn.textContent = '📞'; btn.style.color = ''; }, 2000); }
     if (typeof loadContacts === 'function') loadContacts();
+    // Mettre à jour le badge contacts
+    var navBadge = document.getElementById('navContactsCount');
+    var statBadge = document.getElementById('statContacts');
+    if (navBadge) navBadge.textContent = parseInt(navBadge.textContent || 0) + 1;
+    if (statBadge) statBadge.textContent = parseInt(statBadge.textContent || 0) + 1;
   }
 
   // Load J'aime when tab is clicked - patch the original
