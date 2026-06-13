@@ -142,7 +142,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <a href="coup-de-patte-refuges.html" style="font-size:0.78rem;font-weight:700;color:var(--moss);text-decoration:none">Tous les refuges →</a>
         </div>
         <div class="animaux-grid" id="animauxGrid"><div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--dust);font-size:0.85rem">Chargement…</div></div>
-        <div id="voirPlusAnimaux" style="text-align:center;margin-top:18px;display:none"><a href="coup-de-patte-refuges.html" style="font-size:0.8rem;font-weight:700;color:var(--moss);text-decoration:none">Voir tous les animaux →</a></div>
+
       </div>
     </div>
     <div class="right-col">
@@ -344,8 +344,7 @@ window.addEventListener("load", async function() {
   var animaux = animRes.data || [];
   var countEl = document.getElementById("animauxCount");
   if (countEl) countEl.textContent = "(" + animaux.length + ")";
-  var voirPlus = document.getElementById("voirPlusAnimaux");
-  if (voirPlus) voirPlus.style.display = animaux.length > 6 ? "block" : "none";
+
   var grid = document.getElementById("animauxGrid");
   if (grid) {
     if (animaux.length > 0) {
