@@ -2,54 +2,48 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://coup-de-patte.fr/</loc>
-    <lastmod>2026-06-11</lastmod>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://coup-de-patte.fr/coup-de-patte-refuges.html</loc>
-    <lastmod>2026-06-11</lastmod>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://coup-de-patte.fr/coup-de-patte-enfin-moi.html</loc>
-    <lastmod>2026-06-11</lastmod>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://coup-de-patte.fr/coup-de-patte-apropos.html</loc>
-    <lastmod>2026-06-11</lastmod>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://coup-de-patte.fr/coup-de-patte-contact.html</loc>
-    <lastmod>2026-06-11</lastmod>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://coup-de-patte.fr/coup-de-patte-cgu.html</loc>
-    <lastmod>2026-06-11</lastmod>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
+    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=0d62cb71-8cb7-48dd-a0a7-358ec61790dd</loc>
+    <lastmod>2026-06-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=9dd6de1b-c4ca-47eb-b1c4-8ccb33e1d9bc</loc>
-    <lastmod>2026-06-07</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=1db38955-1487-4e50-8f19-caab20503613</loc>
-    <lastmod>2026-06-07</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=1d843be9-c376-4a14-8e28-a0db087be8f3</loc>
     <lastmod>2026-06-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -61,8 +55,14 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=40f9b383-c2dd-449c-a12d-613dbe07f54e</loc>
-    <lastmod>2026-06-02</lastmod>
+    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=4d323e7e-5077-4688-811e-dee0bbf8957d</loc>
+    <lastmod>2026-06-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=1db38955-1487-4e50-8f19-caab20503613</loc>
+    <lastmod>2026-06-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -73,61 +73,7 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=4d323e7e-5077-4688-811e-dee0bbf8957d</loc>
-    <lastmod>2026-06-07</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=0d62cb71-8cb7-48dd-a0a7-358ec61790dd</loc>
-    <lastmod>2026-06-07</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=ba367dfe-8825-4216-9507-202f5e6713a8</loc>
-    <lastmod>2026-06-07</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=d5af2cbc-e8c4-403d-9ccc-bd50245cd003</loc>
-    <lastmod>2026-06-07</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=b8c0794e-d702-4c07-95e0-d805823db48a</loc>
-    <lastmod>2026-06-07</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=e7aa0acc-f2c9-4b8d-9830-a54ffde2a10a</loc>
-    <lastmod>2026-06-07</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=df2e4c86-c100-49f3-9373-f0c221df25ce</loc>
-    <lastmod>2026-06-07</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=2babdedc-66b7-42e5-8c2a-2582bd8daed2</loc>
-    <lastmod>2026-06-07</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=474ac2fa-b40e-4aca-a278-11f9376196a5</loc>
-    <lastmod>2026-06-07</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=08d57d0f-4a18-4277-b5fd-3f818f425b2c</loc>
     <lastmod>2026-06-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -145,7 +91,19 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=e2befa83-1a83-460d-98bf-9f912da2e18b</loc>
+    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=df2e4c86-c100-49f3-9373-f0c221df25ce</loc>
+    <lastmod>2026-06-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=b8c0794e-d702-4c07-95e0-d805823db48a</loc>
+    <lastmod>2026-06-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=08d57d0f-4a18-4277-b5fd-3f818f425b2c</loc>
     <lastmod>2026-06-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -157,13 +115,49 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=2e8faad3-1301-4011-8ec7-2d5ecd3b764b</loc>
+    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=e2befa83-1a83-460d-98bf-9f912da2e18b</loc>
+    <lastmod>2026-06-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=93385a86-8311-4647-9f74-0b53fc037bde</loc>
+    <lastmod>2026-06-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=209c84f4-3235-4f48-ba07-e35142e66865</loc>
+    <lastmod>2026-06-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=a6f88ff0-f8ed-4a9c-a7b5-6c698345fdb2</loc>
     <lastmod>2026-06-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=2f592dee-625f-413a-863e-ce9a4e8fd2f0</loc>
+    <lastmod>2026-06-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=10b955b0-f300-4605-9219-03c31bc237de</loc>
+    <lastmod>2026-06-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=cba7659d-7ece-4f35-b33a-2fec21d551ac</loc>
+    <lastmod>2026-06-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=2e8faad3-1301-4011-8ec7-2d5ecd3b764b</loc>
     <lastmod>2026-06-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -181,55 +175,19 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=a6f88ff0-f8ed-4a9c-a7b5-6c698345fdb2</loc>
-    <lastmod>2026-06-07</lastmod>
+    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=c4d01c49-2920-45d6-b6bb-1e719e76fcef</loc>
+    <lastmod>2026-06-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=10b955b0-f300-4605-9219-03c31bc237de</loc>
-    <lastmod>2026-06-07</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=209c84f4-3235-4f48-ba07-e35142e66865</loc>
-    <lastmod>2026-06-07</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=cba7659d-7ece-4f35-b33a-2fec21d551ac</loc>
-    <lastmod>2026-06-07</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=acc838ef-4552-4d41-82f0-dff73b207daf</loc>
-    <lastmod>2026-06-07</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=23d86e61-3c69-46c5-a09d-87153b713286</loc>
-    <lastmod>2026-06-07</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=61c555ee-af09-47d4-8497-d6b85ad54d4c</loc>
-    <lastmod>2026-06-07</lastmod>
+    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=0564e0c1-d4e9-4602-a8ab-99ed7d33d66f</loc>
+    <lastmod>2026-06-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=78e94fe4-552b-47f8-939d-cb0a53703edc</loc>
-    <lastmod>2026-06-07</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=012eeb12-d0b1-41bb-9bf5-15c4c2e2c5ef</loc>
     <lastmod>2026-06-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -247,49 +205,19 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=5936715d-280f-4fc3-a1f1-8cc0eb3bc168</loc>
-    <lastmod>2026-06-07</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=47153379-d701-4023-9839-1be897e70fc0</loc>
     <lastmod>2026-06-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=fb2c7771-8852-49c9-9d8d-1f2f4d961637</loc>
+    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=5936715d-280f-4fc3-a1f1-8cc0eb3bc168</loc>
     <lastmod>2026-06-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=dee8457c-3a52-46dd-85e3-bbb79fdf9b23</loc>
-    <lastmod>2026-06-07</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=ff042ca7-6e84-461e-9569-fddb6ade7916</loc>
-    <lastmod>2026-06-07</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=cd1afb63-a0dc-41fe-b2a6-ac6e6162be2e</loc>
-    <lastmod>2026-06-07</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=dfc5a940-3cf3-4918-bf0d-9de343dea3d5</loc>
-    <lastmod>2026-06-07</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=6e0290ea-f04d-4f77-ae74-15519e44133b</loc>
+    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=012eeb12-d0b1-41bb-9bf5-15c4c2e2c5ef</loc>
     <lastmod>2026-06-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -301,7 +229,7 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=415af2aa-10ab-4786-822e-00371784cea1</loc>
+    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=6e0290ea-f04d-4f77-ae74-15519e44133b</loc>
     <lastmod>2026-06-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -319,13 +247,31 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=be304489-0ba3-4b94-ad61-eb092376169f</loc>
+    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=ff042ca7-6e84-461e-9569-fddb6ade7916</loc>
     <lastmod>2026-06-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=66d2bce0-fee4-436b-9231-11620bea8620</loc>
+    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=fb2c7771-8852-49c9-9d8d-1f2f4d961637</loc>
+    <lastmod>2026-06-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=cd1afb63-a0dc-41fe-b2a6-ac6e6162be2e</loc>
+    <lastmod>2026-06-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=415af2aa-10ab-4786-822e-00371784cea1</loc>
+    <lastmod>2026-06-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=be304489-0ba3-4b94-ad61-eb092376169f</loc>
     <lastmod>2026-06-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -337,19 +283,7 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=09e4b94f-0e08-4b59-8aa1-d9cf9e27204b</loc>
-    <lastmod>2026-06-07</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=b4cf7c47-ed14-46a1-9aeb-a1c6880d4adb</loc>
-    <lastmod>2026-06-07</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=01443a12-e73f-46b5-9631-ad4a39e40bbb</loc>
+    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=66d2bce0-fee4-436b-9231-11620bea8620</loc>
     <lastmod>2026-06-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -361,7 +295,121 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=8b808e6d-5be2-449a-b704-eb56b71d5610</loc>
+    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=b4cf7c47-ed14-46a1-9aeb-a1c6880d4adb</loc>
+    <lastmod>2026-06-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=a166d5e8-de73-4d2d-b5a0-1a74b6fc2c90</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=01443a12-e73f-46b5-9631-ad4a39e40bbb</loc>
+    <lastmod>2026-06-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=b4b3b4b7-cf19-4193-a010-ffcaad8fb6d3</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=917d26d8-0bca-4fa6-af05-29efa4757afd</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=ade67e51-8fd4-4701-a58b-1a550ea3b1c6</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=bc809ff7-daf8-4385-8445-1b5284757e47</loc>
+    <lastmod>2026-06-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=bea88555-12b9-40db-b44c-6e0e99c35f39</loc>
+    <lastmod>2026-06-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=680f07e1-ace5-487e-9a6b-42c7de5fa853</loc>
+    <lastmod>2026-06-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=ff2e1997-dbde-4a4a-9d0c-f3e8b664ff05</loc>
+    <lastmod>2026-06-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=73fca34c-c12f-4873-beff-eeb8863ea7a2</loc>
+    <lastmod>2026-06-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=f51a082c-8110-4bfa-a173-5479a506c994</loc>
+    <lastmod>2026-06-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=5eced36a-7a53-444d-b20b-f9f22750c30a</loc>
+    <lastmod>2026-06-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=17f747d0-86a2-4c87-923b-2a2b387ee497</loc>
+    <lastmod>2026-06-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=9299e3af-e266-465e-bbbe-d17c54e5ef10</loc>
+    <lastmod>2026-06-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=ceefa326-2fe1-4ff1-ab20-e531275e3e3c</loc>
+    <lastmod>2026-06-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=b79ac68b-a8e0-43f2-829a-f8ed01db9fd5</loc>
+    <lastmod>2026-06-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=0cbc08e5-7b55-4406-aa84-30424573fda2</loc>
+    <lastmod>2026-06-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=f7801def-b892-4493-a274-a43ea741bd6b</loc>
+    <lastmod>2026-06-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=75724104-017b-4581-9c31-a6deaa3f406b</loc>
     <lastmod>2026-06-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -373,14 +421,44 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=75724104-017b-4581-9c31-a6deaa3f406b</loc>
+    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=93006dd6-ed00-4870-ac16-95e4a45551e2</loc>
     <lastmod>2026-06-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=93006dd6-ed00-4870-ac16-95e4a45551e2</loc>
+    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=acc838ef-4552-4d41-82f0-dff73b207daf</loc>
     <lastmod>2026-06-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=09e4b94f-0e08-4b59-8aa1-d9cf9e27204b</loc>
+    <lastmod>2026-06-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=ce903cae-a324-4343-a1f1-66f88ccbc1c9</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=a7eb8fb4-8df8-4d09-897b-c3c7614011f0</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=4ae98c34-8d00-44f9-a52f-cea9e2893391</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://coup-de-patte.fr/coup-de-patte-fiche.html?id=e0dfb712-15b5-476a-8295-01dacde06cb3</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -393,6 +471,12 @@
   <url>
     <loc>https://coup-de-patte.fr/coup-de-patte-refuge.html?id=6d191cc1-d38f-4a0a-afb5-9ca7086ff896</loc>
     <lastmod>2026-05-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://coup-de-patte.fr/coup-de-patte-refuge.html?id=071af489-de8f-40a2-a505-c504521cc882</loc>
+    <lastmod>2026-06-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
