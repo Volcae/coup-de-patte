@@ -256,6 +256,7 @@ tbody tr:hover td{background:rgba(235,245,232,0.35)}
       }, 200);
     }
     if (id === 'algorithme' || id === 'enfin') { setTimeout(function() { if (typeof chargerParametresAlgo === 'function') chargerParametresAlgo(); }, 200); }
+    if (id === 'communication') { setTimeout(function() { if (typeof chargerAnnuaire === 'function') chargerAnnuaire(); }, 200); }
     if (id === 'scraping') {
       setTimeout(function() {
         if (typeof chargerScrapingQueue === 'function') chargerScrapingQueue();
@@ -708,52 +709,49 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <a href="cdp-emails-refuge.html" target="_blank" target="_blank" class="btn-primary" style="display:inline-flex">📧 Ouvrir les modèles d'emails</a>
       </div>
 
-      <!-- Modèle email refuges sans site -->
-      <p style="font-family:'Fraunces',serif;font-size:0.95rem;font-weight:600;font-style:italic;color:var(--forest);margin:0 0 14px">📬 Email — Refuges sans site internet</p>
+      <!-- Annuaire associations -->
+      <p style="font-family:'Fraunces',serif;font-size:0.95rem;font-weight:600;font-style:italic;color:var(--forest);margin:0 0 14px">📋 Annuaire des associations et refuges</p>
       <div class="dash-card" style="margin-bottom:28px">
-        <p style="font-size:0.78rem;color:var(--dust);line-height:1.6;margin-bottom:16px">Modèle d'email pour inviter des associations et refuges qui n'ont pas de site internet à rejoindre Coup de Patte.</p>
-        <div style="display:flex;gap:10px;margin-bottom:16px">
-          <button onclick="copierEmailRefuge()" style="padding:8px 16px;background:var(--moss);color:var(--ivory);border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer">📋 Copier l'email</button>
-          <button onclick="document.getElementById('emailPreviewRefuge').style.display=document.getElementById('emailPreviewRefuge').style.display==='none'?'block':'none'" style="padding:8px 16px;background:transparent;border:1.5px solid var(--border);border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.8rem;font-weight:700;color:var(--dust);cursor:pointer">👁 Aperçu</button>
-        </div>
-        <div id="emailPreviewRefuge" style="display:none;border:1.5px solid var(--border);border-radius:16px;overflow:hidden">
-          <div style="background:#F4F1E8;padding:40px;font-family:Arial,sans-serif;max-width:520px;margin:0 auto">
-            <div style="text-align:center;margin-bottom:24px">
-              <div style="width:52px;height:52px;background:#2D4A3E;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;display:inline-flex;align-items:center;justify-content:center;font-size:1.4rem;margin:0 auto 8px">🐾</div>
-              <p style="font-size:17px;font-weight:700;color:#2D4A3E;margin:0">Coup de Patte</p>
-            </div>
-            <h2 style="font-size:20px;color:#2D4A3E;margin:0 0 6px">Votre refuge mérite d'être vu</h2>
-            <p style="font-size:13px;color:#7A6E65;margin:0 0 24px">Une vitrine gratuite pour vos animaux, sans site internet</p>
-            <div style="background:#FDFCF8;border-radius:16px;padding:28px;margin-bottom:20px">
-              <p style="font-size:13px;color:#2D4A3E;line-height:1.7;margin:0 0 14px">Bonjour,</p>
-              <p style="font-size:13px;color:#2D4A3E;line-height:1.7;margin:0 0 14px">Nous avons découvert votre association et le travail remarquable que vous faites pour les animaux en attente d'une famille.</p>
-              <p style="font-size:13px;color:#2D4A3E;line-height:1.7;margin:0 0 14px"><strong>Coup de Patte</strong> est une plateforme d'adoption gratuite qui connecte les adoptants avec les animaux des refuges, et met particulièrement en avant ceux qui attendent depuis le plus longtemps.</p>
-              <p style="font-size:13px;color:#2D4A3E;line-height:1.7;margin:0 0 20px">Votre espace refuge sur Coup de Patte vous permet de :</p>
-              <div style="margin-bottom:20px">
-                <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px"><span>📋</span><p style="font-size:13px;color:#2D4A3E;margin:0;line-height:1.6"><strong>Créer les fiches de vos animaux</strong> — photos, description, compatibilités</p></div>
-                <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px"><span>🎯</span><p style="font-size:13px;color:#2D4A3E;margin:0;line-height:1.6"><strong>Être mis en relation avec les bons adoptants</strong> — notre algorithme propose vos animaux aux familles qui leur correspondent vraiment</p></div>
-                <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px"><span>✨</span><p style="font-size:13px;color:#2D4A3E;margin:0;line-height:1.6"><strong>Donner plus de visibilité à vos "Enfin Moi ?"</strong> — une catégorie dédiée aux animaux qui attendent depuis longtemps</p></div>
-                <div style="display:flex;align-items:flex-start;gap:10px"><span>🆓</span><p style="font-size:13px;color:#2D4A3E;margin:0;line-height:1.6"><strong>Entièrement gratuit</strong> — Coup de Patte est un projet indépendant à but non lucratif</p></div>
-              </div>
-              <p style="font-size:13px;color:#2D4A3E;line-height:1.7;margin:0 0 16px">Créer votre compte en quelques clics :</p>
-              <div style="background:#F4F1E8;border-radius:12px;padding:16px;margin-bottom:20px">
-                <p style="font-size:12px;color:#2D4A3E;margin:0 0 6px"><strong>1.</strong> Rendez-vous sur <a href="https://coup-de-patte.fr/coup-de-patte-login.html" style="color:#4A7C59">coup-de-patte.fr</a></p>
-                <p style="font-size:12px;color:#2D4A3E;margin:0 0 6px"><strong>2.</strong> Cliquez sur <strong>"Je gère un refuge"</strong> puis <strong>"Créer mon compte"</strong></p>
-                <p style="font-size:12px;color:#2D4A3E;margin:0 0 6px"><strong>3.</strong> Renseignez les informations de votre refuge</p>
-                <p style="font-size:12px;color:#2D4A3E;margin:0"><strong>4.</strong> Ajoutez vos animaux et commencez à recevoir des demandes d'adoption</p>
-              </div>
-              <div style="text-align:center">
-                <a href="https://coup-de-patte.fr/coup-de-patte-login.html" style="display:inline-block;background:#4A7C59;color:#F4F1E8;font-size:14px;font-weight:700;padding:13px 28px;border-radius:50px;text-decoration:none">🐾 Créer mon espace refuge</a>
-              </div>
-              <p style="font-size:11px;color:#A89E96;margin:16px 0 0;text-align:center">Si vous ne souhaitez pas être contacté par Coup de Patte, ignorez simplement cet email.</p>
-            </div>
-            <p style="text-align:center;font-size:11px;color:#A89E96">© 2025 Coup de Patte · coup-de-patte.fr</p>
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px">
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <input id="annuaireSearch" type="text" placeholder="Rechercher..." oninput="filtrerAnnuaire()" style="padding:8px 12px;border:1.5px solid var(--border);border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.8rem;background:var(--ivory);color:var(--forest);width:180px">
+            <select id="annuaireDepFilter" onchange="filtrerAnnuaire()" style="padding:8px 12px;border:1.5px solid var(--border);border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.8rem;background:var(--ivory);color:var(--forest)">
+              <option value="">Tous les départements</option>
+            </select>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button onclick="copierTousEmails()" style="padding:7px 14px;background:var(--moss);color:var(--ivory);border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer">📋 Copier tous les emails</button>
+            <button onclick="copierEmailsDep()" style="padding:7px 14px;background:transparent;border:1.5px solid var(--border);border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.78rem;font-weight:700;color:var(--dust);cursor:pointer">📋 Copier emails du département</button>
+            <button onclick="ouvrirNouvelleEntree()" style="padding:7px 14px;background:var(--forest);color:var(--ivory);border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer">+ Ajouter</button>
           </div>
         </div>
-        <span id="copieConfirm" style="font-size:0.75rem;color:var(--moss);display:none;margin-top:8px;display:none">✅ Texte copié !</span>
+        <div id="annuaireListe" style="display:flex;flex-direction:column;gap:0"></div>
+        <div id="annuaireVide" style="text-align:center;padding:30px;color:var(--dust);font-style:italic;display:none">Aucune association trouvée.</div>
       </div>
 
-      <!-- Réseaux sociaux -->
+      <!-- Modale annuaire -->
+      <div id="annuaireModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:400;align-items:center;justify-content:center">
+        <div style="background:var(--paper);border-radius:20px;padding:28px;width:100%;max-width:480px;margin:20px;box-shadow:0 20px 60px rgba(0,0,0,0.2)">
+          <h3 style="font-family:'Fraunces',serif;font-size:1rem;font-weight:700;color:var(--forest);margin:0 0 18px" id="annuaireModalTitle">Nouvelle entrée</h3>
+          <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px">
+            <div><label style="display:block;font-size:0.72rem;font-weight:700;color:var(--forest);margin-bottom:3px">Nom *</label><input id="anom" type="text" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-family:'Nunito',sans-serif;font-size:0.85rem;background:var(--ivory);color:var(--forest);box-sizing:border-box"></div>
+            <div style="display:flex;gap:8px">
+              <div style="flex:1"><label style="display:block;font-size:0.72rem;font-weight:700;color:var(--forest);margin-bottom:3px">Département *</label><input id="adep" type="text" placeholder="ex: 21" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-family:'Nunito',sans-serif;font-size:0.85rem;background:var(--ivory);color:var(--forest);box-sizing:border-box"></div>
+              <div style="flex:2"><label style="display:block;font-size:0.72rem;font-weight:700;color:var(--forest);margin-bottom:3px">Ville</label><input id="aville" type="text" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-family:'Nunito',sans-serif;font-size:0.85rem;background:var(--ivory);color:var(--forest);box-sizing:border-box"></div>
+            </div>
+            <div><label style="display:block;font-size:0.72rem;font-weight:700;color:var(--forest);margin-bottom:3px">Email</label><input id="aemail" type="email" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-family:'Nunito',sans-serif;font-size:0.85rem;background:var(--ivory);color:var(--forest);box-sizing:border-box"></div>
+            <div><label style="display:block;font-size:0.72rem;font-weight:700;color:var(--forest);margin-bottom:3px">Site web</label><input id="asite" type="text" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-family:'Nunito',sans-serif;font-size:0.85rem;background:var(--ivory);color:var(--forest);box-sizing:border-box"></div>
+            <div><label style="display:block;font-size:0.72rem;font-weight:700;color:var(--forest);margin-bottom:3px">Notes</label><textarea id="anotes" rows="2" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-family:'Nunito',sans-serif;font-size:0.85rem;background:var(--ivory);color:var(--forest);box-sizing:border-box;resize:none"></textarea></div>
+          </div>
+          <div style="display:flex;gap:8px;justify-content:flex-end">
+            <button onclick="fermerAnnuaireModal()" style="padding:9px 16px;background:transparent;border:1.5px solid var(--border);border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.82rem;cursor:pointer;color:var(--dust)">Annuler</button>
+            <button onclick="supprimerEntreeAnnuaire()" id="aBtnSupp" style="display:none;padding:9px 16px;background:transparent;border:1.5px solid rgba(201,112,74,0.4);border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.82rem;cursor:pointer;color:var(--rose)">🗑 Supprimer</button>
+            <button onclick="sauvegarderEntreeAnnuaire()" style="padding:9px 20px;background:linear-gradient(135deg,var(--moss),var(--forest));color:var(--ivory);border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer">💾 Sauvegarder</button>
+          </div>
+        </div>
+      </div>
+
+            <!-- Réseaux sociaux -->
       <p style="font-family:'Fraunces',serif;font-size:0.95rem;font-weight:600;font-style:italic;color:var(--forest);margin-bottom:14px">📱 Kit réseaux sociaux</p>
       <div class="dash-card" style="margin-bottom:28px">
         <p style="font-size:0.78rem;color:var(--dust);line-height:1.6;margin-bottom:16px">Visuels prêts à publier (Instagram, Facebook), textes optimisés par plateforme (TikTok, Instagram, Facebook), et conseils stratégiques pour maximiser la portée sans budget publicitaire.</p>
@@ -3419,6 +3417,174 @@ async function sauvegarderGPS() {
 document.getElementById('gpsModal').addEventListener('click', function(e) {
   if (e.target === this) fermerGPS();
 });
+</script>
+<script>
+// ── ANNUAIRE ──────────────────────────────────────────────
+var _annuaireData = [];
+var _annuaireEditId = null;
+var _annuaireFiltered = [];
+
+async function chargerAnnuaire() {
+  var sb = getSupabase();
+  var { data, error } = await sb.from('Annuaire').select('*').order('departement').order('nom');
+  if (error) { showToast('Erreur chargement annuaire'); return; }
+  _annuaireData = data || [];
+  _annuaireFiltered = _annuaireData;
+  peuplerFiltresDep();
+  renderAnnuaire(_annuaireData);
+}
+
+function peuplerFiltresDep() {
+  var sel = document.getElementById('annuaireDepFilter');
+  if (!sel) return;
+  var deps = [...new Set(_annuaireData.map(function(e) { return e.departement; }))].sort();
+  sel.innerHTML = '<option value="">Tous les départements</option>' +
+    deps.map(function(d) { return '<option value="' + d + '">' + d + '</option>'; }).join('');
+}
+
+function filtrerAnnuaire() {
+  var q = (document.getElementById('annuaireSearch').value || '').toLowerCase().trim();
+  var dep = document.getElementById('annuaireDepFilter').value;
+  _annuaireFiltered = _annuaireData.filter(function(e) {
+    var matchQ = !q || (e.nom||'').toLowerCase().includes(q) || (e.ville||'').toLowerCase().includes(q) || (e.email||'').toLowerCase().includes(q);
+    var matchD = !dep || e.departement === dep;
+    return matchQ && matchD;
+  });
+  renderAnnuaire(_annuaireFiltered);
+}
+
+function renderAnnuaire(list) {
+  var el = document.getElementById('annuaireListe');
+  var vide = document.getElementById('annuaireVide');
+  if (!el) return;
+  if (!list || list.length === 0) {
+    el.innerHTML = '';
+    if (vide) vide.style.display = 'block';
+    return;
+  }
+  if (vide) vide.style.display = 'none';
+
+  // Grouper par département
+  var byDep = {};
+  list.forEach(function(e) {
+    if (!byDep[e.departement]) byDep[e.departement] = [];
+    byDep[e.departement].push(e);
+  });
+
+  el.innerHTML = Object.keys(byDep).sort().map(function(dep) {
+    var entries = byDep[dep];
+    var emailsDep = entries.filter(function(e) { return e.email; }).map(function(e) { return e.email; });
+    return '<div style="margin-bottom:16px">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--forest);border-radius:10px 10px 0 0;margin-bottom:0">' +
+        '<span style="font-size:0.8rem;font-weight:800;color:var(--ivory)">Département ' + dep + ' — ' + entries.length + ' structure(s)</span>' +
+        (emailsDep.length > 0 ? '<button onclick="copierEmailsDep(\'' + dep + '\')" style="padding:4px 10px;background:rgba(244,241,232,0.15);color:var(--ivory);border:1px solid rgba(244,241,232,0.3);border-radius:50px;font-family:\'Nunito\',sans-serif;font-size:0.68rem;font-weight:700;cursor:pointer">📋 ' + emailsDep.length + ' email(s)</button>' : '') +
+      '</div>' +
+      entries.map(function(e, i) {
+        var isLast = i === entries.length - 1;
+        return '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 12px;background:var(--paper);border:1.5px solid var(--border);border-top:none;' + (isLast ? 'border-radius:0 0 10px 10px' : '') + '">' +
+          '<div style="flex:1;min-width:0">' +
+            '<span style="font-size:0.78rem;font-weight:700;color:var(--forest)">' + e.nom + '</span>' +
+            (e.ville ? '<span style="font-size:0.7rem;color:var(--dust);margin-left:6px">· ' + e.ville + '</span>' : '') +
+            (e.email ? '<div style="font-size:0.7rem;color:var(--moss);margin-top:1px">' + e.email + '</div>' : '<div style="font-size:0.68rem;color:var(--dust);font-style:italic;margin-top:1px">Pas d\'email</div>') +
+            (e.site_web ? '<div style="font-size:0.68rem;color:var(--dust);margin-top:1px"><a href="' + e.site_web + '" target="_blank" style="color:var(--dust)">' + e.site_web.replace(/^https?:\/\//, '') + '</a></div>' : '') +
+            (e.notes ? '<div style="font-size:0.67rem;color:var(--dust);font-style:italic;margin-top:2px">' + e.notes + '</div>' : '') +
+          '</div>' +
+          '<div style="display:flex;gap:5px;flex-shrink:0">' +
+            (e.email ? '<button onclick="copierEmail(\'' + e.email + '\')" style="padding:4px 9px;background:var(--mint-lt);color:var(--moss);border:1px solid rgba(74,124,89,0.2);border-radius:50px;font-family:\'Nunito\',sans-serif;font-size:0.65rem;font-weight:700;cursor:pointer">📋</button>' : '') +
+            '<button onclick="ouvrirEditionEntree(\'' + e.id + '\')" style="padding:4px 9px;background:transparent;border:1px solid var(--border);border-radius:50px;font-family:\'Nunito\',sans-serif;font-size:0.65rem;color:var(--dust);cursor:pointer">✏️</button>' +
+          '</div>' +
+        '</div>';
+      }).join('') +
+    '</div>';
+  }).join('');
+}
+
+function copierEmail(email) {
+  navigator.clipboard.writeText(email).then(function() { showToast('📋 ' + email + ' copié'); });
+}
+
+function copierTousEmails() {
+  var emails = _annuaireFiltered.filter(function(e) { return e.email; }).map(function(e) { return e.email; });
+  if (!emails.length) { showToast('Aucun email dans la sélection'); return; }
+  navigator.clipboard.writeText(emails.join('; ')).then(function() { showToast('📋 ' + emails.length + ' email(s) copiés'); });
+}
+
+function copierEmailsDep(dep) {
+  var filtre = dep || document.getElementById('annuaireDepFilter').value;
+  var emails = _annuaireFiltered.filter(function(e) { return e.email && (!filtre || e.departement === filtre); }).map(function(e) { return e.email; });
+  if (!emails.length) { showToast('Aucun email pour ce département'); return; }
+  navigator.clipboard.writeText(emails.join('; ')).then(function() { showToast('📋 ' + emails.length + ' email(s) copiés'); });
+}
+
+function ouvrirNouvelleEntree() {
+  _annuaireEditId = null;
+  document.getElementById('annuaireModalTitle').textContent = 'Nouvelle structure';
+  ['anom','adep','aville','aemail','asite','anotes'].forEach(function(id) { var el = document.getElementById(id); if (el) el.value = ''; });
+  document.getElementById('aBtnSupp').style.display = 'none';
+  document.getElementById('annuaireModal').style.display = 'flex';
+}
+
+async function ouvrirEditionEntree(id) {
+  var e = _annuaireData.find(function(x) { return x.id === id; });
+  if (!e) return;
+  _annuaireEditId = id;
+  document.getElementById('annuaireModalTitle').textContent = 'Modifier';
+  document.getElementById('anom').value = e.nom || '';
+  document.getElementById('adep').value = e.departement || '';
+  document.getElementById('aville').value = e.ville || '';
+  document.getElementById('aemail').value = e.email || '';
+  document.getElementById('asite').value = e.site_web || '';
+  document.getElementById('anotes').value = e.notes || '';
+  document.getElementById('aBtnSupp').style.display = 'inline-flex';
+  document.getElementById('annuaireModal').style.display = 'flex';
+}
+
+function fermerAnnuaireModal() {
+  document.getElementById('annuaireModal').style.display = 'none';
+  _annuaireEditId = null;
+}
+
+async function sauvegarderEntreeAnnuaire() {
+  var nom = document.getElementById('anom').value.trim();
+  var dep = document.getElementById('adep').value.trim();
+  if (!nom || !dep) { showToast('Nom et département requis'); return; }
+  var payload = {
+    nom: nom,
+    departement: dep,
+    ville: document.getElementById('aville').value.trim() || null,
+    email: document.getElementById('aemail').value.trim() || null,
+    site_web: document.getElementById('asite').value.trim() || null,
+    notes: document.getElementById('anotes').value.trim() || null,
+  };
+  var sb = getSupabase();
+  var error;
+  if (_annuaireEditId) {
+    ({ error } = await sb.from('Annuaire').update(payload).eq('id', _annuaireEditId));
+  } else {
+    ({ error } = await sb.from('Annuaire').insert(payload));
+  }
+  if (error) { showToast('Erreur : ' + error.message); return; }
+  showToast('✅ Sauvegardé');
+  fermerAnnuaireModal();
+  chargerAnnuaire();
+}
+
+async function supprimerEntreeAnnuaire() {
+  if (!_annuaireEditId) return;
+  if (!confirm('Supprimer cette entrée ?')) return;
+  var sb = getSupabase();
+  var { error } = await sb.from('Annuaire').delete().eq('id', _annuaireEditId);
+  if (error) { showToast('Erreur : ' + error.message); return; }
+  showToast('🗑 Supprimé');
+  fermerAnnuaireModal();
+  chargerAnnuaire();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  var m = document.getElementById('annuaireModal');
+  if (m) m.addEventListener('click', function(e) { if (e.target === this) fermerAnnuaireModal(); });
+});
+
 </script>
 </body>
 </html>
