@@ -19,6 +19,13 @@ header p{font-size:0.75rem;color:rgba(244,241,232,0.6);margin-top:2px}
 
 /* Visuels carrés */
 .visuals-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.stories-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.tips-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media (max-width: 760px){
+  .visuals-grid{grid-template-columns:repeat(2,1fr)}
+  .stories-grid{grid-template-columns:repeat(2,1fr)}
+  .tips-grid{grid-template-columns:1fr}
+}
 .visual-wrap{display:flex;flex-direction:column;gap:10px}
 .visual-label{font-size:0.72rem;font-weight:700;color:var(--dust);text-transform:uppercase;letter-spacing:0.5px}
 .visual-actions{display:flex;gap:8px}
@@ -73,11 +80,56 @@ header p{font-size:0.75rem;color:rgba(244,241,232,0.6);margin-top:2px}
 .btn-copy-sm{padding:5px 12px;background:var(--moss);color:var(--ivory);border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.68rem;font-weight:700;cursor:pointer;flex-shrink:0}
 
 /* Conseils */
-.tips-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
 .tip{background:var(--paper);border-radius:14px;border:1.5px solid var(--border);padding:16px}
 .tip-icon{font-size:1.4rem;margin-bottom:8px;display:block}
 .tip h4{font-size:0.82rem;font-weight:700;color:var(--forest);margin-bottom:6px}
 .tip p{font-size:0.72rem;color:var(--dust);line-height:1.5}
+
+/* Stories format telephone 9:16 */
+.story-wrap{display:flex;flex-direction:column;gap:10px}
+.v-story{width:100%;aspect-ratio:9/16;border-radius:20px;overflow:hidden;position:relative;display:flex;flex-direction:column;box-shadow:0 6px 24px rgba(45,74,62,0.12)}
+
+.s1{background:linear-gradient(165deg,var(--forest),#1c332a)}
+.s1-top{padding:24px 20px 0;display:flex;align-items:center;gap:8px}
+.s1-logo{width:26px;height:26px;background:var(--amber);border-radius:50% 50% 50% 50%/60% 60% 40% 40%;display:flex;align-items:center;justify-content:center;font-size:0.7rem}
+.s1-brand{font-family:'Fraunces',serif;font-size:0.72rem;font-weight:700;color:var(--ivory)}
+.s1-mid{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center}
+.s1-paw{font-size:2.8rem;margin-bottom:14px;opacity:0.9}
+.s1-title{font-family:'Fraunces',serif;font-size:1.5rem;font-weight:700;font-style:italic;color:var(--ivory);line-height:1.2;margin-bottom:10px}
+.s1-sub{font-size:0.72rem;color:rgba(244,241,232,0.7);line-height:1.6;max-width:200px}
+.s1-bottom{padding:18px 20px 26px;text-align:center}
+.s1-cta{display:inline-block;background:var(--amber);color:var(--forest);font-size:0.68rem;font-weight:800;padding:9px 20px;border-radius:50px}
+
+.s2{background:var(--ivory)}
+.s2-photo{flex:1;background:linear-gradient(150deg,var(--mint),var(--sage));display:flex;align-items:center;justify-content:center;position:relative}
+.s2-photo-icon{font-size:3.5rem;opacity:0.5}
+.s2-ribbon{position:absolute;top:18px;left:18px;background:var(--amber);color:var(--forest);font-size:0.55rem;font-weight:800;padding:4px 10px;border-radius:50px;text-transform:uppercase;letter-spacing:0.5px}
+.s2-info{background:var(--paper);padding:18px 18px 24px}
+.s2-name{font-family:'Fraunces',serif;font-size:1.15rem;font-weight:700;color:var(--forest);margin-bottom:4px}
+.s2-meta{font-size:0.66rem;color:var(--dust);margin-bottom:10px}
+.s2-url{font-size:0.62rem;color:var(--moss);font-weight:700}
+
+.s3{background:linear-gradient(165deg,#3a2418,#1f140d)}
+.s3-top{padding:24px 20px 0;display:flex;align-items:center;gap:8px}
+.s3-logo{width:26px;height:26px;background:var(--ivory);border-radius:50% 50% 50% 50%/60% 60% 40% 40%;display:flex;align-items:center;justify-content:center;font-size:0.7rem}
+.s3-brand{font-family:'Fraunces',serif;font-size:0.72rem;font-weight:700;color:var(--ivory)}
+.s3-mid{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center}
+.s3-emoji{font-size:2.6rem;margin-bottom:14px}
+.s3-title{font-family:'Fraunces',serif;font-size:1.3rem;font-weight:700;color:var(--ivory);line-height:1.25;margin-bottom:10px}
+.s3-sub{font-size:0.7rem;color:rgba(244,241,232,0.65);line-height:1.6;max-width:210px}
+.s3-bottom{padding:18px 20px 26px;text-align:center}
+.s3-cta{display:inline-block;background:var(--ivory);color:#3a2418;font-size:0.68rem;font-weight:800;padding:9px 20px;border-radius:50px}
+
+.s4{background:var(--moss)}
+.s4-top{padding:24px 20px 0}
+.s4-badge{display:inline-block;background:rgba(255,255,255,0.18);color:var(--ivory);font-size:0.58rem;font-weight:700;padding:4px 10px;border-radius:50px;text-transform:uppercase;letter-spacing:0.5px}
+.s4-mid{flex:1;display:flex;flex-direction:column;justify-content:center;padding:24px}
+.s4-title{font-family:'Fraunces',serif;font-size:1.55rem;font-weight:700;color:var(--ivory);line-height:1.2;margin-bottom:14px}
+.s4-steps{display:flex;flex-direction:column;gap:8px}
+.s4-step{display:flex;align-items:center;gap:8px;font-size:0.68rem;color:rgba(244,241,232,0.9)}
+.s4-step-num{width:18px;height:18px;background:var(--amber);color:var(--forest);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:800;flex-shrink:0}
+.s4-bottom{padding:18px 20px 26px;text-align:center}
+.s4-cta{display:inline-block;background:var(--amber);color:var(--forest);font-size:0.68rem;font-weight:800;padding:9px 20px;border-radius:50px}
 </style>
 </head>
 <body>
@@ -154,6 +206,100 @@ header p{font-size:0.75rem;color:rgba(244,241,232,0.6);margin-top:2px}
         </div>
         <div class="visual-actions">
           <button class="btn-dl" onclick="telechargerVisuel('v3')">⬇️ Télécharger</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- STORIES TELEPHONE -->
+  <div>
+    <h2 class="section-title">📱 Stories — Format 9:16 (téléphone)</h2>
+    <div class="stories-grid">
+
+      <div class="story-wrap">
+        <span class="visual-label">Présentation générale</span>
+        <div class="v-story s1" id="s1">
+          <div class="s1-top">
+            <div class="s1-logo">🐾</div>
+            <span class="s1-brand">Coup de Patte</span>
+          </div>
+          <div class="s1-mid">
+            <span class="s1-paw">🐾</span>
+            <div class="s1-title">L'adoption,<br>autrement.</div>
+            <p class="s1-sub">Un profil, des matchs personnalisés selon votre logement et votre quotidien.</p>
+          </div>
+          <div class="s1-bottom">
+            <span class="s1-cta">coup-de-patte.fr</span>
+          </div>
+        </div>
+        <div class="visual-actions">
+          <button class="btn-dl" onclick="telechargerVisuel('s1')">⬇️ Télécharger</button>
+        </div>
+      </div>
+
+      <div class="story-wrap">
+        <span class="visual-label">Fiche animal (à éditer)</span>
+        <div class="v-story s2" id="s2">
+          <div class="s2-photo">
+            <span class="s2-ribbon">✨ Enfin Moi ?</span>
+            <span class="s2-photo-icon">📷</span>
+          </div>
+          <div class="s2-info">
+            <div class="s2-name">Nom de l'animal</div>
+            <div class="s2-meta">Race · Âge · Sexe · Ville</div>
+            <div class="s2-url">→ coup-de-patte.fr</div>
+          </div>
+        </div>
+        <div class="visual-actions">
+          <button class="btn-dl" onclick="telechargerVisuel('s2')">⬇️ Télécharger</button>
+          <button class="btn-copy-text" onclick="copierTexte('s2-tip')">💡 Astuce photo</button>
+        </div>
+        <p id="s2-tip" style="display:none">Remplacez l'icône 📷 par la photo de l'animal et le nom/race/âge avant de publier.</p>
+      </div>
+
+      <div class="story-wrap">
+        <span class="visual-label">Enfin Moi ?</span>
+        <div class="v-story s3" id="s3">
+          <div class="s3-top">
+            <div class="s3-logo">🐾</div>
+            <span class="s3-brand">Coup de Patte</span>
+          </div>
+          <div class="s3-mid">
+            <span class="s3-emoji">✨</span>
+            <div class="s3-title">Les oubliés des refuges<br>méritent une famille aussi.</div>
+            <p class="s3-sub">Seniors, animaux en attente depuis longtemps, besoins particuliers — découvrez-les.</p>
+          </div>
+          <div class="s3-bottom">
+            <span class="s3-cta">Voir les Enfin Moi ?</span>
+          </div>
+        </div>
+        <div class="visual-actions">
+          <button class="btn-dl" onclick="telechargerVisuel('s3')">⬇️ Télécharger</button>
+        </div>
+      </div>
+
+      <div class="story-wrap">
+        <span class="visual-label">Comment ça marche</span>
+        <div class="v-story s4" id="s4">
+          <div class="s4-top">
+            <span class="s4-badge">100% gratuit</span>
+          </div>
+          <div class="s4-mid">
+            <div class="s4-title">Trouvez votre futur compagnon</div>
+            <div class="s4-steps">
+              <div class="s4-step"><span class="s4-step-num">1</span>Créez votre profil</div>
+              <div class="s4-step"><span class="s4-step-num">2</span>Découvrez vos matchs</div>
+              <div class="s4-step"><span class="s4-step-num">3</span>Contactez le refuge</div>
+              <div class="s4-step"><span class="s4-step-num">4</span>Rencontrez-le</div>
+            </div>
+          </div>
+          <div class="s4-bottom">
+            <span class="s4-cta">coup-de-patte.fr</span>
+          </div>
+        </div>
+        <div class="visual-actions">
+          <button class="btn-dl" onclick="telechargerVisuel('s4')">⬇️ Télécharger</button>
         </div>
       </div>
 
@@ -324,9 +470,23 @@ function copierTexte(id, btn) {
 }
 
 function telechargerVisuel(id) {
-  alert('Pour télécharger ce visuel : faites un clic droit sur l\'image → "Enregistrer l\'image" ou faites une capture d\'écran. Un export PNG automatique sera disponible prochainement.');
+  var el = document.getElementById(id);
+  if (!el || typeof html2canvas === 'undefined') {
+    alert('Le téléchargement n\'est pas disponible pour le moment. Faites une capture d\'écran de ce visuel.');
+    return;
+  }
+  html2canvas(el, { backgroundColor: null, scale: 3 }).then(function(canvas) {
+    var link = document.createElement('a');
+    link.download = 'coup-de-patte-' + id + '.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  }).catch(function() {
+    alert('Le téléchargement a échoué. Faites une capture d\'écran de ce visuel.');
+  });
 }
 </script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 </body>
 </html>
