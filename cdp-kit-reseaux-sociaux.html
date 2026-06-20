@@ -131,6 +131,7 @@ header p{font-size:0.75rem;color:rgba(244,241,232,0.6);margin-top:2px}
 .s4-bottom{padding:18px 20px 26px;text-align:center}
 .s4-cta{display:inline-block;background:var(--amber);color:var(--forest);font-size:0.68rem;font-weight:800;padding:9px 20px;border-radius:50px}
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
 
@@ -162,7 +163,7 @@ header p{font-size:0.75rem;color:rgba(244,241,232,0.6);margin-top:2px}
           </div>
         </div>
         <div class="visual-actions">
-          <button class="btn-dl" onclick="telechargerVisuel('v1')">⬇️ Télécharger</button>
+          <button class="btn-dl" onclick="telechargerVisuel('v1', this)">⬇️ Télécharger</button>
         </div>
       </div>
 
@@ -181,7 +182,7 @@ header p{font-size:0.75rem;color:rgba(244,241,232,0.6);margin-top:2px}
           </div>
         </div>
         <div class="visual-actions">
-          <button class="btn-dl" onclick="telechargerVisuel('v2')">⬇️ Télécharger</button>
+          <button class="btn-dl" onclick="telechargerVisuel('v2', this)">⬇️ Télécharger</button>
         </div>
       </div>
 
@@ -205,7 +206,7 @@ header p{font-size:0.75rem;color:rgba(244,241,232,0.6);margin-top:2px}
           </div>
         </div>
         <div class="visual-actions">
-          <button class="btn-dl" onclick="telechargerVisuel('v3')">⬇️ Télécharger</button>
+          <button class="btn-dl" onclick="telechargerVisuel('v3', this)">⬇️ Télécharger</button>
         </div>
       </div>
 
@@ -234,7 +235,7 @@ header p{font-size:0.75rem;color:rgba(244,241,232,0.6);margin-top:2px}
           </div>
         </div>
         <div class="visual-actions">
-          <button class="btn-dl" onclick="telechargerVisuel('s1')">⬇️ Télécharger</button>
+          <button class="btn-dl" onclick="telechargerVisuel('s1', this)">⬇️ Télécharger</button>
         </div>
       </div>
 
@@ -252,7 +253,7 @@ header p{font-size:0.75rem;color:rgba(244,241,232,0.6);margin-top:2px}
           </div>
         </div>
         <div class="visual-actions">
-          <button class="btn-dl" onclick="telechargerVisuel('s2')">⬇️ Télécharger</button>
+          <button class="btn-dl" onclick="telechargerVisuel('s2', this)">⬇️ Télécharger</button>
           <button class="btn-copy-text" onclick="copierTexte('s2-tip')">💡 Astuce photo</button>
         </div>
         <p id="s2-tip" style="display:none">Remplacez l'icône 📷 par la photo de l'animal et le nom/race/âge avant de publier.</p>
@@ -275,7 +276,7 @@ header p{font-size:0.75rem;color:rgba(244,241,232,0.6);margin-top:2px}
           </div>
         </div>
         <div class="visual-actions">
-          <button class="btn-dl" onclick="telechargerVisuel('s3')">⬇️ Télécharger</button>
+          <button class="btn-dl" onclick="telechargerVisuel('s3', this)">⬇️ Télécharger</button>
         </div>
       </div>
 
@@ -299,7 +300,7 @@ header p{font-size:0.75rem;color:rgba(244,241,232,0.6);margin-top:2px}
           </div>
         </div>
         <div class="visual-actions">
-          <button class="btn-dl" onclick="telechargerVisuel('s4')">⬇️ Télécharger</button>
+          <button class="btn-dl" onclick="telechargerVisuel('s4', this)">⬇️ Télécharger</button>
         </div>
       </div>
 
@@ -417,6 +418,42 @@ Des questions ? Répondez à ce message ou contactez-nous directement 🐾</pre>
         </div>
       </div>
 
+      <div class="text-card">
+        <div class="text-card-header">
+          <div>
+            <div style="display:flex;gap:6px;margin-bottom:4px">
+              <span class="platform-badge badge-fb">Facebook</span>
+            </div>
+            <h4>Publicité Facebook — annonce sponsorisée</h4>
+            <p>Texte court pour une pub ciblant adoptants et refuges</p>
+          </div>
+          <button class="btn-copy-sm" onclick="copierTexte('t5',this)">📋 Copier</button>
+        </div>
+        <div class="text-body">
+          <pre id="t5">Coup de Patte connecte adoptants et refuges grâce à un algorithme de compatibilité. Trouvez l'animal qui vous correspond, ou donnez plus de visibilité aux vôtres si vous gérez un refuge. 100% gratuit, sans engagement.</pre>
+        </div>
+      </div>
+
+      <div class="text-card">
+        <div class="text-card-header">
+          <div>
+            <div style="display:flex;gap:6px;margin-bottom:4px">
+              <span class="platform-badge badge-fb">Facebook</span>
+            </div>
+            <h4>Relance Messenger — refuges déjà contactés par email</h4>
+            <p>Pour relancer sur Facebook une association qui n'a pas répondu au mail</p>
+          </div>
+          <button class="btn-copy-sm" onclick="copierTexte('t6',this)">📋 Copier</button>
+        </div>
+        <div class="text-body">
+          <pre id="t6">Bonjour, je vous ai envoyé un email il y a quelques jours au sujet de Coup de Patte, une plateforme d'adoption gratuite que j'ai créée. Je me permets de vous recontacter ici au cas où le mail serait passé inaperçu.
+
+L'idée : un algorithme propose vos animaux aux adoptants dont le profil correspond vraiment, et les animaux qui attendent depuis longtemps ont une visibilité renforcée. C'est gratuit, sans engagement, et ça prend quelques minutes à mettre en place.
+
+Si ça vous intéresse, je suis disponible pour en discuter ici ou par téléphone. Et si ce n'est pas le bon moment, pas de souci 🐾</pre>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -469,24 +506,27 @@ function copierTexte(id, btn) {
   });
 }
 
-function telechargerVisuel(id) {
+function telechargerVisuel(id, btn) {
   var el = document.getElementById(id);
-  if (!el || typeof html2canvas === 'undefined') {
-    alert('Le téléchargement n\'est pas disponible pour le moment. Faites une capture d\'écran de ce visuel.');
+  if (!el) return;
+  if (typeof html2canvas === 'undefined') {
+    setTimeout(function() { telechargerVisuel(id, btn); }, 300);
     return;
   }
-  html2canvas(el, { backgroundColor: null, scale: 3 }).then(function(canvas) {
+  var label = btn ? btn.textContent : null;
+  if (btn) btn.textContent = '⏳ Génération…';
+  html2canvas(el, { backgroundColor: null, scale: 3, useCORS: true, logging: false }).then(function(canvas) {
+    if (btn) btn.textContent = label;
     var link = document.createElement('a');
     link.download = 'coup-de-patte-' + id + '.png';
     link.href = canvas.toDataURL('image/png');
     link.click();
   }).catch(function() {
+    if (btn) btn.textContent = label;
     alert('Le téléchargement a échoué. Faites une capture d\'écran de ce visuel.');
   });
 }
 </script>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 </body>
 </html>
